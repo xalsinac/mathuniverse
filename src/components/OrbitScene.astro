@@ -1,0 +1,16 @@
+<div class="orbit-scene" aria-hidden="true">
+  <div class="ring ring-one"></div><div class="ring ring-two"></div><div class="ring ring-three"></div>
+  <span class="formula formula-one">∫ f(x) dx</span><span class="formula formula-two">e<sup>iπ</sup> + 1 = 0</span><span class="formula formula-three">Σ</span>
+  <span class="planet planet-a">π</span><span class="planet planet-b">∞</span><span class="planet planet-c">△</span><span class="planet planet-d">∴</span>
+  <div class="scene-center"><svg viewBox="0 0 100 100"><path d="M12 69 43 15l12 20 12-20 21 54h-13l-8-21-12 21-12-21-18 31H12Z"/></svg></div>
+</div>
+
+<style>
+  .orbit-scene { height:min(67vw,720px); inset:50% -8% auto auto; position:absolute; transform:translateY(-50%); width:min(67vw,720px); }
+  .ring { border:1px solid; border-radius:50%; inset:50%; position:absolute; transform:translate(-50%,-50%); }.ring-one { border-color:#394dff; height:98%; width:98%; }.ring-two { border-color:#bd4cff; height:71%; transform:translate(-50%,-50%) rotate(44deg); width:71%; }.ring-three { border-color:#68f58e; height:44%; width:44%; }
+  .scene-center { align-items:center; background:radial-gradient(circle,#24252e 0 35%,transparent 70%); color:#f6f5f0; display:flex; height:20%; justify-content:center; left:40%; position:absolute; top:40%; width:20%; }.scene-center svg { fill:currentColor; height:100%; width:100%; }
+  .formula,.planet { align-items:center; display:flex; justify-content:center; position:absolute; }.formula { color:#80818a; font:500 .65rem var(--mono); letter-spacing:.06em; white-space:nowrap; }.formula-one { left:3%; top:23%; }.formula-two { bottom:20%; right:-7%; }.formula-three { bottom:16%; color:#a7a8af; font-size:3rem; left:19%; }
+  .planet { background:#191a20; border:1px solid #4c4d57; border-radius:12px; box-shadow:0 0 25px color-mix(in srgb,var(--planet) 45%,transparent); color:var(--planet); font:600 1.5rem/1 var(--serif); height:clamp(2.7rem,5vw,4.6rem); width:clamp(2.7rem,5vw,4.6rem); }.planet-a { --planet:#b6ff5c; left:4%; top:44%; }.planet-b { --planet:#f794ff; right:5%; top:15%; }.planet-c { --planet:#6ecaff; bottom:4%; right:20%; }.planet-d { --planet:#ffc45d; left:28%; top:-2%; }
+  @media (max-width:760px) { .orbit-scene { height:88vw; inset:38% -30% auto auto; width:88vw; opacity:.75; }.formula-one,.formula-two { display:none; } }
+  @media (prefers-reduced-motion:no-preference) { .ring-one { animation:turn 38s linear infinite; }.ring-two { animation:turn 26s linear infinite reverse; }.planet { animation:float 5s ease-in-out infinite alternate; }.planet-b { animation-delay:-2s; }.planet-c { animation-delay:-3.3s; } @keyframes turn { to { transform:translate(-50%,-50%) rotate(360deg); } } @keyframes float { to { translate:0 -10px; } } }
+</style>
