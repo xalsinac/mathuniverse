@@ -37,6 +37,9 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 ---
 
 <div class="craft-hero-orbit" data-craft-orbit-system aria-label="Taller de juegos Math Craft">
+  <!-- Neblina cósmica atmosférica (rosáceos, rojizos, púrpuras) en modo claro -->
+  <div class="craft-nebula-light" aria-hidden="true"></div>
+
   <!-- Canvas de fondo: Estrellas quietas en el fondo + Órbitas y arcos de neón giratorios -->
   <canvas class="orbit-bg-canvas" data-craft-orbit-canvas aria-hidden="true"></canvas>
 
@@ -257,6 +260,26 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 
   :root[data-theme='light'] .craft-hero-orbit {
     background: #f4f3ed;
+  }
+
+  /* Neblina cósmica para modo claro en Craft (CERO coste de GPU, acelerada por hardware sin blur) */
+  .craft-nebula-light {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transform: translateZ(0);
+    contain: strict;
+    background:
+      radial-gradient(ellipse 65% 55% at 26% 38%, rgba(244, 63, 94, 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 74% 62%, rgba(168, 85, 247, 0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 50% at 68% 26%, rgba(251, 146, 60, 0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 50% at 34% 74%, rgba(56, 189, 248, 0.08) 0%, transparent 65%);
+  }
+
+  :root[data-theme='light'] .craft-nebula-light {
+    display: block;
   }
 
   /* CANVAS DE FONDO */
@@ -771,15 +794,26 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     };
 
     // Estrellas ESTÁTICAS en el fondo (NO rotan, permanecen fijas con titileo en su sitio)
-    const starCount = 140;
-    const stars = Array.from({ length: starCount }, () => ({
+    const CRAFT_STARS_LIGHT = [
+      '#e11d48', // Rubí rosáceo
+      '#f43f5e', // Rosa coral
+      '#7c3aed', // Amatista cósmico
+      '#0284c7', // Azul cerúleo
+      '#ea580c', // Ámbar rojizo
+      '#059669', // Menta esmeralda
+      '#d946ef', // Magenta
+    ];
+
+    const starCount = 180;
+    const stars = Array.from({ length: starCount }, (_, i) => ({
       xFrac: Math.random(),
       yFrac: Math.random(),
       size: Math.random() * 1.5 + 0.6,
       baseAlpha: Math.random() * 0.45 + 0.25,
       twinkleSpeed: Math.random() * 2 + 0.8,
       twinklePhase: Math.random() * Math.PI * 2,
-      color: Math.random() > 0.8 ? '#38c8ff' : Math.random() > 0.6 ? '#ff8a5b' : '#ffffff',
+      colorDark: Math.random() > 0.8 ? '#38c8ff' : Math.random() > 0.6 ? '#ff8a5b' : '#ffffff',
+      colorLight: CRAFT_STARS_LIGHT[i % CRAFT_STARS_LIGHT.length],
     }));
 
     function isDark(): boolean {
@@ -866,10 +900,10 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
         const twinkle = Math.sin(sim.time * st.twinkleSpeed + st.twinklePhase);
         const curAlpha = st.baseAlpha * (0.7 + 0.3 * twinkle);
 
-        ctx.fillStyle = st.color;
-        ctx.globalAlpha = dark ? curAlpha : curAlpha * 0.55;
+        ctx.fillStyle = dark ? st.colorDark : st.colorLight;
+        ctx.globalAlpha = dark ? curAlpha : curAlpha * 0.95;
         ctx.beginPath();
-        ctx.arc(sx, sy, st.size, 0, Math.PI * 2);
+        ctx.arc(sx, sy, !dark ? st.size * 1.15 : st.size, 0, Math.PI * 2);
         ctx.fill();
       });
 

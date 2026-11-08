@@ -17,6 +17,9 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
 ---
 
 <div class="hero-orbit" data-orbit-system aria-label="Galaxia interactiva de proyectos y recursos">
+  <!-- Neblina cósmica en tonos rosáceos, rojizos y púrpuras para modo claro -->
+  <div class="orbit-nebula-light" aria-hidden="true"></div>
+
   <canvas class="orbit-canvas" data-orbit-canvas aria-hidden="true"></canvas>
 
   <!-- Velo radial sutil tras el centro tipográfico (HeroScrim) -->
@@ -139,7 +142,8 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
       };
 
       const ARM_PALETTE_DARK = ['#4d94ff', '#64a5ff', '#a78bfa', '#38c8ff', '#ff8a5b', '#3fe0b5'];
-      const ARM_PALETTE_LIGHT = ['#2563eb', '#1d4ed8', '#4f46e5', '#0284c7', '#334155', '#0f766e'];
+      // Paleta de brazos en modo claro enriquecida con tonos rubí, amatista y coral
+      const ARM_PALETTE_LIGHT = ['#2563eb', '#e11d48', '#7c3aed', '#0284c7', '#ea580c', '#059669'];
 
       // Campo estelar determinista (polvo cósmico y estrellas tintineantes detrás de las órbitas)
       type Star = {
@@ -155,9 +159,19 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
       };
 
       const STAR_COLORS_DARK = ['#ffffff', '#dce8ff', '#93c5fd', '#c4b5fd', '#7dd3fc', '#fde68a'];
-      const STAR_COLORS_LIGHT = ['#1e3a8a', '#334155', '#1d4ed8', '#4338ca', '#0369a1', '#475569'];
+      // Paleta cromática cósmica y luminosa para modo claro (rosáceos, rojizos, púrpuras, ámbar y turquesa)
+      const STAR_COLORS_LIGHT = [
+        '#e11d48', // Rubí rosáceo
+        '#f43f5e', // Rosa coral brillante
+        '#7c3aed', // Amatista estelar
+        '#d946ef', // Magenta
+        '#0284c7', // Azul cerúleo
+        '#ea580c', // Ámbar rojizo
+        '#059669', // Menta esmeralda
+        '#be123c', // Rosa intenso
+      ];
 
-      const STAR_COUNT = 168;
+      const STAR_COUNT = 240;
       const stars: Star[] = Array.from({ length: STAR_COUNT }, (_, i) => {
         // Secuencia de baja discrepancia (Halton / áurea) para repartir estrellas con naturalidad sin grumos artificiales
         const h1 = (i * 0.6180339887) % 1;
@@ -176,7 +190,7 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
           baseAlpha: isBright ? 0.68 + h2 * 0.32 : 0.22 + h3 * 0.48,
           twinkleSpeed: 0.7 + h1 * 2.1,
           twinklePhase: i * 2.39996,
-          colorIdx: i % STAR_COLORS_DARK.length,
+          colorIdx: i % STAR_COLORS_LIGHT.length,
           isCross: isBright,
           parallax: isBright ? 0.38 : 0.18 + h2 * 0.15,
         };
@@ -355,9 +369,9 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
           return smoothstep(0.45, 1.0, Math.hypot(nx, ny));
         };
 
-        // 0. Campo de estrellas de fondo (gira más despacio que los brazos para crear profundidad / paralaje)
+        // 0. Campo de estrellas de fondo (más visible y denso en modo claro)
         const maxStarR = Math.hypot(width, height) * 0.54;
-        const starCount = isMobile ? 90 : STAR_COUNT;
+        const starCount = isMobile ? (isLight ? 120 : 90) : (isLight ? STAR_COUNT : 160);
         const scrollStarShift = window.scrollY * 0.00025;
 
         for (let i = 0; i < starCount; i++) {
@@ -381,21 +395,21 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
             twinkle *
             pocketFade *
             introAlpha *
-            (isLight ? 0.65 : 1.15);
+            (isLight ? 1.25 : 1.15);
 
           if (alpha < 0.03) continue;
 
-          ctx.fillStyle = starPalette[st.colorIdx];
+          ctx.fillStyle = starPalette[st.colorIdx % starPalette.length];
           ctx.globalAlpha = Math.min(1, alpha);
 
           ctx.beginPath();
-          ctx.arc(sx, sy, st.size, 0, Math.PI * 2);
+          ctx.arc(sx, sy, isLight ? st.size * 1.15 : st.size, 0, Math.PI * 2);
           ctx.fill();
 
           // Destello sutil en cruz para las estrellas principales cuando están cerca de su pico de brillo
           if (st.isCross && twinkle > 0.68) {
             const flareLen = st.size * (2.8 + twinkle * 1.9);
-            ctx.strokeStyle = starPalette[st.colorIdx];
+            ctx.strokeStyle = starPalette[st.colorIdx % starPalette.length];
             ctx.lineWidth = 0.85;
             ctx.globalAlpha = Math.min(1, alpha * 0.65);
             ctx.beginPath();
@@ -779,6 +793,27 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
     pointer-events: none;
     position: absolute;
     z-index: 0;
+  }
+
+  /* Neblina cósmica atmosférica (rosáceos, rojizos, púrpuras) activa SOLO en modo claro */
+  /* CERO coste de GPU: degradados radiales nativos con aceleración por hardware (sin filter: blur) */
+  .orbit-nebula-light {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transform: translateZ(0);
+    contain: strict;
+    background:
+      radial-gradient(ellipse 65% 55% at 24% 34%, rgba(244, 63, 94, 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 76% 66%, rgba(168, 85, 247, 0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 50% at 72% 26%, rgba(251, 146, 60, 0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 50% at 28% 74%, rgba(56, 189, 248, 0.08) 0%, transparent 65%);
+  }
+
+  :global(:root[data-theme='light']) .orbit-nebula-light {
+    display: block;
   }
 
   .orbit-canvas {

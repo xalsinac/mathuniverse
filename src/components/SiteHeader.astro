@@ -75,7 +75,7 @@ const isHome = activePage === 'home';
           <path d="m21 21-4.3-4.3"></path>
         </svg>
         <span class="cmd-trigger-text">Buscar</span>
-        <kbd class="cmd-kbd">⌘K</kbd>
+        <kbd class="cmd-kbd" data-cmd-kbd>⌘K</kbd>
       </button>
 
       <!-- Conmutador de Tema (Oscuro / Claro) -->
@@ -231,6 +231,24 @@ const isHome = activePage === 'home';
     syncToggleUI(next);
     window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
   });
+
+  // Detección de Sistema Operativo para atajo del buscador (⌘K en Mac/Apple vs Ctrl+K en PC/Windows/Linux)
+  const isApple =
+    typeof navigator !== 'undefined' &&
+    /(Mac|iPhone|iPod|iPad)/i.test(
+      (navigator as any).userAgentData?.platform || navigator.platform || navigator.userAgent || '',
+    );
+  const shortcutLabel = isApple ? '⌘K' : 'Ctrl+K';
+
+  document.querySelectorAll<HTMLElement>('[data-cmd-kbd]').forEach((el) => {
+    el.textContent = shortcutLabel;
+  });
+
+  const cmdTrigger = document.querySelector<HTMLElement>('[data-cmd-open]');
+  if (cmdTrigger) {
+    cmdTrigger.setAttribute('title', `Buscar aplicación, herramienta o examen (${shortcutLabel})`);
+    cmdTrigger.setAttribute('aria-label', `Abrir buscador rápido (${shortcutLabel})`);
+  }
 
   // Control del Menú Móvil Desplegable
   const menuBtn = document.querySelector<HTMLButtonElement>('[data-mobile-menu-toggle]');
