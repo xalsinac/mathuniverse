@@ -333,8 +333,14 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
         ctx.clearRect(0, 0, width, height);
         if (introAlpha <= 0.005) return;
 
+        const aspect = width / Math.max(1, height);
+        const ultraWideStretch = aspect > 1.78 ? Math.min(1.48, Math.pow(aspect / 1.75, 0.72)) : 1;
+
         ctx.save();
         ctx.translate(cx, cy);
+        if (ultraWideStretch > 1) {
+          ctx.scale(ultraWideStretch, 1);
+        }
 
         const isLight = document.documentElement.dataset.theme === 'light';
         const palette = isLight ? ARM_PALETTE_LIGHT : ARM_PALETTE_DARK;
@@ -523,6 +529,9 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
         const sinSpin = Math.sin(sim.spin);
         const rollChunkOffset = -0.1 * (1 - waveEased);
 
+        const aspect = width / Math.max(1, height);
+        const ultraWideStretch = aspect > 1.78 ? Math.min(1.48, Math.pow(aspect / 1.75, 0.72)) : 1;
+
         // 1. Calcular posición en la espiral, flotación (wobble) y tirón magnético del cursor (tug)
         for (let i = 0; i < activeCount; i++) {
           const node = nodes[i];
@@ -578,7 +587,8 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
 
           node.localX = lx;
           node.localY = ly;
-          node.screenX = cosSpin * lx - sinSpin * ly;
+          // En pantallas ultra-wide expandimos suavemente horizontalmente para que alcance los dos laterales
+          node.screenX = (cosSpin * lx - sinSpin * ly) * ultraWideStretch;
           node.screenY = sinSpin * lx + cosSpin * ly;
         }
 
@@ -624,32 +634,44 @@ const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
           const rPos = spiralB * (thetaBirth + node.journey * (thetaExit - thetaBirth));
           const waveFactor = clamp01((waveRadius - rPos) / 180);
 
-          // Descarte suave al salir por los bordes de la pantalla
           const px = cx + node.screenX;
           const py = cy + node.screenY;
-          const edgeMargin = finalSize * 0.8;
-          const inViewport =
-            px > -edgeMargin &&
-            px < width + edgeMargin &&
-            py > -edgeMargin &&
-            py < height + edgeMargin;
-
-          const alpha = inViewport ? birthAlpha * waveFactor * keepFactor : 0;
           const pocketScale = GALAXY.keepScale + (1 - GALAXY.keepScale) * keepFactor;
           const scaleRatio = (finalSize / 56) * pocketScale;
+          const halfCard = (finalSize * 0.5) * scaleRatio;
+
+          // Desvanecimiento suave en los bordes del lienzo:
+          // La tarjeta se desvanece suavemente a 0 antes de que su borde físico toque el marco de la pantalla,
+          // evitando por completo el corte abrupto vertical (efecto guillotina) en los laterales.
+          const leftDist = px - halfCard;
+          const rightDist = width - (px + halfCard);
+          const topDist = py - halfCard;
+          const bottomDist = height - (py + halfCard);
+          const minEdgeDist = Math.min(leftDist, rightDist, topDist, bottomDist);
+          const edgeFade = smoothstep(0, 48, minEdgeDist);
+
+          const inViewport = minEdgeDist > -10 && px > -100 && px < width + 100 && py > -100 && py < height + 100;
+          const alpha = inViewport && minEdgeDist > 0 ? birthAlpha * waveFactor * keepFactor * edgeFade : 0;
 
           // Desenfoque de nacimiento (nebula softness) y al emerger del texto central, que se limpia al hacer hover
           const birthBlur = (1 - smoothstep(0, GALAXY.blurEnd, node.journey)) * 6;
           const pocketBlur = (1 - keepFactor) * 7;
           const blurPx = Math.max(birthBlur, pocketBlur) * (1 - node.targetWeight);
 
-          node.el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%) scale(${scaleRatio.toFixed(3)})`;
-          node.el.style.opacity = alpha.toFixed(3);
-          node.el.style.filter = blurPx > 0.35 ? `blur(${blurPx.toFixed(1)}px)` : 'none';
-          node.el.style.pointerEvents = alpha > 0.35 ? 'auto' : 'none';
-          node.el.style.zIndex = isHovered
-            ? '10'
-            : String(Math.round(node.journey * 5) + 1);
+          if (alpha < 0.015) {
+            node.el.style.visibility = 'hidden';
+            node.el.style.opacity = '0';
+            node.el.style.pointerEvents = 'none';
+          } else {
+            node.el.style.visibility = 'visible';
+            node.el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%) scale(${scaleRatio.toFixed(3)})`;
+            node.el.style.opacity = alpha.toFixed(3);
+            node.el.style.filter = blurPx > 0.35 ? `blur(${blurPx.toFixed(1)}px)` : 'none';
+            node.el.style.pointerEvents = alpha > 0.35 ? 'auto' : 'none';
+            node.el.style.zIndex = isHovered
+              ? '10'
+              : String(Math.round(node.journey * 5) + 1);
+          }
         }
 
         // 3. Dibujar canvas de fondo y posicionar la etiqueta HUD flotante bajo el icono activo

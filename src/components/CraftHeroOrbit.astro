@@ -244,7 +244,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     position: relative;
     width: 100%;
     max-width: 100%;
-    min-height: clamp(580px, 86vh, 1020px);
+    min-height: clamp(620px, 88vh, 960px);
     overflow: hidden;
     overflow-x: clip;
     background: #08090d;
@@ -800,30 +800,29 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     }
 
     // Definición DINÁMICA de las 3 ÓRBITAS:
-    // En móviles: elipses verticales ajustadas al ancho de pantalla (sin desborde horizontal).
-    // En ultra-wide (29", 34", 4K): se expanden para ocupar el 88%-92% del ancho disponible (sin dejar 1/4 vacío a izquierda ni derecha).
+    // Mantenemos la distancia vertical original compacta y controlada (ry ~ 205, 280, 355) para que no se haga
+    // excesivamente alta en monitores grandes, mientras que en horizontal expandimos rx para aprovechar todo el ancho.
     function getOrbitRadii(w: number, h: number) {
       const isMobile = w < 768;
 
       if (isMobile) {
-        // Modo móvil (orientación vertical): elipses contenidas horizontalmente para no desbordar
         return [
-          { rx: Math.max(115, w * 0.34), ry: Math.max(140, h * 0.22), speed: 0.22 },
-          { rx: Math.max(145, w * 0.42), ry: Math.max(195, h * 0.32), speed: 0.15 },
-          { rx: Math.max(170, w * 0.48), ry: Math.max(255, h * 0.42), speed: 0.095 },
+          { rx: Math.max(115, w * 0.34), ry: 135, speed: 0.22 },
+          { rx: Math.max(145, w * 0.42), ry: 185, speed: 0.15 },
+          { rx: Math.max(170, w * 0.48), ry: 240, speed: 0.095 },
         ];
       }
 
-      // Desktop estándar y Ultra-Wide (pantallas 1600px - 3440px / monitores 29" ultra-wide)
-      // La órbita exterior se expande hasta el 44%-46% del ancho total del monitor (1150px+ en 2560px),
-      // asegurando que las pantallas lleguen a los dos extremos laterales sin dejar zonas vacías.
-      const outerRx = Math.min(w * 0.46, Math.max(580, w * 0.44));
+      // Desktop estándar y Ultra-Wide (29", 34", 4K)
+      // Horizontalmente aprovecha hasta el 45% del ancho total para poblar los extremos laterales
+      const outerRx = Math.min(w * 0.45, Math.max(620, w * 0.44));
       const midRx = outerRx * 0.72;
       const innerRx = Math.max(340, outerRx * 0.48);
 
-      const outerRy = Math.min(h * 0.46, Math.max(320, h * 0.43));
-      const midRy = outerRy * 0.72;
-      const innerRy = Math.max(190, outerRy * 0.48);
+      // Vertical original de hace dos iteraciones (ry: 215, 295, 385)
+      const innerRy = 215;
+      const midRy = 295;
+      const outerRy = 385;
 
       return [
         { rx: innerRx, ry: innerRy, speed: 0.15 },
