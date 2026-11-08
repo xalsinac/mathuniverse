@@ -28,14 +28,16 @@ const totalCount = craftProjects.length;
         data-toggle-floating-calc
         title="Abrir calculadora científica flotante"
       >
-        <span>🧮 Calculadora</span>
+        <span class="btn-icon">🧮</span>
+        <span class="btn-text">Calculadora</span>
       </button>
       <a
         href="#colabora"
         class="craft-top-btn is-accent"
         title="Proponer un juego o proyecto de alumno"
       >
-        <span>✨ Proponer juego</span>
+        <span class="btn-icon">✨</span>
+        <span class="btn-text">Proponer juego</span>
       </a>
     </div>
   </SiteHeader>
@@ -458,6 +460,28 @@ const totalCount = craftProjects.length;
   .craft-top-btn.is-accent:hover {
     border-color: #b48cff;
     background: #b48cff22;
+  }
+
+  @media (max-width: 680px) {
+    .craft-top-actions {
+      padding: 0 0.4rem;
+      gap: 0.25rem;
+    }
+
+    .craft-top-btn {
+      padding: 0.25rem 0.45rem;
+    }
+
+    .craft-top-btn .btn-text {
+      display: none;
+    }
+  }
+
+  @media (max-width: 420px) {
+    /* En móviles muy estrechos dejamos sólo el botón de calculadora en la barra superior */
+    .craft-top-btn.is-accent {
+      display: none;
+    }
   }
 
   /* ---------------------------------------------------- */

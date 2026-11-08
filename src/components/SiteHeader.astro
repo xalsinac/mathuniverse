@@ -114,6 +114,44 @@ const isHome = activePage === 'home';
         <span class="theme-toggle-text" data-theme-label>Tema</span>
       </button>
 
+      <!-- Botón Menú Móvil (Hamburguesa / Cerrar) para pantallas táctiles -->
+      <button
+        type="button"
+        class="topbar-cell mobile-menu-btn"
+        data-mobile-menu-toggle
+        aria-label="Abrir menú de navegación"
+        aria-expanded="false"
+        aria-controls="mobile-nav-drawer"
+      >
+        <svg
+          class="icon-menu"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="4" y1="6" x2="20" y2="6"></line>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <line x1="4" y1="18" x2="20" y2="18"></line>
+        </svg>
+        <svg
+          class="icon-close"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
       {
         ctaLabel && (
           <a href={ctaHref} class="topbar-cta">
@@ -122,6 +160,45 @@ const isHome = activePage === 'home';
         )
       }
     </div>
+  </div>
+
+  <!-- Desplegable de Navegación Móvil -->
+  <div id="mobile-nav-drawer" class="mobile-drawer" data-mobile-drawer hidden>
+    <nav class="mobile-drawer-nav" aria-label="Navegación móvil">
+      <a href={isHome ? '#inicio' : '/'} class:list={{ 'is-active': isHome }}>
+        <span>{isHome ? 'Inicio' : '← Ir al Inicio'}</span>
+      </a>
+      <a href={isHome ? '#recursos' : '/#recursos'}>
+        <span>Recursos & Apps</span>
+      </a>
+      <a href={isHome ? '#universo' : '/#universo'}>
+        <span>El proyecto</span>
+      </a>
+      <a href={isHome ? '#principios' : '/#principios'}>
+        <span>Principios</span>
+      </a>
+
+      <div class="mobile-drawer-divider" aria-hidden="true"></div>
+
+      <div class="mobile-drawer-direct">
+        <a href="/craft" class="mobile-drawer-chip">
+          <span class="chip-dot" style="background:#38c8ff;"></span>
+          <span>08 · Math Craft</span>
+        </a>
+        <a href="/gym" class="mobile-drawer-chip">
+          <span class="chip-dot" style="background:#ff9838;"></span>
+          <span>04 · Math Gym</span>
+        </a>
+        <a href="/selectividad" class="mobile-drawer-chip">
+          <span class="chip-dot" style="background:#b48cff;"></span>
+          <span>Selectividad PAU</span>
+        </a>
+        <a href="/herramientas" class="mobile-drawer-chip">
+          <span class="chip-dot" style="background:#3fe0b5;"></span>
+          <span>Calculadora & Apps</span>
+        </a>
+      </div>
+    </nav>
   </div>
 </header>
 
@@ -153,6 +230,36 @@ const isHome = activePage === 'home';
     if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
     syncToggleUI(next);
     window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
+  });
+
+  // Control del Menú Móvil Desplegable
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-mobile-menu-toggle]');
+  const drawer = document.querySelector<HTMLElement>('[data-mobile-drawer]');
+
+  menuBtn?.addEventListener('click', () => {
+    const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+    const nextState = !isExpanded;
+    menuBtn.setAttribute('aria-expanded', String(nextState));
+    menuBtn.classList.toggle('is-active', nextState);
+    if (drawer) {
+      if (nextState) {
+        drawer.removeAttribute('hidden');
+        drawer.classList.add('is-open');
+      } else {
+        drawer.classList.remove('is-open');
+        drawer.setAttribute('hidden', '');
+      }
+    }
+  });
+
+  // Cerrar el drawer al pulsar en cualquier enlace de navegación
+  drawer?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      menuBtn?.setAttribute('aria-expanded', 'false');
+      menuBtn?.classList.remove('is-active');
+      drawer?.classList.remove('is-open');
+      drawer?.setAttribute('hidden', '');
+    });
   });
 </script>
 
@@ -311,6 +418,135 @@ const isHome = activePage === 'home';
     display: none;
   }
 
+  /* Botón Menú Móvil */
+  .mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border-bottom: 0;
+    border-right: 0;
+    border-top: 0;
+    color: var(--ink);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
+  }
+
+  .mobile-menu-btn:hover,
+  .mobile-menu-btn:focus-visible,
+  .mobile-menu-btn.is-active {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .mobile-menu-btn svg {
+    height: 1.05rem;
+    width: 1.05rem;
+  }
+
+  .mobile-menu-btn .icon-close {
+    display: none;
+  }
+
+  .mobile-menu-btn.is-active .icon-menu {
+    display: none;
+  }
+
+  .mobile-menu-btn.is-active .icon-close {
+    display: block;
+  }
+
+  /* Drawer Desplegable Móvil */
+  .mobile-drawer {
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-strong);
+    display: block;
+    padding: 1rem 1.25rem 1.35rem;
+    animation: drawerSlideDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-drawer[hidden] {
+    display: none;
+  }
+
+  @keyframes drawerSlideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mobile-drawer-nav a {
+    color: var(--ink);
+    font: 600 0.82rem/1.2 var(--mono);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.65rem;
+    border-radius: 5px;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .mobile-drawer-nav a:hover,
+  .mobile-drawer-nav a.is-active {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .mobile-drawer-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 0.4rem 0;
+  }
+
+  .mobile-drawer-direct {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .mobile-drawer-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font: 500 0.72rem/1.2 var(--mono);
+    color: var(--ink-soft);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .mobile-drawer-chip:hover {
+    border-color: var(--line-strong);
+    color: var(--ink-strong);
+  }
+
+  .chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   @media (max-width: 1120px) {
     .status {
       display: none;
@@ -321,13 +557,46 @@ const isHome = activePage === 'home';
     .topbar-nav {
       display: none;
     }
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
   }
 
   @media (max-width: 680px) {
     .topbar-cta,
     .cmd-trigger-text,
+    .cmd-kbd,
     .theme-toggle-text {
       display: none;
+    }
+
+    .topbar-brand {
+      padding: 0 0.85rem;
+    }
+
+    .topbar-right :global(.topbar-cell),
+    .topbar-cell {
+      padding: 0 0.7rem;
+      gap: 0.35rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .topbar-brand {
+      padding: 0 0.65rem;
+    }
+
+    .topbar-brand :global(.logo-uni) {
+      display: none;
+    }
+
+    .topbar-right :global(.topbar-cell),
+    .topbar-cell {
+      padding: 0 0.55rem;
+    }
+
+    .mobile-drawer-direct {
+      grid-template-columns: 1fr;
     }
   }
 </style>

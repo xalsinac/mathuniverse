@@ -984,6 +984,27 @@ const clientExams = selectividadExams.map((exam) => ({
     color: #ffffff;
   }
 
+  @media (max-width: 680px) {
+    .sim-timer {
+      padding: 0 0.45rem;
+      gap: 0.35rem;
+    }
+
+    .sim-timer .timer-label {
+      display: none;
+    }
+
+    .timer-readout {
+      font-size: 0.78rem;
+    }
+
+    .timer-btn {
+      height: 1.45rem;
+      width: 1.45rem;
+      font-size: 0.58rem;
+    }
+  }
+
   /* ========================================================================= */
   /* CABECERA, ESTACIÓN DE SIMULACRO Y SELECTOR PRINCIPAL DE MODALIDAD         */
   /* ========================================================================= */
