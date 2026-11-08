@@ -1,14 +1,15 @@
 ---
 const { compact = false } = Astro.props;
 ---
-<a class:list={['logo', { compact }]} href="#inicio" aria-label="Math Universe, ir al inicio">
-  <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 32 20 10h8l13 22h-9l-8-13-8 13H7Z" fill="currentColor"/><path d="M19 29h10v6H19z" fill="currentColor" opacity=".45"/></svg>
-  {!compact && <span>Math<span>Universe</span></span>}
+<a class:list={['logo', { compact }]} href="/" aria-label="Math Universe, ir al inicio">
+  <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 32 20 10h8l13 22h-9l-8-13-8 13H7Z" fill="currentColor"/><path d="M19 29h10v6H19z" fill="var(--accent-ink)" opacity=".85"/></svg>
+  {!compact && <span class="logo-word"><em class="logo-math">Math</em><span class="logo-uni">Universe</span></span>}
 </a>
 
 <style>
-  .logo { align-items:center; color:var(--ink); display:inline-flex; gap:.7rem; font:700 .86rem/1 var(--mono); letter-spacing:.12em; text-decoration:none; text-transform:uppercase; }
+  .logo { align-items:center; color:var(--ink); display:inline-flex; gap:.65rem; font:700 .88rem/1 var(--display); font-stretch:118%; font-variation-settings:'wdth' 118; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; }
   .logo svg { height:2rem; width:2rem; }
-  .logo span span { color:var(--muted); font-weight:500; margin-left:.18em; }
+  .logo-math { color:var(--accent-ink); font-style:normal; }
+  .logo-uni { color:var(--ink); font-weight:600; margin-left:.18em; }
   .logo.compact svg { height:1.55rem; width:1.55rem; }
 </style>

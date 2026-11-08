@@ -1,183 +1,1128 @@
-<nav class="scroll-navigator" data-scroll-navigator aria-label="Progreso de lectura">
-  <div class="scroll-trail" data-scroll-trail></div>
-  <div class="scroll-rule" aria-hidden="true">
-    <span class="rule-line"></span>
-    <span class="rule-tick tick-zero">00</span>
-    <span class="rule-tick tick-quarter">25</span>
-    <span class="rule-tick tick-middle">50</span>
-    <span class="rule-tick tick-three-quarters">75</span>
-    <span class="rule-tick tick-full">100</span>
-    <span class="progress-marker"><i></i><b data-scroll-progress>000%</b></span>
+<nav class="scroll-navigator" data-scroll-navigator aria-label="Progreso de lectura y secciones">
+  <!-- Fondos difuminados de contraste para la pila superior y la cola inferior -->
+  <div class="ruler-pools" aria-hidden="true">
+    <div class="ruler-pool ruler-pool-top" data-pool-top></div>
+    <div class="ruler-pool ruler-pool-bottom" data-pool-bottom></div>
   </div>
+
+  <!-- Raíl interactivo de la regla graduada -->
+  <div
+    class="ruler-rail"
+    data-ruler-rail
+    role="scrollbar"
+    aria-controls="inicio"
+    aria-orientation="vertical"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    aria-label="Posición en la página"
+  >
+    <div class="ruler-frost" aria-hidden="true"></div>
+    <div class="ruler-track" data-ruler-track aria-hidden="true"></div>
+    <div class="ruler-bracket" data-ruler-bracket aria-hidden="true">
+      <div class="ruler-bracket-fill"></div>
+      <span class="ruler-bracket-edge top"></span>
+      <span class="ruler-bracket-edge bottom"></span>
+    </div>
+    <div class="ruler-needle" data-ruler-needle aria-hidden="true">
+      <span class="ruler-needle-line"></span>
+      <span class="ruler-readout" data-ruler-readout>
+        <span class="ruler-digits" data-ruler-digits>
+          {[0, 1, 2].map((col) => (
+            <span class="ruler-digit-col" data-digit-col={col}>
+              {'0123456789'.split('').map((d) => <span>{d}</span>)}
+            </span>
+          ))}
+        </span>
+        <span class="ruler-pct-sign">%</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="ruler-ghost" data-ruler-ghost aria-hidden="true">
+    <div class="ruler-ghost-bar"></div>
+  </div>
+
+  <!-- Escenario donde vuelan las letras y sus áreas clicables -->
+  <div class="ruler-headings" data-ruler-headings></div>
 </nav>
 
 <script>
-  const navigator = document.querySelector<HTMLElement>('[data-scroll-navigator]');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nav = document.querySelector<HTMLElement>('[data-scroll-navigator]');
 
-  if (navigator) {
-    const trail = navigator.querySelector<HTMLElement>('[data-scroll-trail]');
-    const progressLabel = navigator.querySelector<HTMLElement>('[data-scroll-progress]');
-    const sections = [...document.querySelectorAll<HTMLElement>('[data-scroll-section]')];
-    const anchors = sections.map((section) => ({
-      element: section,
-      label: section.dataset.sectionTitle ?? 'Sección',
-    }));
+  if (nav) {
+    const rail = nav.querySelector<HTMLElement>('[data-ruler-rail]')!;
+    const track = nav.querySelector<HTMLElement>('[data-ruler-track]')!;
+    const bracket = nav.querySelector<HTMLElement>('[data-ruler-bracket]')!;
+    const needle = nav.querySelector<HTMLElement>('[data-ruler-needle]')!;
+    const readout = nav.querySelector<HTMLElement>('[data-ruler-readout]')!;
+    const ghost = nav.querySelector<HTMLElement>('[data-ruler-ghost]')!;
+    const headingsLayer = nav.querySelector<HTMLElement>('[data-ruler-headings]')!;
+    const poolTop = nav.querySelector<HTMLElement>('[data-pool-top]')!;
+    const poolBottom = nav.querySelector<HTMLElement>('[data-pool-bottom]')!;
+    const digitCols = [...nav.querySelectorAll<HTMLElement>('[data-digit-col]')];
 
-    if (trail && anchors.length) {
-      trail.innerHTML = anchors.map((section, index) => {
-        const letters = [...section.label].map((letter, letterIndex) =>
-          `<span class="trail-letter" style="--letter:${letterIndex}">${letter === ' ' ? '&nbsp;' : letter}</span>`,
-        ).join('');
-        return `<button class="trail-item" type="button" data-trail-item="${index}" aria-label="Ir a ${section.label}">${letters}</button>`;
-      }).join('');
+    // Parámetros de diseño y cinemática (inspirados en el Tuner de getartcraft.com)
+    const LAYOUT = {
+      navH: 55,
+      edgePad: 16,
+      railW: 60,
+      minorPct: 1,
+      labelPct: 5,
+      thresholdPct: 14, // % vh donde la palabra gira a horizontal arriba
+      headingPx: 30,    // Tamaño de la sección activa (arriba)
+      ridingPx: 18,     // Tamaño viajando en vertical por el raíl
+      queuePx: 14,      // Tamaño en la cola inferior y en la pila superior
+      topPad: 22,
+      currentGap: 24,
+      queueSlot: 20,
+      queuePad: 36,
+      textPad: 6,
+    };
 
-      const items = [...trail.querySelectorAll<HTMLButtonElement>('[data-trail-item]')];
-      let activeIndex = -1;
-      let queued = false;
-      let scrollingTimer = 0;
-      let lastScrollY = window.scrollY;
-      let scrollDirection = 1;
+    const MOTION = {
+      flipZone: 210,    // Distancia de scroll (px) en la que ocurre el giro Aladino superior
+      detachZone: 240,  // Distancia de scroll (px) para despegar de la cola inferior al raíl
+      stagger: 0.16,    // Desfase por letra durante el vuelo
+      arc: 30,          // Curvatura Bézier (px) hacia el interior de la página
+      snapDelay: 400,   // ms en reposo antes de auto-completar un giro a medias
+      velRadius: 180,   // Radio (px doc) alrededor de la aguja donde las marcas se estiran con la velocidad
+      velMax: 0.65,     // Estiramiento máximo de las marcas con velocidad
+      zoomInDelay: 150,
+      zoomOutDelay: 150,
+      zoomLerp: 10,
+    };
 
-      const sectionPosition = (section: HTMLElement) =>
-        Math.max(0, section.getBoundingClientRect().top + window.scrollY - window.innerHeight * .12);
+    const LOOK = {
+      minorAlpha: 0.35,
+      majorAlpha: 0.78,
+      labelAlpha: 0.48,
+      minorLen: 10,
+      majorLen: 20,
+      queueAlpha: 0.38,
+      yieldPad: 26,
+      needleFadePct: 2.5,
+      mapAlpha: 0.85,
+    };
 
-      const lettersFor = (item: HTMLButtonElement) =>
-        [...item.querySelectorAll<HTMLElement>('.trail-letter')];
+    const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+    const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
-      const setSidebarOrigins = (item: HTMLButtonElement) => {
-        const rule = navigator.querySelector<HTMLElement>('.scroll-rule');
-        if (!rule) return;
-        item.classList.add('is-measuring');
-        const ruleBox = rule.getBoundingClientRect();
-        const sourceX = ruleBox.left + ruleBox.width * .66;
-        const letters = lettersFor(item);
-        const sourceStartY = ruleBox.top + ruleBox.height * .58 - ((letters.length - 1) * 7.5);
-        letters.forEach((letter, index) => {
-          const target = letter.getBoundingClientRect();
-          letter.style.setProperty('--source-x', `${sourceX - (target.left + target.width / 2)}px`);
-          letter.style.setProperty('--source-y', `${sourceStartY + index * 15 - (target.top + target.height / 2)}px`);
-        });
-        item.classList.remove('is-measuring');
+    const rulerMap = (vh: number, edgePad: number) => {
+      const base = LAYOUT.navH + edgePad;
+      const span = Math.max(1, vh - LAYOUT.navH - 2 * edgePad);
+      return {
+        base,
+        span,
+        drift: (progress: number) => base - progress * (LAYOUT.navH + 2 * edgePad),
       };
+    };
 
-      const showStandby = (index: number) => {
-        const item = items[index];
-        if (!item) return;
-        item.classList.remove('is-entering', 'is-reached', 'is-current');
-        item.classList.add('is-standby');
-        setSidebarOrigins(item);
-      };
+    type LetterMetrics = { adv: number[]; cum: number[]; total: number };
+    type SectionInfo = {
+      id: string;
+      label: string;
+      element: HTMLElement;
+      anchor: number;
+      bottom: number;
+      isHero: boolean;
+      letters: HTMLElement[];
+      hit: HTMLAnchorElement;
+    };
+    type TickInfo = {
+      pct: number;
+      docY: number;
+      major: boolean;
+      alpha: number;
+      rowEl: HTMLElement;
+      lineEl: HTMLElement;
+      labelEl?: HTMLElement;
+    };
 
-      const enterTrail = (index: number) => {
-        const item = items[index];
-        if (!item) return;
-        item.classList.remove('is-standby');
-        item.classList.add('is-entering');
-        setSidebarOrigins(item);
-        requestAnimationFrame(() => {
-          item.classList.remove('is-entering');
-          item.classList.add('is-reached');
-        });
-      };
+    let geom = { docH: 0, vh: 0, vw: 0 };
+    let metricsMap: Record<string, LetterMetrics> = {};
+    let sections: SectionInfo[] = [];
+    let ticks: TickInfo[] = [];
+    let railSpans: { top: number; bottom: number; k: number }[] = [];
 
-      const resetTrail = (index: number) => {
-        const item = items[index];
-        if (!item) return;
-        setSidebarOrigins(item);
-        item.classList.remove('is-current', 'is-reached', 'is-entering');
-        item.classList.add('is-standby');
-      };
+    const state = {
+      lastY: window.scrollY,
+      smoothY: window.scrollY,
+      vel: 0,
+      lastTime: performance.now(),
+      prevDigits: [-1, -1, -1],
+      prevPct: -1,
+      readoutAbove: false,
+      hoveredIndex: -1,
+      hoverWeights: [] as number[],
+      flashUntil: [] as number[],
+      zoomIntent: false,
+      zoomTimer: 0,
+      zoomP: 0,
+      dragging: false,
+      dragStartY: 0,
+      dragMoved: 0,
+      ghostActive: false,
+      ghostY: 0,
+      snapSince: null as number | null,
+      snapping: false,
+      armed: true,
+      jumping: false,
+      jumpAnimId: 0,
+    };
 
-      const syncTrail = (nextActive: number, initial = false) => {
-        if (initial) {
-          items.forEach((item, index) => item.classList.toggle('is-reached', index <= nextActive));
-        } else if (nextActive > activeIndex) {
-          for (let index = activeIndex + 1; index <= nextActive; index += 1) enterTrail(index);
+    // Animador suave de scroll propio (sin depender de librerías externas)
+    const smoothScrollTo = (targetY: number, durationMs = 750, onDone?: () => void) => {
+      cancelAnimationFrame(state.jumpAnimId);
+      const startY = window.scrollY;
+      const diff = targetY - startY;
+      if (Math.abs(diff) < 2) {
+        onDone?.();
+        return;
+      }
+      const startTime = performance.now();
+      const step = (now: number) => {
+        const t = clamp01((now - startTime) / durationMs);
+        const eased = easeOutExpo(t);
+        window.scrollTo(0, startY + diff * eased);
+        if (t < 1) {
+          state.jumpAnimId = requestAnimationFrame(step);
         } else {
-          for (let index = activeIndex; index > nextActive; index -= 1) resetTrail(index);
+          onDone?.();
         }
+      };
+      state.jumpAnimId = requestAnimationFrame(step);
+    };
 
-        items.forEach((item, index) => {
-          if (index > nextActive + 1) item.classList.remove('is-current', 'is-reached', 'is-entering', 'is-standby');
-          item.classList.toggle('is-current', index === nextActive);
-          item.setAttribute('aria-current', index === nextActive ? 'location' : 'false');
+    // Medir el ancho real de cada carácter en ems (normalizado a 100px) para posicionar cada letra sin solapamientos
+    const measureLabels = (labels: string[]) => {
+      const probe = document.createElement('div');
+      probe.className = 'ruler-measure-probe';
+      probe.style.cssText =
+        'position:fixed;left:-9999px;top:0;visibility:hidden;white-space:pre;font-family:var(--display);font-weight:620;font-stretch:118%;font-variation-settings:"wdth" 118;font-size:100px;line-height:1;letter-spacing:-0.02em;text-transform:uppercase;';
+      document.body.appendChild(probe);
+
+      const out: Record<string, LetterMetrics> = {};
+      for (const label of labels) {
+        probe.textContent = '';
+        const spans = [...label].map((ch) => {
+          const s = document.createElement('span');
+          s.textContent = ch === ' ' ? '\u00A0' : ch;
+          probe.appendChild(s);
+          return s;
         });
-        showStandby(nextActive + 1);
-      };
+        const adv = spans.map((s) => s.getBoundingClientRect().width / 100);
+        const cum: number[] = [];
+        let total = 0;
+        for (const w of adv) {
+          cum.push(total);
+          total += w;
+        }
+        out[label] = { adv, cum, total };
+      }
+      probe.remove();
+      return out;
+    };
 
-      const update = () => {
-        queued = false;
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const percentage = documentHeight > 0 ? Math.round((window.scrollY / documentHeight) * 100) : 0;
-        navigator.style.setProperty('--scroll-progress', String(percentage));
-        if (progressLabel) progressLabel.textContent = `${String(percentage).padStart(3, '0')}%`;
+    // Inicializar secciones del DOM y sus letras independientes
+    const buildSections = () => {
+      const rawSections = [...document.querySelectorAll<HTMLElement>('[data-scroll-section]')];
+      headingsLayer.innerHTML = '';
+      sections = rawSections.map((el, index) => {
+        const label = (el.dataset.sectionTitle ?? `Sección ${index + 1}`).toUpperCase();
+        const id = el.id || `seccion-${index}`;
+        if (!el.id) el.id = id;
 
-        const readingLine = window.scrollY + window.innerHeight * .44;
-        let nextActive = 0;
-        anchors.forEach((section, index) => {
-          if (section.element.getBoundingClientRect().top + window.scrollY <= readingLine) nextActive = index;
+        const hit = document.createElement('a');
+        hit.href = `#${id}`;
+        hit.className = 'ruler-hit';
+        hit.setAttribute('aria-label', `Ir a ${label}`);
+        hit.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          state.flashUntil[index] = performance.now() + 380;
+          state.armed = false;
+          state.jumping = true;
+          const targetY = index === 0 ? 0 : Math.max(0, el.getBoundingClientRect().top + window.scrollY - LAYOUT.navH);
+          smoothScrollTo(targetY, 850, () => {
+            state.jumping = false;
+          });
+        });
+        hit.addEventListener('pointerenter', () => {
+          state.hoveredIndex = index;
+        });
+        hit.addEventListener('pointerleave', () => {
+          if (state.hoveredIndex === index) state.hoveredIndex = -1;
+        });
+        headingsLayer.appendChild(hit);
+
+        const letters = [...label].map((ch) => {
+          const span = document.createElement('span');
+          span.className = 'ruler-letter';
+          span.setAttribute('aria-hidden', 'true');
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          span.style.fontSize = `${LAYOUT.headingPx}px`;
+          headingsLayer.appendChild(span);
+          return span;
         });
 
-        if (nextActive !== activeIndex) {
-          syncTrail(nextActive, activeIndex === -1);
-          activeIndex = nextActive;
+        return {
+          id,
+          label,
+          element: el,
+          anchor: 0,
+          bottom: 0,
+          isHero: index === 0,
+          letters,
+          hit,
+        };
+      });
+
+      state.hoverWeights = new Array(sections.length).fill(0);
+      state.flashUntil = new Array(sections.length).fill(0);
+      metricsMap = measureLabels(sections.map((s) => s.label));
+    };
+
+    // Construir las 101 marcas graduadas de la regla (0% a 100%)
+    const buildTicks = () => {
+      track.innerHTML = '';
+      ticks = [];
+      for (let p = 0; p <= 100 + 1e-6; p += LAYOUT.minorPct) {
+        const pct = Math.round(p * 100) / 100;
+        const major = Math.abs(pct % LAYOUT.labelPct) < 1e-6;
+        const alpha = major ? LOOK.majorAlpha : LOOK.minorAlpha;
+
+        const rowEl = document.createElement('div');
+        rowEl.className = 'ruler-tick-row';
+
+        const lineEl = document.createElement('span');
+        lineEl.className = 'ruler-tick-line';
+        lineEl.style.width = `${major ? LAYOUT.railW && LOOK.majorLen : LOOK.minorLen}px`;
+        lineEl.style.opacity = String(alpha);
+        rowEl.appendChild(lineEl);
+
+        let labelEl: HTMLElement | undefined;
+        if (major) {
+          labelEl = document.createElement('span');
+          labelEl.className = 'ruler-tick-label';
+          labelEl.style.right = `${LOOK.majorLen + 5}px`;
+          labelEl.style.opacity = String(LOOK.labelAlpha);
+          labelEl.textContent = String(pct).padStart(2, '0');
+          rowEl.appendChild(labelEl);
         }
-      };
 
-      const snapAfterScroll = () => {
-        if (reduceMotion) return;
-        const positions = anchors.map(({ element }) => sectionPosition(element));
-        const current = window.scrollY;
-        const closest = positions.reduce((best, position) =>
-          Math.abs(position - current) < Math.abs(best - current) ? position : best,
-        positions[0]);
-        // Solo completa una transición que ya está cerca de resolverse; no secuestra un scroll normal.
-        if (Math.abs(closest - current) < window.innerHeight * .22) {
-          const target = scrollDirection >= 0 ? Math.max(closest, current) : Math.min(closest, current);
-          if (Math.abs(target - current) > 3) window.scrollTo({ top: target, behavior: 'smooth' });
+        track.appendChild(rowEl);
+        ticks.push({
+          pct,
+          docY: 0,
+          major,
+          alpha,
+          rowEl,
+          lineEl,
+          labelEl,
+        });
+      }
+    };
+
+    const updateGeometry = () => {
+      geom = {
+        docH: Math.max(document.documentElement.scrollHeight, window.innerHeight + 1),
+        vh: window.innerHeight,
+        vw: window.innerWidth,
+      };
+      track.style.height = `${geom.docH}px`;
+      sections.forEach((sec) => {
+        const rect = sec.element.getBoundingClientRect();
+        sec.anchor = rect.top + window.scrollY;
+        sec.bottom = rect.bottom + window.scrollY;
+      });
+      ticks.forEach((t) => {
+        t.docY = (t.pct / 100) * geom.docH;
+        t.rowEl.style.top = `${t.docY}px`;
+      });
+      metricsMap = measureLabels(sections.map((s) => s.label));
+    };
+
+    // Bucle principal de renderizado frame a frame
+    const tickFrame = (now: number) => {
+      const dt = Math.min((now - state.lastTime) / 1000, 0.1) || 0.016;
+      state.lastTime = now;
+
+      if (geom.vh > 0 && sections.length > 0) {
+        const rawY = window.scrollY;
+        // Suavizado ligero del valor de scroll para que el vuelo Bézier tenga inercia sedosa incluso con rueda de ratón a saltos
+        const smoothFactor = 1 - Math.exp(-18 * dt);
+        state.smoothY += (rawY - state.smoothY) * smoothFactor;
+        if (Math.abs(rawY - state.smoothY) < 0.15) state.smoothY = rawY;
+
+        const scrollY = state.smoothY;
+        const maxScroll = Math.max(1, geom.docH - geom.vh);
+        const progress = clamp01(scrollY / maxScroll);
+        const map = rulerMap(geom.vh, LAYOUT.edgePad);
+        const drift = map.drift(progress);
+
+        const instVel = (scrollY - state.lastY) / dt;
+        state.lastY = scrollY;
+        state.vel += (instVel - state.vel) * (1 - Math.exp(-6 * dt));
+
+        // 1. Mover la pista de marcas y la aguja
+        track.style.transform = `translate3d(0, ${-scrollY + drift}px, 0)`;
+
+        const needleY = map.base + progress * map.span;
+        needle.style.transform = `translate3d(0, ${needleY}px, 0)`;
+        needle.style.opacity = String(clamp01(progress / Math.max(0.001, LOOK.needleFadePct / 100)));
+
+        const readoutAbove = needleY > geom.vh - 28;
+        if (readoutAbove !== state.readoutAbove) {
+          state.readoutAbove = readoutAbove;
+          readout.style.top = readoutAbove ? '-15px' : '4px';
         }
-      };
 
-      const onScroll = () => {
-        const currentScrollY = window.scrollY;
-        scrollDirection = currentScrollY >= lastScrollY ? 1 : -1;
-        lastScrollY = currentScrollY;
-        if (!queued) { queued = true; requestAnimationFrame(update); }
-        window.clearTimeout(scrollingTimer);
-        scrollingTimer = window.setTimeout(snapAfterScroll, 150);
-      };
+        const pctInt = Math.round(progress * 100);
+        if (pctInt !== state.prevPct) {
+          state.prevPct = pctInt;
+          rail.setAttribute('aria-valuenow', String(pctInt));
+          const digitsStr = String(pctInt).padStart(3, '0');
+          for (let d = 0; d < 3; d++) {
+            const code = digitsStr.charCodeAt(d) - 48;
+            if (code !== state.prevDigits[d]) {
+              state.prevDigits[d] = code;
+              digitCols[d].style.transform = `translateY(${-code}em)`;
+            }
+          }
+        }
 
-      items.forEach((item, index) => item.addEventListener('click', () => {
-        window.scrollTo({ top: sectionPosition(anchors[index].element), behavior: reduceMotion ? 'auto' : 'smooth' });
-      }));
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', () => { update(); showStandby(activeIndex + 1); }, { passive: true });
-      update();
-    }
+        // Zoom de mapa completo al mantener el cursor sobre la regla
+        const zoomTarget = state.zoomIntent || state.dragging ? 1 : 0;
+        state.zoomP += (zoomTarget - state.zoomP) * (1 - Math.exp(-MOTION.zoomLerp * dt));
+        if (zoomTarget === 0 && state.zoomP < 0.0005) state.zoomP = 0;
+        if (zoomTarget === 1 && state.zoomP > 0.9995) state.zoomP = 1;
+        const zoomEased = easeInOutCubic(state.zoomP);
+
+        bracket.style.transform = `translate3d(0, ${map.base + (scrollY / geom.docH) * map.span}px, 0)`;
+        bracket.style.height = `${(geom.vh / geom.docH) * map.span}px`;
+        bracket.style.opacity = String(zoomEased);
+
+        if (state.ghostActive) {
+          ghost.style.transform = `translate3d(0, ${state.ghostY}px, 0)`;
+          ghost.style.opacity = String(0.25 + 0.75 * zoomEased);
+        } else {
+          ghost.style.opacity = '0';
+        }
+
+        // 2. Calcular cinemática de cada sección (Cola inferior -> Raíl vertical -> Giro Aladino -> Pila superior)
+        const flipLineY = (LAYOUT.thresholdPct / 100) * geom.vh;
+        const topStackStartY = LAYOUT.navH + LAYOUT.topPad;
+        const bottomQueueStartY = geom.vh - LAYOUT.queuePad;
+        const D = LAYOUT.headingPx;
+        const ridingScale = LAYOUT.ridingPx / D;
+        const queueScale = LAYOUT.queuePx / D;
+        const railCenterX = geom.vw - LAYOUT.railW / 2;
+
+        const sectionStates = sections.map((sec, idx) => {
+          const m = metricsMap[sec.label];
+          const rideLen = (m?.total ?? 0) * D * ridingScale;
+          const v = sec.anchor - scrollY + drift;
+          let flipP = 0;
+          let detachP = 0;
+          let scrollFlip: { start: number; end: number } | null = null;
+
+          if (idx === 0) {
+            // La primera sección (Inicio) empieza ya activa arriba
+            flipP = 1;
+            detachP = 1;
+          } else {
+            flipP = clamp01((flipLineY + MOTION.flipZone - v) / MOTION.flipZone);
+            // Si una sección al final de la página no puede subir hasta flipLineY porque se acaba el documento,
+            // garantizamos que gire al llegar al final del scroll sin pisar la sección anterior
+            if (sec.anchor - maxScroll > flipLineY) {
+              const prevSec = sections[idx - 1];
+              const prevFlipEndScroll = prevSec
+                ? Math.max(0, prevSec.anchor + drift - flipLineY)
+                : 0;
+              const naturalStart = Math.min(sec.bottom - geom.vh, maxScroll - 80);
+              const start = Math.max(naturalStart, Math.min(prevFlipEndScroll + 45, maxScroll - 55));
+              const span = Math.max(45, maxScroll - start);
+              flipP = Math.max(flipP, clamp01((scrollY - start) / span));
+              scrollFlip = { start, end: maxScroll };
+            }
+          }
+
+          return {
+            v,
+            rideLen,
+            flipP,
+            scrollFlip,
+            detachP,
+            yq: bottomQueueStartY,
+          };
+        });
+
+        // Calcular posiciones en la cola inferior (de abajo hacia arriba) y su despegue (detachP)
+        let queueSlotCounter = 0;
+        for (let i = sections.length - 1; i >= 1; i--) {
+          const st = sectionStates[i];
+          st.yq = bottomQueueStartY - LAYOUT.queueSlot * queueSlotCounter;
+          st.detachP = clamp01(
+            (st.yq + MOTION.detachZone - (st.v + st.rideLen)) / MOTION.detachZone,
+          );
+          queueSlotCounter += 1 - st.detachP;
+        }
+
+        // Contar cuántas secciones han completado el giro superior y cuál es el progreso de las que aún están girando
+        let completedFlips = 0;
+        for (const st of sectionStates) {
+          if (st.flipP >= 1) completedFlips++;
+        }
+
+        // Opacidad de las piscinas de contraste superior e inferior (la superior solo se activa al empezar a bajar de la cabecera)
+        let maxTopP = 0;
+        let maxBotP = 0;
+        for (let i = 1; i < sectionStates.length; i++) {
+          if (sectionStates[i].flipP > maxTopP) maxTopP = sectionStates[i].flipP;
+          const botPresence = 1 - sectionStates[i].detachP;
+          if (botPresence > maxBotP) maxBotP = botPresence;
+        }
+        const heroScrolledTopP = clamp01(scrollY / 90);
+        poolTop.style.opacity = String(Math.max(maxTopP, heroScrolledTopP * 0.85));
+        poolBottom.style.opacity = String(maxBotP);
+
+        // Posición horizontal para una letra `charIdx` en la pila/cola horizontal (alineada a la derecha, junto al raíl)
+        const horizontalPose = (
+          m: LetterMetrics,
+          charIdx: number,
+          y: number,
+          scale: number,
+          alpha: number,
+        ) => {
+          const charCenterEm = (m.cum[charIdx] + m.adv[charIdx] / 2) * D * scale;
+          const totalWidthPx = m.total * D * scale;
+          const distFromRight = LAYOUT.railW + LAYOUT.textPad + (totalWidthPx - charCenterEm);
+          return {
+            x: geom.vw - distFromRight,
+            y,
+            rot: 0,
+            scale,
+            alpha,
+          };
+        };
+
+        // Posición vertical para una letra `charIdx` viajando por el raíl de la regla
+        const verticalRailPose = (m: LetterMetrics, charIdx: number, topY: number) => ({
+          x: railCenterX,
+          y: topY + (m.total - m.cum[charIdx] - m.adv[charIdx] / 2) * D * ridingScale,
+          rot: -90,
+          scale: ridingScale,
+          alpha: LOOK.queueAlpha,
+        });
+
+        railSpans = [];
+
+        // Posicionar cada letra de cada sección usando la curva de Bézier cuadrática + stagger
+        for (let i = 0; i < sections.length; i++) {
+          const sec = sections[i];
+          const m = metricsMap[sec.label];
+          if (!m) continue;
+
+          const { v, rideLen, flipP, detachP, yq } = sectionStates[i];
+          const N = m.adv.length;
+
+          let phaseP = 1;
+          let reverseOrder = false;
+          let poseFrom: (charIdx: number) => { x: number; y: number; rot: number; scale: number; alpha: number };
+          let poseTo: (charIdx: number) => { x: number; y: number; rot: number; scale: number; alpha: number };
+
+          if (flipP > 0) {
+            // Fase 3 -> 4: Giro superior ("Efecto Aladino") desde vertical en el raíl a horizontal arriba
+            phaseP = flipP;
+            reverseOrder = true;
+            poseFrom = (c) => verticalRailPose(m, c, v);
+
+            if (flipP >= 1) {
+              // Ya está en la cabecera superior: cada sección cede su puesto de título grande (1.0)
+              // exactamente a medida que su sucesora inmediata (i + 1) va girando
+              const nextFlipP = i + 1 < sectionStates.length ? sectionStates[i + 1].flipP : 0;
+              const compressT = i < completedFlips - 1 ? 1 : clamp01(nextFlipP);
+              const targetY =
+                topStackStartY + i * LAYOUT.queueSlot + LAYOUT.currentGap * (1 - compressT);
+              const targetScale = 1 - (1 - queueScale) * compressT;
+              const targetAlpha = 1 - (1 - LOOK.queueAlpha) * compressT;
+              poseTo = (c) => horizontalPose(m, c, targetY, targetScale, targetAlpha);
+            } else {
+              // En pleno vuelo hacia el puesto de título activo grande
+              const targetY = topStackStartY + i * LAYOUT.queueSlot + LAYOUT.currentGap;
+              poseTo = (c) => horizontalPose(m, c, targetY, 1, 1);
+            }
+          } else if (detachP < 1) {
+            // Fase 1 -> 2: Despegue desde la cola horizontal inferior hacia la posición vertical en el raíl
+            phaseP = detachP;
+            reverseOrder = true;
+            const railStartTopY = yq - rideLen;
+            poseFrom = (c) => horizontalPose(m, c, yq, queueScale, LOOK.queueAlpha);
+            poseTo = (c) => verticalRailPose(m, c, railStartTopY);
+          } else {
+            // Fase 2: Viajando en vertical por el raíl junto a su sección
+            phaseP = 1;
+            poseFrom = poseTo = (c) => verticalRailPose(m, c, v);
+          }
+
+          const totalStaggerSpan = 1 + (N - 1) * MOTION.stagger;
+          const mapOverviewY = map.base + (sec.isHero ? 0 : sec.anchor / geom.docH) * map.span;
+
+          const hoverTarget = state.hoveredIndex === i ? 1 : 0;
+          const hoverW = (state.hoverWeights[i] +=
+            (hoverTarget - state.hoverWeights[i]) * (1 - Math.exp(-dt / 0.08)));
+          const flashW = clamp01((state.flashUntil[i] - now) / 350);
+
+          let minX = Infinity,
+            maxX = -Infinity,
+            minY = Infinity,
+            maxY = -Infinity,
+            maxAlpha = 0;
+
+          for (let c = 0; c < N; c++) {
+            const letterEl = sec.letters[c];
+            if (!letterEl) continue;
+
+            const orderIdx = reverseOrder ? N - 1 - c : c;
+            const localT = clamp01(phaseP * totalStaggerSpan - orderIdx * MOTION.stagger);
+            const d = easeInOutCubic(localT);
+
+            const from = poseFrom(c);
+            const to = poseTo(c);
+
+            // Punto de control de la curva de Bézier cuadrática (se arquea hacia adentro de la página: -MOTION.arc)
+            const ctrlX = (from.x + to.x) / 2 - MOTION.arc;
+            const ctrlY = (from.y + to.y) / 2;
+            const invD = 1 - d;
+
+            let x = invD * invD * from.x + 2 * invD * d * ctrlX + d * d * to.x;
+            let y = invD * invD * from.y + 2 * invD * d * ctrlY + d * d * to.y;
+            let rot = from.rot + (to.rot - from.rot) * d;
+            let scale = from.scale + (to.scale - from.scale) * d;
+            let alpha = from.alpha + (to.alpha - from.alpha) * d;
+
+            // Si el usuario mantiene el puntero sobre la regla (modo mapa zoom), las palabras se alinean con su % real
+            if (zoomEased > 0) {
+              const mapPose = horizontalPose(m, c, mapOverviewY, queueScale, LOOK.mapAlpha);
+              x += (mapPose.x - x) * zoomEased;
+              y += (mapPose.y - y) * zoomEased;
+              rot *= 1 - zoomEased;
+              scale += (mapPose.scale - scale) * zoomEased;
+              alpha += (mapPose.alpha - alpha) * zoomEased;
+            }
+
+            letterEl.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) translate(-50%, -50%) rotate(${rot.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+            letterEl.style.opacity = '1';
+
+            const finalAlpha = alpha + (1 - alpha) * hoverW;
+            const baseColor =
+              finalAlpha >= 0.98
+                ? 'var(--ink)'
+                : `color-mix(in srgb, var(--ink) ${(clamp01(finalAlpha) * 100).toFixed(1)}%, var(--bg))`;
+            letterEl.style.color =
+              flashW > 0.01
+                ? `color-mix(in srgb, var(--accent-ink) ${(flashW * 85).toFixed(0)}%, ${baseColor})`
+                : hoverW > 0.05 && finalAlpha < 0.95
+                  ? `color-mix(in srgb, var(--accent-ink) ${(hoverW * 80).toFixed(0)}%, ${baseColor})`
+                  : baseColor;
+
+            if (alpha > maxAlpha) maxAlpha = alpha;
+
+            // Caja envolvente para el botón clicable (hit target)
+            const halfW = (m.adv[c] * D * scale) / 2 + 2;
+            const halfH = (D * scale) / 2 + 2;
+            const isVert = Math.abs(rot) > 45;
+            const rx = isVert ? halfH : halfW;
+            const ry = isVert ? halfW : halfH;
+            if (x - rx < minX) minX = x - rx;
+            if (x + rx > maxX) maxX = x + rx;
+            if (y - ry < minY) minY = y - ry;
+            if (y + ry > maxY) maxY = y + ry;
+          }
+
+          // Registrar qué tramo del raíl está ocupado por una palabra vertical para apartar los números de la regla
+          const onRailWeight = sec.isHero ? 0 : detachP * (1 - flipP);
+          if (onRailWeight > 0.02) {
+            railSpans.push({ top: v, bottom: v + rideLen, k: onRailWeight });
+          }
+
+          if (isFinite(minX)) {
+            sec.hit.style.left = `${minX - 4}px`;
+            sec.hit.style.top = `${minY - 3}px`;
+            sec.hit.style.width = `${maxX - minX + 8}px`;
+            sec.hit.style.height = `${maxY - minY + 6}px`;
+            sec.hit.style.pointerEvents = maxAlpha > 0.05 ? 'auto' : 'none';
+          }
+        }
+
+        // 3. Actualizar las marcas de la regla (estiramiento por velocidad de scroll + ocultar números bajo palabras en el raíl)
+        const currentDocPos = progress * geom.docH;
+        const velNorm = clamp01(Math.abs(state.vel) / 2600);
+
+        for (let i = 0; i < ticks.length; i++) {
+          const t = ticks[i];
+          const screenY = t.docY - scrollY + drift;
+          const zoomedY = map.base + (t.pct / 100) * map.span;
+
+          if (zoomEased > 0) {
+            t.rowEl.style.transform = `translate3d(0, ${zoomEased * (zoomedY - screenY)}px, 0)`;
+          } else {
+            t.rowEl.style.transform = '';
+          }
+
+          if (t.labelEl) {
+            const effY = screenY + zoomEased * (zoomedY - screenY);
+            let yieldFactor = 1;
+            if (LOOK.yieldPad > 0 && zoomEased < 1) {
+              for (const span of railSpans) {
+                const dist =
+                  effY < span.top ? span.top - effY : effY > span.bottom ? effY - span.bottom : 0;
+                if (dist < LOOK.yieldPad) {
+                  const f = 1 - span.k * (1 - dist / LOOK.yieldPad);
+                  if (f < yieldFactor) yieldFactor = f;
+                }
+              }
+            }
+            t.labelEl.style.opacity = String(
+              LOOK.labelAlpha * (1 - (1 - yieldFactor) * (1 - zoomEased)),
+            );
+          }
+
+          const distToNeedle = Math.abs(t.docY - currentDocPos);
+          if (distToNeedle < MOTION.velRadius && MOTION.velRadius > 0) {
+            const prox = 1 - distToNeedle / MOTION.velRadius;
+            const boost = velNorm * prox * prox;
+            t.lineEl.style.transform = `scaleX(${(1 + MOTION.velMax * boost).toFixed(3)})`;
+            t.lineEl.style.opacity = String(Math.min(1, t.alpha + 0.55 * boost));
+          } else {
+            t.lineEl.style.transform = 'scaleX(1)';
+            t.lineEl.style.opacity = String(t.alpha);
+          }
+        }
+
+        // 4. Auto-Snap inteligente si el usuario detiene el scroll dejando un giro Aladino a medias
+        const midFlipIdx = sectionStates.findIndex((s) => s.flipP > 0.04 && s.flipP < 0.96);
+        if (state.dragging) state.armed = true;
+
+        if (state.snapping) {
+          if (midFlipIdx < 0) state.snapping = false;
+        } else if (
+          midFlipIdx >= 0 &&
+          state.armed &&
+          !state.jumping &&
+          Math.abs(state.vel) < 30 &&
+          !state.dragging &&
+          state.zoomP < 0.3
+        ) {
+          if (state.snapSince === null) {
+            state.snapSince = now;
+          } else if (now - state.snapSince > MOTION.snapDelay) {
+            const st = sectionStates[midFlipIdx];
+            const sec = sections[midFlipIdx];
+            let targetScrollY: number;
+            if (st.scrollFlip) {
+              targetScrollY = st.flipP >= 0.5 ? st.scrollFlip.end + 4 : st.scrollFlip.start - 4;
+            } else {
+              const targetV = st.flipP >= 0.5 ? flipLineY - 4 : flipLineY + MOTION.flipZone + 4;
+              targetScrollY = sec.anchor + drift - targetV;
+            }
+            targetScrollY = Math.max(0, Math.min(maxScroll, targetScrollY));
+            state.snapping = true;
+            state.armed = false;
+            state.snapSince = null;
+            smoothScrollTo(targetScrollY, 650, () => {
+              state.snapping = false;
+            });
+          }
+        } else {
+          state.snapSince = null;
+        }
+      }
+
+      requestAnimationFrame(tickFrame);
+    };
+
+    // Interacciones sobre el raíl de la regla (hover zoom, arrastrar y clic directo)
+    const setZoomIntent = (intent: boolean) => {
+      window.clearTimeout(state.zoomTimer);
+      state.zoomTimer = window.setTimeout(
+        () => {
+          state.zoomIntent = intent;
+        },
+        intent ? MOTION.zoomInDelay : MOTION.zoomOutDelay,
+      );
+    };
+
+    rail.addEventListener('pointerenter', () => setZoomIntent(true));
+    rail.addEventListener('pointerleave', () => {
+      state.ghostActive = false;
+      if (!state.dragging) setZoomIntent(false);
+    });
+
+    rail.addEventListener('pointermove', (ev) => {
+      const map = rulerMap(geom.vh, LAYOUT.edgePad);
+      const clampedY = Math.max(map.base, Math.min(map.base + map.span, ev.clientY));
+      const pct = clamp01((clampedY - map.base) / map.span);
+      state.ghostActive = true;
+      state.ghostY = clampedY;
+      if (state.dragging) {
+        state.dragMoved = Math.max(state.dragMoved, Math.abs(ev.clientY - state.dragStartY));
+        const targetY = pct * Math.max(1, geom.docH - geom.vh);
+        window.scrollTo(0, targetY);
+      }
+    });
+
+    rail.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault();
+      state.dragStartY = ev.clientY;
+      state.dragMoved = 0;
+      state.dragging = true;
+      rail.setPointerCapture(ev.pointerId);
+    });
+
+    const endDrag = (ev: PointerEvent) => {
+      if (!state.dragging) return;
+      state.dragging = false;
+      const box = rail.getBoundingClientRect();
+      const inside =
+        ev.clientX >= box.left &&
+        ev.clientX <= box.right &&
+        ev.clientY >= box.top &&
+        ev.clientY <= box.bottom;
+      if (!inside) {
+        state.ghostActive = false;
+        setZoomIntent(false);
+      }
+    };
+    rail.addEventListener('pointerup', endDrag);
+    rail.addEventListener('pointercancel', endDrag);
+
+    rail.addEventListener('click', (ev) => {
+      if (state.dragMoved > 4) return;
+      const map = rulerMap(geom.vh, LAYOUT.edgePad);
+      const pct = clamp01((ev.clientY - map.base) / map.span);
+      const targetY = pct * Math.max(1, geom.docH - geom.vh);
+      state.armed = false;
+      state.jumping = true;
+      smoothScrollTo(targetY, 800, () => {
+        state.jumping = false;
+      });
+    });
+
+    const rearm = () => {
+      state.armed = true;
+    };
+    window.addEventListener('wheel', rearm, { passive: true });
+    window.addEventListener('touchmove', rearm, { passive: true });
+    window.addEventListener('keydown', rearm);
+
+    // Inicialización
+    buildSections();
+    buildTicks();
+    updateGeometry();
+
+    const ro = new ResizeObserver(() => updateGeometry());
+    ro.observe(document.body);
+    window.addEventListener('resize', updateGeometry, { passive: true });
+    document.fonts?.ready.then(() => updateGeometry()).catch(() => {});
+
+    requestAnimationFrame(tickFrame);
   }
 </script>
 
 <style is:global>
-  .scroll-navigator { --scroll-progress:0; bottom:0; display:block; pointer-events:none; position:fixed; right:0; top:0; z-index:12; }
-  .scroll-rule { bottom:8vh; position:absolute; right:0; top:8vh; width:clamp(5.5rem,8vw,7.75rem); }
-  .rule-line { background:linear-gradient(#4b4d58aa,#4b4d5822); bottom:0; position:absolute; right:1.7rem; top:0; width:1px; }
-  .rule-tick { color:#777985; font:.62rem/1 var(--mono); letter-spacing:.04em; position:absolute; right:2.25rem; transform:translateY(-50%); }
-  .rule-tick::after { background:#aeb0b8; content:""; height:1px; left:calc(100% + .55rem); position:absolute; top:50%; width:1.25rem; }
-  .tick-zero { top:0; }.tick-quarter { top:25%; }.tick-middle { top:50%; }.tick-three-quarters { top:75%; }.tick-full { bottom:0; transform:translateY(50%); }
-  .progress-marker { align-items:center; display:flex; gap:.55rem; position:absolute; right:0; top:calc(var(--scroll-progress) * 1%); transform:translateY(-50%); transition:top .15s linear; }
-  .progress-marker i { background:linear-gradient(90deg,transparent,#4c94ff 22%,#83c0ff); box-shadow:0 0 .8rem #2d7cff; display:block; height:2px; width:clamp(4rem,7vw,6.5rem); }
-  .progress-marker b { color:#82b4ff; font:500 .67rem/1 var(--mono); letter-spacing:.08em; min-width:3rem; }
-  .scroll-trail { align-items:flex-end; display:flex; flex-direction:column; gap:.28rem; max-height:58vh; overflow:visible; pointer-events:auto; position:absolute; right:clamp(4.2rem,5.8vw,5.4rem); top:21vh; }
-  .trail-item { background:none; border:0; color:#666872; cursor:pointer; display:flex; font:600 clamp(.64rem,1vw,.82rem)/1 var(--mono); justify-content:flex-end; letter-spacing:.12em; max-height:0; opacity:0; overflow:visible; padding:0; pointer-events:none; text-transform:uppercase; transition:max-height .18s ease,opacity .18s ease,color .25s ease; white-space:nowrap; }
-  .trail-item.is-reached,.trail-item.is-entering { max-height:1.35rem; opacity:.68; padding:.12rem 0; pointer-events:auto; }
-  .trail-item.is-current { color:#f3f2ec; opacity:1; }
-  .trail-item.is-standby { opacity:1; pointer-events:none; }
-  .trail-letter { --source-x:0px; --source-y:0px; display:inline-block; opacity:0; transform:translate(var(--source-x),var(--source-y)) rotate(90deg); transform-origin:center; transition:transform .72s cubic-bezier(.16,1,.3,1),opacity .22s ease; transition-delay:calc(var(--letter) * 38ms); }
-  .trail-item.is-standby .trail-letter,.trail-item.is-entering .trail-letter { color:#585a62; opacity:.82; }
-  .trail-item.is-reached .trail-letter { opacity:1; transform:none; }
-  .trail-item.is-measuring .trail-letter { opacity:0!important; transform:none!important; transition:none!important; }
-  .trail-item:hover,.trail-item:focus-visible { color:#b6ff5c; opacity:1; outline:none; }
-  @media (max-width:900px) { .scroll-navigator { display:none; } }
-  @media (prefers-reduced-motion:reduce) { .progress-marker,.trail-item,.trail-letter { transition:none; } }
+  .scroll-navigator {
+    inset: 0;
+    pointer-events: none;
+    position: fixed;
+    z-index: 30;
+  }
+
+  /* Piscinas de contraste difuminadas tras los títulos superiores e inferiores */
+  .ruler-pools {
+    inset: 0;
+    pointer-events: none;
+    position: fixed;
+    z-index: 29;
+  }
+
+  .ruler-pool {
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    background-color: color-mix(in srgb, var(--bg) 80%, transparent);
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    transition: opacity 0.2s ease;
+    width: 340px;
+  }
+
+  .ruler-pool-top {
+    height: 220px;
+    mask-image: radial-gradient(
+      100% 100% at 100% 0%,
+      black 38%,
+      rgba(0, 0, 0, 0.82) 56%,
+      rgba(0, 0, 0, 0.48) 72%,
+      rgba(0, 0, 0, 0.2) 86%,
+      transparent 97%
+    );
+    -webkit-mask-image: radial-gradient(
+      100% 100% at 100% 0%,
+      black 38%,
+      rgba(0, 0, 0, 0.82) 56%,
+      rgba(0, 0, 0, 0.48) 72%,
+      rgba(0, 0, 0, 0.2) 86%,
+      transparent 97%
+    );
+    top: 3.45rem;
+  }
+
+  .ruler-pool-bottom {
+    bottom: 0;
+    height: 180px;
+    mask-image: radial-gradient(
+      100% 100% at 100% 100%,
+      black 38%,
+      rgba(0, 0, 0, 0.82) 56%,
+      rgba(0, 0, 0, 0.48) 72%,
+      rgba(0, 0, 0, 0.2) 86%,
+      transparent 97%
+    );
+    -webkit-mask-image: radial-gradient(
+      100% 100% at 100% 100%,
+      black 38%,
+      rgba(0, 0, 0, 0.82) 56%,
+      rgba(0, 0, 0, 0.48) 72%,
+      rgba(0, 0, 0, 0.2) 86%,
+      transparent 97%
+    );
+  }
+
+  /* Raíl lateral de la regla (empieza debajo de la barra superior para no tapar el botón de tema) */
+  .ruler-rail {
+    bottom: 0;
+    cursor: crosshair;
+    overflow: hidden;
+    pointer-events: auto;
+    position: fixed;
+    right: 0;
+    top: 0;
+    clip-path: inset(3.45rem 0 0 0);
+    user-select: none;
+    width: 60px;
+    z-index: 31;
+  }
+
+  .ruler-frost {
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    background-color: color-mix(in srgb, var(--bg) 55%, transparent);
+    inset: 0;
+    mask-image: linear-gradient(
+      to left,
+      black 40%,
+      rgba(0, 0, 0, 0.65) 58%,
+      rgba(0, 0, 0, 0.28) 76%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to left,
+      black 40%,
+      rgba(0, 0, 0, 0.65) 58%,
+      rgba(0, 0, 0, 0.28) 76%,
+      transparent 100%
+    );
+    position: absolute;
+  }
+
+  .ruler-track {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    will-change: transform;
+  }
+
+  .ruler-tick-row {
+    height: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  .ruler-tick-line {
+    background: var(--ink);
+    display: block;
+    height: 1px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform-origin: right center;
+    will-change: transform, opacity;
+  }
+
+  .ruler-tick-label {
+    color: var(--ink);
+    font: 500 9px/1 var(--mono);
+    letter-spacing: 0.08em;
+    position: absolute;
+    top: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.12s ease;
+  }
+
+  /* Indicador de ventana visible durante el zoom de la regla */
+  .ruler-bracket {
+    height: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .ruler-bracket-fill {
+    background: var(--ink);
+    inset: 0;
+    opacity: 0.1;
+    position: absolute;
+  }
+
+  .ruler-bracket-edge {
+    background: var(--ink);
+    display: block;
+    height: 1px;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    right: 0;
+  }
+
+  .ruler-bracket-edge.top {
+    top: 0;
+  }
+
+  .ruler-bracket-edge.bottom {
+    bottom: 0;
+  }
+
+  /* Aguja de progreso actual y contador odómetro */
+  .ruler-needle {
+    height: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    will-change: transform, opacity;
+  }
+
+  .ruler-needle-line {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    display: block;
+    height: 1.5px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .ruler-readout {
+    color: var(--accent-ink);
+    font: 500 9px/1 var(--mono);
+    letter-spacing: 0.08em;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    white-space: nowrap;
+  }
+
+  .ruler-digits {
+    display: inline-flex;
+    height: 1em;
+    line-height: 1;
+    overflow: hidden;
+  }
+
+  .ruler-digit-col {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1);
+  }
+
+  .ruler-digit-col > span {
+    display: block;
+    height: 1em;
+  }
+
+  .ruler-pct-sign {
+    margin-left: 2px;
+  }
+
+  /* Línea fantasma al pasar el cursor por el raíl */
+  .ruler-ghost {
+    bottom: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 60px;
+    z-index: 32;
+  }
+
+  .ruler-ghost-bar {
+    background: var(--ink);
+    height: 2px;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    width: 60px;
+  }
+
+  /* Capa de letras independientes en vuelo ("Efecto Aladino") */
+  .ruler-headings {
+    inset: 0;
+    pointer-events: none;
+    position: fixed;
+    z-index: 32;
+  }
+
+  .ruler-hit {
+    cursor: pointer;
+    pointer-events: auto;
+    position: absolute;
+  }
+
+  .ruler-letter {
+    color: var(--ink);
+    font-family: var(--display);
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    font-weight: 620;
+    left: 0;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    text-shadow: 0 0 4px var(--bg), 0 0 10px var(--bg);
+    text-transform: uppercase;
+    top: 0;
+    white-space: pre;
+    will-change: transform, opacity, color;
+  }
+
+  @media (max-width: 960px) {
+    .scroll-navigator {
+      display: none;
+    }
+  }
 </style>

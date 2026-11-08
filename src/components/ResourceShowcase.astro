@@ -2,76 +2,638 @@
 import { resources } from '../data/resources';
 import MathGlyph from './MathGlyph.astro';
 ---
-<section class="showcase section" id="recursos" aria-labelledby="resources-title" data-scroll-section data-section-title="Órbitas">
-  <div class="section-label"><span>01 / recursos</span><span>Selecciona una órbita</span></div>
-  <div class="showcase-grid" data-showcase>
-    <div class="resource-detail" aria-live="polite">
-      {resources.map((resource, index) => <article class:list={['detail-card', { active: index === 0 }]} data-detail={resource.id} style={`--accent:${resource.color}`}>
-        <div class="detail-icon"><MathGlyph type={resource.icon} /></div>
-        <p class="eyebrow">{resource.eyebrow}</p>
-        <h2 id={index === 0 ? 'resources-title' : undefined}>{resource.name}</h2>
-        <p class="lead">{resource.description}</p>
-        <p class="detail-copy">{resource.detail}</p>
-        <a class="button button--light" href={resource.href}>Descubrir <span aria-hidden="true">↗</span></a>
-        <p class="placeholder">{resource.href === '#' ? 'Destino pendiente de publicar' : 'Versión temporal disponible'}</p>
-      </article>)}
+
+<section
+  class="showcase section-band"
+  id="recursos"
+  aria-labelledby="resources-title"
+  data-scroll-section
+  data-section-title="Órbitas"
+  data-choreo-band
+>
+  <span class="section-rule" aria-hidden="true"></span>
+  <div class="section-frame">
+    <span class="tick tick-half tick-left" aria-hidden="true"></span>
+    <span class="tick tick-half tick-right" aria-hidden="true"></span>
+
+    <div class="section-eyebrow">
+      <span>
+        <span class="eyebrow-num">01</span>
+        <span class="eyebrow-sep" aria-hidden="true">/</span>
+        Recursos y aplicaciones
+      </span>
+      <span class="eyebrow-right">Nueve espacios · Clic para explorar · Doble clic para abrir</span>
     </div>
-    <div class="resource-selector" aria-label="Proyectos y recursos">
-      <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orbit orbit-c"></div>
-      <div class="selector-heading"><span>EL MAPA</span><strong>Todo empieza<br/>por una pregunta.</strong></div>
-      <div class="resource-list">
-        {resources.map((resource, index) => <button class:list={['resource-button', { active: index === 0 }]} type="button" data-resource={resource.id} style={`--accent:${resource.color}`} aria-pressed={index === 0 ? 'true' : 'false'}>
-          <span class="resource-number">{resource.number}</span><span class="resource-mini-icon"><MathGlyph type={resource.icon} /></span><span class="resource-name">{resource.name}</span><span class="resource-arrow" aria-hidden="true">↗</span>
-        </button>)}
-      </div>
+
+    <div class="showcase-stage section-body" data-showcase style={`--active-accent:${resources[0].color}`}>
+    <!-- Columna izquierda: Información dinámica del recurso seleccionado + acciones -->
+    <div class="resource-detail" aria-live="polite">
+      {
+        resources.map((resource, index) => {
+          const isReady = resource.href !== '#';
+          const isExternal = resource.href.startsWith('http');
+          return (
+            <article
+              class:list={['detail-card', { active: index === 0 }]}
+              data-detail={resource.id}
+              data-color={resource.color}
+              style={`--accent:${resource.color}`}
+            >
+              <div class="detail-badge">
+                <span class="detail-badge-num">{resource.number}</span>
+                <span class="detail-badge-sep">/</span>
+                <span class="detail-badge-eyebrow">{resource.eyebrow}</span>
+              </div>
+
+              <h2 id={index === 0 ? 'resources-title' : undefined} class="detail-title">
+                <span class="title-accent">{resource.accentWord}</span>{resource.restWord}<span class="detail-dot">.</span>
+              </h2>
+
+              <p class="detail-lead">{resource.description}</p>
+              <p class="detail-copy">{resource.detail}</p>
+
+              <div class="detail-actions">
+                <a
+                  class="cta-primary"
+                  href={resource.href}
+                  data-entry-link
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noopener noreferrer' : undefined}
+                >
+                  <span>{isReady ? `Entrar en ${resource.name}` : 'Explorar recurso'}</span>
+                  <span aria-hidden="true">{isExternal ? '↗' : '→'}</span>
+                </a>
+                <a class="cta-secondary" href="#universo">
+                  <span>Sobre el universo</span>
+                </a>
+              </div>
+
+              <p class="detail-meta">
+                <i class:list={['meta-dot', { ready: isReady }]} aria-hidden="true" />
+                {isReady
+                  ? 'Aplicación web interactiva · Acceso libre y gratuito'
+                  : 'En desarrollo activo · Próxima publicación en Math Universe'}
+              </p>
+
+              <div class="detail-HintBar" aria-hidden="true">
+                <span>MODO INTERACTIVO</span>
+                <span>1 CLIC: VER FICHA</span>
+                <span>2 CLICS: ABRIR APP ↗</span>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <!-- Columna derecha: Cuadrícula de iconos estilo App Tiles (GetArtCraft) -->
+    <nav class="app-grid" aria-label="Aplicaciones y recursos matemáticos">
+      {
+        resources.map((resource, index) => {
+          const isReady = resource.href !== '#';
+          return (
+            <button
+              class:list={['app-tile', { active: index === 0 }]}
+              type="button"
+              data-resource={resource.id}
+              data-href={resource.href}
+              data-color={resource.color}
+              style={`--app-color:${resource.color}`}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+              title={`${resource.name} — Clic para ver detalles, doble clic para abrir`}
+            >
+              <span class="app-tile-squircle" data-tile-squircle>
+                <span class="app-tile-glare" data-tile-glare aria-hidden="true" />
+                <span class="app-tile-art">
+                  <MathGlyph type={resource.icon} variant="tile" />
+                </span>
+                <span class="app-tile-num">{resource.number}</span>
+                {isReady && <span class="app-tile-live" title="Disponible online" />}
+              </span>
+              <span class="app-tile-label">
+                <span class="tile-label-accent">{resource.accentWord}</span>{resource.restWord}
+              </span>
+            </button>
+          );
+        })
+      }
+    </nav>
     </div>
   </div>
 </section>
 
 <script>
   const root = document.querySelector<HTMLElement>('[data-showcase]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   if (root) {
-    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-resource]')];
+    const tiles = [...root.querySelectorAll<HTMLButtonElement>('[data-resource]')];
     const cards = [...root.querySelectorAll<HTMLElement>('[data-detail]')];
-    let activeId = buttons[0]?.dataset.resource;
-    const select = (id: string) => {
+    let activeId = tiles[0]?.dataset.resource;
+
+    const selectResource = (id: string) => {
       activeId = id;
-      buttons.forEach((button) => { const active = button.dataset.resource === id; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
-      cards.forEach((card) => card.classList.toggle('active', card.dataset.detail === id));
+      const selectedTile = tiles.find((t) => t.dataset.resource === id);
+      if (selectedTile?.dataset.color) {
+        root.style.setProperty('--active-accent', selectedTile.dataset.color);
+      }
+
+      tiles.forEach((tile) => {
+        const isCurrent = tile.dataset.resource === id;
+        tile.classList.toggle('active', isCurrent);
+        tile.setAttribute('aria-pressed', String(isCurrent));
+      });
+
+      cards.forEach((card) => {
+        card.classList.toggle('active', card.dataset.detail === id);
+      });
     };
-    buttons.forEach((button) => button.addEventListener('click', () => {
-      const id = button.dataset.resource;
+
+    const openResource = (tile: HTMLButtonElement) => {
+      const id = tile.dataset.resource;
       if (!id) return;
-      if (id === activeId) root.querySelector<HTMLAnchorElement>(`[data-detail="${id}"] .button`)?.click();
-      else select(id);
-    }));
+      const link = root.querySelector<HTMLAnchorElement>(`[data-detail="${id}"] [data-entry-link]`);
+      const href = tile.dataset.href;
+
+      // Efecto visual de pulsación al abrir
+      tile.classList.add('is-launching');
+      window.setTimeout(() => tile.classList.remove('is-launching'), 320);
+
+      if (link && href && href !== '#') {
+        link.click();
+      } else if (link) {
+        // Si aún es '#', hacemos un destello sutil en el botón de entrada para indicar que está seleccionado
+        link.focus();
+      }
+    };
+
+    tiles.forEach((tile) => {
+      // 1 Clic: selecciona y muestra la información a la izquierda
+      tile.addEventListener('click', () => {
+        const id = tile.dataset.resource;
+        if (!id) return;
+        if (id !== activeId) {
+          selectResource(id);
+        }
+      });
+
+      // Doble Clic: entra directamente en la aplicación (además de seleccionarla)
+      tile.addEventListener('dblclick', (ev) => {
+        ev.preventDefault();
+        const id = tile.dataset.resource;
+        if (id && id !== activeId) {
+          selectResource(id);
+        }
+        openResource(tile);
+      });
+
+      // Reacción táctil 3D (inclinación suave + brillo dinámico al mover el puntero sobre el icono)
+      if (!reduceMotion) {
+        const squircle = tile.querySelector<HTMLElement>('[data-tile-squircle]');
+        const glare = tile.querySelector<HTMLElement>('[data-tile-glare]');
+
+        tile.addEventListener('pointermove', (ev) => {
+          if (!squircle) return;
+          const rect = squircle.getBoundingClientRect();
+          const nx = (ev.clientX - rect.left) / rect.width - 0.5;
+          const ny = (ev.clientY - rect.top) / rect.height - 0.5;
+          const rotX = (-ny * 18).toFixed(2);
+          const rotY = (nx * 18).toFixed(2);
+          squircle.style.transform = `perspective(520px) translateY(-5px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04)`;
+          if (glare) {
+            const gx = ((nx + 0.5) * 100).toFixed(1);
+            const gy = ((ny + 0.5) * 100).toFixed(1);
+            glare.style.background = `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.34), transparent 65%)`;
+            glare.style.opacity = '1';
+          }
+        });
+
+        const resetTilt = () => {
+          if (!squircle) return;
+          squircle.style.transform = '';
+          if (glare) glare.style.opacity = '0';
+        };
+
+        tile.addEventListener('pointerleave', resetTilt);
+        tile.addEventListener('pointercancel', resetTilt);
+      }
+    });
+
+    // Permitir que los planetas de la galaxia o el buscador ⌘K seleccionen directamente una ficha
+    const selectAndScroll = (id: string, shouldScroll = true) => {
+      const targetTile = tiles.find((t) => t.dataset.resource === id);
+      if (!targetTile) return;
+      selectResource(id);
+      if (shouldScroll) {
+        const sectionEl = document.getElementById('recursos');
+        sectionEl?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+      targetTile.classList.add('is-launching');
+      window.setTimeout(() => targetTile.classList.remove('is-launching'), 360);
+    };
+
+    window.addEventListener('select-resource', (ev: Event) => {
+      const detail = (ev as CustomEvent<{ id?: string; scroll?: boolean }>).detail;
+      if (detail?.id) {
+        selectAndScroll(detail.id, detail.scroll ?? true);
+      }
+    });
+
+    if (window.location.hash.startsWith('#recurso-')) {
+      const hashId = window.location.hash.replace('#recurso-', '');
+      selectAndScroll(hashId, true);
+    }
   }
 </script>
 
 <style>
-  .showcase { padding-top:clamp(1.5rem,3vw,3rem); }
-  .section-label { border-bottom:1px solid var(--line); color:var(--muted); display:flex; font:500 .68rem/1 var(--mono); justify-content:space-between; letter-spacing:.12em; padding-bottom:1rem; text-transform:uppercase; }
-  .showcase-grid { display:grid; gap:1.5rem; grid-template-columns:minmax(0,.94fr) minmax(360px,1.06fr); padding-top:1.5rem; }
-  .resource-detail { min-height:620px; position:relative; }
-  .detail-card { display:flex; flex-direction:column; height:100%; left:0; opacity:0; pointer-events:none; position:absolute; top:0; transform:translateY(14px); transition:opacity .4s ease,transform .4s ease; width:100%; }
-  .detail-card.active { opacity:1; pointer-events:auto; transform:none; }
-  .detail-icon { align-items:center; background:color-mix(in srgb,var(--accent) 12%,transparent); border:1px solid color-mix(in srgb,var(--accent) 60%,transparent); border-radius:50%; color:var(--accent); display:flex; height:clamp(5rem,9vw,7.2rem); justify-content:center; margin-bottom:clamp(3rem,7vw,6rem); width:clamp(5rem,9vw,7.2rem); }
-  .detail-icon :global(.math-glyph) { height:54%; width:54%; }
-  .eyebrow { color:var(--accent); font:500 .7rem/1 var(--mono); letter-spacing:.13em; margin:0 0 1rem; text-transform:uppercase; }
-  h2 { font-size:clamp(3.2rem,6.1vw,7rem); letter-spacing:-.08em; line-height:.88; margin:0; max-width:8ch; }
-  .lead { font-size:clamp(1.1rem,1.7vw,1.45rem); line-height:1.35; margin:2rem 0 .7rem; max-width:26rem; }
-  .detail-copy { color:var(--muted); line-height:1.5; margin:0 0 2rem; max-width:25rem; }
-  .button { align-items:center; border:1px solid currentColor; display:inline-flex; font:600 .73rem/1 var(--mono); gap:2rem; justify-content:space-between; letter-spacing:.1em; padding:1.1rem 1.25rem; text-decoration:none; text-transform:uppercase; width:max-content; }
-  .button--light { background:var(--ink); color:var(--bg); }
-  .placeholder { color:var(--muted); font-size:.75rem; margin-top:.7rem; }
-  .resource-selector { background:#15161b; min-height:620px; overflow:hidden; padding:clamp(1.5rem,3vw,3rem); position:relative; }
-  .orbit { border:1px solid; border-radius:50%; left:50%; pointer-events:none; position:absolute; top:50%; transform:translate(-50%,-50%); }
-  .orbit-a { border-color:#4245f5; height:112%; width:112%; } .orbit-b { border-color:#b33bff; height:78%; width:78%; transform:translate(-50%,-50%) rotate(43deg); } .orbit-c { border-color:#2dff83; height:43%; width:43%; }
-  .selector-heading { position:relative; z-index:1; } .selector-heading span { color:var(--muted); font:.68rem var(--mono); letter-spacing:.12em; } .selector-heading strong { display:block; font-size:clamp(1.7rem,2.8vw,3rem); letter-spacing:-.055em; line-height:.96; margin-top:.5rem; }
-  .resource-list { display:grid; gap:.5rem; margin-top:clamp(3rem,7vw,8rem); position:relative; z-index:1; }
-  .resource-button { align-items:center; background:#111217c9; border:1px solid #35363d; color:var(--ink); cursor:pointer; display:grid; font:500 .9rem/1 var(--sans); gap:.75rem; grid-template-columns:1.5rem 2.1rem 1fr auto; padding:.55rem .7rem; text-align:left; transition:background .25s,border-color .25s,transform .25s; width:100%; }
-  .resource-button:hover,.resource-button.active { background:color-mix(in srgb,var(--accent) 13%,#111217); border-color:var(--accent); transform:translateX(.35rem); }
-  .resource-number { color:var(--muted); font:.62rem var(--mono); }.resource-mini-icon { color:var(--accent); height:1.7rem; width:1.7rem; }.resource-name { font-weight:600; }.resource-arrow { color:var(--accent); font-size:1.1rem; opacity:0; transition:opacity .2s; }.resource-button.active .resource-arrow,.resource-button:hover .resource-arrow { opacity:1; }
-  @media (max-width:760px) { .showcase-grid { display:flex; flex-direction:column; }.resource-detail { min-height:490px; }.resource-selector { min-height:auto; order:-1; }.resource-list { margin-top:3.5rem; }.detail-icon { margin-bottom:2.5rem; } .detail-card { position:absolute; } h2 { max-width:12ch; } }
-  @media (prefers-reduced-motion:reduce) { .detail-card,.resource-button,.resource-arrow { transition:none; } }
+  .showcase-stage {
+    align-items: center;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  }
+
+  /* Columna izquierda: ficha editorial estilo ArtCraft */
+  .resource-detail {
+    min-height: 430px;
+    position: relative;
+  }
+
+  .detail-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+  }
+
+  .detail-card.active {
+    opacity: 1;
+    pointer-events: auto;
+    position: relative;
+    transform: none;
+  }
+
+  .detail-badge {
+    align-items: center;
+    display: inline-flex;
+    font: 500 0.7rem/1 var(--mono);
+    gap: 0.5rem;
+    letter-spacing: 0.13em;
+    margin-bottom: 1.1rem;
+    text-transform: uppercase;
+  }
+
+  .detail-badge-num,
+  .detail-badge-sep {
+    color: var(--muted);
+  }
+
+  .detail-badge-eyebrow {
+    color: var(--accent);
+  }
+
+  .detail-title {
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: clamp(2.35rem, 4.4vw, 4.3rem);
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    font-weight: 650;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    margin: 0;
+    max-width: 15ch;
+    text-wrap: balance;
+  }
+
+  .title-accent {
+    color: var(--accent);
+  }
+
+  .detail-dot {
+    color: var(--accent);
+  }
+
+  .detail-lead {
+    color: var(--ink);
+    font-size: clamp(1.12rem, 1.55vw, 1.38rem);
+    line-height: 1.45;
+    margin: 1.5rem 0 0.65rem;
+    max-width: 34rem;
+  }
+
+  .detail-copy {
+    color: var(--muted);
+    font-size: clamp(0.98rem, 1.2vw, 1.12rem);
+    line-height: 1.55;
+    margin: 0 0 2.1rem;
+    max-width: 32rem;
+  }
+
+  /* Botones rectangulares de estilo técnico / industrial como getartcraft */
+  .detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    align-items: center;
+    display: inline-flex;
+    font: 700 0.69rem/1 var(--mono);
+    gap: 0.85rem;
+    height: 3rem;
+    justify-content: center;
+    letter-spacing: 0.12em;
+    padding: 0 1.45rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease,
+      transform 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .cta-primary {
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .cta-primary:hover,
+  .cta-primary:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .cta-secondary {
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+  }
+
+  .cta-secondary:hover,
+  .cta-secondary:focus-visible {
+    background: var(--invert-bg);
+    border-color: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .detail-meta {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font: 500 0.65rem/1.4 var(--mono);
+    gap: 0.55rem;
+    letter-spacing: 0.08em;
+    margin: 1.15rem 0 1.65rem;
+    text-transform: uppercase;
+  }
+
+  .meta-dot {
+    background: #676975;
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.42rem;
+    width: 0.42rem;
+  }
+
+  .meta-dot.ready {
+    background: var(--accent-ink);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Barra inferior estilo SHARE / HUD bar de getartcraft */
+  .detail-HintBar {
+    border: 1px solid var(--line);
+    display: inline-flex;
+    flex-wrap: wrap;
+    width: fit-content;
+  }
+
+  .detail-HintBar span {
+    color: var(--muted);
+    font: 500 0.6rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    padding: 0.58rem 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .detail-HintBar span + span {
+    border-left: 1px solid var(--line);
+  }
+
+  .detail-HintBar span:first-child {
+    color: color-mix(in srgb, var(--accent) 82%, var(--ink));
+  }
+
+  .detail-badge-eyebrow {
+    color: color-mix(in srgb, var(--accent) 85%, var(--ink));
+  }
+
+  /* Columna derecha: cuadrícula de iconos de aplicaciones */
+  .app-grid {
+    display: grid;
+    gap: 1.65rem 1.15rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
+  }
+
+  .app-tile {
+    align-items: center;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0;
+    position: relative;
+    text-align: center;
+    user-select: none;
+    width: 6.2rem;
+  }
+
+  .app-tile-squircle {
+    align-items: center;
+    background:
+      radial-gradient(
+        120% 120% at 28% 20%,
+        color-mix(in srgb, var(--app-color) 92%, #ffffff 8%) 0%,
+        color-mix(in srgb, var(--app-color) 62%, #12131a 38%) 58%,
+        color-mix(in srgb, var(--app-color) 28%, #0c0d12 72%) 100%
+      );
+    border: 1px solid color-mix(in srgb, var(--app-color) 68%, rgba(255, 255, 255, 0.25));
+    border-radius: 1.35rem;
+    box-shadow:
+      0 10px 24px -6px rgba(0, 0, 0, 0.55),
+      0 4px 14px color-mix(in srgb, var(--app-color) 20%, transparent),
+      inset 0 1px 1px rgba(255, 255, 255, 0.35);
+    display: flex;
+    height: 5.2rem;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    transition:
+      transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1),
+      box-shadow 0.28s ease,
+      border-color 0.28s ease;
+    width: 5.2rem;
+    will-change: transform;
+  }
+
+  .app-tile-glare {
+    inset: 0;
+    mix-blend-mode: overlay;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: opacity 0.2s ease;
+  }
+
+  .app-tile-art {
+    display: block;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+    height: 74%;
+    position: relative;
+    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1);
+    width: 74%;
+    z-index: 1;
+  }
+
+  .app-tile-num {
+    color: rgba(255, 255, 255, 0.72);
+    font: 600 0.54rem/1 var(--mono);
+    left: 0.48rem;
+    letter-spacing: 0.06em;
+    position: absolute;
+    top: 0.45rem;
+    z-index: 2;
+  }
+
+  .app-tile-live {
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffffff;
+    height: 0.36rem;
+    position: absolute;
+    right: 0.48rem;
+    top: 0.48rem;
+    width: 0.36rem;
+    z-index: 2;
+  }
+
+  .app-tile-label {
+    color: var(--ink-soft);
+    font: 600 0.74rem/1.22 var(--sans);
+    max-width: 12ch;
+    text-wrap: balance;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .tile-label-accent {
+    color: var(--app-color);
+  }
+
+  /* Hover y Estado Activo (Seleccionado) */
+  .app-tile:hover .app-tile-art {
+    transform: scale(1.07);
+  }
+
+  .app-tile:hover .app-tile-label {
+    color: color-mix(in srgb, var(--app-color) 80%, var(--ink));
+  }
+
+  :global(:root[data-theme='light']) .app-tile-squircle {
+    box-shadow:
+      0 10px 22px -6px rgba(20, 21, 26, 0.28),
+      0 4px 14px color-mix(in srgb, var(--app-color) 32%, transparent),
+      inset 0 1px 1px rgba(255, 255, 255, 0.42);
+  }
+
+  .app-tile.active .app-tile-squircle {
+    border-color: #ffffff;
+    box-shadow:
+      0 0 0 2px var(--bg),
+      0 0 0 4px var(--app-color),
+      0 14px 32px color-mix(in srgb, var(--app-color) 48%, transparent),
+      inset 0 1px 2px rgba(255, 255, 255, 0.55);
+  }
+
+  .app-tile.active .app-tile-label {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .app-tile.is-launching .app-tile-squircle {
+    transform: scale(0.92) !important;
+  }
+
+  @media (max-width: 900px) {
+    .showcase-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .app-grid {
+      order: -1;
+      width: 100%;
+    }
+
+    .resource-detail {
+      min-height: auto;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .section-label span:last-child {
+      display: none;
+    }
+
+    .app-grid {
+      gap: 1.2rem 0.65rem;
+    }
+
+    .app-tile {
+      width: 5.2rem;
+    }
+
+    .app-tile-squircle {
+      border-radius: 1.15rem;
+      height: 4.4rem;
+      width: 4.4rem;
+    }
+
+    .detail-HintBar {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .detail-card,
+    .app-tile-squircle,
+    .app-tile-art,
+    .app-tile-label {
+      transition: none;
+    }
+  }
 </style>

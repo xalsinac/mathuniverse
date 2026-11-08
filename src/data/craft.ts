@@ -1,0 +1,185 @@
+export type CraftAuthorType = 'teacher' | 'student';
+
+export interface CraftProject {
+  id: string;
+  title: string;
+  authorType: CraftAuthorType;
+  authorName: string;
+  authorRole?: string;
+  schoolOrCourse?: string;
+  year?: string;
+  description: string;
+  mathTopic: string;
+  category: 'physics' | 'geometry' | 'logic' | 'calculus' | 'arcade';
+  categoryLabel: string;
+  url: string;
+  isExternal: boolean;
+  status: 'playable' | 'beta' | 'prototype';
+  tags: string[];
+  color: string;
+  previewImage?: string;
+  featured?: boolean;
+}
+
+export const CRAFT_CATEGORIES = [
+  { id: 'all', label: 'Todos los juegos', icon: '🎮' },
+  { id: 'physics', label: 'Física & Simulaciones', icon: '🪐' },
+  { id: 'arcade', label: 'Arcade & Cálculo Rápido', icon: '⚡' },
+  { id: 'geometry', label: 'Geometría & 3D', icon: '📐' },
+  { id: 'logic', label: 'Lógica & Estrategia', icon: '🧩' },
+] as const;
+
+export const craftProjects: CraftProject[] = [
+  {
+    id: 'demolicion-fiq',
+    title: 'Demolición FIQ',
+    authorType: 'student',
+    authorName: 'Proyecto de Alumno',
+    authorRole: 'Física y Química · Secundaria',
+    schoolOrCourse: 'ESO / Bachillerato',
+    year: '2025',
+    description: 'Juego de física interactiva con cálculo de trayectoria balística, conservación del momento y demolición por impacto.',
+    mathTopic: 'Tiro parabólico, vectores de impulso y cinemática 2D',
+    category: 'physics',
+    categoryLabel: 'Física & Simulaciones',
+    url: 'https://demolicionfiq.vercel.app/',
+    isExternal: true,
+    status: 'playable',
+    tags: ['Física', 'Tiro Parabólico', 'Colisiones', 'Gravedad', 'Canvas'],
+    color: '#ff8a5b',
+    featured: true,
+  },
+  {
+    id: 'math-dojo-arcade',
+    title: 'Math Dojo Arena',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: 'Secundaria y Bachillerato',
+    year: '2024',
+    description: 'Retos de cálculo mental y agilidad operativa contrarreloj con progresión de cinturones de maestría matemática.',
+    mathTopic: 'Aritmética rápida, signos, fracciones y agilidad mental',
+    category: 'arcade',
+    categoryLabel: 'Arcade & Cálculo Rápido',
+    url: 'https://mathdojo-one.vercel.app/',
+    isExternal: true,
+    status: 'playable',
+    tags: ['Cálculo Mental', 'Agilidad', 'Operativa', 'Arcade', 'PWA'],
+    color: '#ff8a5b',
+    featured: true,
+  },
+  {
+    id: 'math-dojo-junior',
+    title: 'Math Dojo Junior',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: 'Primaria y 1.º ESO',
+    year: '2024',
+    description: 'Aventura gamificada para afianzar tablas de multiplicar, jerarquía de operaciones básicas y confianza numérica inicial.',
+    mathTopic: 'Multiplicación, sumas y restas, pensamiento visual',
+    category: 'arcade',
+    categoryLabel: 'Arcade & Cálculo Rápido',
+    url: 'https://mathdojojr.vercel.app/',
+    isExternal: true,
+    status: 'playable',
+    tags: ['Primaria', 'Tablas', 'Multiplicación', 'Gamificación'],
+    color: '#38c8ff',
+    featured: false,
+  },
+  {
+    id: 'orbital-gravity',
+    title: 'Simulador Orbital Kepleriano',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: 'Bachillerato · Física & Matemáticas',
+    year: '2025',
+    description: 'Laboratorio de gravitación gravitatoria N-cuerpos. Lanza planetas, calcula órbitas elípticas y observa la 2.ª ley de Kepler.',
+    mathTopic: 'Gravitación universal, cónicas y ecuaciones diferenciales',
+    category: 'physics',
+    categoryLabel: 'Física & Simulaciones',
+    url: '#',
+    isExternal: false,
+    status: 'beta',
+    tags: ['Gravitación', 'Órbitas', 'Leyes de Kepler', 'Vectores'],
+    color: '#4d94ff',
+    featured: true,
+  },
+  {
+    id: 'voxel-polyhedra',
+    title: 'Vóxel Polyhedra 3D',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: '3.º / 4.º ESO · Geometría',
+    year: '2025',
+    description: 'Constructor interactivo de poliedros regulares y formas espaciales. Calcula caras, vértices, aristas y volúmenes por descomposición.',
+    mathTopic: 'Fórmula de Euler (C + V = A + 2) y cálculo de volúmenes',
+    category: 'geometry',
+    categoryLabel: 'Geometría & 3D',
+    url: '#',
+    isExternal: false,
+    status: 'playable',
+    tags: ['Poliedros', 'Geometría Espacial', 'Euler', 'Isometría 3D'],
+    color: '#b48cff',
+    featured: false,
+  },
+  {
+    id: 'sierpinski-chaos',
+    title: 'El Juego del Caos & Fractales',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: 'ESO y Bachillerato',
+    year: '2025',
+    description: 'Generación estocástica del triángulo de Sierpinski y atractores extraños mediante iteración de puntos aleatorios a velocidad configurable.',
+    mathTopic: 'Geometría fractal, probabilidad y atractores estocásticos',
+    category: 'geometry',
+    categoryLabel: 'Geometría & 3D',
+    url: '#',
+    isExternal: false,
+    status: 'playable',
+    tags: ['Fractales', 'Caos', 'Probabilidad', 'Sierpinski'],
+    color: '#3fe0b5',
+    featured: false,
+  },
+  {
+    id: 'vector-pong',
+    title: 'Vector Pong: Dinámica y Rebotes',
+    authorType: 'student',
+    authorName: 'Proyecto de Alumno',
+    authorRole: 'Informática & Mates',
+    schoolOrCourse: '1.º Bachillerato',
+    year: '2025',
+    description: 'El clásico juego de palas reinterpretado con campos de fuerza, ángulos de reflexión matemática exacta y aceleración por rozamiento.',
+    mathTopic: 'Ángulos de incidencia y reflexión, vectores unitarios',
+    category: 'arcade',
+    categoryLabel: 'Arcade & Cálculo Rápido',
+    url: '#',
+    isExternal: false,
+    status: 'prototype',
+    tags: ['Reflexión', 'Vectores', 'Física 2D', 'Retro'],
+    color: '#e68aff',
+    featured: false,
+  },
+  {
+    id: 'game-theory-dilemma',
+    title: 'El Dilema del Prisionero & Algoritmos',
+    authorType: 'teacher',
+    authorName: 'Xavier Alsina',
+    authorRole: 'Profesor de Matemáticas',
+    schoolOrCourse: 'Bachillerato y Universidad',
+    year: '2025',
+    description: 'Enfrenta estrategias matemáticas (Tit-for-Tat, Cooperador, Traidor, Pavlov) en torneos evolutivos repetidos para ver cuál domina el ecosistema.',
+    mathTopic: 'Teoría de Juegos, equilibrios de Nash y matrices de pago',
+    category: 'logic',
+    categoryLabel: 'Lógica & Estrategia',
+    url: '#',
+    isExternal: false,
+    status: 'beta',
+    tags: ['Teoría de Juegos', 'Nash', 'Estrategia', 'Matrices'],
+    color: '#ffc14d',
+    featured: false,
+  },
+];

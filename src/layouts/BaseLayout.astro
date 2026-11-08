@@ -1,16 +1,276 @@
 ---
 import { site } from '../config/site';
-interface Props { title?: string; description?: string; }
+interface Props {
+  title?: string;
+  description?: string;
+}
 const { title = site.name, description = site.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).toString();
 ---
+
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
   <head>
-    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="generator" content={Astro.generator} /><meta name="theme-color" content="#101116" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" /><link rel="canonical" href={canonical} />
-    <title>{title}</title><meta name="description" content={description} />
-    <meta property="og:type" content="website" /><meta property="og:locale" content="es_ES" /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:site_name" content={site.name} />
-    <style is:global>@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap');:root{--bg:#101116;--ink:#f3f2ec;--muted:#92939d;--line:#2a2b31;--sans:'DM Sans',Arial,sans-serif;--mono:'DM Mono',monospace;--serif:'Instrument Serif',Georgia,serif;color-scheme:dark}*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{background:var(--bg);color:var(--ink);font-family:var(--sans);margin:0;overflow-x:hidden}::selection{background:#b6ff5c;color:#101116}a:focus-visible,button:focus-visible{outline:2px solid #b6ff5c;outline-offset:4px}.section{margin:0 auto;max-width:1440px;padding-left:clamp(1.25rem,5vw,5rem);padding-right:clamp(1.25rem,5vw,5rem)}.page-grid{background-image:linear-gradient(to right,transparent 49.96%,rgba(255,255,255,.04) 50%,transparent 50.04%);background-size:100% 100%}</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#101116" data-theme-meta />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+
+    <!-- Inicialización síncrona de tema para evitar parpadeos (FOUC) -->
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('math-universe-theme');
+          const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+          document.documentElement.dataset.theme = theme;
+          const meta = document.querySelector('[data-theme-meta]');
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f0ea' : '#101116');
+        } catch {}
+      })();
+    </script>
+
+    <style is:global>
+      @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=Geist+Mono:wght@400..700&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+
+      /* Modo Oscuro (Por defecto): Tinta clara sobre pizarra cosmos y acento Azul Eléctrico */
+      :root,
+      :root[data-theme='dark'] {
+        --bg: #101116;
+        --bg-raised: #161820;
+        --bg-sunken: #0b0c10;
+        --ink: #f3f2ec;
+        --ink-strong: #ffffff;
+        --ink-soft: #c5c7d2;
+        --serif-ink: #b8bcc8;
+        --muted: #8e919e;
+        --line: #272932;
+        --line-strong: #3f4250;
+        --accent: #3b82f6;
+        --accent-ink: #64a5ff;
+        --invert-bg: #f3f2ec;
+        --invert-fg: #101116;
+        --grid-line: rgba(255, 255, 255, 0.04);
+        --display: 'Archivo', system-ui, sans-serif;
+        --sans: 'Inter', system-ui, -apple-system, sans-serif;
+        --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        --serif: 'Instrument Serif', Georgia, serif;
+        color-scheme: dark;
+      }
+
+      /* Modo Claro: Papel editorial cálido ("Archival Warm Stone", sin blanco puro) y Azul Cobalto profundo */
+      :root[data-theme='light'] {
+        --bg: #f2f0ea;
+        --bg-raised: #f8f6f1;
+        --bg-sunken: #e6e3db;
+        --ink: #14151a;
+        --ink-strong: #090a0d;
+        --ink-soft: #323540;
+        --serif-ink: #4f5362;
+        --muted: #626573;
+        --line: #d6d3c9;
+        --line-strong: #b5b1a5;
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --invert-bg: #14151a;
+        --invert-fg: #f2f0ea;
+        --grid-line: rgba(20, 21, 26, 0.055);
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+        scroll-behavior: smooth;
+        transition:
+          background-color 0.25s ease,
+          color 0.25s ease;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        margin: 0;
+        overflow-x: hidden;
+        transition:
+          background-color 0.25s ease,
+          color 0.25s ease;
+      }
+
+      ::selection {
+        background: var(--accent);
+        color: #ffffff;
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--accent-ink);
+        outline-offset: 4px;
+      }
+
+      .section {
+        margin: 0 auto;
+        max-width: 1320px;
+        padding-left: clamp(1.25rem, 4vw, 3.5rem);
+        padding-right: clamp(1.25rem, 4vw, 3.5rem);
+      }
+
+      /* Sistema de líneas estructurales de arquitectura técnica (como getartcraft.com) */
+      .section-band {
+        position: relative;
+        width: 100%;
+      }
+
+      .section-rule {
+        background: var(--line);
+        display: block;
+        height: 1px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .section-band.is-drawn .section-rule {
+        transform: scaleX(1);
+      }
+
+      .section-frame {
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        margin: 0 auto;
+        max-width: 1280px;
+        position: relative;
+      }
+
+      /* Cruces de precisión (.tick) en las intersecciones de línea horizontal y bordes verticales */
+      .tick {
+        height: 11px;
+        pointer-events: none;
+        position: absolute;
+        width: 11px;
+        z-index: 31;
+      }
+
+      .tick::before,
+      .tick::after {
+        background: var(--line-strong);
+        content: '';
+        position: absolute;
+      }
+
+      .tick::before {
+        bottom: 0;
+        left: 5px;
+        top: 0;
+        width: 1px;
+      }
+
+      .tick-half::before {
+        top: 5px;
+      }
+
+      .tick::after {
+        height: 1px;
+        left: 0;
+        right: 0;
+        top: 5px;
+      }
+
+      .tick-left {
+        left: -6px;
+        top: -5px;
+      }
+
+      .tick-right {
+        right: -6px;
+        top: -5px;
+      }
+
+      .section-band .tick {
+        opacity: 0;
+        transform: scale(0);
+        transition:
+          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
+          opacity 0.4s ease 0.25s;
+      }
+
+      .section-band.is-drawn .tick {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Franja de cabecera técnica (eyebrow sticky) dentro de cada sección enmarcada */
+      .section-eyebrow {
+        align-items: center;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background: color-mix(in srgb, var(--bg) 68%, transparent);
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        display: flex;
+        font: 500 0.6875rem/1 var(--mono);
+        gap: 1rem;
+        justify-content: space-between;
+        letter-spacing: 0.14em;
+        padding: 0.85rem clamp(1.5rem, 3.5vw, 2.75rem);
+        position: sticky;
+        text-transform: uppercase;
+        top: 3.4rem;
+        z-index: 25;
+      }
+
+      .section-eyebrow .eyebrow-num,
+      .section-eyebrow .eyebrow-sep,
+      .section-eyebrow .eyebrow-right {
+        color: color-mix(in srgb, var(--muted) 72%, transparent);
+      }
+
+      .section-eyebrow .eyebrow-sep {
+        margin: 0 0.45rem;
+      }
+
+      .section-body {
+        padding: clamp(3.5rem, 6vw, 5.5rem) clamp(1.5rem, 3.5vw, 2.75rem);
+      }
+
+      @media (max-width: 1340px) {
+        .section-frame {
+          margin-left: clamp(1rem, 3vw, 2.5rem);
+          margin-right: clamp(1rem, 5vw, 4.2rem);
+        }
+      }
+
+      @media (max-width: 960px) {
+        .section-frame {
+          margin-left: 1rem;
+          margin-right: 1rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .section-eyebrow .eyebrow-right {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body><slot /></body>
 </html>

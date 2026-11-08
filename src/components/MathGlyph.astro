@@ -1,19 +1,218 @@
 ---
-const { type = 'lab' } = Astro.props;
+const { type = 'lab', variant = 'glyph' } = Astro.props;
 ---
-<span class={`math-glyph math-glyph--${type}`} aria-hidden="true">
-  {type === 'lab' && <svg viewBox="0 0 80 80"><path d="M30 10h20M36 10v22L17 64a5 5 0 0 0 4 7h38a5 5 0 0 0 4-7L44 32V10"/><path d="M25 52h30"/></svg>}
-  {type === 'dojo' && <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="27"/><path d="M40 14v52M14 40h52M21 21l38 38M59 21 21 59"/></svg>}
-  {type === 'junior' && <svg viewBox="0 0 80 80"><path d="M40 11c8 15 18 20 29 23-7 9-9 19-7 32-13-2-20 1-22 5-2-4-9-7-22-5 2-13 0-23-7-32 11-3 21-8 29-23Z"/><circle cx="30" cy="41" r="3"/><circle cx="50" cy="41" r="3"/><path d="M31 53c6 4 12 4 18 0"/></svg>}
-  {type === 'games' && <svg viewBox="0 0 80 80"><path d="M18 35h44a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V43a8 8 0 0 1 8-8Z"/><path d="M23 49h14M30 42v14"/><circle cx="56" cy="47" r="2"/><circle cx="62" cy="54" r="2"/></svg>}
-  {type === 'lessons' && <svg viewBox="0 0 80 80"><path d="M19 13h42v54H19z"/><path d="M30 29h20M30 40h20M30 51h12"/></svg>}
-  {type === 'exams' && <svg viewBox="0 0 80 80"><path d="M22 10h28l11 11v49H22z"/><path d="M50 10v12h11M31 36l5 5 12-13M31 54h20"/></svg>}
-  {type === 'practice' && <svg viewBox="0 0 80 80"><path d="m20 17 20-8 20 8v46L40 71 20 63z"/><path d="M40 9v62M20 17l20 9 20-9"/></svg>}
-  {type === 'advanced' && <svg viewBox="0 0 80 80"><path d="M13 58 32 19l13 29 10-18 12 28"/><circle cx="32" cy="19" r="4"/><circle cx="55" cy="30" r="4"/></svg>}
-  {type === 'proofs' && <svg viewBox="0 0 80 80"><path d="M15 62 40 14l25 48Z"/><path d="M25 43h30M40 14v48"/></svg>}
-</span>
+
+{
+  variant === 'tile' ? (
+    <span class={`math-tile math-tile--${type}`} aria-hidden="true">
+      {type === 'lab' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="54" r="34" class="tile-grid" />
+          <path d="M16 54h68M50 20v68" class="tile-grid" />
+          <path d="M36 18h28M42 18v22L23 73a6 6 0 0 0 5.2 9h43.6a6 6 0 0 0 5.2-9L58 40V18" class="tile-main" />
+          <path d="M29 63c8-5 14 5 21 0s13-5 21 0" class="tile-accent" />
+          <circle cx="44" cy="51" r="3" class="tile-dot" />
+          <circle cx="56" cy="44" r="2.2" class="tile-dot" />
+          <circle cx="52" cy="31" r="2" class="tile-dot" />
+        </svg>
+      )}
+      {type === 'dojo' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" class="tile-grid" />
+          <!-- Torii japonés: viga superior curvada (kasagi) + sub-viga -->
+          <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" class="tile-dot" />
+          <path d="M18 28h64l-2 5H20l-2-5Z" class="tile-main" />
+          <!-- Viga transversal (nuki) y puntal central -->
+          <rect x="17" y="42" width="66" height="6" rx="2" class="tile-main" />
+          <rect x="46" y="33" width="8" height="9" class="tile-accent" />
+          <!-- Pilares inclinados y basas -->
+          <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" class="tile-main" />
+          <rect x="21" y="76" width="14" height="8" rx="1.5" class="tile-accent" />
+          <rect x="65" y="76" width="14" height="8" rx="1.5" class="tile-accent" />
+          <path d="M12 84h76" class="tile-accent" />
+        </svg>
+      )}
+      {type === 'junior' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" class="tile-grid" />
+          <!-- Cintas de la bandana a la derecha -->
+          <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" class="tile-accent" />
+          <!-- Katanas cruzadas detrás de los hombros -->
+          <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" class="tile-accent" />
+          <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" class="tile-accent" />
+          <!-- Cabeza y máscara del pequeño Ninja -->
+          <circle cx="50" cy="36" r="19" class="tile-main" />
+          <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" class="tile-accent" />
+          <!-- Hombros y kimono cruzado -->
+          <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" class="tile-main" />
+          <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" class="tile-accent" />
+        </svg>
+      )}
+      {type === 'practice' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" class="tile-grid" />
+          <!-- Mancuerna / Pesa de Math Gym -->
+          <path d="M13 46h6v8h-6a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3ZM81 46h6a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3h-6v-8Z" class="tile-accent" />
+          <rect x="35" y="46" width="30" height="8" class="tile-main" />
+          <rect x="19" y="33" width="8" height="34" rx="4" class="tile-main" />
+          <rect x="27" y="25" width="8" height="50" rx="4" class="tile-main" />
+          <rect x="65" y="25" width="8" height="50" rx="4" class="tile-main" />
+          <rect x="73" y="33" width="8" height="34" rx="4" class="tile-main" />
+        </svg>
+      )}
+      {type === 'exams' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="38" class="tile-grid" />
+          <!-- Hoja de examen con esquina doblada y símbolos √x + = -->
+          <path d="M26 14h34l18 18v50a6 6 0 0 1-6 6H26a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6Z" class="tile-main" />
+          <path d="M60 14v13a5 5 0 0 0 5 5h13Z" class="tile-dot" />
+          <!-- Raíz de x: √x -->
+          <path d="M32 49l4 9 8-20h21" class="tile-accent" />
+          <path d="M51 44l10 10M61 44l-10 10" class="tile-accent" />
+          <!-- Símbolos + y = -->
+          <path d="M39 64v14M32 71h14" class="tile-accent" />
+          <path d="M52 67h14M52 75h14" class="tile-accent" />
+        </svg>
+      )}
+      {type === 'selectividad' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="36" class="tile-grid" />
+          <path d="M16 40 50 22l34 18-34 18-34-18Z" class="tile-main" />
+          <path d="M28 48v20c0 7 10 12 22 12s22-5 22-12V48" class="tile-accent" />
+          <path d="M84 40v24" class="tile-accent" />
+          <circle cx="84" cy="67" r="3.8" class="tile-dot" />
+          <circle cx="50" cy="40" r="3.2" class="tile-dot" />
+        </svg>
+      )}
+      {type === 'lessons' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="36" class="tile-grid" />
+          <path d="M50 26c-8-5-19-6-30-3v50c11-3 22-2 30 3 8-5 19-6 30-3V23c-11-3-22-2-30 3Z" class="tile-main" />
+          <path d="M50 26v50" class="tile-accent" />
+          <path d="M28 38h14M28 49h14M58 38h14M58 49h10" class="tile-accent" />
+          <circle cx="68" cy="60" r="3" class="tile-dot" />
+        </svg>
+      )}
+      {type === 'games' && (
+        <svg viewBox="0 0 100 100">
+          <polygon points="50,15 82,33 82,67 50,85 18,67 18,33" class="tile-grid" />
+          <rect x="18" y="34" width="64" height="34" rx="12" class="tile-main" />
+          <path d="M29 51h14M36 44v14" class="tile-accent" />
+          <circle cx="62" cy="47" r="3.2" class="tile-dot" />
+          <circle cx="70" cy="55" r="3.2" class="tile-dot" />
+          <circle cx="54" cy="55" r="2.5" class="tile-dot" />
+        </svg>
+      )}
+      {type === 'tools' && (
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="36" class="tile-grid" />
+          <rect x="24" y="16" width="52" height="68" rx="8" class="tile-main" />
+          <rect x="32" y="24" width="36" height="15" rx="3" class="tile-accent" />
+          <path d="M35 52h8M39 48v8M57 52h8M35 68h8M57 65h8M57 71h8" class="tile-accent" />
+          <circle cx="62" cy="31.5" r="2.6" class="tile-dot" />
+        </svg>
+      )}
+    </span>
+  ) : (
+    <span class={`math-glyph math-glyph--${type}`} aria-hidden="true">
+      {type === 'lab' && <svg viewBox="0 0 80 80"><path d="M30 10h20M36 10v22L17 64a5 5 0 0 0 4 7h38a5 5 0 0 0 4-7L44 32V10"/><path d="M25 52h30"/></svg>}
+      {type === 'dojo' && (
+        <svg viewBox="0 0 80 80">
+          <path d="M9 15c20 5 42 5 62 0l-2.5 6.5h-57L9 15Z" fill="currentColor" />
+          <path d="M14 21.5h52l-1.5 4.5h-49l-1.5-4.5ZM14 34h52v5H14zM37 26v8M43 26v8" />
+          <path d="M22 26v36M29 26l-2 36M58 26v36M51 26l2 36" />
+          <rect x="17" y="62" width="12" height="6" rx="1" />
+          <rect x="51" y="62" width="12" height="6" rx="1" />
+          <path d="M9 68h62" />
+        </svg>
+      )}
+      {type === 'junior' && (
+        <svg viewBox="0 0 80 80">
+          <path d="M55 21c6-5 11-6 15-5-2 4-5 7-11 9 4 0 8 1.5 11 4-4 2.5-10 1.5-15-2" />
+          <path d="M23 47 11 33a3 3 0 0 1 4.5-4L27 42M16 39l6-5.5" />
+          <path d="M57 47l12-14a3 3 0 0 0-4.5-4L53 42M64 39l-6-5.5" />
+          <circle cx="40" cy="28" r="15.5" />
+          <path d="M27.5 29v-4c0-3 3-5 6.5-5h12c3.5 0 6.5 2 6.5 5v4c-8.5-2.5-16.5-2.5-25 0Z" />
+          <path d="M14 67l4-14c1.6-4 5.5-6.5 10.5-6.5h23c5 0 8.9 2.5 10.5 6.5l4 14H14Z" />
+          <path d="M27 46.5 45 67M33.5 46.5 50.5 67M52 46.5 39 59M24 58l-1.5 9M56 58l1.5 9" />
+        </svg>
+      )}
+      {type === 'practice' && (
+        <svg viewBox="0 0 80 80">
+          <path d="M9 36.5h4.5v7H9a2.5 2.5 0 0 1-2.5-2.5v-2A2.5 2.5 0 0 1 9 36.5ZM66.5 36.5H71a2.5 2.5 0 0 1 2.5 2.5v2A2.5 2.5 0 0 1 71 43.5h-4.5v-7Z" />
+          <path d="M27.5 36.5h25v7h-25z" />
+          <rect x="13.5" y="26" width="7" height="28" rx="3.5" />
+          <rect x="20.5" y="19" width="7" height="42" rx="3.5" />
+          <rect x="52.5" y="19" width="7" height="42" rx="3.5" />
+          <rect x="59.5" y="26" width="7" height="28" rx="3.5" />
+        </svg>
+      )}
+      {type === 'exams' && (
+        <svg viewBox="0 0 80 80">
+          <path d="M20 10h28l15 15v41a5 5 0 0 1-5 5H20a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5Z" />
+          <path d="M48 10v11a4 4 0 0 0 4 4h11Z" fill="currentColor" />
+          <path d="M25 39l3.5 7.5L35 30h17" />
+          <path d="M41 35.5l8 8M49 35.5l-8 8" />
+          <path d="M31 51.5v11.5M25.25 57.25h11.5" />
+          <path d="M42 54h11.5M42 60.5h11.5" />
+        </svg>
+      )}
+      {type === 'selectividad' && <svg viewBox="0 0 80 80"><path d="M10 31 40 15l30 16-30 16-30-16Z"/><path d="M21 38v17c0 6 8.5 10 19 10s19-4 19-10V38M70 31v20"/><circle cx="70" cy="54" r="2.5"/></svg>}
+      {type === 'lessons' && <svg viewBox="0 0 80 80"><path d="M40 20c-7-4-16-5-26-2v44c10-3 19-2 26 2 7-4 16-5 26-2V18c-10-3-19-2-26 2Z"/><path d="M40 20v44M22 31h11M22 41h11M47 31h11M47 41h9"/></svg>}
+      {type === 'games' && <svg viewBox="0 0 80 80"><path d="M18 35h44a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V43a8 8 0 0 1 8-8Z"/><path d="M23 49h14M30 42v14"/><circle cx="56" cy="47" r="2"/><circle cx="62" cy="54" r="2"/></svg>}
+      {type === 'tools' && <svg viewBox="0 0 80 80"><rect x="18" y="11" width="44" height="58" rx="6"/><rect x="25" y="18" width="30" height="13" rx="2"/><path d="M27 43h8M31 39v8M45 43h8M27 57h8M45 54h8M45 60h8"/></svg>}
+    </span>
+  )
+}
 
 <style>
-  .math-glyph { align-items:center; display:inline-flex; justify-content:center; }
-  svg { fill:none; height:100%; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:4; width:100%; }
+  .math-glyph,
+  .math-tile {
+    align-items: center;
+    display: inline-flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .math-glyph svg {
+    fill: none;
+    height: 100%;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 4;
+    width: 100%;
+  }
+
+  .math-tile svg {
+    fill: none;
+    height: 100%;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    width: 100%;
+  }
+
+  .math-tile .tile-grid {
+    opacity: 0.24;
+    stroke: #ffffff;
+    stroke-dasharray: 3 4;
+    stroke-width: 1.5;
+  }
+
+  .math-tile .tile-main {
+    fill: rgba(12, 13, 18, 0.36);
+    stroke: #ffffff;
+    stroke-width: 3.8;
+  }
+
+  .math-tile .tile-accent {
+    stroke: #ffffff;
+    stroke-width: 3.2;
+  }
+
+  .math-tile .tile-dot {
+    fill: #ffffff;
+    stroke: none;
+  }
 </style>

@@ -1,0 +1,971 @@
+---
+import { craftProjects, type CraftProject } from '../data/craft';
+
+// 14 tarjetas repartidas en 3 órbitas variables (Interior, Media, Exterior)
+// para que tengan radios distintos, velocidades distintas y nunca se apelotonen ni tapen el texto central
+const ORBIT_ASSIGNMENTS = [
+  // Órbita 0 (Interior - 4 tarjetas, radio medio, giran más rápido)
+  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Demolición FIQ (Alumno)
+  { projectIdx: 1, orbitRing: 0, phaseOffset: Math.PI * 0.5 },            // Math Dojo Arena (Profesor)
+  { projectIdx: 4, orbitRing: 0, phaseOffset: Math.PI * 1.0 },            // Vóxel Polyhedra 3D (Profesor)
+  { projectIdx: 5, orbitRing: 0, phaseOffset: Math.PI * 1.5 },            // Sierpinski Chaos (Profesor)
+
+  // Órbita 1 (Media - 5 tarjetas, radio amplio, velocidad intermedia)
+  { projectIdx: 6, orbitRing: 1, phaseOffset: 0.2 },                     // Vector Pong (Alumno)
+  { projectIdx: 3, orbitRing: 1, phaseOffset: 0.2 + (Math.PI * 2) / 5 },  // Orbital Kepler (Profesor)
+  { projectIdx: 2, orbitRing: 1, phaseOffset: 0.2 + (Math.PI * 4) / 5 },  // Math Dojo Jr (Profesor)
+  { projectIdx: 7, orbitRing: 1, phaseOffset: 0.2 + (Math.PI * 6) / 5 },  // Dilema del Prisionero (Profesor)
+  { projectIdx: 0, orbitRing: 1, phaseOffset: 0.2 + (Math.PI * 8) / 5 },  // Demolición FIQ (Segunda pasada)
+
+  // Órbita 2 (Exterior - 5 tarjetas, radio grande panorámico, giro pausado)
+  { projectIdx: 1, orbitRing: 2, phaseOffset: 0.5 },
+  { projectIdx: 4, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 2) / 5 },
+  { projectIdx: 6, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 4) / 5 },
+  { projectIdx: 3, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 6) / 5 },
+  { projectIdx: 5, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 8) / 5 },
+];
+
+const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
+  const project = craftProjects[assign.projectIdx % craftProjects.length];
+  return {
+    nodeIndex: idx,
+    orbitRing: assign.orbitRing,
+    phaseOffset: assign.phaseOffset,
+    ...project,
+  };
+});
+---
+
+<div class="craft-hero-orbit" data-craft-orbit-system aria-label="Taller de juegos Math Craft">
+  <!-- Canvas de fondo: Estrellas quietas en el fondo + Órbitas y arcos de neón giratorios -->
+  <canvas class="orbit-bg-canvas" data-craft-orbit-canvas aria-hidden="true"></canvas>
+
+  <!-- Velo radial sutil para proteger la legibilidad del núcleo tipográfico -->
+  <div class="craft-orbit-scrim" aria-hidden="true"></div>
+
+  <!-- Cartas panorámicas flotantes estilo pantalla CRT / ArtCraft Studio (SOLO DIBUJO/VÍDEO) -->
+  <div class="craft-orbit-items" aria-hidden="true">
+    {
+      orbitCards.map((card) => (
+        <a
+          class="craft-screen-card"
+          href={card.url !== '#' ? card.url : `#game-${card.id}`}
+          target={card.isExternal ? '_blank' : undefined}
+          rel={card.isExternal ? 'noopener noreferrer' : undefined}
+          data-orbit-node
+          data-node-index={card.nodeIndex}
+          data-orbit-ring={card.orbitRing}
+          data-phase={card.phaseOffset}
+          data-project-id={card.id}
+          data-title={card.title}
+          data-author-type={card.authorType}
+          data-author-name={card.authorName}
+          data-school={card.schoolOrCourse ?? ''}
+          style={`--card-color:${card.color}`}
+          aria-label={`Ver juego ${card.title} (${card.authorName})`}
+        >
+          <div class="screen-frame">
+            <!-- Pura ventana visual sin textos ni badges superpuestos -->
+            <div class="screen-visual">
+              {card.id === 'demolicion-fiq' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#1b1216" />
+                  <line x1="8" y1="84" x2="152" y2="84" stroke="#ff8a5b" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.4" />
+                  <!-- Cañón de lanzamiento balístico -->
+                  <circle cx="26" cy="78" r="8" stroke="#ff8a5b" stroke-width="1.8" />
+                  <line x1="26" y1="78" x2="48" y2="58" stroke="#ff8a5b" stroke-width="3" stroke-linecap="round" />
+                  <!-- Arco parabólico con cálculo de trayectoria -->
+                  <path d="M 48 58 Q 90 10, 126 58" stroke="#ff8a5b" stroke-width="1.8" stroke-dasharray="4 3" />
+                  <circle cx="90" cy="22" r="3.5" fill="#ff8a5b" />
+                  <!-- Estructura de bloques voxel en demolición -->
+                  <rect x="116" y="54" width="14" height="28" stroke="#ff8a5b" stroke-width="1.2" fill="#ff8a5b35" />
+                  <rect x="132" y="44" width="14" height="38" stroke="#ff8a5b" stroke-width="1.2" fill="#ff8a5b35" />
+                  <rect x="116" y="38" width="30" height="8" stroke="#ff8a5b" stroke-width="1.2" fill="#ff8a5b45" />
+                  <!-- Partículas y esquirlas de impacto -->
+                  <circle cx="126" cy="38" r="6" stroke="#ffb88c" stroke-width="1" />
+                  <circle cx="138" cy="30" r="1.8" fill="#ffb88c" />
+                  <circle cx="112" cy="32" r="1.5" fill="#ffb88c" />
+                </svg>
+              )}
+              {card.id === 'math-dojo-arcade' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#1b1510" />
+                  <circle cx="80" cy="50" r="34" stroke="#ff8a5b" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.6" />
+                  <circle cx="80" cy="50" r="22" stroke="#ff8a5b" stroke-width="0.8" opacity="0.4" />
+                  <path d="M74 24 L64 52 L82 52 L68 78 L94 44 L78 44 Z" fill="#ff8a5b" />
+                  <line x1="20" y1="50" x2="36" y2="50" stroke="#ff8a5b" stroke-width="1.5" />
+                  <line x1="124" y1="50" x2="140" y2="50" stroke="#ff8a5b" stroke-width="1.5" />
+                </svg>
+              )}
+              {card.id === 'math-dojo-junior' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#0d1822" />
+                  <circle cx="44" cy="50" r="18" stroke="#38c8ff" stroke-width="1.8" fill="#38c8ff22" />
+                  <circle cx="80" cy="50" r="24" stroke="#38c8ff" stroke-width="2" fill="#38c8ff33" />
+                  <circle cx="116" cy="50" r="18" stroke="#38c8ff" stroke-width="1.8" fill="#38c8ff22" />
+                  <path d="M40 45 L48 55 M48 45 L40 55" stroke="#38c8ff" stroke-width="2" stroke-linecap="round" />
+                  <path d="M74 50 L86 50 M80 44 L80 56" stroke="#38c8ff" stroke-width="2.5" stroke-linecap="round" />
+                  <path d="M110 50 L122 50" stroke="#38c8ff" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              )}
+              {card.id === 'orbital-gravity' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#0b1220" />
+                  <ellipse cx="80" cy="50" rx="58" ry="26" stroke="#4d94ff" stroke-width="1.4" stroke-dasharray="5 3" opacity="0.6" transform="rotate(-15 80 50)" />
+                  <circle cx="65" cy="48" r="10" fill="#ffc14d" />
+                  <circle cx="65" cy="48" r="18" stroke="#ffc14d" stroke-width="0.8" opacity="0.4" />
+                  <circle cx="122" cy="32" r="4.5" fill="#4d94ff" />
+                  <line x1="122" y1="32" x2="108" y2="20" stroke="#4d94ff" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+              )}
+              {card.id === 'voxel-polyhedra' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#161220" />
+                  <g transform="translate(80, 50)">
+                    <path d="M 0 -28 L 28 -14 L 0 0 L -28 -14 Z" stroke="#b48cff" stroke-width="1.4" fill="#b48cff30" />
+                    <path d="M -28 -14 L 0 0 L 0 28 L -28 14 Z" stroke="#b48cff" stroke-width="1.4" fill="#b48cff18" />
+                    <path d="M 0 0 L 28 -14 L 28 14 L 0 28 Z" stroke="#b48cff" stroke-width="1.4" fill="#b48cff40" />
+                  </g>
+                </svg>
+              )}
+              {card.id === 'sierpinski-chaos' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#0d1b16" />
+                  <polygon points="80,15 36,84 124,84" stroke="#3fe0b5" stroke-width="1.5" fill="none" opacity="0.8" />
+                  <polygon points="80,84 58,49 102,49" stroke="#3fe0b5" stroke-width="1.2" fill="#3fe0b530" />
+                  <circle cx="80" cy="32" r="1.5" fill="#3fe0b5" />
+                  <circle cx="48" cy="74" r="1.5" fill="#3fe0b5" />
+                  <circle cx="112" cy="74" r="1.5" fill="#3fe0b5" />
+                </svg>
+              )}
+              {card.id === 'vector-pong' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#1b101c" />
+                  <line x1="16" y1="28" x2="16" y2="72" stroke="#e68aff" stroke-width="3" stroke-linecap="round" />
+                  <line x1="144" y1="38" x2="144" y2="82" stroke="#e68aff" stroke-width="3" stroke-linecap="round" />
+                  <line x1="80" y1="10" x2="80" y2="90" stroke="#e68aff" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.3" />
+                  <circle cx="62" cy="46" r="4" fill="#e68aff" />
+                  <line x1="62" y1="46" x2="88" y2="30" stroke="#e68aff" stroke-width="1.5" />
+                  <line x1="88" y1="30" x2="114" y2="52" stroke="#e68aff" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.6" />
+                </svg>
+              )}
+              {card.id === 'game-theory-dilemma' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#1c160c" />
+                  <rect x="48" y="24" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d28" />
+                  <rect x="82" y="24" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d18" />
+                  <rect x="48" y="50" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d18" />
+                  <rect x="82" y="50" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d28" />
+                  <!-- Nodos de red de decisión -->
+                  <circle cx="63" cy="35" r="3" fill="#ffc14d" />
+                  <circle cx="97" cy="35" r="3" fill="#ffc14d" />
+                  <circle cx="63" cy="61" r="3" fill="#ffc14d" />
+                  <circle cx="97" cy="61" r="3" fill="#ffc14d" />
+                  <line x1="63" y1="35" x2="97" y2="61" stroke="#ffc14d" stroke-width="0.8" opacity="0.5" />
+                </svg>
+              )}
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- HUD tooltip flotante al posar el cursor sobre cualquier pantalla de juego -->
+  <div class="craft-orbit-hud" data-craft-hud aria-hidden="true">
+    <div class="hud-pill">
+      <span class="hud-badge" data-hud-badge>🎒 PROYECTO ALUMNO</span>
+      <span class="hud-title" data-hud-title>Demolición FIQ</span>
+      <span class="hud-author" data-hud-author>por Alumno (Física y Química)</span>
+    </div>
+  </div>
+
+  <!-- Centro Tipográfico Idéntico al Look & Feel de ArtCraft Studio -->
+  <div class="craft-center-stage">
+    <div class="craft-center-content">
+      <!-- Marca Geométrica y Título Principal -->
+      <div class="craft-logo-lockup">
+        <span class="craft-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 36 36">
+            <path d="M4 28 L18 6 L32 28 L24 28 L18 17 L12 28 Z" fill="currentColor"></path>
+          </svg>
+        </span>
+        <h1 class="craft-studio-title">MATH CRAFT</h1>
+      </div>
+
+      <!-- Titular con estilo "Capable tools *for artists.*" -->
+      <p class="craft-studio-headline">
+        Juegos matemáticos <em>para pensar creando.</em>
+      </p>
+
+      <!-- Descripción clara y enfocada -->
+      <p class="craft-studio-desc">
+        Math Craft es nuestro laboratorio interactivo: explora simulaciones de física, juegos arcade
+        de cálculo mental y proyectos de código desarrollados tanto por profesores como por alumnos.
+      </p>
+
+      <!-- Botones de Acción Principales estilo ArtCraft -->
+      <div class="craft-action-row">
+        <a href="#catalogo" class="craft-btn-primary">
+          <span class="btn-icon">🎮</span>
+          <span>EXPLORAR JUEGOS</span>
+        </a>
+        <a href="#catalogo" class="craft-btn-secondary" data-filter-student-quick>
+          <span class="btn-icon">🎒</span>
+          <span>PROYECTOS DE ALUMNOS</span>
+        </a>
+      </div>
+
+      <!-- Enlace directo destacado a colaborar -->
+      <p class="craft-highlight-note">
+        ¿Has programado un juego o simulación?
+        <a href="#colabora" class="craft-note-link">Ver cómo publicar tu proyecto →</a>
+      </p>
+
+      <!-- Franja inferior de metadatos (como en ArtCraft Studio) -->
+      <div class="craft-meta-bar" aria-hidden="true">
+        <span class="meta-item">OPEN SOURCE</span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item">PROFESOR (XAVIER ALSINA)</span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item">PROYECTOS DE ALUMNOS</span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item">100% WEB & SIN INSTALACIÓN</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ---------------------------------------------------- */
+  /* CONTENEDOR HERO ORBIT                                */
+  /* ---------------------------------------------------- */
+  .craft-hero-orbit {
+    position: relative;
+    width: 100%;
+    min-height: clamp(620px, 88vh, 960px);
+    overflow: hidden;
+    background: #08090d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  :root[data-theme='light'] .craft-hero-orbit {
+    background: #f4f3ed;
+  }
+
+  /* CANVAS DE FONDO */
+  .orbit-bg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* VELO RADIAL */
+  .craft-orbit-scrim {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle 440px at 50% 50%,
+      rgba(8, 9, 13, 0.94) 0%,
+      rgba(8, 9, 13, 0.6) 55%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  :root[data-theme='light'] .craft-orbit-scrim {
+    background: radial-gradient(
+      circle 440px at 50% 50%,
+      rgba(244, 243, 237, 0.94) 0%,
+      rgba(244, 243, 237, 0.6) 55%,
+      transparent 100%
+    );
+  }
+
+  /* ---------------------------------------------------- */
+  /* TARJETAS PANORÁMICAS FLOTANTES (PANTALLAS EN ÓRBITA) */
+  /* ---------------------------------------------------- */
+  .craft-orbit-items {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .craft-screen-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    aspect-ratio: 16 / 10;
+    text-decoration: none;
+    pointer-events: auto;
+    cursor: pointer;
+    transform-origin: center center;
+    transition: box-shadow 0.25s ease, filter 0.25s ease;
+    will-change: transform, opacity;
+  }
+
+  /* Tamaños escalonados según la órbita (órbita 0 interior, 1 media, 2 exterior) */
+  .craft-screen-card[data-orbit-ring="0"] {
+    width: clamp(112px, 9.5vw, 130px);
+  }
+
+  .craft-screen-card[data-orbit-ring="1"] {
+    width: clamp(130px, 11vw, 150px);
+  }
+
+  .craft-screen-card[data-orbit-ring="2"] {
+    width: clamp(145px, 12.5vw, 172px);
+  }
+
+  .screen-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    background: #11131a;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    display: flex;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  :root[data-theme='light'] .screen-frame {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  }
+
+  .craft-screen-card:hover .screen-frame {
+    transform: scale(1.15);
+    border-color: var(--card-color, #b48cff);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 26px color-mix(in srgb, var(--card-color) 45%, transparent);
+  }
+
+  .screen-visual {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #090a0f;
+  }
+
+  .card-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  /* ---------------------------------------------------- */
+  /* HUD TOOLTIP FLOTANTE                                 */
+  /* ---------------------------------------------------- */
+  .craft-orbit-hud {
+    position: absolute;
+    bottom: 2.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .craft-orbit-hud.is-active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
+  }
+
+  .hud-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: rgba(18, 20, 28, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .hud-badge {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #38c8ff;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(56, 200, 255, 0.15);
+  }
+
+  .hud-title {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .hud-author {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: #8e919e;
+  }
+
+  /* ---------------------------------------------------- */
+  /* CENTRO TIPOGRÁFICO (LOOK & FEEL ARTCRAFT STUDIO)     */
+  /* ---------------------------------------------------- */
+  .craft-center-stage {
+    position: relative;
+    z-index: 3;
+    max-width: 680px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+
+  .craft-center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  /* LOGO LOCKUP: Ícono Geométrico + MATH CRAFT */
+  .craft-logo-lockup {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .craft-logo-mark {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.45));
+  }
+
+  :root[data-theme='light'] .craft-logo-mark {
+    color: #101116;
+    filter: none;
+  }
+
+  .craft-studio-title {
+    font-family: var(--display);
+    font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  :root[data-theme='light'] .craft-studio-title {
+    color: #101116;
+  }
+
+  /* HEADLINE: "Juegos matemáticos *para pensar creando.*" */
+  .craft-studio-headline {
+    font-family: var(--display);
+    font-size: clamp(1.4rem, 3.2vw, 2.3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #ffffff;
+    margin: 0 0 1.15rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  :root[data-theme='light'] .craft-studio-headline {
+    color: #101116;
+  }
+
+  .craft-studio-headline em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    color: #c4b5fd;
+    text-shadow: 0 0 25px rgba(196, 181, 253, 0.45);
+  }
+
+  :root[data-theme='light'] .craft-studio-headline em {
+    color: #6d28d9;
+    text-shadow: none;
+  }
+
+  /* PÁRRAFO DESCRIPTIVO */
+  .craft-studio-desc {
+    font-family: var(--sans);
+    font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+    line-height: 1.6;
+    color: #a1a3af;
+    max-width: 560px;
+    margin: 0 0 1.85rem 0;
+  }
+
+  :root[data-theme='light'] .craft-studio-desc {
+    color: #4b5563;
+  }
+
+  /* FILA DE BOTONES DE ACCIÓN */
+  .craft-action-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .craft-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.6rem;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #0b0c10;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  :root[data-theme='light'] .craft-btn-primary {
+    background: #101116;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  .craft-btn-primary:hover {
+    transform: translateY(-2px);
+    background: #f0f0f5;
+    box-shadow: 0 10px 28px rgba(255, 255, 255, 0.35);
+  }
+
+  :root[data-theme='light'] .craft-btn-primary:hover {
+    background: #252836;
+  }
+
+  .craft-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #f3f2ec;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+
+  :root[data-theme='light'] .craft-btn-secondary {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #101116;
+  }
+
+  .craft-btn-secondary:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #38c8ff;
+    color: #38c8ff;
+  }
+
+  .btn-icon {
+    font-size: 0.85rem;
+  }
+
+  /* NOTA INFERIOR */
+  .craft-highlight-note {
+    font-family: var(--sans);
+    font-size: 0.84rem;
+    color: #8e919e;
+    margin: 0 0 1.6rem 0;
+  }
+
+  .craft-note-link {
+    color: #c4b5fd;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-left: 0.3rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+
+  .craft-note-link:hover {
+    color: #ffffff;
+  }
+
+  :root[data-theme='light'] .craft-note-link {
+    color: #6d28d9;
+  }
+
+  /* METADATA BAR */
+  .craft-meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: #555865;
+    letter-spacing: 0.06em;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  :root[data-theme='light'] .craft-meta-bar {
+    color: #8c8f9c;
+  }
+
+  .meta-sep {
+    opacity: 0.5;
+  }
+
+  /* ---------------------------------------------------- */
+  /* RESPONSIVE                                           */
+  /* ---------------------------------------------------- */
+  @media (max-width: 768px) {
+    .craft-hero-orbit {
+      min-height: 560px;
+    }
+
+    .craft-meta-bar {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initCraftHeroOrbit() {
+    const system = document.querySelector<HTMLElement>('[data-craft-orbit-system]');
+    if (!system) return;
+
+    const canvas = system.querySelector<HTMLCanvasElement>('[data-craft-orbit-canvas]');
+    const hud = system.querySelector<HTMLElement>('[data-craft-hud]');
+    const hudBadge = system.querySelector<HTMLElement>('[data-hud-badge]');
+    const hudTitle = system.querySelector<HTMLElement>('[data-hud-title]');
+    const hudAuthor = system.querySelector<HTMLElement>('[data-hud-author]');
+    const cardEls = [...system.querySelectorAll<HTMLAnchorElement>('[data-orbit-node]')];
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx || !cardEls.length) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let animId = 0;
+
+    const pointer = {
+      x: 0,
+      y: 0,
+      targetX: 0,
+      targetY: 0,
+      active: false,
+      hoveredIdx: -1,
+    };
+
+    const sim = {
+      time: 0,
+      spin: 0,
+      lastNow: performance.now(),
+      holdFactor: 0,
+    };
+
+    // Estrellas ESTÁTICAS en el fondo (NO rotan, permanecen fijas con sutil titileo en su sitio)
+    const starCount = 110;
+    const stars = Array.from({ length: starCount }, () => ({
+      xFrac: Math.random(),
+      yFrac: Math.random(),
+      size: Math.random() * 1.5 + 0.6,
+      baseAlpha: Math.random() * 0.45 + 0.25,
+      twinkleSpeed: Math.random() * 2 + 0.8,
+      twinklePhase: Math.random() * Math.PI * 2,
+      color: Math.random() > 0.8 ? '#38c8ff' : Math.random() > 0.6 ? '#ff8a5b' : '#ffffff',
+    }));
+
+    function isDark(): boolean {
+      return document.documentElement.dataset.theme !== 'light';
+    }
+
+    function resize() {
+      if (!canvas || !system) return;
+      const rect = system.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx?.scale(dpr, dpr);
+    }
+
+    // Definición de las 3 ÓRBITAS VARIABLES (radios bien separados del centro para nunca colisionar con el texto)
+    function getOrbitRadii() {
+      // Escalado responsivo según el ancho de la ventana
+      const scaleX = Math.min(1.15, Math.max(0.72, width / 1200));
+      const scaleY = Math.min(1.15, Math.max(0.72, height / 800));
+
+      return [
+        // Órbita 0 (Interior): elipse que envuelve al texto central sin tocarlo nunca
+        { rx: 340 * scaleX, ry: 215 * scaleY, speed: 0.17 },
+        // Órbita 1 (Media): elipse intermedia más amplia
+        { rx: 480 * scaleX, ry: 295 * scaleY, speed: 0.11 },
+        // Órbita 2 (Exterior): elipse lejana panorámica
+        { rx: 640 * scaleX, ry: 385 * scaleY, speed: 0.075 },
+      ];
+    }
+
+    // Inicializar estado de las 14 tarjetas distribuidas en sus 3 órbitas
+    const cardsState = cardEls.map((el, i) => {
+      const ring = parseInt(el.getAttribute('data-orbit-ring') || '0', 10);
+      const phase = parseFloat(el.getAttribute('data-phase') || '0');
+      const title = el.getAttribute('data-title') || '';
+      const authorType = el.getAttribute('data-author-type') || 'teacher';
+      const authorName = el.getAttribute('data-author-name') || '';
+      const school = el.getAttribute('data-school') || '';
+
+      return {
+        el,
+        index: i,
+        ring,
+        angle: phase,
+        title,
+        authorType,
+        authorName,
+        school,
+      };
+    });
+
+    function drawBackgroundOrbits() {
+      if (!ctx) return;
+      const cx = width / 2;
+      const cy = height / 2;
+      const dark = isDark();
+
+      // 1. Estrellas ESTÁTICAS (completamente fijas en el lienzo, titileo suave en su posición)
+      stars.forEach((st) => {
+        const sx = st.xFrac * width;
+        const sy = st.yFrac * height;
+
+        const twinkle = Math.sin(sim.time * st.twinkleSpeed + st.twinklePhase);
+        const curAlpha = st.baseAlpha * (0.7 + 0.3 * twinkle);
+
+        ctx.fillStyle = st.color;
+        ctx.globalAlpha = dark ? curAlpha : curAlpha * 0.55;
+        ctx.beginPath();
+        ctx.arc(sx, sy, st.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      const radii = getOrbitRadii();
+
+      // 2. Líneas orbitales elípticas y arcos de neón de color GIRATORIOS
+      ctx.save();
+      ctx.translate(cx, cy);
+      // Las líneas de órbita y los arcos de color rotan continuamente (como en la Home)
+      ctx.rotate(sim.spin);
+
+      // Dibujar las 3 órbitas elípticas
+      radii.forEach((r, idx) => {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r.rx, r.ry, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 1;
+        ctx.stroke();
+
+        // Ticks de radar a lo largo de las elipses
+        const tickCount = idx === 0 ? 32 : idx === 1 ? 44 : 56;
+        for (let t = 0; t < tickCount; t++) {
+          const a = (t * Math.PI * 2) / tickCount;
+          const cos = Math.cos(a);
+          const sin = Math.sin(a);
+          const x1 = (r.rx - 3) * cos;
+          const y1 = (r.ry - 3) * sin;
+          const x2 = (r.rx + 3) * cos;
+          const y2 = (r.ry + 3) * sin;
+
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      });
+
+      // 3. Arcos de neón vibrantes girando solidarios con el sistema orbital
+      // Arco Rojo / Naranja en la órbita exterior
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radii[2].rx, radii[2].ry, 0, -0.65, 0.45);
+      ctx.strokeStyle = '#ff4d4d';
+      ctx.lineWidth = 2.6;
+      ctx.globalAlpha = dark ? 0.9 : 0.7;
+      ctx.stroke();
+
+      // Arco Azul Eléctrico en la órbita media
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radii[1].rx, radii[1].ry, 0, 2.35, 3.75);
+      ctx.strokeStyle = '#38c8ff';
+      ctx.lineWidth = 2.4;
+      ctx.globalAlpha = dark ? 0.95 : 0.75;
+      ctx.stroke();
+
+      // Arco Verde / Menta en la órbita interior
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radii[0].rx, radii[0].ry, 0, 0.9, 1.95);
+      ctx.strokeStyle = '#3fe0b5';
+      ctx.lineWidth = 2.2;
+      ctx.globalAlpha = dark ? 0.85 : 0.65;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function render(now: number) {
+      const dt = Math.min((now - sim.lastNow) / 1000, 0.05) || 0.016;
+      sim.lastNow = now;
+      sim.time += dt;
+
+      // Suavizado del cursor (Lerp)
+      pointer.x += (pointer.targetX - pointer.x) * 0.08;
+      pointer.y += (pointer.targetY - pointer.y) * 0.08;
+
+      const hasHover = pointer.hoveredIdx >= 0;
+      sim.holdFactor += ((hasHover ? 1 : 0) - sim.holdFactor) * (1 - Math.exp(-dt / 0.18));
+
+      // Velocidad de giro orbital continuo (se atenúa sutilmente al hacer hover, pero nunca se congela)
+      const speedMultiplier = 1 - sim.holdFactor * 0.65;
+      sim.spin += dt * 0.045 * speedMultiplier;
+
+      ctx?.clearRect(0, 0, width, height);
+      drawBackgroundOrbits();
+
+      const cx = width / 2;
+      const cy = height / 2;
+      const radii = getOrbitRadii();
+
+      // Actualizar posición de cada tarjeta en su órbita correspondiente
+      cardsState.forEach((card) => {
+        const isHovered = card.index === pointer.hoveredIdx;
+        const orbitConfig = radii[card.ring];
+
+        // Giro dinámico según su órbita
+        card.angle += dt * orbitConfig.speed * speedMultiplier;
+
+        const currentAngle = card.angle;
+        let px = cx + orbitConfig.rx * Math.cos(currentAngle);
+        let py = cy + orbitConfig.ry * Math.sin(currentAngle);
+
+        // Parallax sutil con el ratón
+        px += pointer.x * (0.025 + card.ring * 0.015);
+        py += pointer.y * (0.025 + card.ring * 0.015);
+
+        // Escala con ligera perspectiva de profundidad
+        const depth = (Math.sin(currentAngle) + 1) * 0.5; // 0 (fondo) a 1 (frente)
+        const baseScale = 0.85 + depth * 0.28;
+        const targetScale = isHovered ? 1.25 : baseScale;
+
+        // Opacidad suave
+        const alpha = 0.75 + depth * 0.25;
+
+        card.el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%) scale(${targetScale.toFixed(3)})`;
+        card.el.style.opacity = alpha.toFixed(2);
+        card.el.style.pointerEvents = 'auto';
+        card.el.style.zIndex = isHovered ? '40' : String(card.ring * 10 + Math.floor(depth * 8) + 5);
+      });
+
+      animId = requestAnimationFrame(render);
+    }
+
+    // Escuchadores del puntero
+    function onPointerMove(e: PointerEvent) {
+      const rect = system!.getBoundingClientRect();
+      pointer.targetX = e.clientX - (rect.left + rect.width / 2);
+      pointer.targetY = e.clientY - (rect.top + rect.height / 2);
+      pointer.active = true;
+    }
+
+    function onPointerLeave() {
+      pointer.targetX = 0;
+      pointer.targetY = 0;
+      pointer.active = false;
+      pointer.hoveredIdx = -1;
+      if (hud) hud.classList.remove('is-active');
+    }
+
+    system.addEventListener('pointermove', onPointerMove as EventListener, { passive: true });
+    system.addEventListener('pointerleave', onPointerLeave);
+    window.addEventListener('resize', resize, { passive: true });
+
+    // Hover en tarjetas individuales para activar el HUD
+    cardEls.forEach((el, idx) => {
+      el.addEventListener('pointerenter', () => {
+        pointer.hoveredIdx = idx;
+        const card = cardsState[idx];
+        if (hud && hudBadge && hudTitle && hudAuthor) {
+          hudBadge.textContent = card.authorType === 'student' ? '🎒 PROYECTO ALUMNO' : '👨‍🏫 PROFESOR';
+          hudBadge.style.color = card.authorType === 'student' ? '#38c8ff' : '#b48cff';
+          hudTitle.textContent = card.title;
+          hudAuthor.textContent = card.authorType === 'student' ? `por ${card.authorName} (${card.school})` : `por ${card.authorName}`;
+          hud.classList.add('is-active');
+        }
+      });
+
+      el.addEventListener('pointerleave', () => {
+        if (pointer.hoveredIdx === idx) {
+          pointer.hoveredIdx = -1;
+          if (hud) hud.classList.remove('is-active');
+        }
+      });
+    });
+
+    resize();
+    render(performance.now());
+
+    // Botón de filtro rápido de alumnos en el centro
+    const studentQuickBtn = system.querySelector('[data-filter-student-quick]');
+    if (studentQuickBtn) {
+      studentQuickBtn.addEventListener('click', () => {
+        const studentFilterBtn = document.querySelector<HTMLButtonElement>('[data-author-filter="student"]');
+        if (studentFilterBtn) {
+          studentFilterBtn.click();
+        }
+      });
+    }
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCraftHeroOrbit);
+  } else {
+    initCraftHeroOrbit();
+  }
+  document.addEventListener('astro:page-load', initCraftHeroOrbit);
+</script>

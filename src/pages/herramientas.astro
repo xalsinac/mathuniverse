@@ -1,0 +1,1452 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import ScientificCalculator from '../components/ScientificCalculator.astro';
+import FunctionGrapher from '../components/FunctionGrapher.astro';
+import { site } from '../config/site';
+---
+
+<BaseLayout
+  title={`Math Tools — ${site.name}`}
+  description="Calculadora científica con fracciones verticales, graficador de funciones 2D, conversor de unidades, escalas, proporciones y descomposición factorial en Math Universe."
+>
+  <SiteHeader
+    activePage="herramientas"
+    statusText="Utilidades activas"
+    ctaHref="/#recursos"
+    ctaLabel="Todas las Apps"
+  />
+
+  <main>
+    <!-- Cabecera y Banco de Trabajo de Herramientas (enmarcado con líneas arquitectónicas) -->
+    <section class="tools-band section-band is-drawn">
+      <span class="section-rule" aria-hidden="true"></span>
+      <div class="section-frame">
+        <span class="tick tick-half tick-left" aria-hidden="true"></span>
+        <span class="tick tick-half tick-right" aria-hidden="true"></span>
+
+        <div class="section-eyebrow">
+          <span>
+            <span class="eyebrow-num">09</span>
+            <span class="eyebrow-sep" aria-hidden="true">/</span>
+            Math Tools · Calculadora y herramientas
+          </span>
+          <span class="eyebrow-right">Cálculo exacto · Graficador 2D · Conversores · Escalas</span>
+        </div>
+
+        <!-- Introducción compacta + Selector de Pestañas del Banco de Trabajo -->
+        <div class="tools-header section-body">
+          <div class="tools-title-block">
+            <p class="kicker">Utilidades al instante</p>
+            <h1>Cuando necesitas <em>una pequeña ayuda.</em></h1>
+            <p class="tools-lead">
+              Calculadoras científicas con escritura natural de fracciones verticales, conversores
+              de magnitudes, escalas y descomposición factorial paso a paso.
+            </p>
+          </div>
+
+          <!-- Pestañas rápidas de herramientas -->
+          <div class="workbench-tabs" role="tablist" aria-label="Herramientas disponibles">
+            <button
+              type="button"
+              role="tab"
+              aria-selected="true"
+              class="wb-tab is-active"
+              data-wb-tab="calculator"
+            >
+              <span class="wb-tab-num">01</span>
+              <span class="wb-tab-info">
+                <strong>Calculadora Científica</strong>
+                <small>Fracciones a/b · S⇔D · FACT · 2.º grado</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              class="wb-tab"
+              data-wb-tab="converter"
+            >
+              <span class="wb-tab-num">02</span>
+              <span class="wb-tab-info">
+                <strong>Conversor de Unidades</strong>
+                <small>Longitud · Área · Volumen · Masa · Ángulos</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              class="wb-tab"
+              data-wb-tab="scales"
+            >
+              <span class="wb-tab-num">03</span>
+              <span class="wb-tab-info">
+                <strong>Escalas y Proporciones</strong>
+                <small>Planos 1:E · Regla de 3 directa e inversa</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              class="wb-tab"
+              data-wb-tab="numbertheory"
+            >
+              <span class="wb-tab-num">04</span>
+              <span class="wb-tab-info">
+                <strong>M.C.D. · m.c.m. y Factores</strong>
+                <small>Descomposición vertical tipo pizarra</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              class="wb-tab"
+              data-wb-tab="grapher"
+            >
+              <span class="wb-tab-num">05</span>
+              <span class="wb-tab-info">
+                <strong>Graficador de Funciones</strong>
+                <small>Plano 2D f(x) · Raíces · Extremos · Tabla</small>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 01 (ABIERTA POR DEFECTO): CALCULADORA CIENTÍFICA        -->
+        <!-- =============================================================== -->
+        <div class="wb-panel is-active section-body" data-wb-panel="calculator">
+          <ScientificCalculator />
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 02: CONVERSOR DE UNIDADES                               -->
+        <!-- =============================================================== -->
+        <div class="wb-panel section-body" data-wb-panel="converter">
+          <div class="tool-module">
+            <div class="module-head">
+              <div>
+                <span class="module-eyebrow">SISTEMA INTERNACIONAL Y MAGNITUDES</span>
+                <h2>Conversor de unidades</h2>
+              </div>
+              <div class="unit-cat-pills" data-unit-categories role="tablist">
+                <button type="button" class="cat-pill is-active" data-unit-cat="length">Longitud</button>
+                <button type="button" class="cat-pill" data-unit-cat="area">Superficie (m²)</button>
+                <button type="button" class="cat-pill" data-unit-cat="volume">Volumen y Capacidad</button>
+                <button type="button" class="cat-pill" data-unit-cat="mass">Masa</button>
+                <button type="button" class="cat-pill" data-unit-cat="speed">Velocidad</button>
+                <button type="button" class="cat-pill" data-unit-cat="angle">Ángulos</button>
+                <button type="button" class="cat-pill" data-unit-cat="temp">Temperatura</button>
+              </div>
+            </div>
+
+            <div class="converter-grid">
+              <div class="conv-box">
+                <label class="conv-label" for="conv-val-from">Valor de origen</label>
+                <input id="conv-val-from" type="number" value="1" step="any" data-conv-input />
+                <select data-conv-from aria-label="Unidad de origen"></select>
+              </div>
+
+              <button type="button" class="conv-swap-btn" data-conv-swap title="Intercambiar unidades">
+                <span>⇄</span>
+              </button>
+
+              <div class="conv-box is-result">
+                <span class="conv-label">Resultado convertido</span>
+                <div class="conv-output" data-conv-output>100</div>
+                <select data-conv-to aria-label="Unidad de destino"></select>
+              </div>
+            </div>
+
+            <div class="conv-formula-bar" data-conv-formula></div>
+
+            <div class="conv-all-table-wrap">
+              <p class="table-title">EQUIVALENCIA SIMULTÁNEA EN TODAS LAS UNIDADES</p>
+              <div class="conv-all-grid" data-conv-all></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 03: ESCALAS Y REGLA DE TRES (PROPORCIONES)              -->
+        <!-- =============================================================== -->
+        <div class="wb-panel section-body" data-wb-panel="scales">
+          <div class="scales-split">
+            <!-- Bloque A: Calculadora de Escalas (1 : E) -->
+            <div class="tool-module">
+              <span class="module-eyebrow">GEOMETRÍA Y CARTOGRAFÍA</span>
+              <h2>Calculadora de Escalas <em>(Plano ↔ Realidad)</em></h2>
+              <p class="module-desc">
+                Relaciona medidas en el plano o mapa con su tamaño en la realidad según la escala
+                <strong>1 : E</strong>.
+              </p>
+
+              <div class="scale-presets">
+                <span>Escalas habituales:</span>
+                <button type="button" data-scale-preset="50">1:50</button>
+                <button type="button" data-scale-preset="100">1:100</button>
+                <button type="button" data-scale-preset="500">1:500</button>
+                <button type="button" data-scale-preset="25000">1:25 000</button>
+                <button type="button" data-scale-preset="50000">1:50 000</button>
+              </div>
+
+              <div class="scale-form">
+                <div class="scale-field">
+                  <label>Escala del plano (1 : E)</label>
+                  <div class="scale-ratio-input">
+                    <span>1 :</span>
+                    <input type="number" value="25000" min="0.0001" step="any" data-scale-e />
+                  </div>
+                </div>
+
+                <div class="scale-field">
+                  <label>Medida en el Dibujo / Mapa</label>
+                  <div class="scale-unit-row">
+                    <input type="number" value="4" step="any" data-scale-map />
+                    <select data-scale-map-unit>
+                      <option value="0.001">mm</option>
+                      <option value="0.01" selected>cm</option>
+                      <option value="1">m</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="scale-field">
+                  <label>Medida en la Realidad</label>
+                  <div class="scale-unit-row">
+                    <input type="number" value="1" step="any" data-scale-real />
+                    <select data-scale-real-unit>
+                      <option value="0.01">cm</option>
+                      <option value="1">m</option>
+                      <option value="1000" selected>km</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="scale-explanation" data-scale-summary></div>
+            </div>
+
+            <!-- Bloque B: Regla de Tres Directa e Inversa con Fracción Vertical -->
+            <div class="tool-module">
+              <div class="prop-head">
+                <div>
+                  <span class="module-eyebrow">PROPORCIONALIDAD</span>
+                  <h2>Regla de tres <em>(Directa e Inversa)</em></h2>
+                </div>
+                <div class="prop-mode-switch">
+                  <button type="button" class="cat-pill is-active" data-prop-type="direct">Directa</button>
+                  <button type="button" class="cat-pill" data-prop-type="inverse">Inversa</button>
+                </div>
+              </div>
+
+              <div class="prop-matrix">
+                <div class="prop-row">
+                  <label class="prop-box">
+                    <span>Magnitud A₁</span>
+                    <input type="number" value="4" step="any" data-prop-a />
+                  </label>
+                  <span class="prop-arrow">⟶</span>
+                  <label class="prop-box">
+                    <span>Magnitud B₁</span>
+                    <input type="number" value="18" step="any" data-prop-b />
+                  </label>
+                </div>
+
+                <div class="prop-row">
+                  <label class="prop-box">
+                    <span>Magnitud A₂</span>
+                    <input type="number" value="10" step="any" data-prop-c />
+                  </label>
+                  <span class="prop-arrow">⟶</span>
+                  <div class="prop-box is-unknown">
+                    <span>Incógnita <strong>x</strong></span>
+                    <div class="prop-x-val" data-prop-x>45</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="prop-resolution" data-prop-steps></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 04: M.C.D., m.c.m. Y FACTORIZACIÓN EN COLUMNA VERTICAL  -->
+        <!-- =============================================================== -->
+        <div class="wb-panel section-body" data-wb-panel="numbertheory">
+          <div class="tool-module">
+            <div class="module-head">
+              <div>
+                <span class="module-eyebrow">DIVISIBILIDAD Y TEORÍA DE NÚMEROS</span>
+                <h2>M.C.D., m.c.m. y descomposición en factores primos</h2>
+              </div>
+              <div class="nt-presets">
+                <span>Ejemplos:</span>
+                <button type="button" data-nt-preset="72, 108">72 y 108</button>
+                <button type="button" data-nt-preset="60, 84, 140">60, 84 y 140</button>
+                <button type="button" data-nt-preset="360, 504">360 y 504</button>
+              </div>
+            </div>
+
+            <div class="nt-input-bar">
+              <label for="nt-numbers-input">
+                Introduce dos o más números enteros separados por comas o espacios:
+              </label>
+              <div class="nt-input-group">
+                <input
+                  id="nt-numbers-input"
+                  type="text"
+                  value="72, 108"
+                  data-nt-input
+                  placeholder="Ej. 72, 108, 180"
+                />
+                <button type="button" class="nt-calc-btn" data-nt-calc>CALCULAR</button>
+              </div>
+            </div>
+
+            <div class="nt-results" data-nt-output></div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 05: GRAFICADOR DE FUNCIONES 2D f(x) Y g(x)              -->
+        <!-- =============================================================== -->
+        <div class="wb-panel section-body" data-wb-panel="grapher">
+          <FunctionGrapher />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de página enmarcado -->
+  <footer class="footer-section section-band is-drawn">
+    <span class="section-rule" aria-hidden="true"></span>
+    <div class="section-frame">
+      <span class="tick tick-half tick-left" aria-hidden="true"></span>
+      <span class="tick tick-half tick-right" aria-hidden="true"></span>
+
+      <div class="footer-body section-body">
+        <div class="footer-bottom">
+          <span>© {new Date().getFullYear()} Math Universe · Xavier Alsina</span>
+          <a href="/">← Volver a la galaxia principal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</BaseLayout>
+
+<script>
+  import {
+    factorizeInteger,
+    gcd,
+    lcm,
+    renderVerticalFractionHtml,
+    toFraction,
+  } from '../lib/mathEngine';
+
+  // Navegación por pestañas del Banco de Trabajo (Calculadora, Conversor, Escalas, MCD/mcm, Graficador)
+  const wbTabs = document.querySelectorAll<HTMLButtonElement>('[data-wb-tab]');
+  const wbPanels = document.querySelectorAll<HTMLElement>('[data-wb-panel]');
+
+  const activateTab = (target: string) => {
+    wbTabs.forEach((t) => {
+      const active = t.dataset.wbTab === target;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', String(active));
+    });
+    wbPanels.forEach((p) => {
+      p.classList.toggle('is-active', p.dataset.wbPanel === target);
+    });
+  };
+
+  wbTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.wbTab;
+      if (target) activateTab(target);
+    });
+  });
+
+  // Soportar enlaces profundos desde el buscador global ⌘K (?tab=grapher, ?tab=calculator&mode=quad, ?pip=1, etc.)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('pip') === '1') {
+    document.body.classList.add('is-pip-standalone');
+  }
+  const tabParam = params.get('tab');
+  if (tabParam && ['calculator', 'converter', 'scales', 'numbertheory', 'grapher'].includes(tabParam)) {
+    activateTab(tabParam);
+  }
+  const modeParam = params.get('mode');
+  if (modeParam === 'quad') {
+    const quadBtn = document.querySelector<HTMLButtonElement>('[data-calc-mode="quad"]');
+    quadBtn?.click();
+  }
+
+  // =========================================================================
+  // 3. LÓGICA DEL CONVERSOR DE UNIDADES
+  // =========================================================================
+  interface UnitDef {
+    id: string;
+    name: string;
+    symbol: string;
+    factor: number; // respecto a la unidad base de la categoría
+  }
+
+  const UNIT_DATA: Record<string, { baseName: string; units: UnitDef[] }> = {
+    length: {
+      baseName: 'metro (m)',
+      units: [
+        { id: 'km', name: 'Kilómetro (km)', symbol: 'km', factor: 1000 },
+        { id: 'hm', name: 'Hectómetro (hm)', symbol: 'hm', factor: 100 },
+        { id: 'dam', name: 'Decámetro (dam)', symbol: 'dam', factor: 10 },
+        { id: 'm', name: 'Metro (m)', symbol: 'm', factor: 1 },
+        { id: 'dm', name: 'Decímetro (dm)', symbol: 'dm', factor: 0.1 },
+        { id: 'cm', name: 'Centímetro (cm)', symbol: 'cm', factor: 0.01 },
+        { id: 'mm', name: 'Milímetro (mm)', symbol: 'mm', factor: 0.001 },
+        { id: 'mi', name: 'Milla (mi)', symbol: 'mi', factor: 1609.344 },
+        { id: 'in', name: 'Pulgada (in)', symbol: 'in', factor: 0.0254 },
+      ],
+    },
+    area: {
+      baseName: 'metro cuadrado (m²)',
+      units: [
+        { id: 'km2', name: 'Kilómetro cuadrado (km²)', symbol: 'km²', factor: 1e6 },
+        { id: 'ha', name: 'Hectárea (ha = hm²)', symbol: 'ha', factor: 1e4 },
+        { id: 'dam2', name: 'Decámetro cuadrado (dam²)', symbol: 'dam²', factor: 100 },
+        { id: 'm2', name: 'Metro cuadrado (m²)', symbol: 'm²', factor: 1 },
+        { id: 'dm2', name: 'Decímetro cuadrado (dm²)', symbol: 'dm²', factor: 0.01 },
+        { id: 'cm2', name: 'Centímetro cuadrado (cm²)', symbol: 'cm²', factor: 1e-4 },
+        { id: 'mm2', name: 'Milímetro cuadrado (mm²)', symbol: 'mm²', factor: 1e-6 },
+      ],
+    },
+    volume: {
+      baseName: 'litro (L = dm³)',
+      units: [
+        { id: 'm3', name: 'Metro cúbico (m³)', symbol: 'm³', factor: 1000 },
+        { id: 'hl', name: 'Hectolitro (hL)', symbol: 'hL', factor: 100 },
+        { id: 'dm3', name: 'Decímetro cúbico / Litro (dm³ = L)', symbol: 'L (dm³)', factor: 1 },
+        { id: 'dl', name: 'Decilitro (dL)', symbol: 'dL', factor: 0.1 },
+        { id: 'cl', name: 'Centilitro (cL)', symbol: 'cL', factor: 0.01 },
+        { id: 'cm3', name: 'Centímetro cúbico / Mililitro (cm³ = mL)', symbol: 'mL (cm³)', factor: 0.001 },
+      ],
+    },
+    mass: {
+      baseName: 'gramo (g)',
+      units: [
+        { id: 't', name: 'Tonelada (t)', symbol: 't', factor: 1e6 },
+        { id: 'kg', name: 'Kilogramo (kg)', symbol: 'kg', factor: 1000 },
+        { id: 'hg', name: 'Hectogramo (hg)', symbol: 'hg', factor: 100 },
+        { id: 'dag', name: 'Decagramo (dag)', symbol: 'dag', factor: 10 },
+        { id: 'g', name: 'Gramo (g)', symbol: 'g', factor: 1 },
+        { id: 'dg', name: 'Decigramo (dg)', symbol: 'dg', factor: 0.1 },
+        { id: 'cg', name: 'Centigramo (cg)', symbol: 'cg', factor: 0.01 },
+        { id: 'mg', name: 'Miligramo (mg)', symbol: 'mg', factor: 0.001 },
+      ],
+    },
+    speed: {
+      baseName: 'metro por segundo (m/s)',
+      units: [
+        { id: 'kmh', name: 'Kilómetros por hora (km/h)', symbol: 'km/h', factor: 1 / 3.6 },
+        { id: 'ms', name: 'Metros por segundo (m/s)', symbol: 'm/s', factor: 1 },
+        { id: 'mph', name: 'Millas por hora (mph)', symbol: 'mph', factor: 0.44704 },
+        { id: 'kn', name: 'Nudos (kt)', symbol: 'kt', factor: 0.514444 },
+      ],
+    },
+    angle: {
+      baseName: 'grado sexagesimal (°)',
+      units: [
+        { id: 'deg', name: 'Grados sexagesimales (°)', symbol: '°', factor: 1 },
+        { id: 'rad', name: 'Radianes (rad)', symbol: 'rad', factor: 180 / Math.PI },
+        { id: 'grad', name: 'Gradianes / Gones (ᵍ)', symbol: 'ᵍ', factor: 0.9 },
+        { id: 'turn', name: 'Vueltas completas (rev)', symbol: 'rev', factor: 360 },
+      ],
+    },
+    temp: {
+      baseName: 'Temperatura (°C / K / °F)',
+      units: [
+        { id: 'c', name: 'Grados Celsius (°C)', symbol: '°C', factor: 1 },
+        { id: 'k', name: 'Kelvin (K)', symbol: 'K', factor: 1 },
+        { id: 'f', name: 'Grados Fahrenheit (°F)', symbol: '°F', factor: 1 },
+      ],
+    },
+  };
+
+  let currentCat = 'length';
+  const convInput = document.querySelector<HTMLInputElement>('[data-conv-input]');
+  const convFrom = document.querySelector<HTMLSelectElement>('[data-conv-from]');
+  const convTo = document.querySelector<HTMLSelectElement>('[data-conv-to]');
+  const convOutput = document.querySelector<HTMLElement>('[data-conv-output]');
+  const convFormula = document.querySelector<HTMLElement>('[data-conv-formula]');
+  const convAll = document.querySelector<HTMLElement>('[data-conv-all]');
+  const convSwap = document.querySelector<HTMLButtonElement>('[data-conv-swap]');
+
+  const formatNum = (n: number): string => {
+    if (!Number.isFinite(n)) return '—';
+    if (Math.abs(n) === 0) return '0';
+    if (Math.abs(n) >= 1e7 || Math.abs(n) < 1e-4) return n.toExponential(4);
+    return Number(n.toPrecision(8)).toString();
+  };
+
+  const convertTemperature = (val: number, from: string, to: string): number => {
+    let celsius = val;
+    if (from === 'k') celsius = val - 273.15;
+    else if (from === 'f') celsius = ((val - 32) * 5) / 9;
+
+    if (to === 'c') return celsius;
+    if (to === 'k') return celsius + 273.15;
+    if (to === 'f') return (celsius * 9) / 5 + 32;
+    return celsius;
+  };
+
+  const populateUnitSelects = () => {
+    const cat = UNIT_DATA[currentCat];
+    if (!cat || !convFrom || !convTo) return;
+    const opts = cat.units
+      .map((u) => `<option value="${u.id}">${u.name}</option>`)
+      .join('');
+    convFrom.innerHTML = opts;
+    convTo.innerHTML = opts;
+    if (currentCat === 'length') {
+      convFrom.value = 'm';
+      convTo.value = 'cm';
+    } else if (currentCat === 'speed') {
+      convFrom.value = 'kmh';
+      convTo.value = 'ms';
+    } else if (cat.units.length > 1) {
+      convFrom.value = cat.units[0].id;
+      convTo.value = cat.units[1].id;
+    }
+    updateConversion();
+  };
+
+  const updateConversion = () => {
+    const cat = UNIT_DATA[currentCat];
+    if (!cat || !convInput || !convFrom || !convTo || !convOutput || !convFormula || !convAll) return;
+    const val = parseFloat(convInput.value) || 0;
+    const uFrom = cat.units.find((u) => u.id === convFrom.value) || cat.units[0];
+    const uTo = cat.units.find((u) => u.id === convTo.value) || cat.units[0];
+
+    let result = 0;
+    if (currentCat === 'temp') {
+      result = convertTemperature(val, uFrom.id, uTo.id);
+      convFormula.innerHTML = `Conversión térmica directa: <strong>${val} ${uFrom.symbol} = ${formatNum(result)} ${uTo.symbol}</strong>`;
+    } else {
+      const ratio = uFrom.factor / uTo.factor;
+      result = val * ratio;
+      convFormula.innerHTML = `Factor de conversión: <strong>1 ${uFrom.symbol} = ${formatNum(ratio)} ${uTo.symbol}</strong> · Multiplicamos por <code>${formatNum(ratio)}</code>`;
+    }
+
+    convOutput.textContent = formatNum(result);
+
+    // Tabla simultánea
+    convAll.innerHTML = cat.units
+      .map((u) => {
+        const v =
+          currentCat === 'temp'
+            ? convertTemperature(val, uFrom.id, u.id)
+            : (val * uFrom.factor) / u.factor;
+        const isCurrent = u.id === uTo.id;
+        return `
+          <div class="conv-cell ${isCurrent ? 'is-target' : ''}">
+            <span class="conv-cell-sym">${u.symbol}</span>
+            <strong class="conv-cell-val">${formatNum(v)}</strong>
+            <span class="conv-cell-name">${u.name}</span>
+          </div>
+        `;
+      })
+      .join('');
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-unit-cat]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentCat = btn.dataset.unitCat || 'length';
+      document.querySelectorAll('[data-unit-cat]').forEach((b) =>
+        b.classList.toggle('is-active', b === btn),
+      );
+      populateUnitSelects();
+    });
+  });
+
+  convInput?.addEventListener('input', updateConversion);
+  convFrom?.addEventListener('change', updateConversion);
+  convTo?.addEventListener('change', updateConversion);
+  convSwap?.addEventListener('click', () => {
+    if (!convFrom || !convTo) return;
+    const tmp = convFrom.value;
+    convFrom.value = convTo.value;
+    convTo.value = tmp;
+    updateConversion();
+  });
+
+  populateUnitSelects();
+
+  // =========================================================================
+  // 4. LÓGICA DE ESCALAS (1:E) Y REGLA DE TRES (DIRECTA / INVERSA)
+  // =========================================================================
+  const scaleE = document.querySelector<HTMLInputElement>('[data-scale-e]');
+  const scaleMap = document.querySelector<HTMLInputElement>('[data-scale-map]');
+  const scaleMapUnit = document.querySelector<HTMLSelectElement>('[data-scale-map-unit]');
+  const scaleReal = document.querySelector<HTMLInputElement>('[data-scale-real]');
+  const scaleRealUnit = document.querySelector<HTMLSelectElement>('[data-scale-real-unit]');
+  const scaleSummary = document.querySelector<HTMLElement>('[data-scale-summary]');
+
+  const updateScaleFromMap = () => {
+    if (!scaleE || !scaleMap || !scaleMapUnit || !scaleReal || !scaleRealUnit || !scaleSummary) return;
+    const E = parseFloat(scaleE.value) || 1;
+    const mapVal = parseFloat(scaleMap.value) || 0;
+    const mapFactor = parseFloat(scaleMapUnit.value) || 0.01;
+    const realFactor = parseFloat(scaleRealUnit.value) || 1;
+
+    const metersInReal = mapVal * mapFactor * E;
+    const realVal = metersInReal / realFactor;
+    scaleReal.value = Number(realVal.toPrecision(7)).toString();
+
+    scaleSummary.innerHTML = `
+      A escala <strong>1 : ${E.toLocaleString('es-ES')}</strong>, cada <strong>1 cm</strong> del plano equivale a
+      <strong>${formatNum((0.01 * E) / 1)} m</strong> (${formatNum((0.01 * E) / 1000)} km) en la realidad.
+    `;
+  };
+
+  const updateScaleFromReal = () => {
+    if (!scaleE || !scaleMap || !scaleMapUnit || !scaleReal || !scaleRealUnit) return;
+    const E = parseFloat(scaleE.value) || 1;
+    const realVal = parseFloat(scaleReal.value) || 0;
+    const mapFactor = parseFloat(scaleMapUnit.value) || 0.01;
+    const realFactor = parseFloat(scaleRealUnit.value) || 1;
+
+    const metersInReal = realVal * realFactor;
+    const mapVal = metersInReal / (E * mapFactor);
+    scaleMap.value = Number(mapVal.toPrecision(7)).toString();
+  };
+
+  scaleE?.addEventListener('input', updateScaleFromMap);
+  scaleMap?.addEventListener('input', updateScaleFromMap);
+  scaleMapUnit?.addEventListener('change', updateScaleFromMap);
+  scaleReal?.addEventListener('input', updateScaleFromReal);
+  scaleRealUnit?.addEventListener('change', updateScaleFromMap);
+
+  document.querySelectorAll<HTMLButtonElement>('[data-scale-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (scaleE) {
+        scaleE.value = btn.dataset.scalePreset || '100';
+        updateScaleFromMap();
+      }
+    });
+  });
+
+  updateScaleFromMap();
+
+  // Regla de tres directa e inversa
+  let propType: 'direct' | 'inverse' = 'direct';
+  const propA = document.querySelector<HTMLInputElement>('[data-prop-a]');
+  const propB = document.querySelector<HTMLInputElement>('[data-prop-b]');
+  const propC = document.querySelector<HTMLInputElement>('[data-prop-c]');
+  const propX = document.querySelector<HTMLElement>('[data-prop-x]');
+  const propSteps = document.querySelector<HTMLElement>('[data-prop-steps]');
+
+  const updateProportion = () => {
+    if (!propA || !propB || !propC || !propX || !propSteps) return;
+    const A = parseFloat(propA.value) || 0;
+    const B = parseFloat(propB.value) || 0;
+    const C = parseFloat(propC.value) || 0;
+
+    if (propType === 'direct') {
+      if (Math.abs(A) < 1e-12) {
+        propX.textContent = '—';
+        return;
+      }
+      const x = (B * C) / A;
+      const frac = toFraction(x, 10000);
+      const exactStr =
+        frac && frac.d > 1
+          ? `${renderVerticalFractionHtml(String(frac.n), String(frac.d))} ≈ ${formatNum(x)}`
+          : formatNum(x);
+      propX.innerHTML = exactStr;
+      propSteps.innerHTML = `
+        <strong>Proporcionalidad Directa:</strong>
+        ${renderVerticalFractionHtml(String(A), String(C))} = ${renderVerticalFractionHtml(String(B), 'x')}
+        &nbsp;⟹&nbsp;
+        x = ${renderVerticalFractionHtml(`${B} · ${C}`, String(A))} = <strong>${formatNum(x)}</strong>
+      `;
+    } else {
+      if (Math.abs(C) < 1e-12) {
+        propX.textContent = '—';
+        return;
+      }
+      const x = (A * B) / C;
+      const frac = toFraction(x, 10000);
+      const exactStr =
+        frac && frac.d > 1
+          ? `${renderVerticalFractionHtml(String(frac.n), String(frac.d))} ≈ ${formatNum(x)}`
+          : formatNum(x);
+      propX.innerHTML = exactStr;
+      propSteps.innerHTML = `
+        <strong>Proporcionalidad Inversa:</strong>
+        A₁ · B₁ = A₂ · x &nbsp;⟹&nbsp;
+        x = ${renderVerticalFractionHtml(`${A} · ${B}`, String(C))} = <strong>${formatNum(x)}</strong>
+      `;
+    }
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-prop-type]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      propType = (btn.dataset.propType as 'direct' | 'inverse') || 'direct';
+      document.querySelectorAll('[data-prop-type]').forEach((b) =>
+        b.classList.toggle('is-active', b === btn),
+      );
+      updateProportion();
+    });
+  });
+
+  [propA, propB, propC].forEach((inp) => inp?.addEventListener('input', updateProportion));
+  updateProportion();
+
+  // =========================================================================
+  // 5. LÓGICA DE M.C.D., m.c.m. Y COLUMNAS DE FACTORIZACIÓN PRIMA
+  // =========================================================================
+  const ntInput = document.querySelector<HTMLInputElement>('[data-nt-input]');
+  const ntCalcBtn = document.querySelector<HTMLButtonElement>('[data-nt-calc]');
+  const ntOutput = document.querySelector<HTMLElement>('[data-nt-output]');
+
+  const updateNumberTheory = () => {
+    if (!ntInput || !ntOutput) return;
+    const nums = ntInput.value
+      .split(/[\s,;]+/)
+      .map((s) => Math.abs(Math.trunc(Number(s))))
+      .filter((n) => Number.isFinite(n) && n >= 2 && n <= 999999999);
+
+    if (nums.length === 0) {
+      ntOutput.innerHTML = '<p class="nt-empty">Introduce al menos un número entero mayor o igual que 2.</p>';
+      return;
+    }
+
+    const totalGcd = nums.reduce((acc, n) => gcd(acc, n));
+    const totalLcm = nums.reduce((acc, n) => lcm(acc, n));
+    const coprime = nums.length >= 2 && totalGcd === 1;
+
+    const columnsHtml = nums
+      .map((n) => {
+        const info = factorizeInteger(n);
+        if (!info) return '';
+        const canonicalHtml = info.factors
+          .map((f) => (f.exponent > 1 ? `${f.prime}<sup class="m-sup">${f.exponent}</sup>` : `${f.prime}`))
+          .join(' · ');
+
+        const rowsHtml =
+          info.steps
+            .map(
+              (st) => `
+              <div class="board-row">
+                <span class="board-q">${st.quotient}</span>
+                <span class="board-d">${st.divisor}</span>
+              </div>
+            `,
+            )
+            .join('') +
+          `<div class="board-row"><span class="board-q">1</span><span class="board-d"></span></div>`;
+
+        return `
+          <div class="nt-factor-card">
+            <div class="nt-factor-head">
+              <strong>${n} = ${canonicalHtml}</strong>
+              <span>${info.isPrime ? 'Primo' : `${info.divisorsCount} divisores`}</span>
+            </div>
+            <div class="nt-board-col">
+              ${rowsHtml}
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    ntOutput.innerHTML = `
+      <div class="nt-summary-row">
+        <div class="nt-summary-box">
+          <span class="nt-sum-label">Máximo Común Divisor · M.C.D.(${nums.join(', ')})</span>
+          <strong class="nt-sum-val">${totalGcd.toLocaleString('es-ES')}</strong>
+          <small>Factores comunes elevados al menor exponente${coprime ? ' · ¡Son primos entre sí!' : ''}</small>
+        </div>
+        <div class="nt-summary-box">
+          <span class="nt-sum-label">Mínimo Común Múltiplo · m.c.m.(${nums.join(', ')})</span>
+          <strong class="nt-sum-val">${totalLcm.toLocaleString('es-ES')}</strong>
+          <small>Factores comunes y no comunes elevados al mayor exponente</small>
+        </div>
+      </div>
+
+      <div class="nt-columns-grid">
+        ${columnsHtml}
+      </div>
+    `;
+  };
+
+  ntCalcBtn?.addEventListener('click', updateNumberTheory);
+  ntInput?.addEventListener('input', updateNumberTheory);
+  document.querySelectorAll<HTMLButtonElement>('[data-nt-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (ntInput) {
+        ntInput.value = btn.dataset.ntPreset || '72, 108';
+        updateNumberTheory();
+      }
+    });
+  });
+
+  updateNumberTheory();
+</script>
+
+<style>
+  /* Cabecera de Herramientas */
+  .tools-header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2.2rem;
+    padding-top: 2.5rem;
+  }
+
+  .kicker {
+    color: var(--accent-ink);
+    font: 500 0.7rem var(--mono);
+    letter-spacing: 0.14em;
+    margin: 0 0 0.85rem;
+    text-transform: uppercase;
+  }
+
+  .tools-title-block h1 {
+    font-family: var(--display);
+    font-size: clamp(2.4rem, 4.8vw, 4.4rem);
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    font-weight: 650;
+    letter-spacing: -0.04em;
+    line-height: 0.96;
+    margin: 0 0 0.9rem;
+  }
+
+  .tools-title-block h1 em {
+    color: var(--serif-ink);
+    font-family: var(--serif);
+    font-stretch: 100%;
+    font-weight: 400;
+  }
+
+  .tools-lead {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.5;
+    margin: 0 0 2rem;
+    max-width: 44rem;
+  }
+
+  /* Pestañas del Banco de Trabajo */
+  .workbench-tabs {
+    background: var(--line);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .wb-tab {
+    align-items: flex-start;
+    background: var(--bg);
+    border: 0;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.15rem;
+    text-align: left;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .wb-tab:hover {
+    background: var(--bg-raised);
+    color: var(--ink);
+  }
+
+  .wb-tab.is-active {
+    background: var(--bg-raised);
+    box-shadow: inset 0 -2px 0 var(--accent);
+    color: var(--ink);
+  }
+
+  .wb-tab-num {
+    border: 1px solid var(--line-strong);
+    color: var(--accent-ink);
+    font: 600 0.64rem/1 var(--mono);
+    padding: 0.3rem 0.42rem;
+  }
+
+  .wb-tab.is-active .wb-tab-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .wb-tab-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+  }
+
+  .wb-tab-info strong {
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-stretch: 112%;
+    color: var(--ink);
+  }
+
+  .wb-tab-info small {
+    color: var(--muted);
+    font: 400 0.68rem/1.3 var(--mono);
+  }
+
+  .wb-panel {
+    display: none;
+    padding-top: 2.25rem;
+  }
+
+  .wb-panel.is-active {
+    display: block;
+  }
+
+  /* ========================================================================= */
+  /* ESTILOS DE CONVERSOR, ESCALAS Y TEORÍA DE NÚMEROS                         */
+  /* ========================================================================= */
+  .tool-module {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .module-head,
+  .prop-head {
+    align-items: flex-end;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .module-eyebrow {
+    color: var(--accent-ink);
+    display: block;
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.13em;
+    margin-bottom: 0.4rem;
+  }
+
+  .tool-module h2 {
+    font-family: var(--display);
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    margin: 0;
+  }
+
+  .tool-module h2 em {
+    color: var(--serif-ink);
+    font-family: var(--serif);
+    font-stretch: 100%;
+    font-weight: 400;
+  }
+
+  .unit-cat-pills,
+  .prop-mode-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .cat-pill {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 0.48rem 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .cat-pill.is-active,
+  .cat-pill:hover {
+    background: var(--invert-bg);
+    border-color: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .converter-grid {
+    align-items: center;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr auto 1fr;
+    margin-bottom: 1rem;
+  }
+
+  .conv-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1.1rem;
+  }
+
+  .conv-box.is-result {
+    border-color: var(--accent);
+  }
+
+  .conv-label {
+    color: var(--muted);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .conv-box input,
+  .conv-output {
+    background: transparent;
+    border: 0;
+    color: var(--ink-strong);
+    font: 700 1.85rem/1.1 var(--mono);
+    outline: none;
+    width: 100%;
+  }
+
+  .conv-output {
+    color: var(--accent-ink);
+  }
+
+  .conv-box select {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font: 500 0.8rem/1.2 var(--mono);
+    padding: 0.55rem 0.65rem;
+  }
+
+  .conv-swap-btn {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: var(--accent-ink);
+    cursor: pointer;
+    font-size: 1.25rem;
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .conv-swap-btn:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .conv-formula-bar {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font: 400 0.8rem/1.4 var(--mono);
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .table-title {
+    color: var(--muted);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    margin: 0 0 0.75rem;
+  }
+
+  .conv-all-grid {
+    background: var(--line);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  }
+
+  .conv-all-grid :global(.conv-cell) {
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .conv-all-grid :global(.conv-cell.is-target) {
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  }
+
+  .conv-all-grid :global(.conv-cell-sym) {
+    color: var(--accent-ink);
+    font: 600 0.65rem/1 var(--mono);
+  }
+
+  .conv-all-grid :global(.conv-cell-val) {
+    color: var(--ink-strong);
+    font: 700 1.15rem/1.2 var(--mono);
+  }
+
+  .conv-all-grid :global(.conv-cell-name) {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  /* Escalas y Proporciones */
+  .scales-split {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .module-desc {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 1.1rem;
+  }
+
+  .scale-presets,
+  .nt-presets {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font: 500 0.65rem/1 var(--mono);
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .scale-presets span,
+  .nt-presets span {
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scale-presets button,
+  .nt-presets button {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font: 500 0.65rem/1 var(--mono);
+    padding: 0.38rem 0.6rem;
+  }
+
+  .scale-presets button:hover,
+  .nt-presets button:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .scale-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .scale-field {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.75rem 1rem;
+  }
+
+  .scale-field label {
+    color: var(--muted);
+    display: block;
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .scale-ratio-input,
+  .scale-unit-row {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .scale-ratio-input span {
+    color: var(--accent-ink);
+    font: 700 1.25rem/1 var(--mono);
+  }
+
+  .scale-field input {
+    background: transparent;
+    border: 0;
+    color: var(--ink-strong);
+    flex: 1;
+    font: 700 1.25rem/1 var(--mono);
+    outline: none;
+    width: 100%;
+  }
+
+  .scale-field select {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font: 600 0.75rem/1 var(--mono);
+    padding: 0.4rem 0.6rem;
+  }
+
+  .scale-explanation,
+  .prop-resolution {
+    background: var(--bg-sunken);
+    border-left: 3px solid var(--accent);
+    color: var(--ink-soft);
+    font: 400 0.85rem/1.55 var(--mono);
+    padding: 0.85rem 1rem;
+  }
+
+  .prop-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .prop-row {
+    align-items: center;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .prop-arrow {
+    color: var(--accent-ink);
+    font: 700 1.2rem/1 var(--mono);
+  }
+
+  .prop-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .prop-box.is-unknown {
+    border-color: var(--accent);
+  }
+
+  .prop-box span {
+    color: var(--muted);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prop-box input,
+  .prop-x-val {
+    background: transparent;
+    border: 0;
+    color: var(--ink-strong);
+    font: 700 1.35rem/1.1 var(--mono);
+    outline: none;
+    width: 100%;
+  }
+
+  .prop-x-val {
+    color: var(--accent-ink);
+  }
+
+  /* M.C.D. y m.c.m. */
+  .nt-input-bar {
+    margin-bottom: 1.5rem;
+  }
+
+  .nt-input-bar label {
+    color: var(--muted);
+    display: block;
+    font: 500 0.75rem/1.4 var(--mono);
+    margin-bottom: 0.5rem;
+  }
+
+  .nt-input-group {
+    display: flex;
+    gap: 0.65rem;
+  }
+
+  .nt-input-group input {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-strong);
+    flex: 1;
+    font: 700 1.2rem/1 var(--mono);
+    outline: none;
+    padding: 0.75rem 1rem;
+  }
+
+  .nt-calc-btn {
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+    cursor: pointer;
+    font: 700 0.72rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    padding: 0 1.5rem;
+  }
+
+  .nt-results :global(.nt-summary-row) {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 1.5rem;
+  }
+
+  .nt-results :global(.nt-summary-box) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.15rem;
+  }
+
+  .nt-results :global(.nt-sum-label) {
+    color: var(--accent-ink);
+    font: 600 0.66rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .nt-results :global(.nt-sum-val) {
+    color: var(--ink-strong);
+    font: 700 2rem/1.1 var(--mono);
+  }
+
+  .nt-results :global(.nt-summary-box small) {
+    color: var(--muted);
+    font-size: 0.76rem;
+  }
+
+  .nt-results :global(.nt-columns-grid) {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  }
+
+  .nt-results :global(.nt-factor-card) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 1rem;
+  }
+
+  .nt-results :global(.nt-factor-head) {
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    font: 600 0.85rem/1.3 var(--mono);
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .nt-results :global(.nt-factor-head span) {
+    color: var(--accent-ink);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+  }
+
+  .nt-results :global(.nt-board-col) {
+    font: 500 0.92rem/1.45 var(--mono);
+  }
+
+  .nt-results :global(.board-row) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nt-results :global(.board-q) {
+    border-right: 2px solid var(--accent-ink);
+    padding-right: 0.75rem;
+    text-align: right;
+  }
+
+  .nt-results :global(.board-d) {
+    color: var(--accent-ink);
+    font-weight: 700;
+    padding-left: 0.75rem;
+  }
+
+  .footer-bottom {
+    align-items: center;
+    display: flex;
+    font: 500 0.68rem/1 var(--mono);
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .footer-bottom a {
+    color: var(--accent-ink);
+    text-decoration: none;
+  }
+
+  @media (max-width: 960px) {
+    .workbench-tabs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .converter-grid,
+    .scales-split,
+    .nt-results :global(.nt-summary-row) {
+      grid-template-columns: 1fr;
+    }
+
+    .topbar-nav,
+    .status {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .workbench-tabs {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Modo Ventana Flotante Independiente (?pip=1) para Safari/Firefox o Popup de escritorio */
+  :global(body.is-pip-standalone) :global(.topbar-shell),
+  :global(body.is-pip-standalone) .tools-header,
+  :global(body.is-pip-standalone) .section-eyebrow,
+  :global(body.is-pip-standalone) .section-rule,
+  :global(body.is-pip-standalone) .tick,
+  :global(body.is-pip-standalone) .footer-section,
+  :global(body.is-pip-standalone) :global(.calc-sidebar) {
+    display: none !important;
+  }
+
+  :global(body.is-pip-standalone) .section-frame {
+    border: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  :global(body.is-pip-standalone) .workbench-panels,
+  :global(body.is-pip-standalone) .wb-panel.is-active {
+    padding: 0 !important;
+  }
+
+  :global(body.is-pip-standalone) :global(.calc-workbench) {
+    display: block !important;
+  }
+
+  :global(body.is-pip-standalone) :global(.calc-chassis) {
+    border: 0 !important;
+    box-shadow: none !important;
+    min-height: 100vh;
+  }
+</style>

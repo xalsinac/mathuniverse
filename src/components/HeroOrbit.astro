@@ -1,29 +1,84 @@
 ---
 import { resources } from '../data/resources';
 import MathGlyph from './MathGlyph.astro';
+
+// En getartcraft.com hay entre 36 y 40 tarjetas poblando los 6 brazos de la espiral (y ~14 en móvil).
+// Generamos 27 nodos (3 por cada uno de los 9 recursos) repartidos de forma entrelazada (round-robin)
+// para que la espiral se vea densa, viva y equilibrada, deduplicando dinámicamente para evitar gemelos juntos.
+const NODES_COUNT = 27;
+const orbitNodes = Array.from({ length: NODES_COUNT }, (_, idx) => {
+  const resource = resources[idx % resources.length];
+  return {
+    nodeIndex: idx,
+    resourceIndex: idx % resources.length,
+    ...resource,
+  };
+});
 ---
-<div class="hero-orbit" data-orbit-system aria-label="Accesos directos a proyectos">
+
+<div class="hero-orbit" data-orbit-system aria-label="Galaxia interactiva de proyectos y recursos">
   <canvas class="orbit-canvas" data-orbit-canvas aria-hidden="true"></canvas>
-  <div class="orbit-core" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M12 69 43 15l12 20 12-20 21 54h-13l-8-21-12 21-12-21-18 31H12Z"/></svg></div>
+
+  <!-- Velo radial sutil tras el centro tipográfico (HeroScrim) -->
+  <div class="orbit-scrim" aria-hidden="true"></div>
+
+  <!-- Iconos viajando por los brazos de la espiral -->
   <div class="orbit-items">
-    {resources.slice(0, 7).map((resource, index) => <a class="orbit-item" href={resource.href} data-orbit-item data-index={index} style={`--accent:${resource.color}`} aria-label={`Abrir ${resource.name}`} title={resource.name}>
-      <span class="orbit-item-icon"><MathGlyph type={resource.icon} /></span><span class="orbit-item-name">{resource.name}</span>
-    </a>)}
+    {
+      orbitNodes.map((node) => (
+        <a
+          class="orbit-item"
+          href={node.href}
+          target={node.href.startsWith('http') ? '_blank' : undefined}
+          rel={node.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+          data-orbit-item
+          data-node-index={node.nodeIndex}
+          data-resource-index={node.resourceIndex}
+          data-resource-id={node.id}
+          data-resource-name={node.name}
+          data-resource-accent={node.accentWord}
+          data-resource-rest={node.restWord ?? ''}
+          style={`--accent:${node.color}`}
+          aria-label={`Abrir ${node.name}`}
+        >
+          <span class="orbit-item-icon">
+            <MathGlyph type={node.icon} />
+          </span>
+        </a>
+      ))
+    }
   </div>
+
+  <!-- Etiqueta flotante tipo HUD (como el hud-label de getartcraft) -->
+  <p class="orbit-hud-label" data-orbit-label aria-hidden="true"></p>
 </div>
 
-<div class="intro-screen" data-intro aria-hidden="true"><div class="intro-mark"><svg viewBox="0 0 100 100"><path d="M12 69 43 15l12 20 12-20 21 54h-13l-8-21-12 21-12-21-18 31H12Z"/></svg></div><p>Math <span>Universe</span></p></div>
+<div class="intro-screen" data-intro aria-hidden="true">
+  <div class="intro-mark">
+    <svg viewBox="0 0 100 100">
+      <path d="M12 69 43 15l12 20 12-20 21 54h-13l-8-21-12 21-12-21-18 31H12Z"></path>
+    </svg>
+  </div>
+  <p><em class="intro-math">Math</em> <span>Universe</span></p>
+</div>
 
 <script>
   const intro = document.querySelector<HTMLElement>('[data-intro]');
   const system = document.querySelector<HTMLElement>('[data-orbit-system]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  let introStartTime = performance.now();
+
   if (intro && !reduceMotion) {
     document.documentElement.classList.add('intro-running');
-    window.setTimeout(() => intro.classList.add('intro-wordmark'), 430);
-    window.setTimeout(() => { intro.classList.add('intro-out'); document.documentElement.classList.remove('intro-running'); document.documentElement.classList.add('hero-ready'); }, 1150);
-    window.setTimeout(() => intro.remove(), 1700);
+    window.setTimeout(() => intro.classList.add('intro-wordmark'), 380);
+    window.setTimeout(() => {
+      intro.classList.add('intro-out');
+      document.documentElement.classList.remove('intro-running');
+      document.documentElement.classList.add('hero-ready');
+      introStartTime = performance.now();
+    }, 1050);
+    window.setTimeout(() => intro.remove(), 1600);
   } else {
     intro?.remove();
     document.documentElement.classList.add('hero-ready');
@@ -31,93 +86,859 @@ import MathGlyph from './MathGlyph.astro';
 
   if (system) {
     const canvas = system.querySelector<HTMLCanvasElement>('[data-orbit-canvas]');
-    const items = [...system.querySelectorAll<HTMLElement>('[data-orbit-item]')];
-    const context = canvas?.getContext('2d');
-    if (canvas && context) {
-      type Orbiter = { element: HTMLElement; angle: number; radius: number; ratio: number; color: string; phase: number; tilt: number; arcOffset: number };
-      const orbiters: Orbiter[] = items.map((element, index) => ({
-        element, angle: (Math.PI * 2 * index) / items.length - .55, radius: .30 + (index % 3) * .115, ratio: .56 + (index % 2) * .16,
-        color: getComputedStyle(element).getPropertyValue('--accent').trim(), phase: index * 1.71, tilt: -.25 + (index % 3) * .14, arcOffset: index * .91,
+    const labelEl = system.querySelector<HTMLElement>('[data-orbit-label]');
+    const itemEls = [...system.querySelectorAll<HTMLAnchorElement>('[data-orbit-item]')];
+    const ctx = canvas?.getContext('2d');
+
+    if (canvas && ctx && itemEls.length) {
+      // Parámetros del sistema Galaxy (clonados del Tuner de getartcraft.com)
+      const GALAXY = {
+        armsDesktop: 6,
+        armsMobile: 3,
+        turnsDesktop: 1.05,
+        turnsMobile: 0.72,
+        rMaxFracDesktop: 0.72,
+        rMaxFracMobile: 0.82,
+        birthFrac: 0.045,
+        armJitter: 0.76,
+        ticksPerArm: 16,
+        circFrac: 0.56,
+        idleSpeed: 0.52,       // Ciclos completos por minuto en reposo
+        scrubPer1kPx: 0.22,    // Avance del conveyor por cada 1000px de scroll
+        spinDegPerMin: -46,    // Rotación global de la espiral (grados por minuto)
+        wobbleAmp: 7,          // Flotación orgánica (px)
+        wobbleFreq: 0.25,      // Frecuencia de flotación (Hz)
+        fieldPx: 300,          // Radio de atracción magnética del cursor (px)
+        tugPx: 10,             // Desplazamiento magnético hacia el cursor (px)
+        holdTau: 0.15,         // Freno rápido de la tarjeta bajo el cursor (s)
+        restTau: 0.95,         // Freno progresivo del resto de la galaxia (s)
+        holdWobble: 1.25,      // Multiplicador de wobble cuando la galaxia está retenida
+        boostScale: 1.24,      // Escala extra al hacer hover
+        innerCap: 0.62,        // Tamaño relativo al nacer en el centro vs borde exterior
+        fadeBand: 0.07,        // Fracción inicial del viaje donde aparece por opacidad
+        blurEnd: 0.09,         // Fracción inicial del viaje donde se enfoca
+        keepPad: 0,            // Sin margen inflado extra alrededor del texto
+        keepBandDesktop: 24,   // Transición corta y ajustada al texto central (px)
+        keepBandMobile: 12,
+        keepScale: 0.86,       // Escala inicial al emerger del bolsillo del texto
+        labelGap: 14,          // Separación de la etiqueta HUD bajo el icono (px)
+        introDur: 2.8,         // Duración de la onda expansiva inicial (s)
+        burstX: 2.8,           // Multiplicador de velocidad durante el arranque
+        burstDur: 2.2,
+        pulseSpeed: 0.2,       // Velocidad de los cometas de luz por los brazos
+        pulseCount: 3,         // Cometas simultáneos por brazo
+        pulseWidth: 0.055,     // Longitud del cometa
+      };
+
+      const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+      const wrap01 = (v: number) => ((v % 1) + 1) % 1;
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+      const smoothstep = (edge0: number, edge1: number, x: number) => {
+        const t = clamp01((x - edge0) / Math.max(1e-5, edge1 - edge0));
+        return t * t * (3 - 2 * t);
+      };
+
+      const ARM_PALETTE_DARK = ['#4d94ff', '#64a5ff', '#a78bfa', '#38c8ff', '#ff8a5b', '#3fe0b5'];
+      const ARM_PALETTE_LIGHT = ['#2563eb', '#1d4ed8', '#4f46e5', '#0284c7', '#334155', '#0f766e'];
+
+      // Campo estelar determinista (polvo cósmico y estrellas tintineantes detrás de las órbitas)
+      type Star = {
+        angle: number;
+        distFrac: number;
+        size: number;
+        baseAlpha: number;
+        twinkleSpeed: number;
+        twinklePhase: number;
+        colorIdx: number;
+        isCross: boolean;
+        parallax: number;
+      };
+
+      const STAR_COLORS_DARK = ['#ffffff', '#dce8ff', '#93c5fd', '#c4b5fd', '#7dd3fc', '#fde68a'];
+      const STAR_COLORS_LIGHT = ['#1e3a8a', '#334155', '#1d4ed8', '#4338ca', '#0369a1', '#475569'];
+
+      const STAR_COUNT = 168;
+      const stars: Star[] = Array.from({ length: STAR_COUNT }, (_, i) => {
+        // Secuencia de baja discrepancia (Halton / áurea) para repartir estrellas con naturalidad sin grumos artificiales
+        const h1 = (i * 0.6180339887) % 1;
+        const h2 = (i * 0.3819660112 + 0.17) % 1;
+        const h3 = (i * 0.7548776662 + 0.43) % 1;
+
+        // Concentrar ligeramente un 35% de las estrellas siguiendo la curvatura de los brazos y el resto en el campo profundo
+        const armCluster = i % 3 === 0 ? ((i % 6) * Math.PI * 2) / 6 + h2 * Math.PI * 1.4 : h1 * Math.PI * 2;
+        const distFrac = 0.08 + Math.pow(h2, 0.78) * 0.92;
+        const isBright = i % 14 === 0;
+
+        return {
+          angle: armCluster + (h3 - 0.5) * 0.45,
+          distFrac,
+          size: isBright ? 1.95 + h3 * 0.85 : 0.8 + h1 * 1.25,
+          baseAlpha: isBright ? 0.68 + h2 * 0.32 : 0.22 + h3 * 0.48,
+          twinkleSpeed: 0.7 + h1 * 2.1,
+          twinklePhase: i * 2.39996,
+          colorIdx: i % STAR_COLORS_DARK.length,
+          isCross: isBright,
+          parallax: isBright ? 0.38 : 0.18 + h2 * 0.15,
+        };
+      });
+
+      type NodeState = {
+        el: HTMLAnchorElement;
+        index: number;
+        resourceIndex: number;
+        name: string;
+        accentWord: string;
+        restWord: string;
+        color: string;
+        arm: number;
+        slot: number;
+        holdOffset: number;
+        journey: number;
+        localX: number;
+        localY: number;
+        screenX: number;
+        screenY: number;
+        currentSize: number;
+        targetWeight: number;
+        keepFactor: number;
+        visible: boolean;
+      };
+
+      const nodes: NodeState[] = itemEls.map((el, idx) => ({
+        el,
+        index: idx,
+        resourceIndex: Number(el.dataset.resourceIndex ?? 0),
+        name: el.dataset.resourceName ?? 'Proyecto',
+        accentWord: el.dataset.resourceAccent ?? el.dataset.resourceName ?? 'Proyecto',
+        restWord: el.dataset.resourceRest ?? '',
+        color: getComputedStyle(el).getPropertyValue('--accent').trim() || '#4d94ff',
+        arm: 0,
+        slot: 0,
+        holdOffset: 0,
+        journey: 0,
+        localX: 0,
+        localY: 0,
+        screenX: 0,
+        screenY: 0,
+        currentSize: 48,
+        targetWeight: 0,
+        keepFactor: 1,
+        visible: true,
       }));
-      let width = 0, height = 0, dpr = 1, hovered: Orbiter | undefined, last = performance.now(), scrollBoost = 0, previousScrollY = window.scrollY;
-      const resize = () => { const box = system.getBoundingClientRect(); width = box.width; height = box.height; dpr = Math.min(window.devicePixelRatio || 1, 2); canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = `${width}px`; canvas.style.height = `${height}px`; context.setTransform(dpr, 0, 0, dpr, 0, 0); };
-      new ResizeObserver(resize).observe(system); resize();
-      const drawOrbitArc = (cx: number, cy: number, orbiter: Orbiter, base: number) => {
-        const radius = base * orbiter.radius;
-        const start = orbiter.arcOffset;
-        const end = start + Math.PI / 3;
-        const segments = 14;
-        context.save();
-        context.translate(cx, cy);
-        context.rotate(orbiter.tilt);
-        // Varios pequeños trazos permiten que el arco se desvanezca por ambos extremos.
-        for (let index = 0; index < segments; index += 1) {
-          const progress = (index + .5) / segments;
-          const density = Math.pow(Math.sin(Math.PI * progress), 1.55);
-          const segmentStart = start + (end - start) * index / segments;
-          const segmentEnd = start + (end - start) * (index + 1) / segments;
-          context.beginPath();
-          context.ellipse(0, 0, radius, radius * orbiter.ratio, 0, segmentStart, segmentEnd);
-          context.strokeStyle = orbiter.color;
-          context.globalAlpha = .16 * density;
-          context.lineWidth = 4;
-          context.shadowBlur = 0;
-          context.stroke();
-          context.beginPath();
-          context.ellipse(0, 0, radius, radius * orbiter.ratio, 0, segmentStart, segmentEnd);
-          context.globalAlpha = .88 * density;
-          context.lineWidth = 1;
-          context.shadowBlur = 0;
-          context.stroke();
+
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let isMobile = false;
+      let activeCount = nodes.length;
+      let arms = GALAXY.armsDesktop;
+      let slotsPerArm = Math.ceil(activeCount / arms);
+      let rMax = 500;
+      let thetaMax = GALAXY.turnsDesktop * Math.PI * 2;
+      let thetaBirth = GALAXY.birthFrac * thetaMax;
+      let thetaExit = thetaMax * 1.35;
+      let spiralB = 100;
+      let baseTileSize = 58;
+      let keepW = 220;
+      let keepH = 160;
+      let centerOffsetY = 0;
+
+      const pointer = {
+        x: 0,
+        y: 0,
+        active: false,
+        hoveredNode: -1,
+      };
+
+      const sim = {
+        time: 0,
+        idleP: 0,
+        lastP: 0,
+        spin: 0,
+        holdTarget: 0,
+        holdRest: 0,
+        fieldK: 1,
+        lastFrame: performance.now(),
+        onScreen: true,
+      };
+
+      // Calcular geometría de la espiral y del bolsillo de exclusión alrededor del texto del Hero
+      const updateLayout = () => {
+        const box = system.getBoundingClientRect();
+        width = Math.max(1, box.width);
+        height = Math.max(1, box.height);
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const mpx = (width * height) / 1e6;
+        isMobile = width < 760 || mpx < 0.55;
+        arms = isMobile ? GALAXY.armsMobile : GALAXY.armsDesktop;
+        activeCount = isMobile ? 14 : nodes.length;
+        slotsPerArm = Math.max(1, Math.ceil(activeCount / arms));
+
+        const halfDiag = Math.hypot(width, height) / 2;
+        const rMaxFrac = isMobile ? GALAXY.rMaxFracMobile : GALAXY.rMaxFracDesktop;
+        const turns = isMobile ? GALAXY.turnsMobile : GALAXY.turnsDesktop;
+
+        rMax = rMaxFrac * halfDiag;
+        thetaMax = turns * Math.PI * 2;
+        spiralB = rMax / thetaMax;
+        baseTileSize = Math.min(84, Math.max(52, height * (isMobile ? 0.086 : 0.102)));
+        thetaBirth = GALAXY.birthFrac * thetaMax;
+        thetaExit = (halfDiag + 1.5 * baseTileSize) / spiralB;
+
+        // Medir el bloque tipográfico del Hero para crear el "keep-out pocket"
+        const heroSection = system.closest('.hero');
+        const heroContent = heroSection?.querySelector<HTMLElement>('.hero-content');
+        if (heroContent) {
+          const h1 = heroContent.querySelector<HTMLElement>('h1');
+          const introBlock = heroContent.querySelector<HTMLElement>('.hero-intro');
+          const contentRect = heroContent.getBoundingClientRect();
+          const h1Rect = h1?.getBoundingClientRect();
+          const introRect = introBlock?.getBoundingClientRect();
+
+          const textW = Math.max(h1Rect?.width ?? 0, introRect?.width ?? 0, 280);
+          const textTop = h1Rect ? h1Rect.top - box.top : contentRect.top - box.top + 60;
+          const textBottom = introRect ? introRect.bottom - box.top : contentRect.bottom - box.top - 40;
+          const textH = Math.max(180, textBottom - textTop);
+
+          keepW = Math.min(width * 0.21, textW * 0.28);
+          keepH = Math.min(height * 0.19, textH * 0.27);
+          centerOffsetY = (textTop + textBottom) / 2 - height / 2;
+          // Limitar desvío vertical del centro de la galaxia
+          centerOffsetY = Math.max(-height * 0.05, Math.min(height * 0.05, centerOffsetY));
+        } else {
+          keepW = width * 0.15;
+          keepH = height * 0.15;
+          centerOffsetY = 0;
         }
-        context.restore();
-      };
-      const render = (now: number, delta = 0) => {
-        // El ángulo disminuye porque el eje Y del lienzo crece hacia abajo: así la órbita es antihoraria en pantalla.
-        const restingSpeed = hovered ? .000035 : .000115;
-        scrollBoost *= Math.pow(.994, delta / 16);
-        const speed = restingSpeed + scrollBoost;
-        orbiters.forEach((orbiter, index) => {
-          orbiter.angle -= speed * delta * (1 + (index % 3) * .055);
-          orbiter.arcOffset -= speed * delta * (1.08 + (index % 2) * .05);
-        });
-        const cx = width / 2, cy = height / 2, base = Math.min(width, height);
-        context.clearRect(0, 0, width, height);
-        orbiters.forEach((orbiter) => drawOrbitArc(cx, cy, orbiter, base));
-        orbiters.forEach((orbiter) => {
-          const wobble = hovered && orbiter !== hovered ? Math.sin(now / 880 + orbiter.phase) * .016 : 0;
-          const a = orbiter.angle + wobble;
-          const r = base * orbiter.radius;
-          const x = cx + Math.cos(a) * r * Math.cos(orbiter.tilt) - Math.sin(a) * r * orbiter.ratio * Math.sin(orbiter.tilt);
-          const y = cy + Math.cos(a) * r * Math.sin(orbiter.tilt) + Math.sin(a) * r * orbiter.ratio * Math.cos(orbiter.tilt);
-          const scale = orbiter === hovered ? 1.2 : 1 + Math.sin(now / 1700 + orbiter.phase) * .025;
-          const outOfView = x < -width * .12 || x > width * 1.12 || y < -height * .14 || y > height * 1.14;
-          orbiter.element.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%) scale(${scale})`;
-          orbiter.element.style.opacity = outOfView ? '0' : '1';
-          orbiter.element.style.pointerEvents = outOfView ? 'none' : 'auto';
+
+        nodes.forEach((node, idx) => {
+          node.arm = idx % arms;
+          node.slot = Math.floor(idx / arms);
+          node.visible = idx < activeCount;
+          if (!node.visible) {
+            node.el.style.opacity = '0';
+            node.el.style.pointerEvents = 'none';
+          }
         });
       };
-      const frame = (now: number) => {
-        const delta = Math.min(now - last, 32); last = now;
-        render(now, delta);
-        requestAnimationFrame(frame);
+
+      // Dibujar el sustrato geométrico: círculo de construcción discontinuo, brazos en espiral, marcas (ticks) y cometas de luz
+      const drawUnderlay = (cx: number, cy: number, waveRadius: number, introAlpha: number) => {
+        ctx.clearRect(0, 0, width, height);
+        if (introAlpha <= 0.005) return;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        const isLight = document.documentElement.dataset.theme === 'light';
+        const palette = isLight ? ARM_PALETTE_LIGHT : ARM_PALETTE_DARK;
+        const starPalette = isLight ? STAR_COLORS_LIGHT : STAR_COLORS_DARK;
+        const armBaseStroke = isLight ? 'rgba(20, 21, 26, 0.045)' : 'rgba(165, 168, 182, 0.036)';
+        const tickStroke = isLight ? 'rgba(20, 21, 26, 0.06)' : 'rgba(195, 198, 210, 0.045)';
+
+        // Función auxiliar para atenuar suavemente sólo el núcleo estricto del título
+        const getPocketMask = (x: number, y: number): number => {
+          const nx = Math.abs(x) / Math.max(1, keepW * 0.85);
+          const ny = Math.abs(y) / Math.max(1, keepH * 0.85);
+          return smoothstep(0.45, 1.0, Math.hypot(nx, ny));
+        };
+
+        // 0. Campo de estrellas de fondo (gira más despacio que los brazos para crear profundidad / paralaje)
+        const maxStarR = Math.hypot(width, height) * 0.54;
+        const starCount = isMobile ? 90 : STAR_COUNT;
+        const scrollStarShift = window.scrollY * 0.00025;
+
+        for (let i = 0; i < starCount; i++) {
+          const st = stars[i];
+          const r = st.distFrac * maxStarR;
+          if (r > waveRadius * 1.15) continue;
+
+          const ang = st.angle + sim.spin * st.parallax - scrollStarShift * st.parallax;
+          const sx = r * Math.cos(ang);
+          const sy = r * Math.sin(ang);
+
+          // Atenuar estrellas en el bolsillo central para que el título del Hero sea siempre cristalino
+          const pocketFade = getPocketMask(sx, sy);
+          if (pocketFade < 0.02) continue;
+
+          // Parpadeo (twinkle) sinusoidal suave
+          const twinkle =
+            0.58 + 0.42 * Math.sin(sim.time * st.twinkleSpeed + st.twinklePhase);
+          const alpha =
+            st.baseAlpha *
+            twinkle *
+            pocketFade *
+            introAlpha *
+            (isLight ? 0.65 : 1.15);
+
+          if (alpha < 0.03) continue;
+
+          ctx.fillStyle = starPalette[st.colorIdx];
+          ctx.globalAlpha = Math.min(1, alpha);
+
+          ctx.beginPath();
+          ctx.arc(sx, sy, st.size, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Destello sutil en cruz para las estrellas principales cuando están cerca de su pico de brillo
+          if (st.isCross && twinkle > 0.68) {
+            const flareLen = st.size * (2.8 + twinkle * 1.9);
+            ctx.strokeStyle = starPalette[st.colorIdx];
+            ctx.lineWidth = 0.85;
+            ctx.globalAlpha = Math.min(1, alpha * 0.65);
+            ctx.beginPath();
+            ctx.moveTo(sx - flareLen, sy);
+            ctx.lineTo(sx + flareLen, sy);
+            ctx.moveTo(sx, sy - flareLen);
+            ctx.lineTo(sx, sy + flareLen);
+            ctx.stroke();
+          }
+        }
+
+        // 1. Brazos de la espiral de Arquímedes ultra-sutiles (estilo ArtCraft)
+        const steps = 140;
+        const tStart = 0.42 * thetaBirth;
+        const tSpan = thetaExit - tStart;
+
+        for (let armIdx = 0; armIdx < arms; armIdx++) {
+          const armAngleOffset = (armIdx * Math.PI * 2) / arms;
+          const pulseColor = palette[armIdx % palette.length];
+
+          // Trazado base del brazo (casi imperceptible y oculto en la zona central del texto)
+          for (let s = 0; s < steps; s++) {
+            const frac0 = s / steps;
+            const frac1 = (s + 1) / steps;
+            const theta0 = tStart + frac0 * tSpan;
+            const theta1 = tStart + frac1 * tSpan;
+            const r0 = spiralB * theta0;
+            const r1 = spiralB * theta1;
+            if (r0 > waveRadius) break;
+
+            const a0 = -theta0 + armAngleOffset + sim.spin;
+            const a1 = -theta1 + armAngleOffset + sim.spin;
+            const x0 = r0 * Math.cos(a0);
+            const y0 = r0 * Math.sin(a0);
+            const x1 = r1 * Math.cos(a1);
+            const y1 = r1 * Math.sin(a1);
+
+            const pocketFade = getPocketMask((x0 + x1) * 0.5, (y0 + y1) * 0.5);
+            if (pocketFade < 0.02) continue;
+
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.strokeStyle = armBaseStroke;
+            ctx.lineWidth = 0.85;
+            ctx.globalAlpha = introAlpha * pocketFade;
+            ctx.stroke();
+
+            // Brillo de color muy tenue y fino a lo largo de la órbita (como en la captura de ArtCraft)
+            const d = wrap01(
+              frac0 * GALAXY.pulseCount - sim.time * GALAXY.pulseSpeed + armIdx * 0.618034,
+            );
+            const delta = d - 0.5;
+            const sigma = GALAXY.pulseWidth * (delta < 0 ? 1.8 : 0.65);
+            let g = Math.exp(-0.5 * (delta / sigma) * (delta / sigma));
+            g *= smoothstep(0.12, 0.28, frac0);
+            g *= clamp01((waveRadius - r0) / 180);
+
+            if (g > 0.05) {
+              ctx.beginPath();
+              ctx.moveTo(x0, y0);
+              ctx.lineTo(x1, y1);
+              ctx.strokeStyle = pulseColor;
+              ctx.lineWidth = 1.05;
+              ctx.globalAlpha = 0.22 * g * pocketFade * introAlpha;
+              ctx.stroke();
+            }
+          }
+
+          // 2. Marcas transversales (ticks) muy tenues solo en la periferia exterior
+          for (let k = 0; k < GALAXY.ticksPerArm; k++) {
+            const theta = thetaMax * (0.48 + (0.52 * (k + 0.5)) / GALAXY.ticksPerArm);
+            const r = spiralB * theta;
+            if (r > waveRadius) continue;
+            const ang = -theta + armAngleOffset + sim.spin;
+            const cosA = Math.cos(ang);
+            const sinA = Math.sin(ang);
+            const tx = r * cosA;
+            const ty = r * sinA;
+            const pocketFade = getPocketMask(tx, ty);
+            if (pocketFade < 0.05) continue;
+
+            ctx.beginPath();
+            ctx.moveTo((r - 3.2) * cosA, (r - 3.2) * sinA);
+            ctx.lineTo((r + 3.2) * cosA, (r + 3.2) * sinA);
+            ctx.strokeStyle = tickStroke;
+            ctx.lineWidth = 0.8;
+            ctx.globalAlpha = introAlpha * pocketFade;
+            ctx.stroke();
+          }
+        }
+
+        ctx.restore();
       };
-      const accelerateOnScroll = () => {
-        const movement = window.scrollY - previousScrollY;
-        if (movement > 0) scrollBoost = Math.min(.00095, scrollBoost + movement * .0000038);
-        previousScrollY = window.scrollY;
+
+      const renderFrame = (now: number) => {
+        const dt = Math.min((now - sim.lastFrame) / 1000, 0.05) || 0.016;
+        sim.lastFrame = now;
+        sim.time += dt;
+
+        const introElapsed = Math.max(0, (now - introStartTime) / 1000);
+        const waveLinear = reduceMotion ? 1 : clamp01(introElapsed / GALAXY.introDur);
+        const waveEased = easeOutCubic(waveLinear);
+        const burstLinear = reduceMotion ? 1 : clamp01(introElapsed / GALAXY.burstDur);
+        const speedBurst = 1 + (GALAXY.burstX - 1) * (1 - easeOutCubic(burstLinear));
+
+        // Avance del conveyor en reposo + rotación global
+        if (!reduceMotion) {
+          sim.idleP += (dt * GALAXY.idleSpeed * speedBurst) / 60;
+          sim.spin +=
+            (dt * ((GALAXY.spinDegPerMin * Math.PI) / 180)) / 60 * (1 - sim.holdRest);
+        }
+
+        // El scroll empuja o rebobina físicamente los iconos a lo largo de la espiral
+        const totalConveyorP = sim.idleP + (window.scrollY * GALAXY.scrubPer1kPx) / 1000;
+        const deltaP = totalConveyorP - sim.lastP;
+        sim.lastP = totalConveyorP;
+
+        const hasTarget = pointer.hoveredNode >= 0;
+        sim.holdTarget +=
+          ((hasTarget ? 1 : 0) - sim.holdTarget) *
+          (1 - Math.exp(-dt / Math.max(0.01, GALAXY.holdTau)));
+        sim.holdRest +=
+          ((hasTarget ? 1 : 0) - sim.holdRest) *
+          (1 - Math.exp(-dt / Math.max(0.01, GALAXY.restTau)));
+        sim.fieldK += ((hasTarget ? 0 : 1) - sim.fieldK) * (1 - Math.exp(-dt / 0.12));
+
+        const cx = width / 2;
+        const cy = height / 2 + centerOffsetY;
+        const cosSpin = Math.cos(sim.spin);
+        const sinSpin = Math.sin(sim.spin);
+        const rollChunkOffset = -0.1 * (1 - waveEased);
+
+        // 1. Calcular posición en la espiral, flotación (wobble) y tirón magnético del cursor (tug)
+        for (let i = 0; i < activeCount; i++) {
+          const node = nodes[i];
+          const holdFactor =
+            i === pointer.hoveredNode
+              ? Math.max(sim.holdTarget, sim.holdRest)
+              : sim.holdRest;
+          node.holdOffset -= deltaP * holdFactor;
+
+          const journey = Math.max(
+            0,
+            wrap01(
+              (node.slot + 0.5 + node.arm * GALAXY.armJitter) / slotsPerArm +
+                totalConveyorP +
+                node.holdOffset,
+            ) + rollChunkOffset,
+          );
+          node.journey = journey;
+
+          const theta = thetaBirth + journey * (thetaExit - thetaBirth);
+          const radius = spiralB * theta;
+          const armAngle = -theta + (node.arm * Math.PI * 2) / arms;
+          const cosA = Math.cos(armAngle);
+          const sinA = Math.sin(armAngle);
+
+          // Flotación orgánica en el espacio
+          const wobbleAmp =
+            GALAXY.wobbleAmp *
+            (1 + (GALAXY.holdWobble - 1) * sim.holdRest) *
+            (1 - node.targetWeight);
+          const wx = Math.sin(sim.time * GALAXY.wobbleFreq * Math.PI * 2 + 2.399 * i);
+          const wy = Math.cos(sim.time * GALAXY.wobbleFreq * Math.PI * 1.4 + 1.713 * i);
+
+          let lx = radius * cosA + wobbleAmp * (-wx * sinA + 0.6 * wy * cosA);
+          let ly = radius * sinA + wobbleAmp * (wx * cosA + 0.6 * wy * sinA);
+
+          // Atracción magnética hacia el cursor dentro de fieldPx
+          if (pointer.active && GALAXY.tugPx > 0 && sim.fieldK > 0.001) {
+            const sx = cosSpin * lx - sinSpin * ly;
+            const sy = sinSpin * lx + cosSpin * ly;
+            const dx = pointer.x - sx;
+            const dy = pointer.y - sy;
+            const distSq = dx * dx + dy * dy;
+            const pull =
+              (GALAXY.tugPx *
+                Math.exp(-distSq / (GALAXY.fieldPx * GALAXY.fieldPx)) *
+                sim.fieldK *
+                (1 - node.targetWeight)) /
+              Math.max(1, Math.sqrt(distSq));
+            lx += (cosSpin * dx + sinSpin * dy) * pull;
+            ly += (-sinSpin * dx + cosSpin * dy) * pull;
+          }
+
+          node.localX = lx;
+          node.localY = ly;
+          node.screenX = cosSpin * lx - sinSpin * ly;
+          node.screenY = sinSpin * lx + cosSpin * ly;
+        }
+
+        // 2. Actualizar cada elemento DOM: escala por distancia a vecinos, bolsillo keep-out del Hero, desenfoque y opacidad
+        const waveRadius = waveEased * spiralB * thetaExit;
+        const keepBand = isMobile ? GALAXY.keepBandMobile : GALAXY.keepBandDesktop;
+
+        for (let i = 0; i < activeCount; i++) {
+          const node = nodes[i];
+          const isHovered = i === pointer.hoveredNode;
+          node.targetWeight +=
+            ((isHovered ? 1 : 0) - node.targetWeight) * (1 - Math.exp(-dt / 0.18));
+
+          // Calcular distancia al vecino más cercano para nunca colisionar (collision-free sizing)
+          let minNeighborDist = Infinity;
+          for (let j = 0; j < activeCount; j++) {
+            if (i === j) continue;
+            const d = Math.hypot(
+              nodes[j].screenX - node.screenX,
+              nodes[j].screenY - node.screenY,
+            );
+            if (d < minNeighborDist) minNeighborDist = d;
+          }
+
+          const radialCap =
+            baseTileSize * (GALAXY.innerCap + (1 - GALAXY.innerCap) * node.journey);
+          const targetSize = Math.min(radialCap, minNeighborDist * 0.88);
+          node.currentSize += (targetSize - node.currentSize) * (1 - Math.exp(-6 * dt));
+
+          const boost = 1 + (GALAXY.boostScale - 1) * node.targetWeight;
+          const finalSize = Math.max(24, node.currentSize) * boost;
+
+          // Elipse ajustada sólo al núcleo central para aprovechar las órbitas internas sin dejar huecos vacíos
+          const normEllip = Math.hypot(
+            node.screenX / Math.max(1, keepW),
+            node.screenY / Math.max(1, keepH),
+          );
+          const sdfKeepOut = (normEllip - 0.82) * Math.min(keepW, keepH);
+          const keepFactor = smoothstep(-keepBand * 0.6, keepBand * 0.6, sdfKeepOut);
+          node.keepFactor = keepFactor;
+
+          const birthAlpha = clamp01(node.journey / GALAXY.fadeBand);
+          const rPos = spiralB * (thetaBirth + node.journey * (thetaExit - thetaBirth));
+          const waveFactor = clamp01((waveRadius - rPos) / 180);
+
+          // Descarte suave al salir por los bordes de la pantalla
+          const px = cx + node.screenX;
+          const py = cy + node.screenY;
+          const edgeMargin = finalSize * 0.8;
+          const inViewport =
+            px > -edgeMargin &&
+            px < width + edgeMargin &&
+            py > -edgeMargin &&
+            py < height + edgeMargin;
+
+          const alpha = inViewport ? birthAlpha * waveFactor * keepFactor : 0;
+          const pocketScale = GALAXY.keepScale + (1 - GALAXY.keepScale) * keepFactor;
+          const scaleRatio = (finalSize / 56) * pocketScale;
+
+          // Desenfoque de nacimiento (nebula softness) y al emerger del texto central, que se limpia al hacer hover
+          const birthBlur = (1 - smoothstep(0, GALAXY.blurEnd, node.journey)) * 6;
+          const pocketBlur = (1 - keepFactor) * 7;
+          const blurPx = Math.max(birthBlur, pocketBlur) * (1 - node.targetWeight);
+
+          node.el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translate(-50%, -50%) scale(${scaleRatio.toFixed(3)})`;
+          node.el.style.opacity = alpha.toFixed(3);
+          node.el.style.filter = blurPx > 0.35 ? `blur(${blurPx.toFixed(1)}px)` : 'none';
+          node.el.style.pointerEvents = alpha > 0.35 ? 'auto' : 'none';
+          node.el.style.zIndex = isHovered
+            ? '10'
+            : String(Math.round(node.journey * 5) + 1);
+        }
+
+        // 3. Dibujar canvas de fondo y posicionar la etiqueta HUD flotante bajo el icono activo
+        drawUnderlay(cx, cy, waveRadius, clamp01(introElapsed / 1.1));
+
+        if (labelEl) {
+          if (pointer.hoveredNode >= 0) {
+            const hn = nodes[pointer.hoveredNode];
+            const px = cx + hn.screenX;
+            const py =
+              cy +
+              hn.screenY +
+              (hn.currentSize * GALAXY.boostScale) / 2 +
+              GALAXY.labelGap;
+            labelEl.innerHTML = `<span style="color:${hn.color}">${hn.accentWord}</span>${hn.restWord}`;
+            labelEl.style.opacity = '1';
+            labelEl.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0) translateX(-50%)`;
+          } else {
+            labelEl.style.opacity = '0';
+          }
+        }
+
+        if (sim.onScreen && !reduceMotion) {
+          requestAnimationFrame(renderFrame);
+        }
       };
-      items.forEach((element, index) => { element.addEventListener('pointerenter', () => { hovered = orbiters[index]; system.classList.add('is-paused'); }); element.addEventListener('pointerleave', () => { hovered = undefined; system.classList.remove('is-paused'); }); });
-      window.addEventListener('scroll', accelerateOnScroll, { passive: true });
-      if (reduceMotion) render(performance.now());
-      else requestAnimationFrame(frame);
+
+      // Eventos de puntero sobre el contenedor del Hero y sobre cada icono
+      const heroEl = system.closest<HTMLElement>('.hero') ?? system;
+      heroEl.addEventListener(
+        'pointermove',
+        (ev) => {
+          const box = system.getBoundingClientRect();
+          pointer.x = ev.clientX - box.left - width / 2;
+          pointer.y = ev.clientY - box.top - (height / 2 + centerOffsetY);
+          pointer.active = true;
+        },
+        { passive: true },
+      );
+
+      heroEl.addEventListener('pointerleave', () => {
+        pointer.active = false;
+        pointer.hoveredNode = -1;
+        system.classList.remove('is-holding');
+      });
+
+      itemEls.forEach((el, idx) => {
+        el.addEventListener('pointerenter', () => {
+          pointer.hoveredNode = idx;
+          pointer.active = true;
+          system.classList.add('is-holding');
+        });
+        el.addEventListener('pointerleave', () => {
+          if (pointer.hoveredNode === idx) {
+            pointer.hoveredNode = -1;
+            system.classList.remove('is-holding');
+          }
+        });
+        el.addEventListener('click', (ev) => {
+          const href = el.getAttribute('href');
+          const resId = el.dataset.resourceId;
+          if (href === '#' && resId) {
+            ev.preventDefault();
+            window.dispatchEvent(
+              new CustomEvent('select-resource', { detail: { id: resId, scroll: true } }),
+            );
+          }
+        });
+      });
+
+      // Pausar bucle cuando el Hero sale completamente de la pantalla para ahorrar CPU/GPU
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          const wasOn = sim.onScreen;
+          sim.onScreen = entry.isIntersecting;
+          if (!wasOn && sim.onScreen && !reduceMotion) {
+            sim.lastFrame = performance.now();
+            requestAnimationFrame(renderFrame);
+          }
+        },
+        { rootMargin: '300px 0px' },
+      );
+      io.observe(system);
+
+      new ResizeObserver(updateLayout).observe(system);
+      updateLayout();
+
+      window.addEventListener('themechange', () => {
+        if (reduceMotion) renderFrame(performance.now());
+      });
+
+      if (reduceMotion) {
+        renderFrame(performance.now());
+      } else {
+        requestAnimationFrame(renderFrame);
+      }
     }
   }
 </script>
 
 <style>
-  .hero-orbit { inset:0; overflow:hidden; pointer-events:none; position:absolute; z-index:0; }.orbit-canvas { height:100%; inset:0; pointer-events:none; position:absolute; width:100%; }.orbit-core { color:#f3f2ec; filter:drop-shadow(0 0 1.5rem rgba(255,255,255,.14)); height:clamp(5rem,9vw,8rem); left:50%; position:absolute; top:51%; transform:translate(-50%,-50%); width:clamp(5rem,9vw,8rem); }.orbit-core svg,.intro-mark svg { fill:currentColor; height:100%; width:100%; }.orbit-items { inset:0; pointer-events:none; position:absolute; }.orbit-item { align-items:center; background:rgba(23,24,30,.92); border:1px solid color-mix(in srgb,var(--accent) 56%,#555 44%); border-radius:.85rem; box-shadow:0 0 1.6rem color-mix(in srgb,var(--accent) 27%,transparent); color:var(--accent); cursor:pointer; display:flex; height:clamp(2.9rem,4.5vw,4.2rem); justify-content:center; left:0; pointer-events:auto; position:absolute; text-decoration:none; top:0; transition:box-shadow .35s ease,background .35s ease; width:clamp(2.9rem,4.5vw,4.2rem); will-change:transform,opacity; }.orbit-item:hover,.orbit-item:focus-visible { background:color-mix(in srgb,var(--accent) 15%,#17181e); box-shadow:0 0 2.6rem color-mix(in srgb,var(--accent) 70%,transparent); z-index:2; }.orbit-item-icon { display:block; height:48%; width:48%; }.orbit-item :global(.math-glyph) { height:100%; width:100%; }.orbit-item-name { background:#121319; border:1px solid color-mix(in srgb,var(--accent) 40%,transparent); color:var(--ink); font:500 .62rem/1 var(--mono); left:calc(100% + .55rem); letter-spacing:.04em; opacity:0; padding:.5rem .6rem; pointer-events:none; position:absolute; text-transform:uppercase; transform:translateX(-.4rem); transition:opacity .18s,transform .18s; white-space:nowrap; }.orbit-item:hover .orbit-item-name,.orbit-item:focus-visible .orbit-item-name { opacity:1; transform:none; }.is-paused .orbit-item:not(:hover) { filter:saturate(.8); }
-  .intro-screen { align-items:center; background:#101116; color:#f3f2ec; display:flex; flex-direction:column; inset:0; justify-content:center; position:fixed; transition:opacity .55s ease,visibility .55s ease; z-index:20; }.intro-screen.intro-out { opacity:0; visibility:hidden; }.intro-mark { height:clamp(4rem,9vw,7rem); transition:transform .55s cubic-bezier(.16,1,.3,1); width:clamp(4rem,9vw,7rem); }.intro-screen p { font:600 clamp(.9rem,2vw,1.35rem)/1 var(--mono); letter-spacing:.12em; margin:1.4rem 0 0; opacity:0; text-transform:uppercase; transform:translateY(.5rem); transition:opacity .4s ease,transform .4s ease; }.intro-screen p span { color:#8e909a; font-weight:400; }.intro-wordmark .intro-mark { transform:scale(.64); }.intro-wordmark p { opacity:1; transform:none; }
-  @media (max-width:760px) { .orbit-core { top:43%; }.orbit-item { border-radius:.7rem; }.orbit-item-name { display:none; }.hero-orbit { opacity:.83; } }
-  @media (prefers-reduced-motion:reduce) { .intro-screen { display:none; } }
+  .hero-orbit {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  .orbit-canvas {
+    height: 100%;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  /* Velo protector de contraste detrás de la tipografía del Hero (como HeroScrim en getartcraft) */
+  .orbit-scrim {
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--bg) 82%, transparent) 38%,
+      transparent 100%
+    );
+    height: min(64vh, 520px);
+    left: 50%;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(74vw, 760px);
+  }
+
+  .orbit-items {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .orbit-item {
+    align-items: center;
+    background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 56%, var(--line-strong) 44%);
+    border-radius: 0.72rem;
+    box-shadow:
+      0 6px 22px color-mix(in srgb, var(--accent) 28%, rgba(0, 0, 0, 0.16)),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    color: var(--accent);
+    cursor: pointer;
+    display: flex;
+    height: 3.5rem;
+    justify-content: center;
+    left: 0;
+    pointer-events: auto;
+    position: absolute;
+    text-decoration: none;
+    top: 0;
+    transition:
+      box-shadow 0.25s ease,
+      background 0.25s ease,
+      border-color 0.25s ease;
+    width: 3.5rem;
+    will-change: transform, opacity, filter;
+  }
+
+  :global(:root[data-theme='light']) .orbit-item {
+    background: color-mix(in srgb, var(--accent) 14%, #181a22);
+    border-color: color-mix(in srgb, var(--accent) 68%, #181a22);
+    box-shadow:
+      0 8px 20px -4px rgba(20, 21, 26, 0.24),
+      0 3px 10px color-mix(in srgb, var(--accent) 32%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .orbit-item:hover,
+  .orbit-item:focus-visible {
+    background: color-mix(in srgb, var(--accent) 22%, #16171d);
+    border-color: var(--accent);
+    box-shadow:
+      0 8px 32px color-mix(in srgb, var(--accent) 65%, transparent),
+      0 0 1px 1px var(--accent);
+  }
+
+  .orbit-item-icon {
+    display: block;
+    height: 60%;
+    width: 60%;
+  }
+
+  .orbit-item :global(.math-glyph) {
+    height: 100%;
+    width: 100%;
+  }
+
+  /* Etiqueta HUD centralizada para el icono sobre el que está el cursor */
+  .orbit-hud-label {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+    font: 700 0.64rem/1 var(--mono);
+    left: 0;
+    letter-spacing: 0.1em;
+    margin: 0;
+    opacity: 0;
+    padding: 0.38rem 0.55rem;
+    pointer-events: none;
+    position: absolute;
+    text-transform: uppercase;
+    top: 0;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+    will-change: transform, opacity;
+    z-index: 15;
+  }
+
+  .intro-screen {
+    align-items: center;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    inset: 0;
+    justify-content: center;
+    position: fixed;
+    transition:
+      opacity 0.55s ease,
+      visibility 0.55s ease;
+    z-index: 40;
+  }
+
+  .intro-screen.intro-out {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .intro-mark {
+    height: clamp(4rem, 9vw, 7rem);
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    width: clamp(4rem, 9vw, 7rem);
+  }
+
+  .intro-mark svg {
+    fill: currentColor;
+    height: 100%;
+    width: 100%;
+  }
+
+  .intro-screen p {
+    font: 600 clamp(0.9rem, 2vw, 1.35rem) / 1 var(--mono);
+    letter-spacing: 0.12em;
+    margin: 1.4rem 0 0;
+    opacity: 0;
+    text-transform: uppercase;
+    transform: translateY(0.5rem);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+
+  .intro-screen p .intro-math {
+    color: var(--accent-ink);
+    font-style: normal;
+  }
+
+  .intro-screen p span {
+    color: #8e909a;
+    font-weight: 400;
+  }
+
+  .intro-wordmark .intro-mark {
+    transform: scale(0.64);
+  }
+
+  .intro-wordmark p {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 760px) {
+    .orbit-item {
+      border-radius: 0.6rem;
+    }
+    .orbit-hud-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro-screen {
+      display: none;
+    }
+  }
 </style>

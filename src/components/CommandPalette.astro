@@ -1,0 +1,565 @@
+---
+import { resources } from '../data/resources';
+import { selectividadExams, MODALITIES } from '../data/selectividad';
+import { GYM_LEVELS, GYM_BRANCHES } from '../data/gym';
+import { craftProjects } from '../data/craft';
+
+// Construimos el índice de búsqueda global para el Command Palette (⌘K / Ctrl+K)
+const appItems = resources.map((r) => ({
+  id: `app-${r.id}`,
+  category: 'Aplicaciones y Recursos',
+  title: r.name,
+  subtitle: r.description,
+  badge: r.href !== '#' ? 'ONLINE' : 'FICHA',
+  color: r.color,
+  href: r.href !== '#' ? r.href : `/#recurso-${r.id}`,
+  resourceId: r.id,
+  external: r.href.startsWith('http'),
+}));
+
+const toolItems = [
+  {
+    id: 'tool-calc',
+    category: 'Herramientas Matemáticas',
+    title: 'Calculadora Científica Natural Display',
+    subtitle: 'Fracciones verticales a/b, botón S⇔D, descomposición prima FACT y trigonometría',
+    badge: '09 · CALC',
+    color: '#e68aff',
+    href: '/herramientas?tab=calculator',
+    external: false,
+  },
+  {
+    id: 'tool-quad',
+    category: 'Herramientas Matemáticas',
+    title: 'Resolutor de Ecuaciones de 2.º Grado (ax² + bx + c = 0)',
+    subtitle: 'Raíces exactas con radicales, discriminante Δ, vértice y desarrollo paso a paso',
+    badge: '09 · ÁLGEBRA',
+    color: '#e68aff',
+    href: '/herramientas?tab=calculator&mode=quad',
+    external: false,
+  },
+  {
+    id: 'tool-graph',
+    category: 'Herramientas Matemáticas',
+    title: 'Graficador de Funciones 2D f(x) y g(x)',
+    subtitle: 'Representación gráfica interactiva, raíces, máximos/mínimos, intersecciones y tabla de valores',
+    badge: '09 · GRÁFICAS',
+    color: '#38c8ff',
+    href: '/herramientas?tab=grapher',
+    external: false,
+  },
+  {
+    id: 'tool-conv',
+    category: 'Herramientas Matemáticas',
+    title: 'Conversor de Unidades (S.I.)',
+    subtitle: 'Longitud, superficie, volumen, capacidad, masa, velocidad, ángulos y temperatura',
+    badge: '09 · UNIDADES',
+    color: '#3fe0b5',
+    href: '/herramientas?tab=converter',
+    external: false,
+  },
+  {
+    id: 'tool-scales',
+    category: 'Herramientas Matemáticas',
+    title: 'Calculadora de Escalas (1:E) y Regla de Tres',
+    subtitle: 'Conversión plano ↔ realidad y proporcionalidad directa e inversa con fracciones verticales',
+    badge: '09 · ESCALAS',
+    color: '#ffc14d',
+    href: '/herramientas?tab=scales',
+    external: false,
+  },
+  {
+    id: 'tool-nt',
+    category: 'Herramientas Matemáticas',
+    title: 'M.C.D., m.c.m. y Factorización en Pizarra',
+    subtitle: 'Descomposición en números primos en columna vertical y cálculo de divisores',
+    badge: '09 · DIVISORES',
+    color: '#b48cff',
+    href: '/herramientas?tab=numbertheory',
+    external: false,
+  },
+];
+
+const pauYears = [...new Set(selectividadExams.map((e) => e.year))].sort((a, b) => b - a);
+const pauItems = [
+  {
+    id: 'pau-sim',
+    category: 'Selectividad · PAU',
+    title: 'Estación de Simulacro Oficial PAU (Cronómetro 90 min)',
+    subtitle: 'Practica con cuenta atrás oficial de 1h 30m y examen aleatorio',
+    badge: 'PAU · 90M',
+    color: '#7ea3ff',
+    href: '/selectividad',
+    external: false,
+  },
+  ...pauYears.flatMap((year) => [
+    {
+      id: `pau-ciencias-${year}`,
+      category: 'Selectividad · PAU',
+      title: `PAU ${year} · ${MODALITIES.ciencias.name}`,
+      subtitle: `Junio (Sèrie 1 y 2) y Septiembre · Enunciados y correcciones de ${year}`,
+      badge: `MAT-II · ${year}`,
+      color: '#4d94ff',
+      href: `/selectividad?modality=ciencias&year=${year}`,
+      external: false,
+    },
+    {
+      id: `pau-ccss-${year}`,
+      category: 'Selectividad · PAU',
+      title: `PAU ${year} · ${MODALITIES.ccss.name}`,
+      subtitle: `Junio (Sèrie 1 y 2) y Septiembre · Enunciados y correcciones de ${year}`,
+      badge: `MACS-II · ${year}`,
+      color: '#38c8ff',
+      href: `/selectividad?modality=ccss&year=${year}`,
+      external: false,
+    },
+  ]),
+];
+
+const gymItems = [
+  {
+    id: 'gym-live',
+    category: 'Math Gym · Ejercicios',
+    title: 'Estación de Series Rápidas en Vivo',
+    subtitle: 'Generador instantáneo de ejercicios aleatorios con solución paso a paso desplegable',
+    badge: '04 · GYM',
+    color: '#3fe0b5',
+    href: '/gym#entrenamiento-en-vivo',
+    external: false,
+  },
+  ...GYM_LEVELS.map((lvl) => ({
+    id: `gym-level-${lvl.id}`,
+    category: 'Math Gym · Ejercicios',
+    title: `Ejercicios y problemas de ${lvl.name} (${lvl.stage})`,
+    subtitle: `Hojas de problemas para descargar y visor de ejercicios de ${lvl.short}`,
+    badge: lvl.short,
+    color: '#3fe0b5',
+    href: `/gym?level=${lvl.id}`,
+    external: false,
+  })),
+  ...GYM_BRANCHES.map((br) => ({
+    id: `gym-branch-${br.id}`,
+    category: 'Math Gym · Ejercicios',
+    title: `Bloque: ${br.name}`,
+    subtitle: `Temas: ${br.subtopics.slice(0, 4).join(', ')}...`,
+    badge: br.symbol,
+    color: br.color,
+    href: `/gym?branch=${br.id}`,
+    external: false,
+  })),
+];
+
+const craftItems = craftProjects.map((p) => ({
+  id: `craft-${p.id}`,
+  category: 'Math Craft · Juegos',
+  title: p.title,
+  subtitle: `${p.authorType === 'student' ? '🎒 Alumno' : '👨‍🏫 Xavier Alsina'} · ${p.description}`,
+  badge: p.authorType === 'student' ? 'ALUMNO' : 'PROFESOR',
+  color: p.color,
+  href: p.url !== '#' ? p.url : `/craft#game-${p.id}`,
+  external: p.url.startsWith('http'),
+}));
+
+const searchIndex = [...toolItems, ...appItems, ...gymItems, ...craftItems, ...pauItems];
+---
+
+<!-- Modal Buscador Global (Command Palette · ⌘K / Ctrl+K) -->
+<div class="cmd-backdrop" data-cmd-backdrop hidden aria-hidden="true">
+  <div
+    class="cmd-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Buscador rápido de Math Universe"
+  >
+    <div class="cmd-search-bar">
+      <svg
+        class="cmd-search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+      <input
+        type="search"
+        class="cmd-input"
+        data-cmd-input
+        placeholder="Buscar herramienta, app, ecuación, gráfica o año de Selectividad..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="button" class="cmd-esc-btn" data-cmd-close title="Cerrar (Esc)">
+        ESC
+      </button>
+    </div>
+
+    <div class="cmd-results" data-cmd-results role="listbox"></div>
+
+    <div class="cmd-footer">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> Navegar</span>
+      <span><kbd>↵ Enter</kbd> Abrir</span>
+      <span><kbd>Esc</kbd> Cerrar</span>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ searchIndex }}>
+  window.__MATH_UNIVERSE_CMD_INDEX__ = searchIndex;
+</script>
+
+<script>
+  interface CmdItem {
+    id: string;
+    category: string;
+    title: string;
+    subtitle: string;
+    badge: string;
+    color: string;
+    href: string;
+    resourceId?: string;
+    external: boolean;
+  }
+
+  const indexData: CmdItem[] =
+    (window as unknown as { __MATH_UNIVERSE_CMD_INDEX__: CmdItem[] })
+      .__MATH_UNIVERSE_CMD_INDEX__ || [];
+
+  const backdrop = document.querySelector<HTMLElement>('[data-cmd-backdrop]');
+  const input = document.querySelector<HTMLInputElement>('[data-cmd-input]');
+  const resultsEl = document.querySelector<HTMLElement>('[data-cmd-results]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-cmd-close]');
+  const openTriggers = document.querySelectorAll<HTMLElement>('[data-cmd-open]');
+
+  let isOpen = false;
+  let activeIdx = 0;
+  let filteredItems: CmdItem[] = [];
+
+  const normalize = (str: string) =>
+    str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const activateItem = (item: CmdItem) => {
+    closePalette();
+    // Si estamos en la home y el item apunta a una ficha de #recurso-xxx, seleccionarla suavemente
+    if (item.resourceId && item.href.startsWith('/#recurso-')) {
+      if (window.location.pathname === '/' || window.location.pathname === '') {
+        window.dispatchEvent(
+          new CustomEvent('select-resource', { detail: { id: item.resourceId, scroll: true } }),
+        );
+        return;
+      }
+    }
+    if (item.external) {
+      window.open(item.href, '_blank', 'noopener,noreferrer');
+    } else {
+      window.location.href = item.href;
+    }
+  };
+
+  const renderResults = () => {
+    if (!resultsEl) return;
+    const q = normalize(input?.value || '').trim();
+
+    if (!q) {
+      // Vista inicial sugerida (herramientas + principales apps + últimos años PAU)
+      filteredItems = indexData.slice(0, 14);
+    } else {
+      const terms = q.split(/\s+/);
+      filteredItems = indexData.filter((item) => {
+        const hay = normalize(`${item.title} ${item.subtitle} ${item.category} ${item.badge}`);
+        return terms.every((t) => hay.includes(t));
+      });
+    }
+
+    if (activeIdx >= filteredItems.length) activeIdx = 0;
+
+    if (!filteredItems.length) {
+      resultsEl.innerHTML = `<div class="cmd-empty">No hay resultados para "${input?.value}". Prueba con "calculadora", "funciones", "escalas" o "2025".</div>`;
+      return;
+    }
+
+    let lastCat = '';
+    let html = '';
+
+    filteredItems.forEach((item, idx) => {
+      if (item.category !== lastCat) {
+        lastCat = item.category;
+        html += `<div class="cmd-cat-label">${lastCat}</div>`;
+      }
+      const isSelected = idx === activeIdx;
+      html += `
+        <button
+          type="button"
+          role="option"
+          aria-selected="${isSelected}"
+          class="cmd-item ${isSelected ? 'is-selected' : ''}"
+          data-cmd-idx="${idx}"
+          style="--item-color: ${item.color}"
+        >
+          <span class="cmd-item-dot" aria-hidden="true"></span>
+          <div class="cmd-item-main">
+            <strong class="cmd-item-title">${item.title}</strong>
+            <span class="cmd-item-sub">${item.subtitle}</span>
+          </div>
+          <span class="cmd-item-badge">${item.badge}</span>
+        </button>
+      `;
+    });
+
+    resultsEl.innerHTML = html;
+
+    resultsEl.querySelectorAll<HTMLButtonElement>('[data-cmd-idx]').forEach((btn) => {
+      btn.addEventListener('pointerenter', () => {
+        activeIdx = Number(btn.dataset.cmdIdx || 0);
+        resultsEl.querySelectorAll('.cmd-item').forEach((el, i) => {
+          el.classList.toggle('is-selected', i === activeIdx);
+        });
+      });
+      btn.addEventListener('click', () => {
+        const item = filteredItems[Number(btn.dataset.cmdIdx || 0)];
+        if (item) activateItem(item);
+      });
+    });
+
+    const selectedEl = resultsEl.querySelector<HTMLElement>('.cmd-item.is-selected');
+    selectedEl?.scrollIntoView({ block: 'nearest' });
+  };
+
+  const openPalette = () => {
+    if (!backdrop) return;
+    isOpen = true;
+    backdrop.hidden = false;
+    backdrop.setAttribute('aria-hidden', 'false');
+    activeIdx = 0;
+    if (input) {
+      input.value = '';
+      renderResults();
+      window.setTimeout(() => input.focus(), 20);
+    }
+  };
+
+  const closePalette = () => {
+    if (!backdrop) return;
+    isOpen = false;
+    backdrop.hidden = true;
+    backdrop.setAttribute('aria-hidden', 'true');
+  };
+
+  openTriggers.forEach((btn) => btn.addEventListener('click', openPalette));
+  closeBtn?.addEventListener('click', closePalette);
+
+  backdrop?.addEventListener('click', (ev) => {
+    if (ev.target === backdrop) closePalette();
+  });
+
+  input?.addEventListener('input', () => {
+    activeIdx = 0;
+    renderResults();
+  });
+
+  window.addEventListener('keydown', (ev) => {
+    if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k') {
+      ev.preventDefault();
+      if (isOpen) closePalette();
+      else openPalette();
+      return;
+    }
+
+    if (!isOpen) return;
+
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      closePalette();
+    } else if (ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      if (filteredItems.length) {
+        activeIdx = (activeIdx + 1) % filteredItems.length;
+        renderResults();
+      }
+    } else if (ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      if (filteredItems.length) {
+        activeIdx = (activeIdx - 1 + filteredItems.length) % filteredItems.length;
+        renderResults();
+      }
+    } else if (ev.key === 'Enter') {
+      ev.preventDefault();
+      const current = filteredItems[activeIdx];
+      if (current) activateItem(current);
+    }
+  });
+</script>
+
+<style>
+  .cmd-backdrop {
+    align-items: flex-start;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(8, 9, 13, 0.72);
+     inset: 0;
+    display: flex;
+    justify-content: center;
+    padding: clamp(3.5rem, 10vh, 6.5rem) 1rem 2rem;
+    position: fixed;
+    z-index: 120;
+  }
+
+  .cmd-backdrop[hidden] {
+    display: none;
+  }
+
+  .cmd-dialog {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 28px 70px -15px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    max-height: min(560px, 80vh);
+     max-width: 640px;
+    width: 100%;
+  }
+
+  .cmd-search-bar {
+    align-items: center;
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .cmd-search-icon {
+    color: var(--accent-ink);
+    flex-shrink: 0;
+    height: 1.15rem;
+    width: 1.15rem;
+  }
+
+  .cmd-input {
+    background: transparent;
+    border: 0;
+    color: var(--ink-strong);
+    flex: 1;
+    font: 500 0.95rem/1.3 var(--sans);
+    outline: none;
+    width: 100%;
+  }
+
+  .cmd-input::placeholder {
+    color: var(--muted);
+  }
+
+  .cmd-esc-btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .cmd-results {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .cmd-results :global(.cmd-cat-label) {
+    color: var(--muted);
+    font: 600 0.58rem/1 var(--mono);
+    letter-spacing: 0.14em;
+    padding: 0.65rem 0.65rem 0.35rem;
+    text-transform: uppercase;
+  }
+
+  .cmd-results :global(.cmd-item) {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    gap: 0.8rem;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .cmd-results :global(.cmd-item.is-selected) {
+    background: var(--bg-sunken);
+    border-color: var(--line-strong);
+  }
+
+  .cmd-results :global(.cmd-item-dot) {
+    background: var(--item-color, var(--accent));
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--item-color, var(--accent));
+    flex-shrink: 0;
+    height: 0.5rem;
+    width: 0.5rem;
+  }
+
+  .cmd-results :global(.cmd-item-main) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
+  }
+
+  .cmd-results :global(.cmd-item-title) {
+    color: var(--ink-strong);
+    font: 600 0.88rem/1.25 var(--sans);
+  }
+
+  .cmd-results :global(.cmd-item-sub) {
+    color: var(--muted);
+    font-size: 0.76rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cmd-results :global(.cmd-item-badge) {
+    border: 1px solid var(--line);
+    color: var(--accent-ink);
+    flex-shrink: 0;
+    font: 600 0.58rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 0.28rem 0.48rem;
+    text-transform: uppercase;
+  }
+
+  .cmd-results :global(.cmd-empty) {
+    color: var(--muted);
+    font-size: 0.88rem;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .cmd-footer {
+    align-items: center;
+    background: var(--bg-sunken);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    display: flex;
+    font: 500 0.62rem/1 var(--mono);
+    gap: 1.25rem;
+    padding: 0.6rem 1.1rem;
+  }
+
+  .cmd-footer kbd {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font: 600 0.58rem/1 var(--mono);
+    padding: 0.15rem 0.35rem;
+  }
+</style>

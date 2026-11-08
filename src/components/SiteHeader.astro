@@ -1,0 +1,333 @@
+---
+import LogoMark from './LogoMark.astro';
+import CommandPalette from './CommandPalette.astro';
+
+interface Props {
+  activePage?: 'home' | 'selectividad' | 'herramientas' | 'gym' | 'craft';
+  statusText?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+const {
+  activePage = 'home',
+  statusText = 'En construcción',
+  ctaHref = '/#recursos',
+  ctaLabel = 'Explorar Apps',
+} = Astro.props;
+
+const isHome = activePage === 'home';
+---
+
+<header class="topbar-shell">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-brand">
+        <LogoMark />
+      </div>
+      <nav class="topbar-nav" aria-label="Navegación principal">
+        <a href={isHome ? '#inicio' : '/'} class:list={{ 'is-active': isHome }}>
+          <span>{isHome ? 'Inicio' : '← Inicio'}</span>
+        </a>
+        <a href={isHome ? '#recursos' : '/#recursos'}>
+          <span>Recursos</span>
+        </a>
+        <a href={isHome ? '#universo' : '/#universo'}>
+          <span>El proyecto</span>
+        </a>
+        <a href={isHome ? '#principios' : '/#principios'}>
+          <span>Principios</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="topbar-right">
+      <!-- Slot opcional para widgets específicos de página (ej. el cronómetro compacto en Selectividad) -->
+      <slot name="right-extra" />
+
+      {
+        statusText && (
+          <span class="topbar-cell status">
+            <i></i>
+            <span>{statusText}</span>
+          </span>
+        )
+      }
+
+      <!-- Botón Buscador Global (Command Palette · ⌘K / Ctrl+K) -->
+      <button
+        type="button"
+        class="topbar-cell cmd-trigger"
+        data-cmd-open
+        aria-label="Abrir buscador rápido (⌘K o Ctrl+K)"
+        title="Buscar aplicación, herramienta o examen (⌘K / Ctrl+K)"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <span class="cmd-trigger-text">Buscar</span>
+        <kbd class="cmd-kbd">⌘K</kbd>
+      </button>
+
+      <!-- Conmutador de Tema (Oscuro / Claro) -->
+      <button
+        type="button"
+        class="topbar-cell theme-toggle"
+        data-theme-toggle
+        aria-label="Cambiar entre modo oscuro y modo claro"
+        title="Cambiar tema (Oscuro / Claro)"
+      >
+        <svg
+          class="icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg
+          class="icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+        </svg>
+        <span class="theme-toggle-text" data-theme-label>Tema</span>
+      </button>
+
+      {
+        ctaLabel && (
+          <a href={ctaHref} class="topbar-cta">
+            {ctaLabel}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</header>
+
+<CommandPalette />
+
+<script>
+  const toggleBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const labelEl = document.querySelector<HTMLElement>('[data-theme-label]');
+
+  const syncToggleUI = (theme: string) => {
+    if (labelEl) {
+      labelEl.textContent = theme === 'light' ? 'Claro' : 'Oscuro';
+    }
+    toggleBtn?.setAttribute(
+      'aria-label',
+      theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro',
+    );
+  };
+
+  syncToggleUI(document.documentElement.dataset.theme || 'dark');
+
+  toggleBtn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem('math-universe-theme', next);
+    } catch {}
+    const meta = document.querySelector('[data-theme-meta]');
+    if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
+    syncToggleUI(next);
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
+  });
+</script>
+
+<style>
+  .topbar-shell {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 60;
+  }
+
+  .topbar {
+    align-items: stretch;
+    display: flex;
+    justify-content: space-between;
+    min-height: 3.4rem;
+    width: 100%;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    align-items: stretch;
+    display: flex;
+  }
+
+  .topbar-brand {
+    align-items: center;
+    border-right: 1px solid var(--line);
+    display: flex;
+    padding: 0 1.35rem;
+  }
+
+  .topbar-nav {
+    align-items: stretch;
+    display: flex;
+  }
+
+  .topbar-nav a {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font: 500 0.68rem/1 var(--mono);
+    letter-spacing: 0.13em;
+    padding: 0 0.8rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .topbar-nav a span {
+    padding: 0.28rem 0.48rem;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .topbar-nav a:hover span,
+  .topbar-nav a.is-active span {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .topbar-right :global(.topbar-cell),
+  .topbar-cell {
+    align-items: center;
+    border-left: 1px solid var(--line);
+    color: var(--muted);
+    display: inline-flex;
+    font: 500 0.66rem/1 var(--mono);
+    gap: 0.45rem;
+    letter-spacing: 0.11em;
+    padding: 0 1rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .status i {
+    background: var(--accent-ink);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+    display: inline-block;
+    height: 0.4rem;
+    width: 0.4rem;
+  }
+
+  .cmd-trigger,
+  .theme-toggle {
+    background: transparent;
+    border-bottom: 0;
+    border-right: 0;
+    border-top: 0;
+    color: var(--ink);
+    cursor: pointer;
+    font-weight: 600;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease;
+  }
+
+  .cmd-trigger:hover,
+  .cmd-trigger:focus-visible,
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .cmd-trigger svg,
+  .theme-toggle svg {
+    height: 0.92rem;
+    width: 0.92rem;
+  }
+
+  .cmd-kbd {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    color: var(--accent-ink);
+    font: 600 0.56rem/1 var(--mono);
+    padding: 0.2rem 0.35rem;
+  }
+
+  .cmd-trigger:hover .cmd-kbd {
+    background: transparent;
+    border-color: currentColor;
+    color: inherit;
+  }
+
+  .topbar-cta {
+    align-items: center;
+    background: var(--invert-bg);
+    border-left: 1px solid var(--line);
+    color: var(--invert-fg);
+    display: inline-flex;
+    font: 700 0.68rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    padding: 0 1.35rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .topbar-cta:hover {
+    opacity: 0.85;
+  }
+
+  :global(:root[data-theme='dark']) .icon-moon {
+    display: none;
+  }
+
+  :global(:root[data-theme='light']) .icon-sun {
+    display: none;
+  }
+
+  @media (max-width: 1120px) {
+    .status {
+      display: none;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .topbar-nav {
+      display: none;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .topbar-cta,
+    .cmd-trigger-text,
+    .theme-toggle-text {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,2326 @@
+---
+// Calculadora Científica "Natural Textbook Display" + Resolutor de Ecuaciones de 2.º Grado + Cinta de Historial + Picture-in-Picture
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<div class:list={['calc-workbench', { 'is-compact': compact }]} data-calc-root>
+  <!-- Aviso visible en la página principal mientras la calculadora flota en Picture-in-Picture -->
+  <div class="calc-pip-dock-notice" data-pip-dock-notice hidden>
+    <div class="pip-dock-badge">⧉ PICTURE-IN-PICTURE ACTIVO</div>
+    <h3>La calculadora está flotando en una ventana siempre visible</h3>
+    <p>
+      Puedes abrir cualquier PDF de examen, cambiar de pestaña o usar otra aplicación: la
+      calculadora permanecerá flotando encima de tu pantalla sin perder ningún cálculo.
+    </p>
+    <button type="button" class="pip-restore-btn" data-pip-restore>
+      <span>↙ Devolver calculadora a esta página</span>
+    </button>
+  </div>
+
+  <!-- Columna Izquierda: Chasis de la Calculadora Científica -->
+  <div class="calc-chassis" data-calc-chassis>
+    <!-- Barra de estado superior tipo Casio ClassWiz / CAD HUD -->
+    <div class="calc-hud-bar">
+      <div class="calc-mode-switch" role="tablist" aria-label="Modo de calculadora">
+        <button
+          type="button"
+          role="tab"
+          aria-selected="true"
+          class="hud-mode-btn is-active"
+          data-calc-mode="comp"
+        >
+          <span>COMP · CIENTÍFICA</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected="false"
+          class="hud-mode-btn"
+          data-calc-mode="quad"
+        >
+          <span>ECUACIÓN 2.º GRADO (ax²+bx+c=0)</span>
+        </button>
+      </div>
+
+      <div class="calc-indicators">
+        <span class="hud-badge shift-badge" data-shift-indicator hidden>SHIFT</span>
+        <span class="hud-badge mem-badge" data-mem-indicator hidden>M</span>
+        <button
+          type="button"
+          class="hud-angle-btn"
+          data-angle-toggle
+          title="Alternar unidad angular: Grados (DEG), Radianes (RAD), Gradianes (GRAD)"
+        >
+          <span data-angle-label>DEG</span>
+        </button>
+        <span class="hud-badge vpam-badge">NATURAL-DISPLAY</span>
+        <button
+          type="button"
+          class="hud-pip-btn"
+          data-calc-pip-toggle
+          title="Sacar calculadora en ventana flotante siempre visible (Picture-in-Picture) para calcular sobre un PDF"
+        >
+          <span class="pip-icon" aria-hidden="true">⧉</span>
+          <span data-pip-label>FLOTANTE (PiP)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 1: MODO CALCULADORA CIENTÍFICA (COMP)                         -->
+    <!-- =================================================================== -->
+    <div class="calc-view is-active" data-view="comp">
+      <!-- Pantalla LCD Natural Display -->
+      <div class="calc-screen" data-calc-screen tabindex="0" aria-label="Pantalla de la calculadora">
+        <div class="screen-top-bar">
+          <span class="screen-hint" data-slot-hint>
+            Escribe con el teclado o usa los botones · <strong>a/b</strong> crea fracción vertical
+          </span>
+          <div class="screen-mem-controls">
+            <button type="button" data-mem-action="MC" title="Borrar memoria">MC</button>
+            <button type="button" data-mem-action="MR" title="Recuperar memoria">MR</button>
+            <button type="button" data-mem-action="M+" title="Sumar a memoria">M+</button>
+            <button type="button" data-mem-action="M-" title="Restar de memoria">M−</button>
+          </div>
+        </div>
+
+        <!-- Expresión en formato Libro de Texto (Fracciones verticales, raíces, exponentes) -->
+        <div class="screen-natural-expr" data-natural-expr aria-live="polite"></div>
+
+        <!-- Entrada rápida sincronizada para teclado físico -->
+        <div class="screen-raw-row">
+          <label class="sr-only" for="calc-raw-input">Expresión matemática</label>
+          <input
+            id="calc-raw-input"
+            type="text"
+            class="screen-raw-input"
+            data-raw-input
+            placeholder="También puedes escribir aquí directo: ej. 3/4 + sqrt(2) o sin(60)"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            type="button"
+            class="screen-copy-btn"
+            data-copy-result
+            title="Copiar resultado al portapapeles"
+          >
+            <span data-copy-label>COPIAR</span>
+          </button>
+        </div>
+
+        <!-- Línea de resultado principal + Píldoras S⇔D de representaciones -->
+        <div class="screen-result-zone">
+          <div class="screen-rep-pills" data-rep-pills aria-label="Formatos del resultado (S⇔D)"></div>
+          <div class="screen-main-result" data-main-result aria-live="assertive">0</div>
+        </div>
+
+        <div class="screen-extra-info" data-extra-info hidden></div>
+      </div>
+
+      <!-- Teclado Científico -->
+      <div class="calc-keypad">
+        <!-- Fila de navegación de plantillas y control -->
+        <div class="keypad-nav-row">
+          <button type="button" class="key key-shift" data-key="SHIFT" title="Segunda función (inversas, raíz cúbica, permutaciones)">
+            <span>SHIFT</span>
+          </button>
+          <button type="button" class="key key-nav" data-key="LEFT" title="Mover cursor a la izquierda / numerador (←)">
+            <span>◀</span>
+          </button>
+          <button type="button" class="key key-nav" data-key="RIGHT" title="Mover cursor a la derecha / denominador / salir de fracción (→ o Tab)">
+            <span>▶</span>
+          </button>
+          <button type="button" class="key key-sd" data-key="SD" title="Alternar entre Fracción Exacta y Decimal (S⇔D)">
+            <span>S ⇔ D</span>
+          </button>
+          <button type="button" class="key key-fact" data-key="FACT" title="Descomponer número entero en factores primos">
+            <span>FACT</span>
+          </button>
+          <button type="button" class="key key-del" data-key="DEL" title="Borrar último carácter (Backspace)">
+            <span>DEL</span>
+          </button>
+          <button type="button" class="key key-ac" data-key="AC" title="Borrar todo (Escape)">
+            <span>AC</span>
+          </button>
+        </div>
+
+        <!-- Bloque de Funciones Científicas (Plantillas 2D, Trigonometría, Logaritmos, Combinatoria) -->
+        <div class="keypad-sci-grid">
+          <!-- Fila 1: Fracción vertical, Raíz, Potencia, Cuadrado, Inverso, Paréntesis -->
+          <button type="button" class="key key-template" data-key="FRAC" title="Insertar fracción vertical a/b">
+            <span class="key-frac-icon"><span>□</span><span class="bar"></span><span>□</span></span>
+          </button>
+          <button type="button" class="key key-sci" data-key="SQRT" data-shift-label="∛□" title="Raíz cuadrada (Shift: Raíz cúbica)">
+            <span class="key-sub" data-sub>∛□</span>
+            <span class="key-main">√□</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="POW2" title="Elevar al cuadrado (x²)">
+            <span class="key-sub">x³</span>
+            <span class="key-main">x²</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="POW" title="Elevar a cualquier exponente (x^□)">
+            <span class="key-main">x<sup>□</sup></span>
+          </button>
+          <button type="button" class="key key-sci" data-key="INV" title="Inverso multiplicativo (x⁻¹)">
+            <span class="key-main">x⁻¹</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="(" title="Abrir paréntesis">
+            <span class="key-main">(</span>
+          </button>
+          <button type="button" class="key key-sci" data-key=")" title="Cerrar paréntesis">
+            <span class="key-main">)</span>
+          </button>
+
+          <!-- Fila 2: Trigonometría, Logaritmos y Combinatoria -->
+          <button type="button" class="key key-sci" data-key="SIN" title="Seno (Shift: Arcoseno sin⁻¹)">
+            <span class="key-sub">sin⁻¹</span>
+            <span class="key-main">sin</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="COS" title="Coseno (Shift: Arcocoseno cos⁻¹)">
+            <span class="key-sub">cos⁻¹</span>
+            <span class="key-main">cos</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="TAN" title="Tangente (Shift: Arcotangente tan⁻¹)">
+            <span class="key-sub">tan⁻¹</span>
+            <span class="key-main">tan</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="LN" title="Logaritmo neperiano (Shift: e^x)">
+            <span class="key-sub">eˣ</span>
+            <span class="key-main">ln</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="LOG" title="Logaritmo decimal base 10 (Shift: 10^x)">
+            <span class="key-sub">10ˣ</span>
+            <span class="key-main">log</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="NCR" title="Combinaciones nCr (Shift: Variaciones nPr)">
+            <span class="key-sub">nPr</span>
+            <span class="key-main">nCr</span>
+          </button>
+          <button type="button" class="key key-sci" data-key="FACTORIAL" title="Factorial n! (Shift: Valor absoluto |x|)">
+            <span class="key-sub">|x|</span>
+            <span class="key-main">n!</span>
+          </button>
+        </div>
+
+        <!-- Bloque Numérico Principal + Operadores Aritméticos y Constantes -->
+        <div class="keypad-main-grid">
+          <button type="button" class="key key-num" data-key="7">7</button>
+          <button type="button" class="key key-num" data-key="8">8</button>
+          <button type="button" class="key key-num" data-key="9">9</button>
+          <button type="button" class="key key-op" data-key="÷" title="Dividir">÷</button>
+          <button type="button" class="key key-const" data-key="π" title="Número Pi (π ≈ 3.14159265)">
+            <span class="key-sub">e</span>
+            <span class="key-main">π</span>
+          </button>
+
+          <button type="button" class="key key-num" data-key="4">4</button>
+          <button type="button" class="key key-num" data-key="5">5</button>
+          <button type="button" class="key key-num" data-key="6">6</button>
+          <button type="button" class="key key-op" data-key="×" title="Multiplicar">×</button>
+          <button type="button" class="key key-const" data-key="%" title="Porcentaje (Shift: Coma separadora de argumentos)">
+            <span class="key-sub">,</span>
+            <span class="key-main">%</span>
+          </button>
+
+          <button type="button" class="key key-num" data-key="1">1</button>
+          <button type="button" class="key key-num" data-key="2">2</button>
+          <button type="button" class="key key-num" data-key="3">3</button>
+          <button type="button" class="key key-op" data-key="-" title="Restar">−</button>
+          <button type="button" class="key key-const" data-key="EXP" title="Notación científica (×10^x)">
+            <span class="key-main">×10ˣ</span>
+          </button>
+
+          <button type="button" class="key key-num" data-key="0">0</button>
+          <button type="button" class="key key-num" data-key=".">.</button>
+          <button type="button" class="key key-ans" data-key="Ans" title="Último resultado calculado">Ans</button>
+          <button type="button" class="key key-op" data-key="+" title="Sumar">+</button>
+          <button type="button" class="key key-eq" data-key="=" title="Calcular resultado (Enter)">=</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 2: RESOLUTOR RÁPIDO DE ECUACIONES DE 2.º GRADO (ax² + bx + c) -->
+    <!-- =================================================================== -->
+    <div class="calc-view" data-view="quad">
+      <div class="quad-panel">
+        <div class="quad-header">
+          <div>
+            <p class="quad-eyebrow">RESOLUTOR SIMBÓLICO Y NUMÉRICO</p>
+            <h3>Ecuación de 2.º grado: <em>ax² + bx + c = 0</em></h3>
+          </div>
+          <div class="quad-presets" aria-label="Ejemplos rápidos">
+            <span>Ejemplos:</span>
+            <button type="button" data-quad-preset="1,-5,6">x² − 5x + 6 = 0</button>
+            <button type="button" data-quad-preset="2,-3,-2">2x² − 3x − 2 = 0</button>
+            <button type="button" data-quad-preset="1,-2,-1">x² − 2x − 1 = 0 (Radical)</button>
+            <button type="button" data-quad-preset="1,4,4">x² + 4x + 4 = 0 (Doble)</button>
+            <button type="button" data-quad-preset="1,2,5">x² + 2x + 5 = 0 (Compleja)</button>
+          </div>
+        </div>
+
+        <!-- Entrada de coeficientes a, b, c -->
+        <div class="quad-inputs-row">
+          <label class="quad-coef-box">
+            <span class="coef-tag">Coeficiente <strong>a</strong> (x²)</span>
+            <input type="text" value="1" data-quad-a inputmode="decimal" />
+          </label>
+          <label class="quad-coef-box">
+            <span class="coef-tag">Coeficiente <strong>b</strong> (x)</span>
+            <input type="text" value="-5" data-quad-b inputmode="decimal" />
+          </label>
+          <label class="quad-coef-box">
+            <span class="coef-tag">Término indep. <strong>c</strong></span>
+            <input type="text" value="6" data-quad-c inputmode="decimal" />
+          </label>
+          <button type="button" class="quad-solve-btn" data-quad-solve>
+            <span>RESOLVER</span>
+          </button>
+        </div>
+
+        <!-- Resultados de la ecuación de 2.º grado -->
+        <div class="quad-results" data-quad-output aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Columna Derecha: Cinta de Historial Interactiva y Guía Rápida -->
+  <aside class="calc-sidebar" aria-label="Cinta de historial de cálculos">
+    <div class="tape-header">
+      <div>
+        <span class="tape-eyebrow">REGISTRO DE SESIÓN</span>
+        <h3 class="tape-title">Cinta de historial</h3>
+      </div>
+      <button type="button" class="tape-clear-btn" data-clear-tape title="Vaciar historial">
+        LIMPIAR
+      </button>
+    </div>
+
+    <p class="tape-help">
+      Haz clic en cualquier operación anterior para recuperar su fórmula o reutilizar su resultado.
+    </p>
+
+    <div class="tape-list" data-tape-list></div>
+
+    <div class="calc-shortcuts-card">
+      <p class="shortcuts-title">ATAJOS DE ESCRITORIO</p>
+      <ul>
+        <li>
+          <kbd>a/b</kbd> o <kbd>/</kbd>
+          <span>Fracción vertical</span>
+        </li>
+        <li>
+          <kbd>◀</kbd> <kbd>▶</kbd> o <kbd>Tab</kbd>
+          <span>Saltar entre numerador y denominador</span>
+        </li>
+        <li>
+          <kbd>S⇔D</kbd>
+          <span>Alternar Fracción ↔ Decimal ↔ Periódico</span>
+        </li>
+        <li>
+          <kbd>FACT</kbd>
+          <span>Descomposición en factores primos</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<script>
+  import {
+    evaluateMath,
+    renderNaturalExpression,
+    solveQuadraticEquation,
+    type AngleMode,
+    type EvalResult,
+  } from '../lib/mathEngine';
+
+  interface TapeEntry {
+    id: string;
+    expr: string;
+    exactHtml: string;
+    decimalPlain: string;
+    angleMode: AngleMode;
+    timestamp: string;
+  }
+
+  const STORAGE_KEY = 'math-universe-calc-tape-v1';
+
+  const DEFAULT_TAPE: TapeEntry[] = [
+    {
+      id: 'demo-1',
+      expr: '\\frac{2}{3}+\\frac{5}{6}',
+      exactHtml: '<span class="m-frac"><span class="m-num">3</span><span class="m-bar"></span><span class="m-den">2</span></span>',
+      decimalPlain: '1.5',
+      angleMode: 'DEG',
+      timestamp: 'Ejemplo',
+    },
+    {
+      id: 'demo-2',
+      expr: 'sin(60)',
+      exactHtml: '<span class="m-frac"><span class="m-num"><span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">3</span></span></span><span class="m-bar"></span><span class="m-den">2</span></span>',
+      decimalPlain: '0.86602540378',
+      angleMode: 'DEG',
+      timestamp: 'Ejemplo',
+    },
+    {
+      id: 'demo-3',
+      expr: '\\sqrt{50}+\\sqrt{8}',
+      exactHtml: '7<span class="m-sqrt"><span class="m-sqrt-sym">√</span><span class="m-sqrt-body">2</span></span>',
+      decimalPlain: '9.8994949366',
+      angleMode: 'DEG',
+      timestamp: 'Ejemplo',
+    },
+  ];
+
+  document.querySelectorAll<HTMLElement>('[data-calc-root]').forEach((root) => {
+    // Estado principal de la calculadora
+    // Usamos '¦' como marcador de posición del cursor dentro de las plantillas (\frac{¦}{}, \sqrt{¦}, etc.)
+    let exprWithCursor = '\\frac{2}{3}+\\frac{5}{6}¦';
+    let angleMode: AngleMode = 'DEG';
+    let shiftActive = false;
+    let ansValue = 1.5;
+    let memoryValue = 0;
+    let currentEval: EvalResult | null = null;
+    let currentRepIndex = 0;
+
+    // Elementos del DOM
+    const naturalExprEl = root.querySelector<HTMLElement>('[data-natural-expr]');
+    const rawInputEl = root.querySelector<HTMLInputElement>('[data-raw-input]');
+    const mainResultEl = root.querySelector<HTMLElement>('[data-main-result]');
+    const repPillsEl = root.querySelector<HTMLElement>('[data-rep-pills]');
+    const extraInfoEl = root.querySelector<HTMLElement>('[data-extra-info]');
+    const angleBtn = root.querySelector<HTMLButtonElement>('[data-angle-toggle]');
+    const angleLabel = root.querySelector<HTMLElement>('[data-angle-label]');
+    const shiftIndicator = root.querySelector<HTMLElement>('[data-shift-indicator]');
+    const memIndicator = root.querySelector<HTMLElement>('[data-mem-indicator]');
+    const slotHintEl = root.querySelector<HTMLElement>('[data-slot-hint]');
+    const tapeListEl = root.querySelector<HTMLElement>('[data-tape-list]');
+    const clearTapeBtn = root.querySelector<HTMLButtonElement>('[data-clear-tape]');
+    const copyBtn = root.querySelector<HTMLButtonElement>('[data-copy-result]');
+    const copyLabel = root.querySelector<HTMLElement>('[data-copy-label]');
+
+    const ensureCursor = (s: string): string => (s.includes('¦') ? s : `${s}¦`);
+    const stripCursor = (s: string): string => s.replace(/¦/g, '');
+
+    const setShift = (val: boolean) => {
+      shiftActive = val;
+      if (shiftIndicator) shiftIndicator.hidden = !shiftActive;
+      root.classList.toggle('is-shift', shiftActive);
+    };
+
+    // Detecta si el cursor está dentro de un numerador, denominador, raíz o exponente para guiar al usuario
+    const updateCursorContextHint = () => {
+      if (!slotHintEl) return;
+      const cursorIdx = exprWithCursor.indexOf('¦');
+      const before = exprWithCursor.slice(0, cursorIdx);
+      if (/\\frac\{[^{}]*$/.test(before)) {
+        slotHintEl.innerHTML =
+          'Editando <strong>NUMERADOR</strong> · Pulsa <kbd>▶</kbd> o <kbd>Tab</kbd> para bajar al denominador';
+      } else if (/\\frac\{[^{}]*\}\{[^{}]*$/.test(before)) {
+        slotHintEl.innerHTML =
+          'Editando <strong>DENOMINADOR</strong> · Pulsa <kbd>▶</kbd> o <kbd>Tab</kbd> para salir de la fracción';
+      } else if (/\\(?:sqrt|cbrt)\{[^{}]*$/.test(before)) {
+        slotHintEl.innerHTML =
+          'Dentro de la <strong>RAÍZ</strong> · Pulsa <kbd>▶</kbd> o <kbd>Tab</kbd> para salir del radical';
+      } else if (/\^\{[^{}]*$/.test(before)) {
+        slotHintEl.innerHTML =
+          'Editando <strong>EXPONENTE</strong> · Pulsa <kbd>▶</kbd> o <kbd>Tab</kbd> para bajar a la línea base';
+      } else {
+        slotHintEl.innerHTML =
+          'Escribe con el teclado o usa los botones · <strong>a/b</strong> crea fracción vertical';
+      }
+    };
+
+    const renderRepresentations = () => {
+      if (!mainResultEl || !repPillsEl || !extraInfoEl) return;
+
+      if (!currentEval) {
+        mainResultEl.innerHTML = '0';
+        repPillsEl.innerHTML = '';
+        extraInfoEl.hidden = true;
+        return;
+      }
+
+      if (!currentEval.ok) {
+        mainResultEl.innerHTML = `<span class="res-error">${currentEval.error || 'Error'}</span>`;
+        repPillsEl.innerHTML = '';
+        extraInfoEl.hidden = true;
+        return;
+      }
+
+      const reps = currentEval.representations;
+      if (!reps.length) {
+        mainResultEl.innerHTML = '0';
+        repPillsEl.innerHTML = '';
+        return;
+      }
+
+      const safeIdx = ((currentRepIndex % reps.length) + reps.length) % reps.length;
+      const activeRep = reps[safeIdx];
+      mainResultEl.innerHTML = activeRep.html;
+
+      // Renderizar píldoras interactivas para cambiar de representación (FRAC, DEC, MIXTO, CIENTÍFICA, FACT)
+      repPillsEl.innerHTML = reps
+        .map(
+          (rep, idx) =>
+            `<button type="button" class="rep-pill ${idx === safeIdx ? 'is-active' : ''}" data-rep-idx="${idx}">${rep.label}</button>`,
+        )
+        .join('');
+
+      repPillsEl.querySelectorAll<HTMLButtonElement>('[data-rep-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentRepIndex = Number(btn.dataset.repIdx || 0);
+          renderRepresentations();
+        });
+      });
+
+      // Información extra si hay descomposición en factores primos disponible
+      if (currentEval.factors && currentEval.factors.length > 0) {
+        extraInfoEl.hidden = false;
+        const badge = currentEval.isPrime
+          ? '<span class="prime-tag is-prime">NÚMERO PRIMO</span>'
+          : `<span class="prime-tag">COMPUESTO · ${currentEval.divisorsCount} divisores</span>`;
+        const factRep = reps.find((r) => r.id === 'factors');
+        extraInfoEl.innerHTML = `${badge} <span class="fact-preview">Factores: ${factRep ? factRep.html : ''}</span>`;
+      } else {
+        extraInfoEl.hidden = true;
+      }
+    };
+
+    const refreshDisplay = (autoEvaluate = true) => {
+      exprWithCursor = ensureCursor(exprWithCursor);
+      if (naturalExprEl) {
+        naturalExprEl.innerHTML = renderNaturalExpression(exprWithCursor);
+      }
+      if (rawInputEl && rawInputEl.ownerDocument.activeElement !== rawInputEl) {
+        rawInputEl.value = stripCursor(exprWithCursor);
+      }
+      updateCursorContextHint();
+
+      if (autoEvaluate) {
+        const clean = stripCursor(exprWithCursor);
+        if (!clean.trim()) {
+          currentEval = null;
+          renderRepresentations();
+          return;
+        }
+        const res = evaluateMath(clean, { angleMode, ans: ansValue });
+        if (res.ok) {
+          currentEval = res;
+          currentRepIndex = 0;
+          renderRepresentations();
+        }
+      }
+    };
+
+    // Inserta texto en la posición actual del cursor '¦'
+    const insertAtCursor = (snippet: string) => {
+      const idx = exprWithCursor.indexOf('¦');
+      const before = exprWithCursor.slice(0, idx);
+      const after = exprWithCursor.slice(idx + 1);
+      if (snippet.includes('¦')) {
+        exprWithCursor = before + snippet + after;
+      } else {
+        exprWithCursor = before + snippet + '¦' + after;
+      }
+      setShift(false);
+      refreshDisplay(true);
+    };
+
+    // Inserta una fracción vertical inteligente: si acaba de escribir un número antes del cursor,
+    // ese número pasa automáticamente al numerador y el cursor baja al denominador.
+    const insertVerticalFraction = () => {
+      const idx = exprWithCursor.indexOf('¦');
+      const before = exprWithCursor.slice(0, idx);
+      const after = exprWithCursor.slice(idx + 1);
+
+      const trailingNumMatch = before.match(/(\d+(?:\.\d+)?|Ans|π|e)$/);
+      if (trailingNumMatch) {
+        const numToken = trailingNumMatch[1];
+        const prefix = before.slice(0, before.length - numToken.length);
+        exprWithCursor = `${prefix}\\frac{${numToken}}{¦}${after}`;
+      } else {
+        exprWithCursor = `${before}\\frac{¦}{}${after}`;
+      }
+      setShift(false);
+      refreshDisplay(true);
+    };
+
+    // Movimiento inteligente del cursor a izquierda y derecha (saltando llaves estructurales)
+    const moveCursorRight = () => {
+      const idx = exprWithCursor.indexOf('¦');
+      if (idx === -1 || idx >= exprWithCursor.length - 1) return;
+      const before = exprWithCursor.slice(0, idx);
+      const after = exprWithCursor.slice(idx + 1);
+
+      // Si estamos al final del numerador "}{", saltamos dentro del denominador "{¦"
+      if (after.startsWith('}{')) {
+        exprWithCursor = before + '}{' + '¦' + after.slice(2);
+      } else {
+        exprWithCursor = before + after[0] + '¦' + after.slice(1);
+      }
+      refreshDisplay(false);
+    };
+
+    const moveCursorLeft = () => {
+      const idx = exprWithCursor.indexOf('¦');
+      if (idx <= 0) return;
+      const before = exprWithCursor.slice(0, idx);
+      const after = exprWithCursor.slice(idx + 1);
+
+      // Si justo antes hay "}{", volvemos al final del numerador
+      if (before.endsWith('}{')) {
+        exprWithCursor = before.slice(0, -2) + '¦}{' + after;
+      } else if (before.endsWith('\\frac{')) {
+        exprWithCursor = before.slice(0, -6) + '¦\\frac{' + after;
+      } else if (before.endsWith('\\sqrt{') || before.endsWith('\\cbrt{')) {
+        exprWithCursor = before.slice(0, -6) + '¦' + before.slice(-6) + after;
+      } else if (before.endsWith('^{')) {
+        exprWithCursor = before.slice(0, -2) + '¦^{' + after;
+      } else {
+        exprWithCursor = before.slice(0, -1) + '¦' + before.slice(-1) + after;
+      }
+      refreshDisplay(false);
+    };
+
+    // Borrado inteligente (DEL): si borra una plantilla vacía \frac{¦}{}, elimina la plantilla entera
+    const deleteBeforeCursor = () => {
+      const idx = exprWithCursor.indexOf('¦');
+      if (idx <= 0) return;
+      const before = exprWithCursor.slice(0, idx);
+      const after = exprWithCursor.slice(idx + 1);
+
+      if (before.endsWith('\\frac{') && after.startsWith('}{}')) {
+        exprWithCursor = before.slice(0, -6) + '¦' + after.slice(3);
+      } else if (before.endsWith('\\frac{') && after.startsWith('}{')) {
+        // Deshacer fracción dejando el denominador si lo hubiera
+        exprWithCursor = before.slice(0, -6) + '¦' + after.slice(2).replace(/^\}/, '');
+      } else if (
+        (before.endsWith('\\sqrt{') || before.endsWith('\\cbrt{')) &&
+        after.startsWith('}')
+      ) {
+        exprWithCursor = before.slice(0, -6) + '¦' + after.slice(1);
+      } else if (before.endsWith('^{') && after.startsWith('}')) {
+        exprWithCursor = before.slice(0, -2) + '¦' + after.slice(1);
+      } else if (before.endsWith('}{')) {
+        // Subir del denominador al final del numerador
+        exprWithCursor = before.slice(0, -2) + '¦}{' + after;
+      } else if (before.endsWith('}')) {
+        // Entrar dentro del bloque cerrado para borrar su último carácter
+        exprWithCursor = before.slice(0, -1) + '¦}' + after;
+      } else {
+        // Si termina en nombre de función como "sin(" o "Ans", borrar el bloque completo
+        const fnMatch = before.match(/(?:asin|acos|atan|sin|cos|tan|sqrt|cbrt|log|ln|abs|nCr|nPr)\($|Ans$/);
+        if (fnMatch) {
+          exprWithCursor = before.slice(0, before.length - fnMatch[0].length) + '¦' + after;
+        } else {
+          exprWithCursor = before.slice(0, -1) + '¦' + after;
+        }
+      }
+      refreshDisplay(true);
+    };
+
+    // =========================================================================
+    // CINTA DE HISTORIAL (PERSISTENTE EN LOCALSTORAGE)
+    // =========================================================================
+    const loadTape = (): TapeEntry[] => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return DEFAULT_TAPE;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_TAPE;
+      } catch {
+        return DEFAULT_TAPE;
+      }
+    };
+
+    let tapeEntries: TapeEntry[] = loadTape();
+
+    const saveTape = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tapeEntries.slice(0, 25)));
+      } catch {}
+    };
+
+    const renderTape = () => {
+      if (!tapeListEl) return;
+      if (!tapeEntries.length) {
+        tapeListEl.innerHTML =
+          '<p class="tape-empty">Aún no hay cálculos guardados. Pulsa <strong>=</strong> para registrar una operación.</p>';
+        return;
+      }
+
+      tapeListEl.innerHTML = tapeEntries
+        .map(
+          (item, idx) => `
+          <div class="tape-item" data-tape-idx="${idx}">
+            <div class="tape-item-meta">
+              <span class="tape-badge">${item.angleMode}</span>
+              <span class="tape-time">${item.timestamp}</span>
+            </div>
+            <div class="tape-item-body">
+              <div class="tape-expr">${renderNaturalExpression(item.expr)}</div>
+              <div class="tape-eq">=</div>
+              <div class="tape-res">${item.exactHtml}</div>
+            </div>
+            <div class="tape-item-actions">
+              <button type="button" data-use-expr="${idx}">Cargar fórmula</button>
+              <button type="button" data-use-res="${idx}">Insertar ${item.decimalPlain}</button>
+            </div>
+          </div>
+        `,
+        )
+        .join('');
+
+      tapeListEl.querySelectorAll<HTMLButtonElement>('[data-use-expr]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const entry = tapeEntries[Number(btn.dataset.useExpr)];
+          if (!entry) return;
+          exprWithCursor = `${entry.expr}¦`;
+          refreshDisplay(true);
+        });
+      });
+
+      tapeListEl.querySelectorAll<HTMLButtonElement>('[data-use-res]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const entry = tapeEntries[Number(btn.dataset.useRes)];
+          if (!entry) return;
+          insertAtCursor(entry.decimalPlain);
+        });
+      });
+    };
+
+    // Ejecutar cálculo final (=) y guardar en la cinta de historial
+    const executeEquals = () => {
+      const clean = stripCursor(exprWithCursor);
+      if (!clean.trim()) return;
+      const res = evaluateMath(clean, { angleMode, ans: ansValue });
+      currentEval = res;
+      currentRepIndex = 0;
+      renderRepresentations();
+
+      if (res.ok) {
+        ansValue = res.value;
+        const exactRep = res.representations[0];
+        const decRep = res.representations.find((r) => r.id === 'decimal') || exactRep;
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        // Evitar duplicar exactamente la misma entrada consecutiva
+        if (tapeEntries[0]?.expr !== clean) {
+          tapeEntries.unshift({
+            id: String(Date.now()),
+            expr: clean,
+            exactHtml: exactRep?.html || String(res.value),
+            decimalPlain: decRep?.plain || String(res.value),
+            angleMode,
+            timestamp: timeStr,
+          });
+          tapeEntries = tapeEntries.slice(0, 25);
+          saveTape();
+          renderTape();
+        }
+      }
+    };
+
+    // =========================================================================
+    // MANEJADOR DE TECLAS DEL PANEL CIENTÍFICO
+    // =========================================================================
+    const handleKeyAction = (key: string) => {
+      switch (key) {
+        case 'SHIFT':
+          setShift(!shiftActive);
+          return;
+        case 'LEFT':
+          moveCursorLeft();
+          return;
+        case 'RIGHT':
+          moveCursorRight();
+          return;
+        case 'AC':
+          exprWithCursor = '¦';
+          currentEval = null;
+          setShift(false);
+          refreshDisplay(false);
+          return;
+        case 'DEL':
+          deleteBeforeCursor();
+          return;
+        case 'SD':
+          if (!currentEval || !currentEval.ok) {
+            executeEquals();
+          } else if (currentEval.representations.length > 1) {
+            currentRepIndex = (currentRepIndex + 1) % currentEval.representations.length;
+            renderRepresentations();
+          }
+          return;
+        case 'FACT': {
+          if (!currentEval || !currentEval.ok) {
+            executeEquals();
+          }
+          if (currentEval && currentEval.ok) {
+            const factIdx = currentEval.representations.findIndex((r) => r.id === 'factors');
+            if (factIdx >= 0) {
+              currentRepIndex = factIdx;
+              renderRepresentations();
+            } else if (extraInfoEl) {
+              extraInfoEl.hidden = false;
+              extraInfoEl.innerHTML =
+                '<span class="prime-tag">FACT requiere un número entero ≥ 2</span>';
+            }
+          }
+          return;
+        }
+        case 'FRAC':
+          insertVerticalFraction();
+          return;
+        case 'SQRT':
+          insertAtCursor(shiftActive ? '\\cbrt{¦}' : '\\sqrt{¦}');
+          return;
+        case 'POW2':
+          insertAtCursor(shiftActive ? '^{3}¦' : '^{2}¦');
+          return;
+        case 'POW':
+          insertAtCursor('^{¦}');
+          return;
+        case 'INV':
+          insertAtCursor('^{-1}¦');
+          return;
+        case 'SIN':
+          insertAtCursor(shiftActive ? 'asin(' : 'sin(');
+          return;
+        case 'COS':
+          insertAtCursor(shiftActive ? 'acos(' : 'cos(');
+          return;
+        case 'TAN':
+          insertAtCursor(shiftActive ? 'atan(' : 'tan(');
+          return;
+        case 'LN':
+          insertAtCursor(shiftActive ? 'e^{¦}' : 'ln(');
+          return;
+        case 'LOG':
+          insertAtCursor(shiftActive ? '10^{¦}' : 'log(');
+          return;
+        case 'NCR':
+          insertAtCursor(shiftActive ? 'nPr(' : 'nCr(');
+          return;
+        case 'FACTORIAL':
+          insertAtCursor(shiftActive ? 'abs(' : '!');
+          return;
+        case 'π':
+          insertAtCursor(shiftActive ? 'e' : 'π');
+          return;
+        case '%':
+          insertAtCursor(shiftActive ? ',' : '%');
+          return;
+        case 'EXP':
+          insertAtCursor('*10^{¦}');
+          return;
+        case '=':
+          executeEquals();
+          return;
+        default:
+          insertAtCursor(key);
+      }
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-key]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const k = btn.dataset.key;
+        if (k) handleKeyAction(k);
+      });
+    });
+
+    // Unidad angular DEG -> RAD -> GRAD
+    angleBtn?.addEventListener('click', () => {
+      const order: AngleMode[] = ['DEG', 'RAD', 'GRAD'];
+      angleMode = order[(order.indexOf(angleMode) + 1) % order.length];
+      if (angleLabel) angleLabel.textContent = angleMode;
+      refreshDisplay(true);
+    });
+
+    // Botones de memoria (MC, MR, M+, M-)
+    root.querySelectorAll<HTMLButtonElement>('[data-mem-action]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const act = btn.dataset.memAction;
+        if (act === 'MC') {
+          memoryValue = 0;
+        } else if (act === 'MR') {
+          insertAtCursor(String(memoryValue));
+        } else if (act === 'M+') {
+          if (!currentEval?.ok) executeEquals();
+          if (currentEval?.ok) memoryValue += currentEval.value;
+        } else if (act === 'M-') {
+          if (!currentEval?.ok) executeEquals();
+          if (currentEval?.ok) memoryValue -= currentEval.value;
+        }
+        if (memIndicator) memIndicator.hidden = Math.abs(memoryValue) < 1e-12;
+      });
+    });
+
+    // Sincronización con el input de teclado directo
+    rawInputEl?.addEventListener('input', () => {
+      exprWithCursor = `${rawInputEl.value}¦`;
+      refreshDisplay(true);
+    });
+
+    rawInputEl?.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        executeEquals();
+      } else if (ev.key === 'Escape') {
+        ev.preventDefault();
+        handleKeyAction('AC');
+      }
+    });
+
+    // Teclado físico cuando el foco está en la pantalla de la calculadora o en ventana PiP
+    const handlePhysicalKeyboard = (ev: KeyboardEvent) => {
+      const ownerDoc = rawInputEl?.ownerDocument || document;
+      const activeEl = ownerDoc.activeElement as HTMLElement | null;
+      if (
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.tagName === 'SELECT')
+      ) {
+        return;
+      }
+      if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+
+      if (ev.key >= '0' && ev.key <= '9') {
+        ev.preventDefault();
+        insertAtCursor(ev.key);
+      } else if (['+', '-', '*', '(', ')', '.', ',', '%', '!'].includes(ev.key)) {
+        ev.preventDefault();
+        insertAtCursor(ev.key === '*' ? '×' : ev.key);
+      } else if (ev.key === '/') {
+        ev.preventDefault();
+        insertVerticalFraction();
+      } else if (ev.key === '^') {
+        ev.preventDefault();
+        insertAtCursor('^{¦}');
+      } else if (ev.key === 'ArrowLeft') {
+        ev.preventDefault();
+        moveCursorLeft();
+      } else if (ev.key === 'ArrowRight' || ev.key === 'Tab') {
+        ev.preventDefault();
+        moveCursorRight();
+      } else if (ev.key === 'Backspace') {
+        ev.preventDefault();
+        deleteBeforeCursor();
+      } else if (ev.key === 'Escape') {
+        ev.preventDefault();
+        handleKeyAction('AC');
+      } else if (ev.key === 'Enter' || ev.key === '=') {
+        ev.preventDefault();
+        executeEquals();
+      }
+    };
+
+    const screenEl = root.querySelector<HTMLElement>('[data-calc-screen]');
+    screenEl?.addEventListener('keydown', handlePhysicalKeyboard);
+
+    // Copiar resultado (compatible tanto en ventana principal como en ventana PiP)
+    copyBtn?.addEventListener('click', async () => {
+      if (!currentEval?.ok) return;
+      const rep = currentEval.representations[currentRepIndex] || currentEval.representations[0];
+      if (!rep) return;
+      try {
+        const win = copyBtn.ownerDocument.defaultView || window;
+        await (win.navigator?.clipboard || navigator.clipboard).writeText(rep.plain);
+        if (copyLabel) {
+          copyLabel.textContent = '¡COPIADO!';
+          window.setTimeout(() => {
+            copyLabel.textContent = 'COPIAR';
+          }, 1400);
+        }
+      } catch {}
+    });
+
+    // =========================================================================
+    // MODO PICTURE-IN-PICTURE (SIEMPRE VISIBLE ENCIMA DE PDFs) + POPUP FALLBACK
+    // =========================================================================
+    const chassisEl = root.querySelector<HTMLElement>('[data-calc-chassis]');
+    const pipToggleBtn = root.querySelector<HTMLButtonElement>('[data-calc-pip-toggle]');
+    const pipLabelEl = root.querySelector<HTMLElement>('[data-pip-label]');
+    const pipDockNotice = root.querySelector<HTMLElement>('[data-pip-dock-notice]');
+    const pipRestoreBtn = root.querySelector<HTMLButtonElement>('[data-pip-restore]');
+
+    let activePipWindow: Window | null = null;
+    const isStandalonePopup = new URLSearchParams(window.location.search).get('pip') === '1';
+
+    if (isStandalonePopup && pipLabelEl) {
+      pipLabelEl.textContent = 'CERRAR ✕';
+    }
+
+    const restoreFromPiP = () => {
+      if (!chassisEl) return;
+      if (pipDockNotice && pipDockNotice.parentNode === root) {
+        root.insertBefore(chassisEl, pipDockNotice.nextSibling);
+        pipDockNotice.hidden = true;
+      } else {
+        root.prepend(chassisEl);
+      }
+      chassisEl.classList.remove('is-in-pip');
+      if (pipLabelEl) pipLabelEl.textContent = 'FLOTANTE (PiP)';
+      if (activePipWindow && !activePipWindow.closed) {
+        try {
+          activePipWindow.close();
+        } catch {}
+      }
+      activePipWindow = null;
+    };
+
+    const launchPiP = async () => {
+      if (!chassisEl) return;
+
+      // Si estamos en la ventana popup independiente (?pip=1), el botón la cierra
+      if (isStandalonePopup && !('documentPictureInPicture' in window)) {
+        window.close();
+        return;
+      }
+
+      // Si ya está abierta la ventana PiP nativa, acoplarla de vuelta
+      if (activePipWindow && !activePipWindow.closed) {
+        restoreFromPiP();
+        return;
+      }
+
+      // 1. Intentar Document Picture-in-Picture API nativa (Always-on-Top OS Window)
+      const docPiP = (window as unknown as {
+        documentPictureInPicture?: {
+          requestWindow: (opts: { width: number; height: number }) => Promise<Window>;
+        };
+      }).documentPictureInPicture;
+
+      if (docPiP) {
+        try {
+          const pipWin = await docPiP.requestWindow({
+            width: 440,
+            height: 675,
+          });
+          activePipWindow = pipWin;
+
+          pipWin.document.title = 'Calculadora Científica — Math Universe';
+          pipWin.document.documentElement.dataset.theme =
+            document.documentElement.dataset.theme || 'dark';
+
+          // Copiar hojas de estilo de la página principal para conservar el diseño exacto
+          Array.from(document.querySelectorAll('style, link[rel="stylesheet"]')).forEach(
+            (node) => {
+              pipWin.document.head.appendChild(node.cloneNode(true));
+            },
+          );
+
+          // Ajustes específicos para la ventana flotante compacta PiP
+          const pipCustomStyle = pipWin.document.createElement('style');
+          pipCustomStyle.textContent = `
+            html, body {
+              margin: 0;
+              padding: 0;
+              background: var(--bg-raised, #14161d);
+              color: var(--ink, #f4f3ef);
+              height: 100%;
+              overflow-x: hidden;
+            }
+            .calc-chassis.is-in-pip {
+              border: 0 !important;
+              box-shadow: none !important;
+              min-height: 100vh;
+              display: flex;
+              flex-direction: column;
+            }
+            .calc-chassis.is-in-pip .vpam-badge {
+              display: none;
+            }
+            .calc-chassis.is-in-pip .calc-hud-bar {
+              padding: 0.45rem 0.65rem;
+              position: sticky;
+              top: 0;
+              z-index: 10;
+            }
+            .calc-chassis.is-in-pip .calc-screen {
+              margin: 0.55rem;
+              padding: 0.65rem 0.8rem;
+            }
+            .calc-chassis.is-in-pip .screen-natural-expr {
+              min-height: 3.1rem;
+              font-size: 1.25rem;
+            }
+            .calc-chassis.is-in-pip .screen-main-result {
+              font-size: 1.55rem;
+            }
+            .calc-chassis.is-in-pip .calc-keypad {
+              padding: 0 0.55rem 0.65rem;
+              gap: 0.4rem;
+            }
+            .calc-chassis.is-in-pip .key {
+              min-height: 2.35rem;
+            }
+          `;
+          pipWin.document.head.appendChild(pipCustomStyle);
+
+          chassisEl.classList.add('is-in-pip');
+          pipWin.document.body.appendChild(chassisEl);
+
+          if (pipDockNotice) pipDockNotice.hidden = false;
+          if (pipLabelEl) pipLabelEl.textContent = 'ACOPLAR ↙';
+
+          // Permitir escribir directamente con el teclado físico cuando la ventana PiP tiene el foco
+          pipWin.document.addEventListener('keydown', handlePhysicalKeyboard);
+
+          // Sincronizar cambios de tema claro/oscuro con la ventana PiP
+          const themeObserver = new MutationObserver(() => {
+            if (activePipWindow && !activePipWindow.closed) {
+              activePipWindow.document.documentElement.dataset.theme =
+                document.documentElement.dataset.theme || 'dark';
+            }
+          });
+          themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme'],
+          });
+
+          pipWin.addEventListener('pagehide', () => {
+            themeObserver.disconnect();
+            restoreFromPiP();
+          });
+
+          // Avisar a contenedores externos (ej. modal flotante en Selectividad) que se abrió PiP
+          window.dispatchEvent(new CustomEvent('calc-pip-opened'));
+          return;
+        } catch {
+          // Si falla o el usuario cancela, continuamos al fallback popup
+        }
+      }
+
+      // 2. Respaldo Universal (Safari / Firefox): Ventana emergente compacta tipo app de escritorio
+      const popupW = 440;
+      const popupH = 680;
+      const left = Math.max(20, window.screen.availWidth - popupW - 40);
+      const top = 60;
+      window.open(
+        '/herramientas?pip=1',
+        'MathUniverseCalculatorPiP',
+        `popup=yes,width=${popupW},height=${popupH},left=${left},top=${top},resizable=yes,scrollbars=yes`,
+      );
+    };
+
+    pipToggleBtn?.addEventListener('click', launchPiP);
+    pipRestoreBtn?.addEventListener('click', restoreFromPiP);
+
+    // Permitir abrir PiP desde otros botones de la página (ej. desde el visor de Selectividad)
+    window.addEventListener('request-calc-pip', () => {
+      launchPiP();
+    });
+
+    clearTapeBtn?.addEventListener('click', () => {
+      tapeEntries = [];
+      saveTape();
+      renderTape();
+    });
+
+    // =========================================================================
+    // CAMBIO ENTRE MODO CIENTÍFICA Y MODO ECUACIÓN 2.º GRADO
+    // =========================================================================
+    const modeBtns = root.querySelectorAll<HTMLButtonElement>('[data-calc-mode]');
+    const calcViews = root.querySelectorAll<HTMLElement>('[data-view]');
+
+    modeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.calcMode;
+        modeBtns.forEach((b) => {
+          const active = b.dataset.calcMode === target;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-selected', String(active));
+        });
+        calcViews.forEach((v) => {
+          v.classList.toggle('is-active', v.dataset.view === target);
+        });
+      });
+    });
+
+    // =========================================================================
+    // RESOLUTOR DE ECUACIONES DE 2.º GRADO
+    // =========================================================================
+    const inputA = root.querySelector<HTMLInputElement>('[data-quad-a]');
+    const inputB = root.querySelector<HTMLInputElement>('[data-quad-b]');
+    const inputC = root.querySelector<HTMLInputElement>('[data-quad-c]');
+    const solveQuadBtn = root.querySelector<HTMLButtonElement>('[data-quad-solve]');
+    const quadOutput = root.querySelector<HTMLElement>('[data-quad-output]');
+
+    const parseCoef = (raw: string): number => {
+      const res = evaluateMath(raw || '0');
+      return res.ok ? res.value : NaN;
+    };
+
+    const runQuadraticSolver = () => {
+      if (!inputA || !inputB || !inputC || !quadOutput) return;
+      const a = parseCoef(inputA.value);
+      const b = parseCoef(inputB.value);
+      const c = parseCoef(inputC.value);
+      const sol = solveQuadraticEquation(a, b, c);
+
+      if (!sol.ok) {
+        quadOutput.innerHTML = `<p class="quad-error">${sol.error}</p>`;
+        return;
+      }
+
+      quadOutput.innerHTML = `
+        <div class="quad-nature-banner ${sol.nature}">
+          <span>${sol.natureLabel}</span>
+          <span>Δ = ${sol.discriminant}</span>
+        </div>
+
+        <div class="quad-roots-grid">
+          <div class="quad-root-card">
+            <span class="root-label">Solución x₁ (Exacta)</span>
+            <div class="root-exact">${sol.x1ExactHtml}</div>
+            <span class="root-dec">Decimal: ${sol.x1Decimal}</span>
+          </div>
+          <div class="quad-root-card">
+            <span class="root-label">Solución x₂ (Exacta)</span>
+            <div class="root-exact">${sol.x2ExactHtml}</div>
+            <span class="root-dec">Decimal: ${sol.x2Decimal}</span>
+          </div>
+        </div>
+
+        <div class="quad-meta-grid">
+          <div class="quad-meta-cell">
+            <span class="meta-label">Vértice de la parábola V(xᵥ, yᵥ)</span>
+            <div class="meta-val">(${sol.vertexXHtml} , ${sol.vertexYHtml})</div>
+            <span class="meta-sub">Decimal: (${sol.vertexXDec}, ${sol.vertexYDec})</span>
+          </div>
+          <div class="quad-meta-cell">
+            <span class="meta-label">Forma factorizada</span>
+            <div class="meta-val">${sol.factoredHtml}</div>
+          </div>
+        </div>
+
+        <div class="quad-steps">
+          <p class="steps-title">DESARROLLO PASO A PASO</p>
+          ${sol.stepsHtml.map((st) => `<div class="step-line">${st}</div>`).join('')}
+        </div>
+      `;
+    };
+
+    solveQuadBtn?.addEventListener('click', runQuadraticSolver);
+    [inputA, inputB, inputC].forEach((inp) => {
+      inp?.addEventListener('input', runQuadraticSolver);
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-quad-preset]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const parts = (btn.dataset.quadPreset || '').split(',');
+        if (parts.length === 3 && inputA && inputB && inputC) {
+          inputA.value = parts[0];
+          inputB.value = parts[1];
+          inputC.value = parts[2];
+          runQuadraticSolver();
+        }
+      });
+    });
+
+    // Inicializar vista
+    refreshDisplay(true);
+    renderTape();
+    runQuadraticSolver();
+  });
+</script>
+
+<style>
+  .calc-workbench {
+    align-items: start;
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
+  }
+
+  .calc-workbench.is-compact {
+    display: block;
+  }
+
+  .calc-workbench.is-compact .calc-sidebar {
+    display: none;
+  }
+
+  /* Aviso cuando el chasis está desacoplado en ventana Picture-in-Picture */
+  .calc-pip-dock-notice {
+    background: var(--bg-raised);
+    border: 1px dashed var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 2.25rem 1.75rem;
+    text-align: left;
+  }
+
+  .calc-pip-dock-notice[hidden] {
+    display: none !important;
+  }
+
+  .pip-dock-badge {
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    font: 700 0.62rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    padding: 0.35rem 0.65rem;
+    text-transform: uppercase;
+  }
+
+  .calc-pip-dock-notice h3 {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    font-stretch: 115%;
+    margin: 0;
+  }
+
+  .calc-pip-dock-notice p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 38rem;
+  }
+
+  .pip-restore-btn {
+    align-self: flex-start;
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+    cursor: pointer;
+    font: 700 0.68rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    margin-top: 0.35rem;
+    padding: 0.68rem 1.15rem;
+    text-transform: uppercase;
+  }
+
+  .pip-restore-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .hud-pip-btn {
+    align-items: center;
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+    cursor: pointer;
+    display: inline-flex;
+    font: 700 0.62rem/1 var(--mono);
+    gap: 0.35rem;
+    height: 1.65rem;
+    letter-spacing: 0.09em;
+    padding: 0 0.65rem;
+    text-transform: uppercase;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .hud-pip-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .pip-icon {
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  /* Chasis principal de la calculadora con líneas técnicas de 1px */
+  .calc-chassis {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    box-shadow:
+      0 18px 42px -14px rgba(17, 18, 22, 0.22),
+      0 4px 12px -2px rgba(17, 18, 22, 0.08);
+    transition:
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  /* En Modo Oscuro: sombra inversa clarificada (halo atmosférico + bisel luminoso) para dar relieve */
+  :global(:root[data-theme='dark']) .calc-chassis {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 16px 44px -8px rgba(255, 255, 255, 0.075),
+      0 24px 68px -14px rgba(129, 140, 248, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  :global(:root[data-theme='dark']) .calc-sidebar {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 14px 38px -10px rgba(255, 255, 255, 0.05),
+      0 20px 54px -16px rgba(129, 140, 248, 0.11),
+      inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+
+  .calc-hud-bar {
+    align-items: center;
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 0.55rem 0.9rem;
+  }
+
+  .calc-mode-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .hud-mode-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    padding: 0.48rem 0.75rem;
+    text-transform: uppercase;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .hud-mode-btn:hover {
+    color: var(--ink);
+  }
+
+  .hud-mode-btn.is-active {
+    background: var(--invert-bg);
+    border-color: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .calc-indicators {
+    align-items: center;
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  .hud-badge,
+  .hud-angle-btn {
+    align-items: center;
+    border: 1px solid var(--line);
+    display: inline-flex;
+    font: 600 0.62rem/1 var(--mono);
+    height: 1.65rem;
+    letter-spacing: 0.1em;
+    padding: 0 0.55rem;
+    text-transform: uppercase;
+  }
+
+  .hud-angle-btn {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+  }
+
+  .shift-badge {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #101116;
+  }
+
+  .mem-badge {
+    background: #10b981;
+    border-color: #10b981;
+    color: #101116;
+  }
+
+  .vpam-badge {
+    color: var(--muted);
+  }
+
+  .calc-view {
+    display: none;
+  }
+
+  .calc-view.is-active {
+    display: block;
+  }
+
+  /* ========================================================================= */
+  /* PANTALLA LCD NATURAL DISPLAY                                              */
+  /* ========================================================================= */
+  .calc-screen {
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--line-strong);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    outline: none;
+    padding: 1rem 1.25rem 1.15rem;
+    position: relative;
+  }
+
+  :global(:root[data-theme='dark']) .calc-screen {
+    background: #0a0b0f;
+    box-shadow:
+      inset 0 3px 12px rgba(0, 0, 0, 0.7),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .calc-screen:focus-within {
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .screen-top-bar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+
+  .screen-hint {
+    color: var(--muted);
+    font: 500 0.66rem/1.3 var(--mono);
+    letter-spacing: 0.04em;
+  }
+
+  .screen-hint :global(strong),
+  .screen-hint :global(kbd) {
+    color: var(--accent-ink);
+    font-family: var(--mono);
+  }
+
+  .screen-mem-controls {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .screen-mem-controls button {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.6rem/1 var(--mono);
+    padding: 0.28rem 0.45rem;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .screen-mem-controls button:hover {
+    background: var(--line);
+    color: var(--ink);
+  }
+
+  /* Expresión con fracciones verticales (Natural Display) */
+  .screen-natural-expr {
+    align-items: center;
+    color: var(--ink);
+    display: flex;
+    flex-wrap: wrap;
+    font: 500 1.45rem/1.35 var(--mono);
+    gap: 0.12rem;
+    min-height: 4.1rem;
+    overflow-x: auto;
+    padding: 0.35rem 0;
+  }
+
+  .screen-raw-row {
+    align-items: center;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.55rem;
+  }
+
+  .screen-raw-input {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    flex: 1;
+    font: 400 0.76rem/1.2 var(--mono);
+    outline: none;
+    width: 100%;
+  }
+
+  .screen-raw-input:focus {
+    color: var(--ink);
+  }
+
+  .screen-copy-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    padding: 0.32rem 0.55rem;
+  }
+
+  .screen-copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .screen-result-zone {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    min-height: 3.4rem;
+    padding-top: 0.2rem;
+  }
+
+  .screen-rep-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .screen-rep-pills :global(.rep-pill) {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.09em;
+    padding: 0.36rem 0.55rem;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+  }
+
+  .screen-rep-pills :global(.rep-pill.is-active),
+  .screen-rep-pills :global(.rep-pill:hover) {
+    background: color-mix(in srgb, var(--accent) 18%, var(--bg-raised));
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .screen-main-result {
+    align-items: center;
+    color: var(--ink-strong);
+    display: inline-flex;
+    font: 700 clamp(1.75rem, 3vw, 2.35rem) / 1.15 var(--mono);
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .screen-extra-info {
+    align-items: center;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    font: 500 0.72rem/1.3 var(--mono);
+    gap: 0.65rem;
+    justify-content: space-between;
+    padding-top: 0.55rem;
+  }
+
+  .screen-extra-info :global(.prime-tag) {
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .screen-extra-info :global(.prime-tag.is-prime) {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* ========================================================================= */
+  /* ESTILOS GLOBALES PARA FRACCIONES VERTICALES, RAÍCES Y SUPERÍNDICES        */
+  /* ========================================================================= */
+  :global(.m-frac) {
+    align-items: center;
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.05;
+    margin: 0 0.22em;
+    vertical-align: middle;
+  }
+
+  :global(.m-num) {
+    padding: 0 0.28em 0.1em;
+    text-align: center;
+  }
+
+  :global(.m-bar) {
+    background: currentColor;
+    display: block;
+    height: 1.5px;
+    min-width: 1.1em;
+    width: 100%;
+  }
+
+  :global(.m-den) {
+    padding: 0.1em 0.28em 0;
+    text-align: center;
+  }
+
+  :global(.m-mixed) {
+    font-weight: 700;
+    margin-right: 0.12em;
+    vertical-align: middle;
+  }
+
+  :global(.m-sqrt) {
+    align-items: baseline;
+    display: inline-flex;
+    margin: 0 0.12em;
+    vertical-align: middle;
+  }
+
+  :global(.m-root-idx) {
+    color: var(--accent-ink);
+    font-size: 0.62em;
+    margin-right: -0.15em;
+    transform: translateY(-0.45em);
+  }
+
+  :global(.m-sqrt-sym) {
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-right: 0.03em;
+  }
+
+  :global(.m-sqrt-body) {
+    border-top: 1.5px solid var(--accent-ink);
+    padding: 0.05em 0.22em 0;
+  }
+
+  :global(.m-sup) {
+    font-size: 0.68em;
+    line-height: 1;
+    margin-left: 0.05em;
+    vertical-align: super;
+  }
+
+  :global(.m-overline) {
+    border-top: 2px solid var(--accent-ink);
+    padding-top: 1px;
+  }
+
+  :global(.m-slot) {
+    border: 1px dashed var(--accent-ink);
+    color: var(--accent-ink);
+    display: inline-block;
+    font-size: 0.8em;
+    line-height: 1;
+    min-width: 0.9em;
+    opacity: 0.75;
+    padding: 0.05em 0.18em;
+    text-align: center;
+  }
+
+  :global(.m-cursor) {
+    animation: calc-blink 1s steps(2, start) infinite;
+    background: var(--accent-ink);
+    display: inline-block;
+    height: 1.15em;
+    margin: 0 1px;
+    vertical-align: -0.18em;
+    width: 2.5px;
+  }
+
+  :global(.m-fn) {
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+
+  :global(.m-op) {
+    color: var(--muted);
+    margin: 0 0.16em;
+  }
+
+  :global(.m-placeholder) {
+    color: var(--muted);
+    opacity: 0.4;
+  }
+
+  :global(.res-error) {
+    color: #f87171;
+    font-size: 1rem;
+  }
+
+  @keyframes calc-blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  /* ========================================================================= */
+  /* TECLADO DE LA CALCULADORA CIENTÍFICA                                      */
+  /* ========================================================================= */
+  .calc-keypad {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--line);
+  }
+
+  .keypad-nav-row,
+  .keypad-sci-grid {
+    background: var(--line);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .keypad-main-grid {
+    background: var(--line);
+    border-top: 1px solid var(--line-strong);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .key {
+    align-items: center;
+    background: var(--bg);
+    border: 0;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--mono);
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0.35rem 0.25rem;
+    position: relative;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      transform 0.08s ease;
+    user-select: none;
+  }
+
+  .key:hover {
+    background: var(--bg-raised);
+  }
+
+  .key:active {
+    transform: scale(0.96);
+  }
+
+  .key-sub {
+    color: #f59e0b;
+    font-size: 0.56rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+    opacity: 0.85;
+  }
+
+  .calc-workbench.is-shift .key-sub {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .key-main {
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .key-frac-icon {
+    align-items: center;
+    color: var(--accent-ink);
+    display: inline-flex;
+    flex-direction: column;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 0.95;
+  }
+
+  .key-frac-icon .bar {
+    background: var(--accent-ink);
+    height: 1.5px;
+    margin: 1px 0;
+    width: 1.1rem;
+  }
+
+  .key-template {
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  }
+
+  .key-shift {
+    color: #f59e0b;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .calc-workbench.is-shift .key-shift {
+    background: #f59e0b;
+    color: #101116;
+  }
+
+  .key-nav {
+    color: var(--accent-ink);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .key-sd,
+  .key-fact {
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg));
+    color: var(--accent-ink);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .key-sd:hover,
+  .key-fact:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .key-del,
+  .key-ac {
+    color: #f87171;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .key-num {
+    background: var(--bg-raised);
+    font-size: 1.12rem;
+    font-weight: 600;
+    min-height: 3.55rem;
+  }
+
+  :global(:root[data-theme='dark']) .key-num {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  }
+
+  .key-op {
+    color: var(--accent-ink);
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-height: 3.55rem;
+  }
+
+  .key-const,
+  .key-ans {
+    font-size: 0.82rem;
+    font-weight: 600;
+    min-height: 3.55rem;
+  }
+
+  .key-eq {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+    font-size: 1.3rem;
+    font-weight: 700;
+    min-height: 3.55rem;
+  }
+
+  .key-eq:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  /* ========================================================================= */
+  /* RESOLUTOR DE ECUACIONES DE 2.º GRADO                                      */
+  /* ========================================================================= */
+  .quad-panel {
+    padding: 1.5rem;
+  }
+
+  .quad-eyebrow {
+    color: var(--accent-ink);
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.13em;
+    margin: 0 0 0.45rem;
+  }
+
+  .quad-header h3 {
+    font-family: var(--display);
+    font-size: 1.65rem;
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    margin: 0 0 1rem;
+  }
+
+  .quad-header h3 em {
+    color: var(--serif-ink);
+    font-family: var(--serif);
+    font-stretch: 100%;
+    font-weight: 400;
+  }
+
+  .quad-presets {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font: 500 0.65rem/1 var(--mono);
+    gap: 0.4rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .quad-presets span {
+    color: var(--muted);
+    margin-right: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .quad-presets button {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font: 500 0.65rem/1 var(--mono);
+    padding: 0.38rem 0.6rem;
+    transition: border-color 0.15s ease;
+  }
+
+  .quad-presets button:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .quad-inputs-row {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .quad-coef-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .coef-tag {
+    color: var(--muted);
+    font: 500 0.64rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .quad-coef-box input {
+    background: transparent;
+    border: 0;
+    color: var(--ink-strong);
+    font: 700 1.25rem/1 var(--mono);
+    outline: none;
+    width: 100%;
+  }
+
+  .quad-solve-btn {
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+    cursor: pointer;
+    font: 700 0.7rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    padding: 0 1.35rem;
+  }
+
+  .quad-solve-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .quad-results :global(.quad-nature-banner) {
+    align-items: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    display: flex;
+    font: 600 0.72rem/1.3 var(--mono);
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .quad-results :global(.quad-nature-banner.two-real) {
+    border-left: 3px solid var(--accent);
+  }
+
+  .quad-results :global(.quad-roots-grid),
+  .quad-results :global(.quad-meta-grid) {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 0.85rem;
+  }
+
+  .quad-results :global(.quad-root-card),
+  .quad-results :global(.quad-meta-cell) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem;
+  }
+
+  .quad-results :global(.root-label),
+  .quad-results :global(.meta-label) {
+    color: var(--muted);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .quad-results :global(.root-exact) {
+    color: var(--ink-strong);
+    font: 700 1.45rem/1.2 var(--mono);
+    min-height: 2.4rem;
+  }
+
+  .quad-results :global(.root-dec),
+  .quad-results :global(.meta-sub) {
+    color: var(--muted);
+    font: 500 0.74rem/1 var(--mono);
+  }
+
+  .quad-results :global(.meta-val) {
+    color: var(--ink);
+    font: 600 1.05rem/1.3 var(--mono);
+  }
+
+  .quad-results :global(.quad-steps) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 1rem;
+  }
+
+  .quad-results :global(.steps-title) {
+    color: var(--accent-ink);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    margin: 0 0 0.65rem;
+  }
+
+  .quad-results :global(.step-line) {
+    color: var(--ink-soft);
+    font: 400 0.88rem/1.6 var(--mono);
+    margin-bottom: 0.45rem;
+  }
+
+  /* ========================================================================= */
+  /* CINTA DE HISTORIAL LATERAL                                                */
+  /* ========================================================================= */
+  .calc-sidebar {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+  }
+
+  .tape-header {
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.85rem;
+  }
+
+  .tape-eyebrow {
+    color: var(--accent-ink);
+    display: block;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.13em;
+    margin-bottom: 0.3rem;
+  }
+
+  .tape-title {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    margin: 0;
+  }
+
+  .tape-clear-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.1em;
+    padding: 0.4rem 0.65rem;
+  }
+
+  .tape-clear-btn:hover {
+    border-color: #f87171;
+    color: #f87171;
+  }
+
+  .tape-help {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .tape-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+  }
+
+  .tape-list :global(.tape-item) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.75rem 0.85rem;
+    transition: border-color 0.15s ease;
+  }
+
+  .tape-list :global(.tape-item:hover) {
+    border-color: var(--line-strong);
+  }
+
+  .tape-list :global(.tape-item-meta) {
+    color: var(--muted);
+    display: flex;
+    font: 500 0.58rem/1 var(--mono);
+    justify-content: space-between;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.45rem;
+  }
+
+  .tape-list :global(.tape-item-body) {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font: 600 1rem/1.3 var(--mono);
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+
+  .tape-list :global(.tape-res) {
+    color: var(--accent-ink);
+    font-size: 1.1rem;
+  }
+
+  .tape-list :global(.tape-item-actions) {
+    border-top: 1px dashed var(--line);
+    display: flex;
+    gap: 0.4rem;
+    padding-top: 0.45rem;
+  }
+
+  .tape-list :global(.tape-item-actions button) {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    flex: 1;
+    font: 500 0.6rem/1 var(--mono);
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .tape-list :global(.tape-item-actions button:hover) {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .calc-shortcuts-card {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    margin-top: 1.15rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .shortcuts-title {
+    color: var(--muted);
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    margin: 0 0 0.65rem;
+  }
+
+  .calc-shortcuts-card ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .calc-shortcuts-card li {
+    align-items: center;
+    color: var(--muted);
+    display: flex;
+    font-size: 0.76rem;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .calc-shortcuts-card kbd {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    font: 600 0.62rem/1 var(--mono);
+    padding: 0.2rem 0.4rem;
+  }
+
+  .sr-only {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  @media (max-width: 1024px) {
+    .calc-workbench {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .quad-inputs-row,
+    .quad-results :global(.quad-roots-grid),
+    .quad-results :global(.quad-meta-grid) {
+      grid-template-columns: 1fr;
+    }
+
+    .quad-solve-btn {
+      height: 2.8rem;
+    }
+  }
+</style>
