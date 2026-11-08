@@ -17,6 +17,18 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
     <meta name="theme-color" content="#101116" data-theme-meta />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
+
+    <!-- Configuración PWA (Instalable como Web App en móviles y ordenadores) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Math Universe" />
+    <meta name="application-name" content="Math Universe" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:type" content="website" />
@@ -37,6 +49,38 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
           if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f0ea' : '#101116');
         } catch {}
       })();
+    </script>
+
+    <!-- Registro del Service Worker para PWA (Siempre actualizado con Network-First) -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js', { updateViaCache: 'none' })
+            .then((reg) => {
+              // Comprobar si hay nueva versión al cargar y al volver a la app
+              reg.update();
+
+              document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                  reg.update();
+                }
+              });
+
+              // Si se detecta un nuevo Service Worker, activarlo de inmediato
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                if (!newWorker) return;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  }
+                });
+              });
+            })
+            .catch(() => {});
+        });
+      }
     </script>
 
     <style is:global>

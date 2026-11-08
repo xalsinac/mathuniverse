@@ -1,0 +1,70 @@
+{
+  "name": "Math Universe",
+  "short_name": "Math Universe",
+  "description": "Un universo de proyectos, aplicaciones y recursos para aprender y enseñar matemáticas.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101116",
+  "theme_color": "#101116",
+  "orientation": "any",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["education", "math", "productivity"],
+  "shortcuts": [
+    {
+      "name": "08 · Math Craft",
+      "short_name": "Math Craft",
+      "description": "Juegos matemáticos interactivos y experimentos de física",
+      "url": "/craft",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "04 · Math Gym",
+      "short_name": "Math Gym",
+      "description": "Gimnasio de cálculo y series de ejercicios",
+      "url": "/gym",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Selectividad PAU",
+      "short_name": "Selectividad",
+      "description": "Exámenes de Selectividad de Matemáticas clasificados",
+      "url": "/selectividad",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Herramientas & Calc",
+      "short_name": "Calculadora",
+      "description": "Calculadora científica, graficador 2D y utilidades",
+      "url": "/herramientas",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
