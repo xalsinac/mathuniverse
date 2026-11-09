@@ -378,16 +378,20 @@ const { compact = false } = Astro.props;
     },
   ];
 
-  document.querySelectorAll<HTMLElement>('[data-calc-root]').forEach((root) => {
-    // Estado principal de la calculadora
-    // Usamos '¦' como marcador de posición del cursor dentro de las plantillas (\frac{¦}{}, \sqrt{¦}, etc.)
-    let exprWithCursor = '\\frac{2}{3}+\\frac{5}{6}¦';
-    let angleMode: AngleMode = 'DEG';
-    let shiftActive = false;
-    let ansValue = 1.5;
-    let memoryValue = 0;
-    let currentEval: EvalResult | null = null;
-    let currentRepIndex = 0;
+  const initAllCalculators = () => {
+    document.querySelectorAll<HTMLElement>('[data-calc-root]').forEach((root) => {
+      if (root.dataset.calcReady === 'true') return;
+      root.dataset.calcReady = 'true';
+
+      // Estado principal de la calculadora
+      // Inicia limpia con '¦' (cursor parpadeante sobre 0)
+      let exprWithCursor = '¦';
+      let angleMode: AngleMode = 'DEG';
+      let shiftActive = false;
+      let ansValue = 0;
+      let memoryValue = 0;
+      let currentEval: EvalResult | null = null;
+      let currentRepIndex = 0;
 
     // Elementos del DOM
     const naturalExprEl = root.querySelector<HTMLElement>('[data-natural-expr]');
@@ -830,24 +834,54 @@ const { compact = false } = Astro.props;
       }
     };
 
+    // Helper universal para botones táctiles interactivos:
+    // En móviles (Android / iOS) `pointerdown` responde con 0ms de latencia antes de cualquier
+    // retraso o cancelación de gesto del navegador. Se previene la acción por defecto para que
+    // pequeñas oscilaciones del dedo al tocar la pantalla no anulen el click.
+    const bindInteractive = (btn: HTMLElement, callback: (ev: Event) => void) => {
+      let lastTrigger = 0;
+      const onTrigger = (ev: Event) => {
+        const now = Date.now();
+        if (now - lastTrigger < 260) {
+          ev.preventDefault();
+          return;
+        }
+        lastTrigger = now;
+        ev.preventDefault();
+        callback(ev);
+      };
+
+      btn.addEventListener('pointerdown', onTrigger);
+      btn.addEventListener('click', onTrigger);
+    };
+
     root.querySelectorAll<HTMLButtonElement>('[data-key]').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      bindInteractive(btn, () => {
         const k = btn.dataset.key;
-        if (k) handleKeyAction(k);
+        if (k) {
+          if ('vibrate' in navigator) {
+            try {
+              navigator.vibrate(10);
+            } catch {}
+          }
+          handleKeyAction(k);
+        }
       });
     });
 
     // Unidad angular DEG -> RAD -> GRAD
-    angleBtn?.addEventListener('click', () => {
-      const order: AngleMode[] = ['DEG', 'RAD', 'GRAD'];
-      angleMode = order[(order.indexOf(angleMode) + 1) % order.length];
-      if (angleLabel) angleLabel.textContent = angleMode;
-      refreshDisplay(true);
-    });
+    if (angleBtn) {
+      bindInteractive(angleBtn, () => {
+        const order: AngleMode[] = ['DEG', 'RAD', 'GRAD'];
+        angleMode = order[(order.indexOf(angleMode) + 1) % order.length];
+        if (angleLabel) angleLabel.textContent = angleMode;
+        refreshDisplay(true);
+      });
+    }
 
     // Botones de memoria (MC, MR, M+, M-)
     root.querySelectorAll<HTMLButtonElement>('[data-mem-action]').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      bindInteractive(btn, () => {
         const act = btn.dataset.memAction;
         if (act === 'MC') {
           memoryValue = 0;
@@ -1134,7 +1168,7 @@ const { compact = false } = Astro.props;
     const calcViews = root.querySelectorAll<HTMLElement>('[data-view]');
 
     modeBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      bindInteractive(btn, () => {
         const target = btn.dataset.calcMode;
         modeBtns.forEach((b) => {
           const active = b.dataset.calcMode === target;
@@ -1211,13 +1245,15 @@ const { compact = false } = Astro.props;
       `;
     };
 
-    solveQuadBtn?.addEventListener('click', runQuadraticSolver);
+    if (solveQuadBtn) {
+      bindInteractive(solveQuadBtn, runQuadraticSolver);
+    }
     [inputA, inputB, inputC].forEach((inp) => {
       inp?.addEventListener('input', runQuadraticSolver);
     });
 
     root.querySelectorAll<HTMLButtonElement>('[data-quad-preset]').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      bindInteractive(btn, () => {
         const parts = (btn.dataset.quadPreset || '').split(',');
         if (parts.length === 3 && inputA && inputB && inputC) {
           inputA.value = parts[0];
@@ -1233,6 +1269,15 @@ const { compact = false } = Astro.props;
     renderTape();
     runQuadraticSolver();
   });
+};
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllCalculators);
+  } else {
+    initAllCalculators();
+  }
+  window.addEventListener('load', initAllCalculators);
+  document.addEventListener('astro:page-load', initAllCalculators);
 </script>
 
 <style>
@@ -1779,6 +1824,10 @@ const { compact = false } = Astro.props;
     flex-direction: column;
     gap: 1px;
     background: var(--line);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .keypad-nav-row,
@@ -1787,6 +1836,10 @@ const { compact = false } = Astro.props;
     display: grid;
     gap: 1px;
     grid-template-columns: repeat(7, minmax(0, 1fr));
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .keypad-main-grid {
@@ -1795,6 +1848,10 @@ const { compact = false } = Astro.props;
     display: grid;
     gap: 1px;
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .key {
@@ -1815,6 +1872,10 @@ const { compact = false } = Astro.props;
       color 0.12s ease,
       transform 0.08s ease;
     user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .key:hover {

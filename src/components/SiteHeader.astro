@@ -218,18 +218,55 @@ const isHome = activePage === 'home';
     );
   };
 
-  syncToggleUI(document.documentElement.dataset.theme || 'dark');
+  const updateCrossLinks = (theme: string) => {
+    try {
+      document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) return;
+        try {
+          const url = new URL(href, window.location.href);
+          if (url.origin === window.location.origin || url.hostname.includes('vercel.app')) {
+            url.searchParams.set('theme', theme);
+            if (url.origin === window.location.origin && !href.startsWith('http')) {
+              const relativePath = href.split('?')[0].split('#')[0];
+              const hash = href.includes('#') ? '#' + href.split('#')[1] : '';
+              a.setAttribute('href', `${relativePath}?theme=${theme}${hash}`);
+            } else {
+              a.setAttribute('href', url.toString());
+            }
+          }
+        } catch (_) {}
+      });
+    } catch (_) {}
+  };
+
+  const initialCurrentTheme = document.documentElement.dataset.theme || 'dark';
+  syncToggleUI(initialCurrentTheme);
+  updateCrossLinks(initialCurrentTheme);
 
   toggleBtn?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem('math-universe-theme', next);
+      localStorage.setItem('mathlab_theme', next);
+      localStorage.setItem('mathdojo_theme', next);
     } catch {}
     const meta = document.querySelector('[data-theme-meta]');
     if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
     syncToggleUI(next);
+    updateCrossLinks(next);
     window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
+  });
+
+  window.addEventListener('pageshow', () => {
+    try {
+      const saved = localStorage.getItem('math-universe-theme') || localStorage.getItem('mathlab_theme') || localStorage.getItem('mathdojo_theme');
+      const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+      document.documentElement.dataset.theme = theme;
+      syncToggleUI(theme);
+      updateCrossLinks(theme);
+    } catch (_) {}
   });
 
   // Detección de Sistema Operativo para atajo del buscador (⌘K en Mac/Apple vs Ctrl+K en PC/Windows/Linux)

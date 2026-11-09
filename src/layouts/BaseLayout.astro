@@ -42,9 +42,14 @@ const canonical = new URL(Astro.url.pathname, site.url).toString();
     <script is:inline>
       (() => {
         try {
-          const saved = localStorage.getItem('math-universe-theme');
+          const params = new URLSearchParams(window.location.search);
+          const urlTheme = params.get('theme');
+          const saved = urlTheme || localStorage.getItem('math-universe-theme') || localStorage.getItem('mathlab_theme') || localStorage.getItem('mathdojo_theme');
           const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
           document.documentElement.dataset.theme = theme;
+          localStorage.setItem('math-universe-theme', theme);
+          localStorage.setItem('mathlab_theme', theme);
+          localStorage.setItem('mathdojo_theme', theme);
           const meta = document.querySelector('[data-theme-meta]');
           if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f0ea' : '#101116');
         } catch {}

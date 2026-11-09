@@ -1,0 +1,416 @@
+---
+import ScientificCalculator from '../components/ScientificCalculator.astro';
+import { site } from '../config/site';
+---
+
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#101116" data-theme-meta />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Configuración PWA Independiente para la Calculadora Standalone -->
+    <link rel="manifest" href="/manifest-calc.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Math Calc" />
+    <meta name="application-name" content="Math Calc" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
+    <title>Math Calc — Calculadora Científica Standalone</title>
+    <meta
+      name="description"
+      content="Calculadora científica con fracciones verticales, display natural, S⇔D y resolución de ecuaciones de 2.º grado. Webapp independiente e instalable en el móvil."
+    />
+
+    <!-- Inicialización síncrona de tema para evitar parpadeos -->
+    <script is:inline>
+      (() => {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const urlTheme = params.get('theme');
+          const saved = urlTheme || localStorage.getItem('math-universe-theme') || localStorage.getItem('mathlab_theme') || localStorage.getItem('mathdojo_theme');
+          const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+          document.documentElement.dataset.theme = theme;
+          localStorage.setItem('math-universe-theme', theme);
+          localStorage.setItem('mathlab_theme', theme);
+          localStorage.setItem('mathdojo_theme', theme);
+          const meta = document.querySelector('[data-theme-meta]');
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f0ea' : '#101116');
+        } catch {}
+      })();
+    </script>
+
+    <!-- Registro del Service Worker PWA -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js', { updateViaCache: 'none' })
+            .then((reg) => {
+              reg.update();
+              document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                  reg.update();
+                }
+              });
+            })
+            .catch(() => {});
+        });
+      }
+    </script>
+
+    <style is:global>
+      @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=Geist+Mono:wght@400..700&family=Inter:wght@400;500;600;700&display=swap');
+
+      :root,
+      :root[data-theme='dark'] {
+        --bg: #101116;
+        --bg-raised: #161820;
+        --bg-sunken: #0b0c10;
+        --ink: #f3f2ec;
+        --ink-strong: #ffffff;
+        --ink-soft: #c5c7d2;
+        --muted: #8e919e;
+        --line: #272932;
+        --line-strong: #3f4250;
+        --accent: #3b82f6;
+        --accent-ink: #64a5ff;
+        --invert-bg: #f3f2ec;
+        --invert-fg: #101116;
+        --mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+        --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        --display: 'Archivo', var(--sans);
+      }
+
+      :root[data-theme='light'] {
+        --bg: #f2f0ea;
+        --bg-raised: #ffffff;
+        --bg-sunken: #e7e5dc;
+        --ink: #101116;
+        --ink-strong: #000000;
+        --ink-soft: #4a4d5a;
+        --muted: #6e7282;
+        --line: #dad7cc;
+        --line-strong: #b5b1a2;
+        --accent: #2563eb;
+        --accent-ink: #1d4ed8;
+        --invert-bg: #101116;
+        --invert-fg: #f3f2ec;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        min-height: 100dvh;
+        width: 100%;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body class="calc-standalone-body">
+    <!-- Barra superior técnica de la WebApp Standalone -->
+    <header class="calc-top-header">
+      <div class="calc-top-left">
+        <a href="/" class="calc-home-link" title="Volver a Math Universe">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="back-icon" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span class="calc-app-title">
+            <strong>Math</strong> <span>Calc</span>
+          </span>
+        </a>
+        <span class="calc-pill-badge">PWA STANDALONE</span>
+      </div>
+
+      <div class="calc-top-actions">
+        <!-- Botón de Instalación como App nativa (se muestra cuando el navegador lo permite) -->
+        <button
+          type="button"
+          class="calc-action-btn install-btn"
+          data-pwa-install
+          hidden
+          title="Instalar calculadora en la pantalla de inicio"
+        >
+          <span>📲 Instalar App</span>
+        </button>
+
+        <!-- Conmutador de Tema Claro / Oscuro -->
+        <button
+          type="button"
+          class="calc-action-btn theme-btn"
+          data-calc-theme-toggle
+          aria-label="Cambiar tema de la calculadora"
+          title="Cambiar entre modo claro y oscuro"
+        >
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenedor Principal de la Calculadora -->
+    <main class="calc-main-stage">
+      <div class="calc-container-wrap">
+        <ScientificCalculator />
+      </div>
+    </main>
+
+    <script>
+      const updateCalcCrossLinks = (theme: string) => {
+        try {
+          document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+            const href = a.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            try {
+              const url = new URL(href, window.location.href);
+              url.searchParams.set('theme', theme);
+              if (url.origin === window.location.origin && !href.startsWith('http')) {
+                const relativePath = href.split('?')[0].split('#')[0];
+                const hash = href.includes('#') ? '#' + href.split('#')[1] : '';
+                a.setAttribute('href', `${relativePath}?theme=${theme}${hash}`);
+              } else {
+                a.setAttribute('href', url.toString());
+              }
+            } catch (_) {}
+          });
+        } catch (_) {}
+      };
+
+      // Conmutador de Tema Claro / Oscuro
+      const themeBtn = document.querySelector<HTMLButtonElement>('[data-calc-theme-toggle]');
+      updateCalcCrossLinks(document.documentElement.dataset.theme || 'dark');
+
+      themeBtn?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem('math-universe-theme', next);
+          localStorage.setItem('mathlab_theme', next);
+          localStorage.setItem('mathdojo_theme', next);
+        } catch {}
+        const meta = document.querySelector('[data-theme-meta]');
+        if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
+        updateCalcCrossLinks(next);
+      });
+
+      window.addEventListener('pageshow', () => {
+        try {
+          const saved = localStorage.getItem('math-universe-theme') || localStorage.getItem('mathlab_theme') || localStorage.getItem('mathdojo_theme');
+          const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+          document.documentElement.dataset.theme = theme;
+          updateCalcCrossLinks(theme);
+        } catch (_) {}
+      });
+
+      // Lógica de Instalación PWA (beforeinstallprompt)
+      let deferredPrompt: any = null;
+      const installBtn = document.querySelector<HTMLButtonElement>('[data-pwa-install]');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) {
+          installBtn.hidden = false;
+        }
+      });
+
+      installBtn?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.hidden = true;
+        }
+        deferredPrompt = null;
+      });
+
+      window.addEventListener('appinstalled', () => {
+        if (installBtn) installBtn.hidden = true;
+        deferredPrompt = null;
+      });
+    </script>
+
+    <style>
+      .calc-standalone-body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+      }
+
+      /* Barra superior de la App */
+      .calc-top-header {
+        align-items: center;
+        background: color-mix(in srgb, var(--bg) 94%, transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        min-height: 3.2rem;
+        padding: 0 1.25rem;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      .calc-top-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .calc-home-link {
+        align-items: center;
+        color: var(--ink);
+        display: inline-flex;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+
+      .back-icon {
+        height: 1.15rem;
+        width: 1.15rem;
+        color: var(--muted);
+        transition: transform 0.15s ease, color 0.15s ease;
+      }
+
+      .calc-home-link:hover .back-icon {
+        color: var(--accent-ink);
+        transform: translateX(-2px);
+      }
+
+      .calc-app-title {
+        font-family: var(--display);
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .calc-app-title strong {
+        color: var(--accent-ink);
+      }
+
+      .calc-pill-badge {
+        background: color-mix(in srgb, var(--accent) 15%, transparent);
+        border: 1px solid var(--accent);
+        border-radius: 4px;
+        color: var(--accent-ink);
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        padding: 0.2rem 0.45rem;
+      }
+
+      .calc-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .calc-action-btn {
+        appearance: none;
+        background: var(--bg-raised);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--ink);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        padding: 0.4rem 0.75rem;
+        transition: all 0.15s ease;
+      }
+
+      .calc-action-btn:hover {
+        background: var(--invert-bg);
+        border-color: var(--line-strong);
+        color: var(--invert-fg);
+      }
+
+      .install-btn {
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 600;
+      }
+
+      .install-btn:hover {
+        background: var(--accent);
+        color: #ffffff;
+      }
+
+      .theme-btn {
+        padding: 0.4rem;
+        width: 2.2rem;
+        height: 2.2rem;
+      }
+
+      .theme-btn svg {
+        height: 1rem;
+        width: 1rem;
+      }
+
+      :root[data-theme='dark'] .icon-moon {
+        display: none;
+      }
+
+      :root[data-theme='light'] .icon-sun {
+        display: none;
+      }
+
+      /* Escenario principal de la calculadora */
+      .calc-main-stage {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem 1rem 3rem;
+      }
+
+      .calc-container-wrap {
+        width: 100%;
+        max-width: 1180px;
+      }
+
+      @media (max-width: 640px) {
+        .calc-top-header {
+          padding: 0 0.85rem;
+          min-height: 2.85rem;
+        }
+
+        .calc-pill-badge {
+          display: none;
+        }
+
+        .calc-main-stage {
+          padding: 0.75rem 0.35rem 2rem;
+        }
+      }
+    </style>
+  </body>
+</html>

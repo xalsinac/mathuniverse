@@ -290,8 +290,10 @@ export function renderVerticalFractionHtml(numHtml: string, denHtml: string): st
  * raíces con barra superior y superíndices.
  */
 export function renderNaturalExpression(expr: string): string {
-  if (!expr || expr.trim() === '') {
-    return '<span class="m-placeholder">0</span>';
+  if (!expr || expr.trim() === '' || expr === '¦') {
+    return expr === '¦'
+      ? '<span class="m-placeholder">0</span><span class="m-cursor" aria-hidden="true"></span>'
+      : '<span class="m-placeholder">0</span>';
   }
 
   const escapeHtml = (s: string) =>
