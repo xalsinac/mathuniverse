@@ -1,0 +1,733 @@
+---
+// Componente de Cabecera Hero con Simulación de Ondas y Bandada de Partículas interactivas
+// Inspirado en el diseño fluido y reactivo de Google Antigravity
+---
+
+<div class="academy-hero-wrapper" id="hero-wave-container">
+  <!-- Canvas interactivo de ondas y bandada -->
+  <canvas id="academy-flock-canvas" class="academy-flock-canvas" aria-hidden="true"></canvas>
+
+  <!-- Capa sutil de gradiente para fusionar con el fondo cósmico -->
+  <div class="hero-vignette" aria-hidden="true"></div>
+
+  <!-- Contenido tipográfico y tarjetas de cristal sobre el canvas -->
+  <div class="academy-hero-content">
+    <div class="hero-glass-badge">
+      <span class="badge-dot" aria-hidden="true"></span>
+      <span class="badge-num">07</span>
+      <span class="badge-sep">/</span>
+      <span class="badge-title">MATH ACADEMY</span>
+      <span class="badge-tag">ENTENDER DE VERDAD</span>
+    </div>
+
+    <h1 class="hero-main-title">
+      El rigor de las matemáticas, <br />
+      <span class="hero-accent-text">demostrado paso a paso.</span>
+    </h1>
+
+    <p class="hero-lead-text">
+      El tratado conceptual y estructurado para <strong>ESO y Bachillerato</strong>. 
+      Donde ninguna fórmula se memoriza a ciegas: cada propiedad tiene su deducción, 
+      cada concepto su porqué y cada teorema sus hipótesis y contraejemplos.
+    </p>
+
+    <!-- Píldoras de métricas con efecto cristal -->
+    <div class="hero-pills-row">
+      <div class="glass-metric-pill">
+        <span class="metric-icon">📐</span>
+        <div class="metric-body">
+          <strong>6 Bloques</strong>
+          <span>ESO &amp; Bachillerato</span>
+        </div>
+      </div>
+
+      <div class="glass-metric-pill">
+        <span class="metric-icon">⚖️</span>
+        <div class="metric-body">
+          <strong>Demostraciones</strong>
+          <span>Deductivas y visuales</span>
+        </div>
+      </div>
+
+      <div class="glass-metric-pill">
+        <span class="metric-icon">🔍</span>
+        <div class="metric-body">
+          <strong>Contraejemplos</strong>
+          <span>Límites de los teoremas</span>
+        </div>
+      </div>
+
+      <div class="glass-metric-pill">
+        <span class="metric-icon">🎓</span>
+        <div class="metric-body">
+          <strong>Preparación PAU</strong>
+          <span>Rigor de matrícula</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botonera de navegación rápida -->
+    <div class="hero-actions-row">
+      <a href="#bloques" class="hero-btn-primary">
+        <span>Explorar los 6 Bloques</span>
+        <span class="btn-arrow" aria-hidden="true">↓</span>
+      </a>
+      <a href="#teoremas" class="hero-btn-glass">
+        <span class="btn-star" aria-hidden="true">👑</span>
+        <span>Salón de Grandes Teoremas</span>
+      </a>
+      <a href="#metodologia" class="hero-btn-link">
+        <span>Manifiesto de Rigor →</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========================================================================
+  // SIMULACIÓN DE ONDAS ARMÓNICAS Y BANDADA (FLOCKING BOIDS) ESTILO ANTIGRAVITY
+  // =========================================================================
+  (() => {
+    const canvas = document.getElementById('academy-flock-canvas') as HTMLCanvasElement | null;
+    const container = document.getElementById('hero-wave-container');
+    if (!canvas || !container) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let animationFrameId: number | null = null;
+    let isRunning = false;
+    let time = 0;
+
+    // Estado del puntero para repulsión y estela reactiva
+    const pointer = {
+      x: -9999,
+      y: -9999,
+      prevX: -9999,
+      prevY: -9999,
+      vx: 0,
+      vy: 0,
+      radius: 170,
+      active: false,
+    };
+
+    // Paletas de color reactivas al tema de Math Universe
+    const getColors = () => {
+      const isLight = document.documentElement.dataset.theme === 'light';
+      if (isLight) {
+        return {
+          waveA: 'rgba(217, 119, 6, 0.08)',
+          waveB: 'rgba(180, 83, 9, 0.12)',
+          waveC: 'rgba(71, 85, 105, 0.07)',
+          boidMain: '#d97706',
+          boidHighlight: '#f59e0b',
+          boidSubtle: '#b45309',
+          boidGlow: 'rgba(217, 119, 6, 0.25)',
+        };
+      }
+      return {
+        waveA: 'rgba(255, 193, 77, 0.07)',
+        waveB: 'rgba(251, 191, 36, 0.12)',
+        waveC: 'rgba(254, 240, 138, 0.05)',
+        boidMain: '#ffc14d',
+        boidHighlight: '#ffeaa7',
+        boidSubtle: '#e69500',
+        boidGlow: 'rgba(255, 193, 77, 0.45)',
+      };
+    };
+
+    let colors = getColors();
+
+    // Observador para cambios instantáneos de modo claro/oscuro
+    const themeObserver = new MutationObserver(() => {
+      colors = getColors();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Definición de partícula / Boid de la bandada
+    interface Boid {
+      x: number;
+      baseY: number;
+      y: number;
+      vx: number;
+      vy: number;
+      angle: number;
+      speed: number;
+      size: number;
+      layer: number; // 0: lejana, 1: media, 2: frontal
+      phase: number;
+      freq: number;
+      amplitude: number;
+      colorType: number;
+    }
+
+    const boids: Boid[] = [];
+    const BOID_COUNT = 85;
+
+    const initBoids = () => {
+      boids.length = 0;
+      for (let i = 0; i < BOID_COUNT; i++) {
+        const layer = Math.random() < 0.25 ? 2 : Math.random() < 0.65 ? 1 : 0;
+        const size = layer === 2 ? 8.5 : layer === 1 ? 6.0 : 4.0;
+        const speed = (0.7 + Math.random() * 0.9) * (layer === 2 ? 1.3 : layer === 1 ? 1.0 : 0.7);
+
+        boids.push({
+          x: Math.random() * (width || 1200),
+          baseY: Math.random() * (height || 500),
+          y: 0,
+          vx: speed,
+          vy: 0,
+          angle: 0,
+          speed,
+          size,
+          layer,
+          phase: Math.random() * Math.PI * 2,
+          freq: 0.003 + Math.random() * 0.004,
+          amplitude: 35 + Math.random() * 45,
+          colorType: i % 5,
+        });
+      }
+    };
+
+    // Redimensionado nítido con soporte para pantallas Retina
+    const resize = () => {
+      const rect = container.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.scale(dpr, dpr);
+
+      if (boids.length === 0) {
+        initBoids();
+      } else {
+        boids.forEach((b) => {
+          if (b.x > width) b.x = Math.random() * width;
+          if (b.baseY > height) b.baseY = Math.random() * height;
+        });
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(() => resize());
+    resizeObserver.observe(container);
+
+    // Eventos de puntero (ratón y pantallas táctiles)
+    const onPointerMove = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = 'touches' in e && e.touches[0] ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e && e.touches[0] ? e.touches[0].clientY : (e as MouseEvent).clientY;
+
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+
+      if (pointer.prevX !== -9999) {
+        pointer.vx = (px - pointer.prevX) * 0.3;
+        pointer.vy = (py - pointer.prevY) * 0.3;
+      }
+      pointer.prevX = pointer.x;
+      pointer.prevY = pointer.y;
+      pointer.x = px;
+      pointer.y = py;
+      pointer.active = true;
+    };
+
+    const onPointerLeave = () => {
+      pointer.active = false;
+      pointer.x = -9999;
+      pointer.y = -9999;
+      pointer.prevX = -9999;
+      pointer.prevY = -9999;
+      pointer.vx = 0;
+      pointer.vy = 0;
+    };
+
+    container.addEventListener('mousemove', onPointerMove, { passive: true });
+    container.addEventListener('touchmove', onPointerMove, { passive: true });
+    container.addEventListener('mouseleave', onPointerLeave, { passive: true });
+    container.addEventListener('touchend', onPointerLeave, { passive: true });
+
+    // Dibuja las líneas de ondas matemáticas en capas
+    const drawWaveRibbons = () => {
+      const waveLayers = [
+        { yBase: height * 0.30, k: 0.0035, w: 0.7, amp: 45, color: colors.waveA, width: 1.5 },
+        { yBase: height * 0.48, k: 0.0048, w: -0.9, amp: 55, color: colors.waveB, width: 2.0 },
+        { yBase: height * 0.65, k: 0.0028, w: 0.5, amp: 40, color: colors.waveC, width: 1.5 },
+        { yBase: height * 0.82, k: 0.0055, w: -0.6, amp: 50, color: colors.waveA, width: 1.2 },
+      ];
+
+      waveLayers.forEach((w) => {
+        ctx.beginPath();
+        ctx.strokeStyle = w.color;
+        ctx.lineWidth = w.width;
+
+        const step = 14;
+        for (let x = 0; x <= width + step; x += step) {
+          let y = w.yBase + Math.sin(x * w.k + time * w.w) * w.amp + Math.cos(x * (w.k * 0.6) - time * 0.4) * (w.amp * 0.5);
+
+          // Si el puntero está cerca, la onda se deforma
+          if (pointer.active) {
+            const dx = x - pointer.x;
+            const dy = y - pointer.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < pointer.radius) {
+              const influence = (1 - dist / pointer.radius);
+              y += (dy / (dist || 1)) * influence * 24;
+            }
+          }
+
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+    };
+
+    // Bucle de renderizado
+    const render = () => {
+      time += 0.016;
+      ctx.clearRect(0, 0, width, height);
+
+      // 1. Dibujar cintas de ondas armónicas
+      drawWaveRibbons();
+
+      // 2. Actualizar y dibujar cada pájaro/boid de la bandada
+      boids.forEach((b) => {
+        // Avance horizontal continuo con reaparición por la izquierda
+        b.x += b.vx;
+        if (b.x > width + 40) {
+          b.x = -40;
+          b.baseY = Math.random() * height;
+        }
+
+        // Posición vertical guiada por onda senoidal armónica
+        const waveOffset = Math.sin(b.x * b.freq + time * 1.1 + b.phase) * b.amplitude;
+        const targetY = b.baseY + waveOffset;
+
+        // Derivada matemática para orientación en el flujo
+        const slope = (Math.cos(b.x * b.freq + time * 1.1 + b.phase) * b.amplitude * b.freq);
+        let targetAngle = Math.atan2(slope * b.speed, b.speed);
+
+        // Interacción física con el cursor (repulsión y estela)
+        if (pointer.active) {
+          const dx = b.x - pointer.x;
+          const dy = targetY - pointer.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < pointer.radius && dist > 1) {
+            const force = (1 - dist / pointer.radius);
+            const repelAngle = Math.atan2(dy, dx);
+            
+            // Mezclamos la dirección de la ola con la repulsión del cursor y el wake
+            targetAngle = targetAngle * (1 - force * 0.8) + repelAngle * (force * 0.8);
+            b.y += (dy / dist) * force * 3.5;
+            b.x += (dx / dist) * force * 1.8;
+          }
+        }
+
+        // Suavizado de posición y rotación (amortiguamiento elástico)
+        b.y += (targetY - b.y) * 0.12;
+        b.angle += (targetAngle - b.angle) * 0.15;
+
+        // Dibujo del ave geométrica / chevrón aerodinámico
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.rotate(b.angle);
+
+        // Selección de color según capa y tipo
+        let fill = colors.boidMain;
+        let alpha = b.layer === 2 ? 0.95 : b.layer === 1 ? 0.72 : 0.40;
+
+        if (b.colorType === 0) {
+          fill = colors.boidHighlight;
+        } else if (b.colorType === 1) {
+          fill = colors.boidSubtle;
+        }
+
+        ctx.fillStyle = fill;
+        ctx.globalAlpha = alpha;
+
+        // Silueta chevrón de pájaro en vuelo
+        const s = b.size;
+        ctx.beginPath();
+        ctx.moveTo(-s * 1.1, -s * 0.55);
+        ctx.lineTo(s * 1.0, 0);
+        ctx.lineTo(-s * 1.1, s * 0.55);
+        ctx.lineTo(-s * 0.5, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Opcional: brillo en las partículas de primer plano
+        if (b.layer === 2) {
+          ctx.shadowColor = colors.boidGlow;
+          ctx.shadowBlur = 6;
+        }
+
+        ctx.restore();
+      });
+
+      // Decadencia de la velocidad del puntero
+      pointer.vx *= 0.85;
+      pointer.vy *= 0.85;
+
+      if (isRunning) {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    // IntersectionObserver para detener el canvas cuando no es visible (0% CPU en scroll)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (!isRunning) {
+            isRunning = true;
+            render();
+          }
+        } else {
+          isRunning = false;
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        }
+      });
+    }, { threshold: 0.05 });
+
+    observer.observe(container);
+  })();
+</script>
+
+<style>
+  .academy-hero-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 520px;
+    padding: 3.5rem 1.5rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 193, 77, 0.08) 0%, transparent 65%);
+  }
+
+  :global([data-theme="light"]) .academy-hero-wrapper {
+    background: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.06) 0%, transparent 70%);
+  }
+
+  /* Canvas interactivo que cubre todo el Hero */
+  .academy-flock-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Viñeta de degradado suave */
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(16, 17, 22, 0.4) 70%,
+      var(--bg-primary, #101116) 100%
+    );
+  }
+
+  :global([data-theme="light"]) .hero-vignette {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(242, 240, 234, 0.4) 70%,
+      var(--bg-primary, #f2f0ea) 100%
+    );
+  }
+
+  /* Contenedor tipográfico central */
+  .academy-hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Insignia / Badge con efecto cristal */
+  .hero-glass-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 193, 77, 0.08);
+    border: 1px solid rgba(255, 193, 77, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    color: #ffc14d;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .hero-glass-badge {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(217, 119, 6, 0.35);
+    color: #b45309;
+    box-shadow: 0 4px 16px rgba(217, 119, 6, 0.08);
+  }
+
+  .badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffc14d;
+    box-shadow: 0 0 10px #ffc14d;
+  }
+
+  :global([data-theme="light"]) .badge-dot {
+    background: #d97706;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.5);
+  }
+
+  .badge-num {
+    font-weight: 700;
+  }
+
+  .badge-sep {
+    opacity: 0.4;
+  }
+
+  .badge-title {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-tag {
+    opacity: 0.75;
+    padding-left: 0.25rem;
+    border-left: 1px solid rgba(255, 193, 77, 0.3);
+  }
+
+  :global([data-theme="light"]) .badge-tag {
+    border-left-color: rgba(217, 119, 6, 0.25);
+  }
+
+  /* Título Principal */
+  .hero-main-title {
+    font-size: clamp(2.3rem, 5.5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 1.2rem;
+    text-wrap: balance;
+  }
+
+  .hero-accent-text {
+    background: linear-gradient(135deg, #ffc14d 0%, #ffeaa7 50%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  :global([data-theme="light"]) .hero-accent-text {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 60%, #92400e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Subtítulo / Lead */
+  .hero-lead-text {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.65;
+    color: var(--muted, #94a3b8);
+    max-width: 760px;
+    margin: 0 0 2.2rem;
+    text-wrap: pretty;
+  }
+
+  .hero-lead-text strong {
+    color: var(--ink, #f3f2ec);
+    font-weight: 600;
+  }
+
+  /* Fila de píldoras de cristal */
+  .hero-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .glass-metric-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 193, 77, 0.2);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .glass-metric-pill:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 193, 77, 0.45);
+    background: rgba(255, 193, 77, 0.06);
+  }
+
+  :global([data-theme="light"]) .glass-metric-pill {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1.5px solid rgba(217, 119, 6, 0.16);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  }
+
+  :global([data-theme="light"]) .glass-metric-pill:hover {
+    border-color: rgba(217, 119, 6, 0.4);
+    background: #ffffff;
+  }
+
+  .metric-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .metric-body {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.2;
+  }
+
+  .metric-body strong {
+    font-size: 0.88rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .metric-body span {
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  /* Botones de acción */
+  .hero-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .hero-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    text-decoration: none;
+    color: #1a1500;
+    background: linear-gradient(135deg, #ffc14d 0%, #f59e0b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 18px rgba(255, 193, 77, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+
+  .hero-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255, 193, 77, 0.55);
+    filter: brightness(1.05);
+  }
+
+  .hero-btn-glass {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    color: var(--ink, #f3f2ec);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .hero-btn-glass:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 193, 77, 0.1);
+    border-color: rgba(255, 193, 77, 0.5);
+  }
+
+  :global([data-theme="light"]) .hero-btn-glass {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1.5px solid rgba(217, 119, 6, 0.25);
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  :global([data-theme="light"]) .hero-btn-glass:hover {
+    background: #ffffff;
+    border-color: #d97706;
+  }
+
+  .hero-btn-link {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.5rem 0.8rem;
+    transition: color 0.2s ease;
+  }
+
+  .hero-btn-link:hover {
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .hero-btn-link:hover {
+    color: #d97706;
+  }
+
+  @media (max-width: 640px) {
+    .academy-hero-wrapper {
+      padding: 2.5rem 1rem 3rem;
+      min-height: 480px;
+    }
+    .hero-pills-row {
+      flex-direction: column;
+      width: 100%;
+    }
+    .glass-metric-pill {
+      width: 100%;
+      justify-content: center;
+    }
+    .hero-actions-row {
+      flex-direction: column;
+      width: 100%;
+    }
+    .hero-btn-primary, .hero-btn-glass {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

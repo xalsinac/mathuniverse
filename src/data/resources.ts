@@ -102,7 +102,7 @@ export const resources: Resource[] = [
     eyebrow: 'Entender de verdad',
     description: 'Lecciones y explicaciones completas, libros y documentos para comprender y recordar lo que necesitas.',
     detail: 'Apuntes claros, teoría estructurada y guías de referencia para ir del porqué al cómo.',
-    href: '#',
+    href: '/academy',
     icon: 'lessons',
     color: '#ffc14d',
   },

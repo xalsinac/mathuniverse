@@ -1,0 +1,1234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import ScientificCalculator from '../components/ScientificCalculator.astro';
+import AcademyHeroWave from '../components/AcademyHeroWave.astro';
+import { site } from '../config/site';
+import {
+  ACADEMY_BLOCKS,
+  ACADEMY_LESSONS,
+  type AcademyLesson,
+  type AcademyBlock,
+} from '../data/academy';
+
+const totalLessons = ACADEMY_LESSONS.length;
+const totalBlocks = ACADEMY_BLOCKS.length;
+---
+
+<BaseLayout
+  title={`Math Academy — ${site.name}`}
+  description="El tratado riguroso y conceptual de matemáticas para ESO y Bachillerato. Donde cada fórmula tiene su deducción, cada teorema sus hipótesis y contraejemplos."
+>
+  <!-- Barra superior técnica unificada -->
+  <SiteHeader activePage="academy" statusText="07 · Math Academy" ctaHref="/#recursos" ctaLabel="Todas las Apps">
+    <div slot="right-extra" class="topbar-cell academy-top-actions">
+      <button
+        type="button"
+        class="academy-top-btn"
+        data-toggle-floating-calc
+        title="Abrir calculadora científica flotante"
+      >
+        <span class="btn-icon">🧮</span>
+        <span class="btn-text">Calculadora</span>
+      </button>
+      <a
+        href="#teoremas"
+        class="academy-top-btn is-accent"
+        title="Ver el Salón de los Grandes Teoremas"
+      >
+        <span class="btn-icon">👑</span>
+        <span class="btn-text">Grandes Teoremas</span>
+      </a>
+    </div>
+  </SiteHeader>
+
+  <main>
+    <!-- 1. HERO BAND CON ONDAS Y BANDADA REACTIVA (ESTILO ANTIGRAVITY) -->
+    <section class="academy-hero-section">
+      <AcademyHeroWave />
+    </section>
+
+    <!-- 2. CATÁLOGO DEL TRATADO: FILTROS Y BUSCADOR -->
+    <section class="academy-catalog-band section-band is-drawn" id="bloques">
+      <span class="section-rule" aria-hidden="true"></span>
+      <div class="section-frame">
+        <span class="tick tick-half tick-left" aria-hidden="true"></span>
+        <span class="tick tick-half tick-right" aria-hidden="true"></span>
+
+        <div class="section-eyebrow">
+          <span>
+            <span class="eyebrow-num">07</span>
+            <span class="eyebrow-sep" aria-hidden="true">/</span>
+            Math Academy · Índice Temático del Tratado
+          </span>
+          <span class="eyebrow-right" data-academy-counter>Mostrando {totalLessons} lecciones en {totalBlocks} bloques</span>
+        </div>
+
+        <!-- Barra de Control: Buscador y Filtros por Nivel -->
+        <div class="academy-controls-bar section-body">
+          <div class="filter-controls-row">
+            <!-- Selector de Nivel Académico -->
+            <div class="level-tabs-group" role="group" aria-label="Filtrar por nivel educativo">
+              <span class="control-label">NIVEL:</span>
+              <button type="button" class="level-chip is-active" data-level-filter="all">
+                <span>Todos</span>
+                <span class="chip-count">{totalLessons}</span>
+              </button>
+              <button type="button" class="level-chip" data-level-filter="ESO">
+                <span>ESO</span>
+                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'ESO').length}</span>
+              </button>
+              <button type="button" class="level-chip" data-level-filter="1º Bachillerato">
+                <span>1º Bachillerato</span>
+                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '1º Bachillerato').length}</span>
+              </button>
+              <button type="button" class="level-chip" data-level-filter="2º Bachillerato">
+                <span>2º Bachillerato</span>
+                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '2º Bachillerato').length}</span>
+              </button>
+              <button type="button" class="level-chip" data-level-filter="Transversal">
+                <span>Transversal</span>
+                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'Transversal').length}</span>
+              </button>
+            </div>
+
+            <!-- Buscador en tiempo real de lecciones -->
+            <div class="search-input-wrapper">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="search"
+                id="academy-search-input"
+                class="academy-search-input"
+                placeholder="Buscar teorema, concepto (ej: Bolzano, absurd, Ruffini)..."
+                aria-label="Buscar lección o demostración"
+              />
+              <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display:none;">✕</button>
+            </div>
+          </div>
+
+          <!-- Selector Rápido de Bloques con Efecto Cristal -->
+          <div class="blocks-jump-nav" aria-label="Acceso directo a bloques">
+            {
+              ACADEMY_BLOCKS.map((b) => (
+                <a href={`#bloque-${b.id}`} class="block-jump-chip" style={`--chip-color: ${b.color};`}>
+                  <span class="jump-icon">{b.icon}</span>
+                  <span class="jump-name">{b.number}. {b.name}</span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        <!-- 3. BLOQUES TEMÁTICOS Y LECCIONES -->
+        <div class="academy-blocks-container section-body">
+          {
+            ACADEMY_BLOCKS.map((block) => {
+              const blockLessons = ACADEMY_LESSONS.filter((l) => l.blockId === block.id);
+              return (
+                <section class="academy-block-group" id={`bloque-${block.id}`}>
+                  <!-- Cabecera del Bloque -->
+                  <div class="block-group-header" style={`--block-accent: ${block.color};`}>
+                    <div class="block-meta">
+                      <span class="block-num-badge">{block.number}</span>
+                      <span class="block-icon">{block.icon}</span>
+                      <div class="block-title-box">
+                        <h2>{block.name}</h2>
+                        <p class="block-tagline">{block.tagline}</p>
+                      </div>
+                    </div>
+                    <div class="block-info-pill">
+                      <span class="pill-scope">{block.levelRange}</span>
+                      <span class="pill-dot">•</span>
+                      <span class="pill-count">{blockLessons.length} Lecciones planificadas</span>
+                    </div>
+                  </div>
+
+                  <p class="block-description">{block.description}</p>
+
+                  <!-- Rejilla de Tarjetas de Lección con Efecto Cristal -->
+                  <div class="lessons-grid">
+                    {
+                      blockLessons.map((lesson) => (
+                        <article
+                          class="academy-glass-card"
+                          data-lesson-id={lesson.id}
+                          data-level={lesson.level}
+                          data-search-terms={`${lesson.title} ${lesson.subtitle} ${lesson.summary} ${lesson.keyConcept}`.toLowerCase()}
+                          style={`--card-accent: ${block.color};`}
+                        >
+                          <div class="card-glow" aria-hidden="true"></div>
+
+                          <div class="card-top">
+                            <span class={`level-badge is-${lesson.level.toLowerCase().replace(/[\sº]/g, '')}`}>
+                              {lesson.level}
+                            </span>
+                            <span class="type-badge">{lesson.badge}</span>
+                            <span class="difficulty-indicator" title={`Dificultad: ${lesson.difficulty}`}>
+                              {lesson.difficulty}
+                            </span>
+                          </div>
+
+                          <h3 class="lesson-title">{lesson.title}</h3>
+                          <p class="lesson-subtitle">{lesson.subtitle}</p>
+
+                          <!-- Caja de Fórmula o Concepto Clave -->
+                          <div class="concept-key-box">
+                            <span class="concept-label">EJE RIGUROSO:</span>
+                            <code class="concept-formula">{lesson.keyConcept}</code>
+                          </div>
+
+                          <p class="lesson-summary">{lesson.summary}</p>
+
+                          <!-- Prerrequisitos -->
+                          <div class="lesson-prereqs">
+                            <span class="prereqs-label">Requiere:</span>
+                            <div class="prereqs-tags">
+                              {lesson.prerequisites.map((req) => (
+                                <span class="prereq-tag">{req}</span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <!-- Pie de Tarjeta -->
+                          <div class="card-bottom">
+                            <div class="duration-estimate">
+                              <span class="clock-icon">⏱</span>
+                              <span>~{lesson.durationMinutes} min de lectura</span>
+                            </div>
+
+                            <div class="status-pill is-prep" title="Contenido en fase de redacción formal">
+                              <span class="status-dot"></span>
+                              <span>Próximamente</span>
+                            </div>
+                          </div>
+                        </article>
+                      ))
+                    }
+                  </div>
+                </section>
+              );
+            })
+          }
+        </div>
+
+        <!-- 4. SALÓN DE LOS GRANDES TEOREMAS (DESTACADO HISTÓRICO) -->
+        <section class="grand-theorems-spotlight section-body" id="teoremas">
+          <div class="spotlight-header">
+            <span class="spotlight-crown">👑</span>
+            <div class="spotlight-text">
+              <h2>El Salón de los Grandes Teoremas</h2>
+              <p>
+                Demostraciones fundamentales que revolucionaron el pensamiento humano y que todo
+                estudiante de secundaria y bachillerato puede comprender y disfrutar en profundidad.
+              </p>
+            </div>
+          </div>
+
+          <div class="theorems-spotlight-grid">
+            <div class="spotlight-card">
+              <div class="spotlight-badge">TEOREMA CLÁSICO · ANTIGÜEDAD</div>
+              <h3>La Irracionalidad de √2</h3>
+              <p class="spotlight-author">Escuela Pitagórica / Euclides (~300 a.C.)</p>
+              <div class="spotlight-formula">
+                <code>√2 ≠ a / b &nbsp;(con a, b ∈ ℤ coprimos)</code>
+              </div>
+              <p class="spotlight-body">
+                El descubrimiento que quebró la filosofía pitagórica de que todo en el cosmos era reducible
+                a proporciones de números enteros. La demostración por reducción al absurdo más limpia de la historia.
+              </p>
+              <div class="spotlight-footer">
+                <span class="tag">Reducción al absurdo</span>
+                <span class="tag">Paridad matemática</span>
+              </div>
+            </div>
+
+            <div class="spotlight-card">
+              <div class="spotlight-badge">TEORÍA DE NÚMEROS</div>
+              <h3>La Infinitud de los Primos</h3>
+              <p class="spotlight-author">Euclides de Alejandría (Elementos, Libro IX)</p>
+              <div class="spotlight-formula">
+                <code>N = (p₁ · p₂ · ... · pₖ) + 1</code>
+              </div>
+              <p class="spotlight-body">
+                Una demostración elegante e imbatible: si asumimos que la lista de primos termina, construimos un nuevo
+                número que fuerza la existencia de un primo desconocido, demostrando que los ladrillos numéricos nunca se agotan.
+              </p>
+              <div class="spotlight-footer">
+                <span class="tag">Teorema de Euclides</span>
+                <span class="tag">Aritmética fundamental</span>
+              </div>
+            </div>
+
+            <div class="spotlight-card">
+              <div class="spotlight-badge">CUMBRE DEL BACHILLERATO</div>
+              <h3>El Teorema Fundamental del Cálculo</h3>
+              <p class="spotlight-author">Newton, Leibniz y Barrow (s. XVII)</p>
+              <div class="spotlight-formula">
+                <code>d/dx [ ∫ₐˣ f(t) dt ] = f(x)</code>
+              </div>
+              <p class="spotlight-body">
+                La conexión monumental entre la velocidad de cambio (derivada) y la acumulación continua de área (integral).
+                El puente que convirtió el cálculo infinitesimal en el motor de toda la ciencia moderna.
+              </p>
+              <div class="spotlight-footer">
+                <span class="tag">Regla de Barrow</span>
+                <span class="tag">Análisis real</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. MANIFIESTO DE RIGOR DE MATH ACADEMY -->
+        <section class="academy-manifesto-band section-body" id="metodologia">
+          <div class="manifesto-card">
+            <div class="manifesto-head">
+              <span class="manifesto-icon">📜</span>
+              <div class="manifesto-title">
+                <h2>El Manifiesto de Rigor de Math Academy</h2>
+                <p>Las 4 reglas de oro con las que construimos cada explicación</p>
+              </div>
+            </div>
+
+            <div class="manifesto-grid">
+              <div class="manifesto-rule">
+                <span class="rule-num">01</span>
+                <h3>Ninguna fórmula sin justificar</h3>
+                <p>
+                  No enseñamos a memorizar ecuaciones de la nada. Cada fórmula importante se deduce paso a paso 
+                  desde axiomas elementales o construcciones geométricas evidentes.
+                </p>
+              </div>
+
+              <div class="manifesto-rule">
+                <span class="rule-num">02</span>
+                <h3>Las hipótesis son sagradas</h3>
+                <p>
+                  Un teorema solo es válido cuando sus condiciones se cumplen al 100%. Por eso, en cada lección 
+                  mostramos el <strong>contraejemplo</strong> que prueba por qué cada hipótesis es indispensable.
+                </p>
+              </div>
+
+              <div class="manifesto-rule">
+                <span class="rule-num">03</span>
+                <h3>Lenguaje formal traducido</h3>
+                <p>
+                  No tememos a la notación rigurosa ($\forall, \exists, \iff$), pero la traducimos de inmediato 
+                  a lenguaje natural y claro para que el rigor no sea una barrera, sino una herramienta de claridad.
+                </p>
+              </div>
+
+              <div class="manifesto-rule">
+                <span class="rule-num">04</span>
+                <h3>Conexión con el aula y la PAU</h3>
+                <p>
+                  El rigor debe traducirse en notas excelentes. Cada desarrollo concluye con ejemplos resueltos 
+                  con el estándar que exigen los correctores de exámenes de Bachillerato y Selectividad.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Calculadora Científica Flotante Integrada -->
+  <ScientificCalculator />
+</BaseLayout>
+
+<script>
+  // =========================================================================
+  // SISTEMA DE FILTRADO Y BÚSQUEDA INTERACTIVA EN TIEMPO REAL
+  // =========================================================================
+  (() => {
+    const searchInput = document.getElementById('academy-search-input') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('search-clear-btn');
+    const levelChips = document.querySelectorAll<HTMLButtonElement>('[data-level-filter]');
+    const lessonCards = document.querySelectorAll<HTMLElement>('.academy-glass-card');
+    const counterEl = document.querySelector('[data-academy-counter]');
+
+    let currentLevel = 'all';
+    let currentSearch = '';
+
+    const applyFilters = () => {
+      let visibleCount = 0;
+
+      lessonCards.forEach((card) => {
+        const cardLevel = card.dataset.level || '';
+        const searchTerms = card.dataset.searchTerms || '';
+
+        const matchesLevel = currentLevel === 'all' || cardLevel === currentLevel;
+        const matchesSearch = !currentSearch || searchTerms.includes(currentSearch);
+
+        if (matchesLevel && matchesSearch) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Ocultar cabeceras de bloque si no tienen lecciones visibles
+      document.querySelectorAll<HTMLElement>('.academy-block-group').forEach((group) => {
+        const visibleLessonsInGroup = group.querySelectorAll('.academy-glass-card:not([style*="display: none"])');
+        if (visibleLessonsInGroup.length === 0) {
+          group.style.display = 'none';
+        } else {
+          group.style.display = '';
+        }
+      });
+
+      // Actualizar contador superior
+      if (counterEl) {
+        counterEl.textContent = `Mostrando ${visibleCount} lecciones ${currentLevel !== 'all' ? `de ${currentLevel}` : ''}`;
+      }
+    };
+
+    // Filtros por nivel
+    levelChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        levelChips.forEach((c) => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        currentLevel = chip.dataset.levelFilter || 'all';
+        applyFilters();
+      });
+    });
+
+    // Búsqueda en tiempo real
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        currentSearch = searchInput.value.trim().toLowerCase();
+        if (clearBtn) {
+          clearBtn.style.display = currentSearch ? 'block' : 'none';
+        }
+        applyFilters();
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          currentSearch = '';
+          clearBtn.style.display = 'none';
+          searchInput.focus();
+          applyFilters();
+        });
+      }
+    }
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS PRINCIPALES DE MATH ACADEMY (COLOR OFICIAL: #ffc14d / #d97706)
+     ========================================================================= */
+
+  /* Botones específicos de la barra superior */
+  .academy-top-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .academy-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink, #f3f2ec);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .academy-top-btn:hover {
+    background: rgba(255, 193, 77, 0.12);
+    border-color: rgba(255, 193, 77, 0.5);
+  }
+
+  .academy-top-btn.is-accent {
+    background: rgba(255, 193, 77, 0.12);
+    border-color: rgba(255, 193, 77, 0.4);
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .academy-top-btn {
+    background: #ffffff;
+    border-color: rgba(217, 119, 6, 0.25);
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  }
+
+  :global([data-theme="light"]) .academy-top-btn.is-accent {
+    background: rgba(217, 119, 6, 0.08);
+    border-color: #d97706;
+    color: #b45309;
+  }
+
+  /* Sección Hero */
+  .academy-hero-section {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  }
+
+  /* Barra de Controles y Filtros */
+  .academy-controls-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .filter-controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .control-label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted, #94a3b8);
+  }
+
+  .level-tabs-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .level-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    color: var(--muted, #94a3b8);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .level-chip:hover {
+    color: var(--ink, #f3f2ec);
+    border-color: rgba(255, 193, 77, 0.4);
+    background: rgba(255, 193, 77, 0.06);
+  }
+
+  .level-chip.is-active {
+    background: rgba(255, 193, 77, 0.15);
+    border-color: #ffc14d;
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .level-chip {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .level-chip.is-active {
+    background: rgba(217, 119, 6, 0.1);
+    border-color: #d97706;
+    color: #b45309;
+  }
+
+  .chip-count {
+    font-size: 0.72rem;
+    opacity: 0.75;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+  }
+
+  /* Buscador de lecciones */
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 280px;
+    flex-grow: 1;
+    max-width: 420px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    font-size: 0.85rem;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .academy-search-input {
+    width: 100%;
+    padding: 0.55rem 2.2rem 0.55rem 2.3rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+    color: var(--ink, #f3f2ec);
+    font-size: 0.88rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .academy-search-input:focus {
+    border-color: #ffc14d;
+    background: rgba(255, 193, 77, 0.04);
+    box-shadow: 0 0 0 3px rgba(255, 193, 77, 0.15);
+  }
+
+  :global([data-theme="light"]) .academy-search-input {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .academy-search-input:focus {
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
+  }
+
+  .search-clear-btn {
+    position: absolute;
+    right: 0.6rem;
+    background: none;
+    border: none;
+    color: var(--muted, #94a3b8);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+  }
+
+  /* Navegación rápida entre bloques con efecto cristal */
+  .blocks-jump-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--border-color, rgba(255, 255, 255, 0.08));
+  }
+
+  .block-jump-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--muted, #94a3b8);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+
+  .block-jump-chip:hover {
+    color: var(--ink, #f3f2ec);
+    border-color: var(--chip-color, #ffc14d);
+    background: rgba(255, 193, 77, 0.06);
+    transform: translateY(-1px);
+  }
+
+  :global([data-theme="light"]) .block-jump-chip {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #475569;
+  }
+
+  /* Grupos de Bloques */
+  .academy-blocks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .academy-block-group {
+    scroll-margin-top: 80px;
+  }
+
+  .block-group-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--block-accent, #ffc14d);
+  }
+
+  .block-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .block-num-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: var(--block-accent, #ffc14d);
+    color: #101116;
+  }
+
+  .block-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .block-title-box h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .block-tagline {
+    font-size: 0.86rem;
+    color: var(--muted, #94a3b8);
+    margin: 0.2rem 0 0;
+  }
+
+  .block-info-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    color: var(--muted, #94a3b8);
+  }
+
+  .block-description {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.6;
+    max-width: 860px;
+    margin: 0 0 1.5rem;
+  }
+
+  /* =========================================================================
+     TARJETAS DE LECCIÓN CON EFECTO CRISTAL (GLASSMORPHISM)
+     ========================================================================= */
+  .lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .academy-glass-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem;
+    border-radius: 16px;
+    background: rgba(22, 24, 34, 0.65);
+    border: 1px solid rgba(255, 193, 77, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .academy-glass-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 193, 77, 0.45);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  :global([data-theme="light"]) .academy-glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1.5px solid rgba(217, 119, 6, 0.15);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  }
+
+  :global([data-theme="light"]) .academy-glass-card:hover {
+    border-color: rgba(217, 119, 6, 0.4);
+    box-shadow: 0 12px 32px rgba(217, 119, 6, 0.08);
+  }
+
+  .card-glow {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--card-accent, #ffc14d) 0%, transparent 70%);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.9rem;
+    font-size: 0.72rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-weight: 700;
+  }
+
+  .level-badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ink, #f3f2ec);
+  }
+
+  .level-badge.is-eso {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .level-badge.is-1bachillerato {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .level-badge.is-2bachillerato {
+    background: rgba(255, 193, 77, 0.15);
+    color: #ffc14d;
+    border: 1px solid rgba(255, 193, 77, 0.3);
+  }
+
+  .level-badge.is-transversal {
+    background: rgba(192, 132, 252, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(192, 132, 252, 0.3);
+  }
+
+  :global([data-theme="light"]) .level-badge.is-2bachillerato {
+    color: #b45309;
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .type-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--muted, #94a3b8);
+  }
+
+  .difficulty-indicator {
+    margin-left: auto;
+    color: var(--muted, #94a3b8);
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+
+  .lesson-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 0.4rem;
+  }
+
+  .lesson-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.45;
+    margin: 0 0 0.9rem;
+  }
+
+  /* Caja de Concepto / Fórmula Clave */
+  .concept-key-box {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    margin-bottom: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  :global([data-theme="light"]) .concept-key-box {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .concept-label {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--card-accent, #ffc14d);
+  }
+
+  :global([data-theme="light"]) .concept-label {
+    color: #b45309;
+  }
+
+  .concept-formula {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink, #f3f2ec);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .lesson-summary {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.55;
+    margin: 0 0 1rem;
+    flex-grow: 1;
+  }
+
+  .lesson-prereqs {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 1.2rem;
+  }
+
+  .prereqs-label {
+    font-weight: 600;
+  }
+
+  .prereqs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .prereq-tag {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+  }
+
+  :global([data-theme="light"]) .prereq-tag {
+    background: rgba(0, 0, 0, 0.04);
+    color: #475569;
+  }
+
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    font-size: 0.78rem;
+  }
+
+  .duration-estimate {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.72rem;
+    font-family: ui-monospace, monospace;
+  }
+
+  .status-pill.is-prep {
+    background: rgba(255, 193, 77, 0.1);
+    color: #ffc14d;
+    border: 1px solid rgba(255, 193, 77, 0.3);
+  }
+
+  :global([data-theme="light"]) .status-pill.is-prep {
+    background: rgba(217, 119, 6, 0.08);
+    color: #b45309;
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulseDot 2s infinite ease-in-out;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { opacity: 0.5; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* =========================================================================
+     4. SALÓN DE LOS GRANDES TEOREMAS (PANORAMA DESTACADO)
+     ========================================================================= */
+  .grand-theorems-spotlight {
+    margin-top: 4.5rem;
+    padding: 2.2rem;
+    border-radius: 20px;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 193, 77, 0.08) 0%, rgba(22, 24, 34, 0.8) 70%);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .grand-theorems-spotlight {
+    background: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.08) 0%, rgba(255, 255, 255, 0.95) 70%);
+    border-color: rgba(217, 119, 6, 0.22);
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
+  }
+
+  .spotlight-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 193, 77, 0.2);
+    padding-bottom: 1.2rem;
+  }
+
+  .spotlight-crown {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .spotlight-text h2 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .spotlight-text p {
+    font-size: 0.98rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+    max-width: 780px;
+    line-height: 1.5;
+  }
+
+  .theorems-spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .spotlight-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border-radius: 14px;
+    background: rgba(16, 17, 22, 0.6);
+    border: 1px solid rgba(255, 193, 77, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  :global([data-theme="light"]) .spotlight-card {
+    background: #ffffff;
+    border-color: rgba(217, 119, 6, 0.16);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .spotlight-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ffc14d;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .spotlight-badge {
+    color: #b45309;
+  }
+
+  .spotlight-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .spotlight-author {
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    font-style: italic;
+    margin: 0 0 0.9rem;
+  }
+
+  .spotlight-formula {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 193, 77, 0.15);
+    margin-bottom: 0.9rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .spotlight-formula {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .spotlight-formula code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .spotlight-formula code {
+    color: #b45309;
+  }
+
+  .spotlight-body {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.55;
+    margin: 0 0 1.2rem;
+    flex-grow: 1;
+  }
+
+  .spotlight-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .spotlight-footer .tag {
+    font-size: 0.72rem;
+    font-family: ui-monospace, monospace;
+    background: rgba(255, 193, 77, 0.08);
+    color: #ffc14d;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .spotlight-footer .tag {
+    background: rgba(217, 119, 6, 0.08);
+    color: #b45309;
+  }
+
+  /* =========================================================================
+     5. MANIFIESTO DE RIGOR
+     ========================================================================= */
+  .academy-manifesto-band {
+    margin-top: 3.5rem;
+  }
+
+  .manifesto-card {
+    padding: 2.2rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--line);
+  }
+
+  :global([data-theme="light"]) .manifesto-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  .manifesto-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.2rem;
+  }
+
+  .manifesto-icon {
+    font-size: 2.2rem;
+  }
+
+  .manifesto-title h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+  }
+
+  .manifesto-title p {
+    font-size: 0.92rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .manifesto-rule {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .rule-num {
+    font-family: ui-monospace, monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .rule-num {
+    color: #d97706;
+  }
+
+  .manifesto-rule h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .manifesto-rule p {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .grand-theorems-spotlight, .manifesto-card {
+      padding: 1.4rem;
+    }
+    .filter-controls-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .search-input-wrapper {
+      max-width: 100%;
+    }
+  }
+</style>
