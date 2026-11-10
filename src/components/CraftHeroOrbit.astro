@@ -5,7 +5,7 @@ import { craftProjects, type CraftProject } from '../data/craft';
 // para que tengan radios distintos, velocidades distintas y nunca se apelotonen
 const ORBIT_ASSIGNMENTS = [
   // Órbita 0 (Interior - 4 tarjetas, radio medio, giran más rápido)
-  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Demolición FIQ (Alumno)
+  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Demolición FIQ (Leo Rueda)
   { projectIdx: 1, orbitRing: 0, phaseOffset: Math.PI * 0.5 },            // Math Dojo Arena (Profesor)
   { projectIdx: 4, orbitRing: 0, phaseOffset: Math.PI * 1.0 },            // Vóxel Polyhedra 3D (Profesor)
   { projectIdx: 5, orbitRing: 0, phaseOffset: Math.PI * 1.5 },            // Sierpinski Chaos (Profesor)
@@ -36,7 +36,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 });
 ---
 
-<div class="craft-hero-orbit" data-craft-orbit-system aria-label="Taller de juegos Math Craft">
+<div class="craft-hero-orbit" data-craft-orbit-system aria-label="Taller de juegos Math Gaming">
   <!-- Neblina cósmica atmosférica: rosada/cálida en modo claro, azul cósmico en modo oscuro -->
   <div class="craft-nebula-light" aria-hidden="true"></div>
   <div class="craft-nebula-dark" aria-hidden="true"></div>
@@ -93,23 +93,35 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
               )}
               {card.id === 'math-dojo-arcade' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#1b1510" />
-                  <circle cx="80" cy="50" r="34" stroke="#ff8a5b" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.6" />
-                  <circle cx="80" cy="50" r="22" stroke="#ff8a5b" stroke-width="0.8" opacity="0.4" />
-                  <path d="M74 24 L64 52 L82 52 L68 78 L94 44 L78 44 Z" fill="#ff8a5b" />
-                  <line x1="20" y1="50" x2="36" y2="50" stroke="#ff8a5b" stroke-width="1.5" />
-                  <line x1="124" y1="50" x2="140" y2="50" stroke="#ff8a5b" stroke-width="1.5" />
+                  <rect width="160" height="100" fill="#181310" />
+                  <circle cx="80" cy="50" r="34" stroke="#ff8a5b" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.35" />
+                  <!-- Icono Oficial Math Dojo Torii -->
+                  <g transform="translate(80, 50) scale(0.68) translate(-50, -50)">
+                    <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" fill="#ff8a5b" />
+                    <path d="M18 28h64l-2 5H20l-2-5Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
+                    <rect x="17" y="42" width="66" height="6" rx="2" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
+                    <rect x="46" y="33" width="8" height="9" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
+                    <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
+                    <rect x="21" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
+                    <rect x="65" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
+                    <path d="M12 84h76" stroke="#ff8a5b" stroke-width="2.5" stroke-linecap="round" />
+                  </g>
                 </svg>
               )}
               {card.id === 'math-dojo-junior' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#0d1822" />
-                  <circle cx="44" cy="50" r="18" stroke="#38c8ff" stroke-width="1.8" fill="#38c8ff22" />
-                  <circle cx="80" cy="50" r="24" stroke="#38c8ff" stroke-width="2" fill="#38c8ff33" />
-                  <circle cx="116" cy="50" r="18" stroke="#38c8ff" stroke-width="1.8" fill="#38c8ff22" />
-                  <path d="M40 45 L48 55 M48 45 L40 55" stroke="#38c8ff" stroke-width="2" stroke-linecap="round" />
-                  <path d="M74 50 L86 50 M80 44 L80 56" stroke="#38c8ff" stroke-width="2.5" stroke-linecap="round" />
-                  <path d="M110 50 L122 50" stroke="#38c8ff" stroke-width="2" stroke-linecap="round" />
+                  <rect width="160" height="100" fill="#0c1622" />
+                  <circle cx="80" cy="50" r="34" stroke="#38c8ff" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.35" />
+                  <!-- Icono Oficial Math Dojo Junior Ninja -->
+                  <g transform="translate(80, 50) scale(0.68) translate(-50, -50)">
+                    <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff35" />
+                    <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round" />
+                    <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round" />
+                    <circle cx="50" cy="36" r="19" stroke="#38c8ff" stroke-width="3" fill="#132338" />
+                    <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff" />
+                    <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" stroke="#38c8ff" stroke-width="3" fill="#132338" />
+                    <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
+                  </g>
                 </svg>
               )}
               {card.id === 'orbital-gravity' && (
@@ -180,7 +192,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     <div class="hud-pill">
       <span class="hud-badge" data-hud-badge>🎒 PROYECTO ALUMNO</span>
       <span class="hud-title" data-hud-title>Demolición FIQ</span>
-      <span class="hud-author" data-hud-author>por Alumno (Física y Química)</span>
+      <span class="hud-author" data-hud-author>por Leo Rueda (2.º de la ESO)</span>
     </div>
   </div>
 
@@ -194,7 +206,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
             <path d="M4 28 L18 6 L32 28 L24 28 L18 17 L12 28 Z" fill="currentColor"></path>
           </svg>
         </span>
-        <h1 class="craft-studio-title">MATH CRAFT</h1>
+        <h1 class="craft-studio-title">MATH GAMING</h1>
       </div>
 
       <!-- Titular con estilo "Capable tools *for artists.*" -->
@@ -204,7 +216,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 
       <!-- Descripción clara y enfocada -->
       <p class="craft-studio-desc">
-        Math Craft es nuestro laboratorio interactivo: explora simulaciones de física, juegos arcade
+        Math Gaming es nuestro laboratorio interactivo: explora simulaciones de física, juegos arcade
         de cálculo mental y proyectos de código desarrollados tanto por profesores como por alumnos.
       </p>
 
@@ -526,7 +538,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     box-sizing: border-box;
   }
 
-  /* LOGO LOCKUP: Ícono Geométrico + MATH CRAFT */
+  /* LOGO LOCKUP: Ícono Geométrico + MATH GAMING */
   .craft-logo-lockup {
     display: flex;
     align-items: center;

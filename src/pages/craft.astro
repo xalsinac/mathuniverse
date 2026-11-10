@@ -16,11 +16,11 @@ const totalCount = craftProjects.length;
 ---
 
 <BaseLayout
-  title={`Math Craft — ${site.name}`}
+  title={`Math Gaming — ${site.name}`}
   description="Juegos matemáticos, simulaciones de física y experimentos interactivos creados por profesores y alumnos en Math Universe. Donde jugar es otra forma de pensar."
 >
   <!-- Barra superior técnica unificada -->
-  <SiteHeader activePage="craft" statusText="08 · Math Craft" ctaHref="/#recursos" ctaLabel="Todas las Apps">
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/#recursos" ctaLabel="Todas las Apps">
     <div slot="right-extra" class="topbar-cell craft-top-actions">
       <button
         type="button"
@@ -59,7 +59,7 @@ const totalCount = craftProjects.length;
           <span>
             <span class="eyebrow-num">08</span>
             <span class="eyebrow-sep" aria-hidden="true">/</span>
-            Math Craft · Catálogo de Juegos y Experimentos
+            Math Gaming · Catálogo de Juegos y Experimentos
           </span>
           <span class="eyebrow-right" data-craft-status-counter>Mostrando {totalCount} juegos</span>
         </div>
@@ -111,8 +111,8 @@ const totalCount = craftProjects.length;
                 type="search"
                 class="craft-search-input"
                 data-craft-search
-                placeholder="Buscar juego, alumno, física, colisiones, kepler..."
-                aria-label="Buscar proyectos en Math Craft"
+                placeholder="Buscar juego, alumno (ej. Leo Rueda), física, colisiones..."
+                aria-label="Buscar proyectos en Math Gaming"
                 autocomplete="off"
                 spellcheck="false"
               />
@@ -204,22 +204,48 @@ const totalCount = craftProjects.length;
                       )}
                       {project.id === 'math-dojo-arcade' && (
                         <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#1b1712" />
-                          <circle cx="160" cy="90" r="54" stroke="#ff8a5b" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6" />
-                          <path d="M152 50 L140 92 L164 92 L148 132 L180 84 L158 84 Z" fill="#ff8a5b" />
+                          <rect width="320" height="180" fill="#181310" />
+                          <circle cx="160" cy="92" r="58" stroke="#ff8a5b" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.3" />
+                          <circle cx="160" cy="92" r="42" stroke="#ff8a5b" stroke-width="0.8" opacity="0.2" />
+                          <!-- Icono Oficial Math Dojo: Torii Japonés -->
+                          <g transform="translate(160, 92) scale(1.15) translate(-50, -50)">
+                            <!-- Viga superior curvada kasagi -->
+                            <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" fill="#ff8a5b" />
+                            <path d="M18 28h64l-2 5H20l-2-5Z" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
+                            <!-- Viga transversal nuki y puntal central -->
+                            <rect x="17" y="42" width="66" height="6" rx="2" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
+                            <rect x="46" y="33" width="8" height="9" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
+                            <!-- Pilares inclinados y basas -->
+                            <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
+                            <rect x="21" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b35" />
+                            <rect x="65" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b35" />
+                            <path d="M12 84h76" stroke="#ff8a5b" stroke-width="2" stroke-linecap="round" />
+                          </g>
                           <text x="20" y="32" fill="#ff8a5b" font-family="monospace" font-size="11" letter-spacing="1">MATH DOJO · ARENA</text>
+                          <text x="300" y="32" text-anchor="end" fill="#ff8a5b" opacity="0.6" font-family="monospace" font-size="10">DOJO</text>
                         </svg>
                       )}
                       {project.id === 'math-dojo-junior' && (
                         <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#101820" />
-                          <circle cx="90" cy="90" r="28" stroke="#38c8ff" stroke-width="2" fill="#38c8ff18" />
-                          <circle cx="160" cy="90" r="34" stroke="#38c8ff" stroke-width="2" fill="#38c8ff22" />
-                          <circle cx="230" cy="90" r="28" stroke="#38c8ff" stroke-width="2" fill="#38c8ff18" />
-                          <text x="83" y="96" fill="#38c8ff" font-family="monospace" font-size="16" font-weight="bold">1</text>
-                          <text x="153" y="96" fill="#38c8ff" font-family="monospace" font-size="18" font-weight="bold">2</text>
-                          <text x="223" y="96" fill="#38c8ff" font-family="monospace" font-size="16" font-weight="bold">3</text>
-                          <text x="20" y="32" fill="#38c8ff" font-family="monospace" font-size="11" letter-spacing="1">DOJO JUNIOR</text>
+                          <rect width="320" height="180" fill="#0d1622" />
+                          <circle cx="160" cy="92" r="58" stroke="#38c8ff" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.3" />
+                          <circle cx="160" cy="92" r="42" stroke="#38c8ff" stroke-width="0.8" opacity="0.2" />
+                          <!-- Icono Oficial Math Dojo Jr: Pequeño Ninja -->
+                          <g transform="translate(160, 92) scale(1.15) translate(-50, -50)">
+                            <!-- Cintas de la bandana -->
+                            <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff35" />
+                            <!-- Katanas cruzadas -->
+                            <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
+                            <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
+                            <!-- Cabeza y máscara Ninja -->
+                            <circle cx="50" cy="36" r="19" stroke="#38c8ff" stroke-width="2.5" fill="#132338" />
+                            <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" stroke="#7dd3fc" stroke-width="2.2" fill="#38c8ff" />
+                            <!-- Hombros y kimono cruzado -->
+                            <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" stroke="#38c8ff" stroke-width="2.5" fill="#132338" />
+                            <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" />
+                          </g>
+                          <text x="20" y="32" fill="#38c8ff" font-family="monospace" font-size="11" letter-spacing="1">MATH DOJO · JUNIOR</text>
+                          <text x="300" y="32" text-anchor="end" fill="#38c8ff" opacity="0.6" font-family="monospace" font-size="10">NINJA</text>
                         </svg>
                       )}
                       {project.id === 'orbital-gravity' && (
@@ -292,11 +318,11 @@ const totalCount = craftProjects.length;
                 <div class="card-body">
                   <div class="card-author-header">
                     {project.authorType === 'student' ? (
-                      <div class="author-badge is-student" title="Proyecto programado por un alumno">
+                      <div class="author-badge is-student" title={`Proyecto programado por ${project.authorName}`}>
                         <span class="badge-icon">🎒</span>
                         <div class="badge-text-col">
-                          <span class="badge-title">PROYECTO ALUMNO</span>
-                          <span class="badge-sub">{project.schoolOrCourse || 'Estudiante'}</span>
+                          <span class="badge-title">{project.authorName}</span>
+                          <span class="badge-sub">{project.schoolOrCourse || project.authorRole || 'Alumno'}</span>
                         </div>
                       </div>
                     ) : (
@@ -378,13 +404,13 @@ const totalCount = craftProjects.length;
             <span class="eyebrow-sep" aria-hidden="true">/</span>
             Comunidad y Taller Abierto
           </span>
-          <span class="eyebrow-right">Publica tu proyecto en Math Craft</span>
+          <span class="eyebrow-right">Publica tu proyecto en Math Gaming</span>
         </div>
 
         <div class="collab-box section-body">
           <div class="collab-left">
             <span class="collab-kicker">¿Eres alumno y has programado un juego?</span>
-            <h2>Haz que tu proyecto forme parte de <em>Math Craft.</em></h2>
+            <h2>Haz que tu proyecto forme parte de <em>Math Gaming.</em></h2>
             <p>
               Si has creado una simulación, juego o herramienta en Canvas, Phaser, Godot Web, Three.js, p5.js o Scratch
               con base matemática o física (colisiones, trigonometría, álgebra, cinemática...), queremos darte espacio.
@@ -401,7 +427,7 @@ const totalCount = craftProjects.length;
               <h3>Envía tu propuesta</h3>
               <p>Envíanos un correo o compártelo en clase indicando el enlace del proyecto, tu nombre y una breve descripción de las matemáticas que utiliza.</p>
               <a
-                href="mailto:xalsina@gmail.com?subject=Propuesta%20de%20Juego%20para%20Math%20Craft&body=Hola%20Xavier%2C%0A%0AQuiero%20proponer%20mi%20juego%20para%20Math%20Craft%3A%0A-%20Nombre%20del%20juego%3A%0A-%20Enlace%20web%20(Vercel%2FGitHub%2FItch)%3A%0A-%20Nombre%20del%20alumno%20o%20equipo%3A%0A-%20Curso%20o%20centro%3A%0A-%20Tema%20matem%C3%A1tico%20o%20f%C3%ADsico%20utilizado%3A%0A%0A%C2%A1Gracias!"
+                href="mailto:xalsina@gmail.com?subject=Propuesta%20de%20Juego%20para%20Math%20Gaming&body=Hola%20Xavier%2C%0A%0AQuiero%20proponer%20mi%20juego%20para%20Math%20Gaming%3A%0A-%20Nombre%20del%20juego%3A%0A-%20Enlace%20web%20(Vercel%2FGitHub%2FItch)%3A%0A-%20Nombre%20del%20alumno%20o%20equipo%3A%0A-%20Curso%20o%20centro%3A%0A-%20Tema%20matem%C3%A1tico%20o%20f%C3%ADsico%20utilizado%3A%0A%0A%C2%A1Gracias!"
                 class="collab-action-btn"
               >
                 <span>✉ Enviar juego por correo</span>

@@ -109,13 +109,14 @@ export const resources: Resource[] = [
   {
     id: 'games',
     number: '08',
-    name: 'Math Craft',
+    name: 'Math Gaming',
     accentWord: 'Math',
-    restWord: ' Craft',
+    restWord: ' Gaming',
     eyebrow: 'Comunidad y retos',
     description: 'Juegos creados tanto por profesores como por alumnos con una base matemática. ¿Te unes?',
     detail: 'Experimentos lúdicos, acertijos y proyectos interactivos donde jugar es otra forma de pensar.',
     href: '/craft',
+    icon: 'games',
     color: '#b48cff',
   },
   {

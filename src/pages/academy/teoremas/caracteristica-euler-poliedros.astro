@@ -1,0 +1,2311 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-06')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-05');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-07');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: DE 1º DE LA ESO A LA INVARIANZA UNIVERSAL -->
+  <section class="lesson-section" id="origen-eso">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. De 1º de la ESO a la Invarianza Universal: El Misterio del Dos</h2>
+
+    <p class="lead-paragraph">
+      Casi todo estudiante de secundaria recuerda la lección introductoria de geometría espacial en <strong>1º de la ESO</strong>: el profesor dibuja un cubo en la pizarra, pide contar sus esquinas, aristas y caras, y revela una fórmula aritmética que parece un truco mnemotécnico escolar:
+    </p>
+
+    <!-- Caja Monumental de la Fórmula de Euler -->
+    <div class="euler-formula-monument">
+      <div class="monument-header">
+        <span class="m-pill">RELACIÓN DE EULER PARA POLIEDROS</span>
+        <span class="m-scope">VÁLIDA PARA TODO POLIEDRO CONVEXO</span>
+      </div>
+
+      <div class="math-display-eq euler-giant-eq">
+        V - A + C = 2
+      </div>
+
+      <p class="monument-desc">
+        Donde <strong>V</strong> es el número de vértices, <strong>A</strong> es el número de aristas (lados) y <strong>C</strong> es el número de caras poligonales.
+      </p>
+    </div>
+
+    <p>
+      En las aulas de secundaria, los alumnos comprueban la regla contando los elementos de cuerpos geométricos elementales y rellenando una tabla canónica:
+    </p>
+
+    <!-- Tabla interactiva de los cuerpos clásicos -->
+    <div class="polyhedra-eso-table-wrapper">
+      <table class="polyhedra-eso-table">
+        <thead>
+          <tr>
+            <th>Poliedro</th>
+            <th>Vértices (V)</th>
+            <th>Aristas (A)</th>
+            <th>Caras (C)</th>
+            <th>Cálculo: V - A + C</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Tetraedro</strong></td>
+            <td>4</td>
+            <td>6</td>
+            <td>4</td>
+            <td><code>4 - 6 + 4</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Cubo / Hexaedro</strong></td>
+            <td>8</td>
+            <td>12</td>
+            <td>6</td>
+            <td><code>8 - 12 + 6</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Octaedro</strong></td>
+            <td>6</td>
+            <td>12</td>
+            <td>8</td>
+            <td><code>6 - 12 + 8</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Dodecaedro</strong></td>
+            <td>20</td>
+            <td>30</td>
+            <td>12</td>
+            <td><code>20 - 30 + 12</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Icosaedro</strong></td>
+            <td>12</td>
+            <td>30</td>
+            <td>20</td>
+            <td><code>12 - 30 + 20</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Prisma de base n-gonal</strong></td>
+            <td>2n</td>
+            <td>3n</td>
+            <td>n + 2</td>
+            <td><code>2n - 3n + (n + 2)</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Pirámide de base n-gonal</strong></td>
+            <td>n + 1</td>
+            <td>2n</td>
+            <td>n + 1</td>
+            <td><code>(n + 1) - 2n + (n + 1)</code></td>
+            <td><span class="badge-two">2</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-title">
+        <span class="insight-glyph">§</span>
+        <span>La Pregunta que Desconcierta al Estudiante Inquisitivo</span>
+      </div>
+      <p>
+        Un prisma puede ser extremadamente delgado o gigantesco; un poliedro puede deformarse irregularmente como una roca con caras asimétricas de mil formas distintas; podemos estirar sus aristas o cambiar todos sus ángulos internos... y sin embargo, <strong>la suma alternada jamás cambia</strong>. No da 1, no da 3, ni depende del volumen ni del área superficial. ¿Qué propiedad oculta del espacio está forzando este invariante universal?
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA DEMOSTRACIÓN DE CAUCHY (1811) -->
+  <section class="lesson-section" id="demostracion-cauchy">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Demostración de Cauchy por Aplanamiento y Triangulación (1811)</h2>
+
+    <p class="lead-paragraph">
+      Aunque <strong>Leonhard Euler</strong> enunció la fórmula en una carta a Christian Goldbach en 1750, su primera demostración contenía lagunas. Fue el célebre matemático francés <strong>Augustin-Louis Cauchy</strong> quien en 1811 concibió una demostración visual y combinatoria impecable mediante <em>grafos planares</em>:
+    </p>
+
+    <!-- Fases de la demostración de Cauchy -->
+    <div class="cauchy-proof-flow">
+      <!-- Fase 1 -->
+      <div class="cauchy-step-card">
+        <div class="step-badge">PASO 1</div>
+        <h4>Retirada de una Cara y Aplanamiento Elástico</h4>
+        <p>
+          Imaginemos que el poliedro está hecho de una lámina elástica de goma hueca. Retiramos una cara cualquiera (por ejemplo, la base inferior). Al quitar una cara, la suma que queremos rastrear se reduce en una unidad:
+        </p>
+        <div class="math-step-expr">
+          V - A + C' = 1 &emsp; (donde C' = C - 1)
+        </div>
+        <p>
+          Ahora abrimos el poliedro por el agujero y lo estiramos sobre una mesa plana. Obtenemos un <strong>grafo planar conexo</strong> donde ninguna arista se cruza con otra y el perímetro exterior corresponde al contorno de la cara retirada (Diagrama de Schlegel).
+        </p>
+      </div>
+
+      <!-- Fase 2 -->
+      <div class="cauchy-step-card">
+        <div class="step-badge">PASO 2</div>
+        <h4>Triangulación Completa del Grafo</h4>
+        <p>
+          Si alguna cara interna tiene más de 3 aristas (como los cuadrados de un cubo o los pentágonos de un dodecaedro), trazamos diagonales internas hasta que <strong>todas las caras sean triángulos</strong>.
+        </p>
+        <div class="math-step-expr">
+          Cada diagonal nueva añade: &nbsp; ΔA = +1, &nbsp; ΔC' = +1, &nbsp; ΔV = 0
+        </div>
+        <p>
+          Calculamos la variación neta de la característica:
+        </p>
+        <div class="math-step-expr">
+          Δ(V - A + C') = 0 - (+1) + (+1) = 0
+        </div>
+        <p>
+          <strong>Invarianza demostrada:</strong> Triangular las caras modifica la cantidad de aristas y caras pero deja el valor V - A + C' rigurosamente idéntico.
+        </p>
+      </div>
+
+      <!-- Fase 3 -->
+      <div class="cauchy-step-card">
+        <div class="step-badge">PASO 3</div>
+        <h4>Poda Sistemática de Triángulos Perimetrales</h4>
+        <p>
+          Comenzamos a retirar triángulos de la frontera exterior del plano uno a uno. Solo pueden darse dos casos topológicos:
+        </p>
+
+        <div class="pruning-cases-grid">
+          <div class="case-box">
+            <span class="case-label">Caso A · Triángulo con 1 arista exterior</span>
+            <p>Retiramos esa arista exterior y la cara correspondiente. El vértice permanece intacto en el grafo restante.</p>
+            <div class="case-math">
+              ΔV = 0, &emsp; ΔA = -1, &emsp; ΔC' = -1
+            </div>
+            <div class="case-result">
+              Δ(V - A + C') = 0 - (-1) + (-1) = 0 &emsp; ✓
+            </div>
+          </div>
+
+          <div class="case-box">
+            <span class="case-label">Caso B · Triángulo con 2 aristas y 1 vértice exterior</span>
+            <p>Retiramos el vértice saliente, sus 2 aristas incidentes y la cara poligonal.</p>
+            <div class="case-math">
+              ΔV = -1, &emsp; ΔA = -2, &emsp; ΔC' = -1
+            </div>
+            <div class="case-result">
+              Δ(V - A + C') = (-1) - (-2) + (-1) = 0 &emsp; ✓
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fase 4 -->
+      <div class="cauchy-step-card is-final">
+        <div class="step-badge">PASO 4</div>
+        <h4>El Triángulo Fundamental y Restauración Final</h4>
+        <p>
+          Continuamos retirando triángulos perimetrales sin alterar jamás el valor de V - A + C', hasta que la red se reduce a un <strong>único triángulo elemental</strong> sobre el plano.
+        </p>
+        <div class="math-step-expr">
+          V = 3, &emsp; A = 3, &emsp; C' = 1 &emsp; ⟹ &emsp; V - A + C' = 3 - 3 + 1 = 1
+        </div>
+        <p>
+          Como ninguna operación modificó el valor de la expresión, el grafo completo aplanado satisfacía V - A + C' = 1. Al reintegrar la cara original que habíamos retirado en el Paso 1:
+        </p>
+        <div class="math-step-expr highlight-gold">
+          V - A + C = (V - A + C') + 1 = 1 + 1 = 2 &emsp; ■ Q.E.D.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: POR QUÉ SOLO HAY 5 SÓLIDOS PLATÓNICOS -->
+  <section class="lesson-section" id="cinco-solidos-platonicos">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Teorema de Imposibilidad: Por Qué Solo Existen 5 Sólidos Platónicos</h2>
+
+    <p class="lead-paragraph">
+      Durante milenios, los geómetras de la Grecia clásica admiraron los <strong>cinco sólidos platónicos</strong> (tetraedro, cubo, octaedro, dodecaedro e icosaedro), pero ninguno pudo demostrar por qué era imposible construir un sexto cuerpo regular perfecto. La relación \(V - A + C = 2\) ofrece la demostración algebraica definitiva:
+    </p>
+
+    <div class="platonic-proof-card">
+      <div class="card-intro">
+        <h5>Definición de Poliedro Regular Convexo</h5>
+        <p>
+          Sea un poliedro donde todas sus caras son polígonos regulares idénticos de <strong>p</strong> lados (\(p \ge 3\)), y donde en cada vértice concurre exactamente el mismo número <strong>q</strong> de aristas (\(q \ge 3\)).
+        </p>
+      </div>
+
+      <div class="algebraic-steps">
+        <div class="step-row">
+          <span class="step-num">1</span>
+          <div class="step-content">
+            <p><strong>Lema de recuento de aristas por caras:</strong> Como cada cara tiene <em>p</em> lados y cada arista pertenece exactamente a 2 caras:</p>
+            <div class="math-step-expr">p · C = 2A &emsp; ⟹ &emsp; C = 2A / p</div>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <span class="step-num">2</span>
+          <div class="step-content">
+            <p><strong>Lema del apretón de manos en vértices:</strong> Como de cada vértice parten <em>q</em> aristas y cada arista conecta 2 vértices:</p>
+            <div class="math-step-expr">q · V = 2A &emsp; ⟹ &emsp; V = 2A / q</div>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <span class="step-num">3</span>
+          <div class="step-content">
+            <p><strong>Sustitución en la Fórmula de Euler:</strong></p>
+            <div class="math-step-expr">
+              V - A + C = 2 &emsp; ⟹ &emsp; (2A / q) - A + (2A / p) = 2
+            </div>
+            <p>Dividiendo toda la igualdad entre 2A:</p>
+            <div class="math-step-expr highlight-cyan">
+              (1 / q) - (1 / 2) + (1 / p) = 1 / A &emsp; ⟺ &emsp; 1/p + 1/q = 1/2 + 1/A
+            </div>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <span class="step-num">4</span>
+          <div class="step-content">
+            <p><strong>La Desigualdad Diofántica Fundamental:</strong></p>
+            <p>Dado que el número de aristas de un cuerpo tridimensional es forzosamente positivo (A &gt; 0), se deduce que 1/A &gt; 0, imponiendo una restricción implacable:</p>
+            <div class="math-step-expr highlight-gold">
+              1/p + 1/q &gt; 1/2 &emsp; (con p ≥ 3, &nbsp; q ≥ 3)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Análisis de las únicas 5 soluciones enteras -->
+      <div class="diophantine-grid">
+        <div class="dio-card">
+          <div class="dio-pair">(p = 3, q = 3)</div>
+          <span class="dio-sum">1/3 + 1/3 = 2/3 &gt; 1/2</span>
+          <h5>Tetraedro</h5>
+          <p>4 triángulos equiláteros; 3 por vértice. A = 6, V = 4, C = 4.</p>
+        </div>
+
+        <div class="dio-card">
+          <div class="dio-pair">(p = 4, q = 3)</div>
+          <span class="dio-sum">1/4 + 1/3 = 7/12 &gt; 1/2</span>
+          <h5>Cubo (Hexaedro)</h5>
+          <p>6 cuadrados regulares; 3 por vértice. A = 12, V = 8, C = 6.</p>
+        </div>
+
+        <div class="dio-card">
+          <div class="dio-pair">(p = 3, q = 4)</div>
+          <span class="dio-sum">1/3 + 1/4 = 7/12 &gt; 1/2</span>
+          <h5>Octaedro</h5>
+          <p>8 triángulos equiláteros; 4 por vértice. A = 12, V = 6, C = 8.</p>
+        </div>
+
+        <div class="dio-card">
+          <div class="dio-pair">(p = 5, q = 3)</div>
+          <span class="dio-sum">1/5 + 1/3 = 8/15 &gt; 1/2</span>
+          <h5>Dodecaedro</h5>
+          <p>12 pentágonos regulares; 3 por vértice. A = 30, V = 20, C = 12.</p>
+        </div>
+
+        <div class="dio-card">
+          <div class="dio-pair">(p = 3, q = 5)</div>
+          <span class="dio-sum">1/3 + 1/5 = 8/15 &gt; 1/2</span>
+          <h5>Icosaedro</h5>
+          <p>20 triángulos equiláteros; 5 por vértice. A = 30, V = 12, C = 20.</p>
+        </div>
+      </div>
+
+      <div class="impossibility-box">
+        <strong>¿Por qué no existen más?</strong> Si probamos <em>p</em> ≥ 6 con <em>q</em> ≥ 3, la suma 1/p + 1/q ≤ 1/6 + 1/3 = 1/2, lo que requeriría 1/A ≤ 0 (un poliedro con infinitas o negativas aristas, que degenera en un teselado plano infinito de hexágonos). <em>La existencia de exactamente cinco sólidos platónicos es una ley geométrica irrefutable gobernada por la topología de Euler.</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: EL DEFECTO ANGULAR DE DESCARTES -->
+  <section class="lesson-section" id="defecto-angular-descartes">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. El Defecto Angular de Descartes (1630): El Precursor Oculto</h2>
+
+    <p class="lead-paragraph">
+      Más de un siglo antes de que Euler redactara su carta, el filósofo y matemático <strong>René Descartes</strong> escribió hacia 1630 un manuscrito titulado <em>De Solidorum Elementis</em>. Aunque el manuscrito se perdió y solo fue recuperado en copia por Leibniz, Descartes había descubierto la misma verdad geométrica desde el ángulo de la curvatura intrínseca:
+    </p>
+
+    <div class="descartes-concept-card">
+      <div class="concept-badge">TEOREMA DEL DEFECTO TOTAL DE DESCARTES</div>
+      <p>
+        En cualquier vértice <em>v</em> de un poliedro, los ángulos de las caras concurrentes no logran completar una circunferencia completa de 360° (2π radianes). A ese "faltante" para llegar a un plano llano se le denomina <strong>defecto angular δ(v)</strong>:
+      </p>
+
+      <div class="math-display-eq">
+        δ(v) = 2π - ∑ θ<sub>i</sub>(v)
+      </div>
+
+      <p class="concept-statement">
+        <strong>Teorema de Descartes:</strong> La suma de los defectos angulares de todos los vértices de cualquier poliedro convexo es invariablemente igual a 4π radianes (720°), es decir, <em>¡el equivalente a dos vueltas completas!</em>
+      </p>
+
+      <div class="math-display-eq highlight-gold">
+        ∑<sub>v ∈ V</sub> δ(v) = 2π · (V - A + C) = 2π · 2 = 4π = 720°
+      </div>
+    </div>
+
+    <!-- Ejemplo visual con el cubo y tetraedro -->
+    <div class="descartes-examples-grid">
+      <div class="d-example-card">
+        <span class="ex-name">En el Cubo (Hexaedro)</span>
+        <p>Cada vértice reúne 3 caras cuadradas (90° cada una):</p>
+        <div class="ex-calc">
+          Suma angular en el vértice = 90° × 3 = 270°
+        </div>
+        <div class="ex-calc">
+          δ(v) = 360° - 270° = 90°
+        </div>
+        <p>Como el cubo tiene exactamente 8 vértices:</p>
+        <div class="ex-total">
+          ∑ δ = 8 × 90° = <strong>720°</strong> = 4π rad
+        </div>
+      </div>
+
+      <div class="d-example-card">
+        <span class="ex-name">En el Tetraedro</span>
+        <p>Cada vértice reúne 3 caras triangulares (60° cada una):</p>
+        <div class="ex-calc">
+          Suma angular en el vértice = 60° × 3 = 180°
+        </div>
+        <div class="ex-calc">
+          δ(v) = 360° - 180° = 180°
+        </div>
+        <p>Como el tetraedro tiene exactamente 4 vértices:</p>
+        <div class="ex-total">
+          ∑ δ = 4 × 180° = <strong>720°</strong> = 4π rad
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: EL GRAN SALTO A LA TOPOLOGÍA Y GÉNERO G -->
+  <section class="lesson-section" id="salto-topologia-genero">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. El Gran Salto a la Topología: Superficies, Género y χ = 2 - 2g</h2>
+
+    <p class="lead-paragraph">
+      Aquí es donde la materia de 1º de la ESO explota hacia la matemática contemporánea: ¿qué ocurre si el poliedro no es convexo? ¿Qué sucede si el cuerpo tiene un agujero pasante, como un <strong>toroide o donut poliédrico</strong>?
+    </p>
+
+    <div class="topology-jump-card">
+      <div class="jump-header">
+        <span class="jump-pill">FÓRMULA DE EULER-POINCARÉ PARA 2-VARIEDADES</span>
+      </div>
+
+      <p>
+        En topología, el número de orificios pasantes de una superficie cerrada orientable se define como su <strong>género <em>g</em></strong>. Henri Poincaré demostró que la cantidad V - A + C no es una propiedad métrica del poliedro, sino la <strong>Característica de Euler χ</strong> de la superficie en la que puede inscribirse:
+      </p>
+
+      <div class="math-display-eq euler-giant-eq highlight-cyan">
+        χ = V - A + C = 2 - 2g
+      </div>
+
+      <!-- Comparativa topológica de géneros -->
+      <div class="genus-levels-grid">
+        <div class="genus-card">
+          <span class="genus-glyph">○</span>
+          <h4>Género g = 0</h4>
+          <span class="genus-name">Esfera Topológica (S²)</span>
+          <div class="genus-math">
+            χ = 2 - 2(0) = 2
+          </div>
+          <p>Poliedros convexos clásicos (cubos, pirámides, prismas). Ningún agujero; cualquier lazo cerrado puede contraerse a un punto.</p>
+        </div>
+
+        <div class="genus-card">
+          <span class="genus-glyph">◎</span>
+          <h4>Género g = 1</h4>
+          <span class="genus-name">Toro Topológico (T²)</span>
+          <div class="genus-math">
+            χ = 2 - 2(1) = 0
+          </div>
+          <p>Superficies con 1 agujero (donut). En cualquier poliedro toroidal con un túnel pasante se cumple estrictamente: <strong>V - A + C = 0</strong>.</p>
+        </div>
+
+        <div class="genus-card">
+          <span class="genus-glyph">∞</span>
+          <h4>Género g = 2</h4>
+          <span class="genus-name">Doble Toro (Superficie con 2 agujeros)</span>
+          <div class="genus-math">
+            χ = 2 - 2(2) = -2
+          </div>
+          <p>Superficies con dos túneles. Todo poliedro bi-toroidal satisface invariablemente: <strong>V - A + C = -2</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tunnel-explanation-box">
+      <h5>¿Por qué abrir un túnel resta exactamente 2 unidades?</h5>
+      <p>
+        Perforar un poliedro para crear un túnel requiere retirar 2 caras (la entrada y la salida del túnel, restando 2 a \(C\)), e insertar paredes internas tubulares. Al conectar los vértices del contorno frontal con el trasero se equilibran aristas y caras internas con precisión quirúrgica, dejando un déficit neto exacto de \(\Delta \chi = -2\). De ahí que cada nuevo agujero reste dos unidades a la característica de Euler.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: LABORATORIO INTERACTIVO 3D -->
+  <section class="lesson-section" id="laboratorio-interactivo-poliedros">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Laboratorio Interactivo: El Explorador 3D de Poliedros y Topología</h2>
+
+    <p class="lead-paragraph">
+      Examina los sólidos en tres dimensiones. Rota los cuerpos arrastrando el ratón (o deslizando en móvil), alterna entre los sólidos platónicos convexos (\(\chi = 2\)) y el <strong>toroide poliédrico con túnel pasante (\(\chi = 0\))</strong>, y observa cómo se computan sus elementos en tiempo real:
+    </p>
+
+    <div class="polyhedra-lab-wrapper">
+      <div class="lab-controls-bar">
+        <div class="solid-selector-tabs" role="tablist" aria-label="Seleccionar poliedro">
+          <button type="button" class="solid-tab-btn is-active" data-solid="tetrahedron">Tetraedro</button>
+          <button type="button" class="solid-tab-btn" data-solid="cube">Cubo</button>
+          <button type="button" class="solid-tab-btn" data-solid="octahedron">Octaedro</button>
+          <button type="button" class="solid-tab-btn" data-solid="dodecahedron">Dodecaedro</button>
+          <button type="button" class="solid-tab-btn" data-solid="icosahedron">Icosaedro</button>
+          <button type="button" class="solid-tab-btn is-torus" data-solid="torus">Toroide (g=1)</button>
+        </div>
+
+        <div class="lab-render-options">
+          <label class="render-toggle-label">
+            <input type="checkbox" id="toggle-wireframe" />
+            <span>Ver Esqueleto (Alambre)</span>
+          </label>
+          <label class="render-toggle-label">
+            <input type="checkbox" id="toggle-autorotate" checked />
+            <span>Auto-rotación</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Zona del Canvas 3D y Panel de Métricas -->
+      <div class="lab-canvas-grid">
+        <div class="canvas-container">
+          <canvas id="polyhedra-3d-canvas" width="560" height="420" aria-label="Visualizador interactivo 3D de poliedros"></canvas>
+          <div class="canvas-drag-hint">Arrastra para rotar en 3D libremente</div>
+        </div>
+
+        <div class="metrics-panel">
+          <div class="panel-header">
+            <span class="ph-title" id="metric-solid-title">Cubo Regular</span>
+            <span class="ph-genus" id="metric-genus-badge">Género g = 0 (Esfera)</span>
+          </div>
+
+          <div class="metric-tiles-grid">
+            <div class="m-tile">
+              <span class="m-label">Vértices (V)</span>
+              <span class="m-val gold" id="metric-v">8</span>
+            </div>
+            <div class="m-tile">
+              <span class="m-label">Aristas (A)</span>
+              <span class="m-val cyan" id="metric-a">12</span>
+            </div>
+            <div class="m-tile">
+              <span class="m-label">Caras (C)</span>
+              <span class="m-val purple" id="metric-c">6</span>
+            </div>
+            <div class="m-tile highlight">
+              <span class="m-label">Euler: V - A + C (χ)</span>
+              <span class="m-val emerald" id="metric-chi">2</span>
+            </div>
+          </div>
+
+          <div class="live-calculation-box">
+            <span class="calc-label">ECUACIÓN TOPOLÓGICA EN VIVO:</span>
+            <div class="live-equation" id="metric-equation-str">
+              8 - 12 + 6 = 2
+            </div>
+          </div>
+
+          <div class="descartes-defect-status">
+            <span class="defect-label">Defecto Angular Total (\(\sum \delta\)):</span>
+            <span class="defect-val" id="metric-defect-str">720° (4π rad)</span>
+          </div>
+
+          <div class="solid-description-box" id="metric-solid-desc">
+            Sólido platónico regular: 6 caras cuadradas idénticas. En cada vértice se encuentran 3 cuadrados.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: LA CIMA UNIVERSITARIA -->
+  <section class="lesson-section" id="cima-universitaria">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. La Cima Universitaria: Gauss-Bonnet y la Topología Algebraica</h2>
+
+    <p class="lead-paragraph">
+      Aquella simple resta de 1º de la ESO se erige como uno de los pilares más profundos de la matemática contemporánea, tendiendo puentes entre la geometría diferencial y la física cuántica:
+    </p>
+
+    <div class="university-peaks-grid">
+      <!-- Pico 1: Gauss-Bonnet -->
+      <div class="peak-card">
+        <div class="peak-badge">GEOMETRÍA DIFERENCIAL</div>
+        <h4>El Teorema de Gauss-Bonnet</h4>
+        <p>
+          Conecta la curvatura gaussiana local continua <em>K</em> de una superficie suave <em>M</em> con su número combinatorio discreto de Euler:
+        </p>
+        <div class="math-step-expr highlight-gold">
+          ∬<sub>M</sub> K · dA = 2π · χ(M)
+        </div>
+        <p>
+          No importa cómo deformes una pelota de fútbol de goma: si la aplastas o la arrugas, habrá zonas con mayor curvatura y zonas con curvatura negativa (en forma de silla de montar), pero <strong>la integral de toda la curvatura superficial siempre sumará exactamente 4π</strong> (2π × 2). ¡La geometría infinitesimal está indisolublemente encadenada a la topología global!
+        </p>
+      </div>
+
+      <!-- Pico 2: Topología Algebraica -->
+      <div class="peak-card">
+        <div class="peak-badge">TOPOLOGÍA ALGEBRAICA</div>
+        <h4>Números de Betti y Grupos de Homología</h4>
+        <p>
+          En el siglo XX, Emmy Noether y Henri Poincaré reformularon la característica de Euler mediante espacios vectoriales de ciclos y bordes:
+        </p>
+        <div class="math-step-expr highlight-cyan">
+          χ = b<sub>0</sub> - b<sub>1</sub> + b<sub>2</sub>
+        </div>
+        <p>
+          Donde b<sub>0</sub> es el número de componentes conexas, b<sub>1</sub> mide los túneles independientes (agujeros 1D), y b<sub>2</sub> representa las cavidades tridimensionales encerradas (burbujas 2D). Para una esfera hueca: b<sub>0</sub> = 1, b<sub>1</sub> = 0, b<sub>2</sub> = 1 ⟹ 1 - 0 + 1 = 2.
+        </p>
+      </div>
+
+      <!-- Pico 3: Dimensiones Superiores -->
+      <div class="peak-card">
+        <div class="peak-badge">POLÍTOPOS EN 4D Y DIMENSIÓN N</div>
+        <h4>La Generalización de Schläfli en 4 Dimensiones</h4>
+        <p>
+          En cuatro dimensiones espaciales, los cuerpos regulares ya no están limitados por caras, sino por celdas tridimensionales (C), además de caras (F), aristas (A) y vértices (V):
+        </p>
+        <div class="math-step-expr highlight-purple">
+          V - A + F - C = 0 &emsp; (para politopos convexos en 4D)
+        </div>
+        <p>
+          Ludwig Schläfli demostró usando esta generalización que en el espacio de 4 dimensiones existen exactamente <strong>seis policoros regulares convexos</strong> (el hipercubo o teseracto, el hiperoctaedro de 16 celdas, el 24-celdas, el 120-celdas y el 600-celdas).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: EVALUACIÓN CONCEPTUAL INTERACTIVA -->
+  <section class="lesson-section" id="evaluacion-conceptual">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: De la Secundaria al Rigor Matemático</h2>
+
+    <p class="lead-paragraph">
+      Pon a prueba tu comprensión de la relación de Euler, la deducción de Cauchy y su evolución topológica:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-question-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 1</span>
+          <p class="q-text">
+            Un prisma recto tiene una base poligonal de 12 lados (dodecágono). ¿Cuántos vértices, aristas y caras tiene, y cuál es su característica de Euler?
+          </p>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">V = 24, A = 36, C = 14 \(\implies 24 - 36 + 14 = 2\).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">V = 12, A = 24, C = 14 \(\implies 12 - 24 + 14 = 2\).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">V = 24, A = 24, C = 12 \(\implies 24 - 24 + 12 = 12\).</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-question-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 2</span>
+          <p class="q-text">
+            En la demostración de Cauchy, ¿por qué añadir diagonales internas para triangular las caras de un cubo no altera el valor de la característica \(V - A + C'\)?
+          </p>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque cada diagonal añade 1 vértice nuevo que neutraliza la arista creada.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque cada diagonal crea simultáneamente 1 arista nueva (\(\Delta A = +1\)) y divide una cara en dos (\(\Delta C' = +1\)), de modo que \(-\Delta A + \Delta C' = -1 + 1 = 0\).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque el valor de \(C'\) permanece estático al ser un grafo plano.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-question-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 3</span>
+          <p class="q-text">
+            Si un escultor perfora un cubo sólido con un taladro de sección cuadrada que lo atraviesa de lado a lado (creando un túnel que conecta la cara superior con la inferior), ¿cuál será el valor de \(V - A + C\) del poliedro resultante?
+          </p>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">2, porque sigue teniendo vértices y caras rectas.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">0, porque al poseer un orificio pasante su género topológico es \(g = 1\), cumpliendo \(\chi = 2 - 2(1) = 0\).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">-2, porque se han perdido dos caras completas del cubo original.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-question-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 4</span>
+          <p class="q-text">
+            Según el Teorema del Defecto Angular de Descartes, si un poliedro convexo irregular tiene 100 vértices de diversas formas y tamaños, ¿cuánto sumarán los defectos angulares de todos sus vértices combinados?
+          </p>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">\(100 \times 360^\circ = 36.000^\circ\).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Exactamente \(720^\circ\) (\(4\pi\) radianes), sin importar el número de vértices ni su simetría.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Dependerá del volumen total y del área superficial del poliedro.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. MOTOR 3D INTERACTIVO PARA POLIEDROS Y TOPOLOGÍA
+    // =========================================================================
+    const canvas = document.getElementById('polyhedra-3d-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    interface PolyhedronModel {
+      name: string;
+      title: string;
+      genus: number;
+      v: number;
+      a: number;
+      c: number;
+      chi: number;
+      equation: string;
+      defect: string;
+      desc: string;
+      vertices: [number, number, number][];
+      faces: number[][];
+    }
+
+    const phi = (1 + Math.sqrt(5)) / 2; // Razón áurea para dodecaedro e icosaedro
+
+    // Definición geométrica y combinatoria de los poliedros
+    const models: Record<string, PolyhedronModel> = {
+      tetrahedron: {
+        name: 'Tetraedro',
+        title: 'Tetraedro Regular',
+        genus: 0,
+        v: 4,
+        a: 6,
+        c: 4,
+        chi: 2,
+        equation: '4 - 6 + 4 = 2',
+        defect: '720° (4π rad) — 4 × 180°',
+        desc: 'El poliedro regular más simple: 4 caras triangulares equiláteras congruentes. En cada vértice concurren 3 aristas.',
+        vertices: [
+          [1, 1, 1],
+          [1, -1, -1],
+          [-1, 1, -1],
+          [-1, -1, 1]
+        ].map(([x, y, z]) => [x * 1.3, y * 1.3, z * 1.3]) as [number, number, number][],
+        faces: [
+          [0, 1, 2],
+          [0, 2, 3],
+          [0, 3, 1],
+          [1, 3, 2]
+        ]
+      },
+      cube: {
+        name: 'Cubo',
+        title: 'Cubo (Hexaedro Regular)',
+        genus: 0,
+        v: 8,
+        a: 12,
+        c: 6,
+        chi: 2,
+        equation: '8 - 12 + 6 = 2',
+        defect: '720° (4π rad) — 8 × 90°',
+        desc: 'Sólido platónico regular: 6 caras cuadradas idénticas. En cada vértice se encuentran 3 cuadrados en ángulo recto.',
+        vertices: [
+          [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+          [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+        ].map(([x, y, z]) => [x * 1.1, y * 1.1, z * 1.1]) as [number, number, number][],
+        faces: [
+          [0, 1, 2, 3], // Trasera
+          [4, 5, 6, 7], // Delantera
+          [0, 1, 5, 4], // Inferior
+          [2, 3, 7, 6], // Superior
+          [0, 3, 7, 4], // Izquierda
+          [1, 2, 6, 5]  // Derecha
+        ]
+      },
+      octahedron: {
+        name: 'Octaedro',
+        title: 'Octaedro Regular',
+        genus: 0,
+        v: 6,
+        a: 12,
+        c: 8,
+        chi: 2,
+        equation: '6 - 12 + 8 = 2',
+        defect: '720° (4π rad) — 6 × 120°',
+        desc: 'Poliedro dual del cubo: 8 caras triangulares equiláteras; 4 triángulos convergen en cada uno de sus 6 vértices.',
+        vertices: [
+          [1.5, 0, 0], [-1.5, 0, 0],
+          [0, 1.5, 0], [0, -1.5, 0],
+          [0, 0, 1.5], [0, 0, -1.5]
+        ],
+        faces: [
+          [0, 2, 4], [0, 4, 3], [0, 3, 5], [0, 5, 2],
+          [1, 4, 2], [1, 3, 4], [1, 5, 3], [1, 2, 5]
+        ]
+      },
+      dodecahedron: {
+        name: 'Dodecaedro',
+        title: 'Dodecaedro Regular',
+        genus: 0,
+        v: 20,
+        a: 30,
+        c: 12,
+        chi: 2,
+        equation: '20 - 30 + 12 = 2',
+        defect: '720° (4π rad) — 20 × 36°',
+        desc: '12 pentágonos regulares. Sus vértices involucran directamente la divina proporción φ = (1 + √5)/2.',
+        vertices: (() => {
+          const s = 0.85;
+          const ip = 1 / phi;
+          const v: [number, number, number][] = [];
+          // 8 vértices del cubo base: (±1, ±1, ±1)
+          for (const x of [-1, 1]) {
+            for (const y of [-1, 1]) {
+              for (const z of [-1, 1]) {
+                v.push([x * s, y * s, z * s]);
+              }
+            }
+          }
+          // 12 vértices en los 3 planos coordenados ortogonales
+          for (const s1 of [-1, 1]) {
+            for (const s2 of [-1, 1]) {
+              v.push([0, s1 * ip * s, s2 * phi * s]);
+            }
+          }
+          for (const s1 of [-1, 1]) {
+            for (const s2 of [-1, 1]) {
+              v.push([s1 * ip * s, s2 * phi * s, 0]);
+            }
+          }
+          for (const s1 of [-1, 1]) {
+            for (const s2 of [-1, 1]) {
+              v.push([s2 * phi * s, 0, s1 * ip * s]);
+            }
+          }
+          return v;
+        })(),
+        faces: [
+          [0, 8, 4, 14, 12],
+          [0, 8, 10, 2, 16],
+          [0, 12, 1, 18, 16],
+          [1, 9, 5, 14, 12],
+          [1, 9, 11, 3, 18],
+          [2, 10, 6, 15, 13],
+          [2, 13, 3, 18, 16],
+          [3, 11, 7, 15, 13],
+          [4, 8, 10, 6, 17],
+          [4, 14, 5, 19, 17],
+          [5, 9, 11, 7, 19],
+          [6, 15, 7, 19, 17]
+        ]
+      },
+      icosahedron: {
+        name: 'Icosaedro',
+        title: 'Icosaedro Regular',
+        genus: 0,
+        v: 12,
+        a: 30,
+        c: 20,
+        chi: 2,
+        equation: '12 - 30 + 20 = 2',
+        defect: '720° (4π rad) — 12 × 60°',
+        desc: 'El poliedro platónico de mayor volumen para una esfera dada: 20 caras triangulares equiláteras; 5 por vértice.',
+        vertices: (() => {
+          const s = 1.0;
+          return [
+            [-s, phi * s, 0], [s, phi * s, 0], [-s, -phi * s, 0], [s, -phi * s, 0],
+            [0, -s, phi * s], [0, s, phi * s], [0, -s, -phi * s], [0, s, -phi * s],
+            [phi * s, 0, -s], [phi * s, 0, s], [-phi * s, 0, -s], [-phi * s, 0, s]
+          ] as [number, number, number][];
+        })(),
+        faces: [
+          [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
+          [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+          [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
+          [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]
+        ]
+      },
+      torus: {
+        name: 'Toroide Poliédrico (T²)',
+        title: 'Toroide Poliédrico con Agujero Central (g = 1)',
+        genus: 1,
+        v: 16,
+        a: 32,
+        c: 16,
+        chi: 0,
+        equation: '16 - 32 + 16 = 0',
+        defect: '0° (Curvatura Total Nula) — g = 1',
+        desc: 'Un cubo atravesado por un túnel cuadrado completo. Al tener 1 agujero (género g=1), la característica de Euler es idénticamente 0.',
+        vertices: (() => {
+          const outW = 1.4;
+          const inW = 0.55;
+          const h = 0.7;
+          return [
+            // 8 vértices del marco exterior: [-outW..outW, -outW..outW, ±h]
+            [-outW, -outW, -h], [outW, -outW, -h], [outW, outW, -h], [-outW, outW, -h],
+            [-outW, -outW, h], [outW, -outW, h], [outW, outW, h], [-outW, outW, h],
+            // 8 vértices del túnel interior hueco: [-inW..inW, -inW..inW, ±h]
+            [-inW, -inW, -h], [inW, -inW, -h], [inW, inW, -h], [-inW, inW, -h],
+            [-inW, -inW, h], [inW, -inW, h], [inW, inW, h], [-inW, inW, h]
+          ] as [number, number, number][];
+        })(),
+        faces: [
+          // 4 caras de la tapa superior
+          [4, 5, 13, 12], [5, 6, 14, 13], [6, 7, 15, 14], [7, 4, 12, 15],
+          // 4 caras de la tapa inferior
+          [0, 3, 11, 8], [3, 2, 10, 11], [2, 1, 9, 10], [1, 0, 8, 9],
+          // 4 caras perimetrales exteriores
+          [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],
+          // 4 paredes del túnel interior
+          [8, 12, 13, 9], [9, 13, 14, 10], [10, 14, 15, 11], [11, 15, 12, 8]
+        ]
+      }
+    };
+
+    let activeSolidKey = 'cube';
+    let rotX = 0.4;
+    let rotY = 0.6;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let autoRotate = true;
+    let wireframeOnly = false;
+
+    // Métricas en la UI
+    const titleEl = document.getElementById('metric-solid-title');
+    const genusEl = document.getElementById('metric-genus-badge');
+    const vEl = document.getElementById('metric-v');
+    const aEl = document.getElementById('metric-a');
+    const cEl = document.getElementById('metric-c');
+    const chiEl = document.getElementById('metric-chi');
+    const eqEl = document.getElementById('metric-equation-str');
+    const defectEl = document.getElementById('metric-defect-str');
+    const descEl = document.getElementById('metric-solid-desc');
+
+    function updateMetricPanel(m: PolyhedronModel) {
+      if (titleEl) titleEl.textContent = m.title;
+      if (genusEl) {
+        genusEl.textContent = m.genus === 0 ? 'Género g = 0 (Esfera S²)' : 'Género g = 1 (Toroide T²)';
+        genusEl.className = m.genus === 0 ? 'ph-genus is-sphere' : 'ph-genus is-torus';
+      }
+      if (vEl) vEl.textContent = String(m.v);
+      if (aEl) aEl.textContent = String(m.a);
+      if (cEl) cEl.textContent = String(m.c);
+      if (chiEl) chiEl.textContent = String(m.chi);
+      if (eqEl) eqEl.textContent = m.equation;
+      if (defectEl) defectEl.textContent = m.defect;
+      if (descEl) descEl.textContent = m.desc;
+    }
+
+    // Control de selección de pestañas
+    const solidButtons = document.querySelectorAll<HTMLButtonElement>('.solid-tab-btn');
+    solidButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const solid = btn.dataset.solid;
+        if (solid && models[solid]) {
+          solidButtons.forEach((b) => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          activeSolidKey = solid;
+          updateMetricPanel(models[solid]);
+        }
+      });
+    });
+
+    const wireframeCheck = document.getElementById('toggle-wireframe') as HTMLInputElement | null;
+    if (wireframeCheck) {
+      wireframeCheck.addEventListener('change', (e) => {
+        wireframeOnly = (e.target as HTMLInputElement).checked;
+      });
+    }
+
+    const autorotateCheck = document.getElementById('toggle-autorotate') as HTMLInputElement | null;
+    if (autorotateCheck) {
+      autorotateCheck.addEventListener('change', (e) => {
+        autoRotate = (e.target as HTMLInputElement).checked;
+      });
+    }
+
+    // Eventos de ratón y táctil para rotar en 3D
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      rotY += dx * 0.01;
+      rotX += dy * 0.01;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - lastMouseX;
+      const dy = e.touches[0].clientY - lastMouseY;
+      rotY += dx * 0.01;
+      rotX += dy * 0.01;
+      lastMouseX = e.touches[0].clientX;
+      lastMouseY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // Render loop 3D
+    function render() {
+      if (!ctx || !canvas) return;
+
+      const width = canvas.width;
+      const height = canvas.height;
+      const cx = width / 2;
+      const cy = height / 2;
+      const scale = 110;
+
+      if (autoRotate && !isDragging) {
+        rotY += 0.007;
+        rotX += 0.003;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+
+      const m = models[activeSolidKey];
+      if (!m) return;
+
+      // Transformar y proyectar vértices
+      const cosX = Math.cos(rotX);
+      const sinX = Math.sin(rotX);
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+
+      const projected = m.vertices.map(([vx, vy, vz]) => {
+        // Rotación alrededor de Y
+        const x1 = vx * cosY + vz * sinY;
+        const y1 = vy;
+        const z1 = -vx * sinY + vz * cosY;
+
+        // Rotación alrededor de X
+        const x2 = x1;
+        const y2 = y1 * cosX - z1 * sinX;
+        const z2 = y1 * sinX + z1 * cosX;
+
+        // Proyección en perspectiva suave
+        const fov = 4.5;
+        const pz = z2 + fov;
+        const px = cx + (x2 / pz) * scale * 2.8;
+        const py = cy - (y2 / pz) * scale * 2.8;
+
+        return { px, py, z: z2 };
+      });
+
+      // Dibujar caras o aristas
+      if (!wireframeOnly) {
+        // Ordenar caras de atrás hacia adelante (algoritmo del pintor)
+        const sortedFaces = m.faces.map((faceIndices) => {
+          let sumZ = 0;
+          faceIndices.forEach((idx) => {
+            if (projected[idx]) sumZ += projected[idx].z;
+          });
+          const avgZ = sumZ / faceIndices.length;
+          return { faceIndices, avgZ };
+        }).sort((a, b) => a.avgZ - b.avgZ);
+
+        sortedFaces.forEach(({ faceIndices, avgZ }) => {
+          if (faceIndices.length < 3) return;
+
+          ctx.beginPath();
+          const first = projected[faceIndices[0]];
+          if (!first) return;
+          ctx.moveTo(first.px, first.py);
+
+          for (let i = 1; i < faceIndices.length; i++) {
+            const p = projected[faceIndices[i]];
+            if (p) ctx.lineTo(p.px, p.py);
+          }
+          ctx.closePath();
+
+          // Iluminación básica según profundidad Z
+          const normZ = Math.max(0, Math.min(1, (avgZ + 2.5) / 5));
+          const alpha = 0.25 + normZ * 0.45;
+
+          if (m.genus === 1) {
+            ctx.fillStyle = `rgba(244, 63, 94, ${alpha})`; // Tono magenta/coral para el toroide
+            ctx.strokeStyle = '#fda4af';
+          } else {
+            ctx.fillStyle = `rgba(14, 165, 233, ${alpha})`; // Tono cyan/azul para los convexos
+            ctx.strokeStyle = '#7dd3fc';
+          }
+
+          ctx.fill();
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
+      } else {
+        // Modo Alambre Puro: dibujar aristas
+        ctx.strokeStyle = m.genus === 1 ? '#fb7185' : '#38bdf8';
+        ctx.lineWidth = 1.8;
+
+        m.faces.forEach((faceIndices) => {
+          for (let i = 0; i < faceIndices.length; i++) {
+            const nextIdx = (i + 1) % faceIndices.length;
+            const p1 = projected[faceIndices[i]];
+            const p2 = projected[faceIndices[nextIdx]];
+            if (p1 && p2) {
+              ctx.beginPath();
+              ctx.moveTo(p1.px, p1.py);
+              ctx.lineTo(p2.px, p2.py);
+              ctx.stroke();
+            }
+          }
+        });
+      }
+
+      // Dibujar vértices destacados
+      projected.forEach(({ px, py }) => {
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#fbbf24'; // Oro
+        ctx.fill();
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(render);
+    }
+
+    updateMetricPanel(models[activeSolidKey]);
+    requestAnimationFrame(render);
+
+    // =========================================================================
+    // 2. SISTEMA DE AUTOEVALUACIÓN INTERACTIVO
+    // =========================================================================
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-question-card');
+    quizCards.forEach((card) => {
+      const optButtons = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+      const feedbackEl = card.querySelector<HTMLElement>('.q-feedback');
+
+      optButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          optButtons.forEach((b) => {
+            b.disabled = true;
+            if (b.dataset.correct === 'true') {
+              b.classList.add('is-right');
+            } else if (b === btn && !isCorrect) {
+              b.classList.add('is-wrong');
+            }
+          });
+
+          if (feedbackEl) {
+            feedbackEl.style.display = 'block';
+            if (isCorrect) {
+              feedbackEl.className = 'q-feedback is-correct';
+              feedbackEl.innerHTML = '<strong>Respuesta Correcta.</strong> Has aplicado con precisión el invariante topológico de Euler y las propiedades algebraicas deducidas.';
+            } else {
+              feedbackEl.className = 'q-feedback is-incorrect';
+              feedbackEl.innerHTML = '<strong>Respuesta Incorrecta.</strong> Revisa cómo la cantidad de elementos o el género de la superficie imponen la suma estricta de Euler.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* ===========================================================================
+     ESTILOS MAESTROS: LA CARACTERÍSTICA DE EULER PARA POLIEDROS
+     =========================================================================== */
+
+  .lead-paragraph {
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--text-color, #334155);
+    margin-bottom: 1.75rem;
+  }
+
+  :global([data-theme="dark"]) .lead-paragraph {
+    color: #cbd5e1;
+  }
+
+  /* Monumento a la Fórmula de Euler */
+  .euler-formula-monument {
+    background: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15), rgba(15, 23, 42, 0.6) 80%);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 1rem;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    box-shadow: 0 12px 36px -10px rgba(14, 165, 233, 0.2);
+  }
+
+  :global([data-theme="light"]) .euler-formula-monument {
+    background: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.1), rgba(248, 250, 252, 0.9) 80%);
+    border-color: rgba(14, 165, 233, 0.35);
+    box-shadow: 0 8px 24px -6px rgba(14, 165, 233, 0.12);
+  }
+
+  .monument-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .m-pill {
+    background: rgba(14, 165, 233, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+  }
+
+  .m-scope {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+
+  .euler-giant-eq {
+    font-size: clamp(2.4rem, 6vw, 3.6rem) !important;
+    font-weight: 900;
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.06em;
+    margin: 0.5rem 0 1rem;
+    text-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+  }
+
+  :global([data-theme="light"]) .euler-giant-eq {
+    color: #0284c7;
+    text-shadow: none;
+  }
+
+  .monument-desc {
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #94a3b8;
+  }
+
+  :global([data-theme="light"]) .monument-desc {
+    color: #475569;
+  }
+
+  /* Tabla de Poliedros ESO */
+  .polyhedra-eso-table-wrapper {
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(15, 23, 42, 0.6);
+    margin-bottom: 2rem;
+  }
+
+  :global([data-theme="light"]) .polyhedra-eso-table-wrapper {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .polyhedra-eso-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    text-align: left;
+  }
+
+  .polyhedra-eso-table th,
+  .polyhedra-eso-table td {
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :global([data-theme="light"]) .polyhedra-eso-table th,
+  :global([data-theme="light"]) .polyhedra-eso-table td {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .polyhedra-eso-table th {
+    background: rgba(0, 0, 0, 0.25);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  :global([data-theme="light"]) .polyhedra-eso-table th {
+    background: #f1f5f9;
+    color: #0369a1;
+  }
+
+  .polyhedra-eso-table td code {
+    font-family: var(--font-mono, monospace);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    color: #f1f5f9;
+  }
+
+  :global([data-theme="light"]) .polyhedra-eso-table td code {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  .badge-two {
+    display: inline-block;
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    padding: 0.15rem 0.55rem;
+    border-radius: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .badge-two {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+  }
+
+  /* Insight Box */
+  .insight-box {
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .insight-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .insight-title {
+    color: #b45309;
+  }
+
+  /* Flujo de demostración de Cauchy */
+  .cauchy-proof-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .cauchy-step-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.85rem;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  :global([data-theme="light"]) .cauchy-step-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .cauchy-step-card.is-final {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.8) 70%);
+  }
+
+  :global([data-theme="light"]) .cauchy-step-card.is-final {
+    background: radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.1), #ffffff 70%);
+    border-color: #f59e0b;
+  }
+
+  .step-badge {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .cauchy-step-card h4 {
+    font-size: 1.25rem;
+    color: #f8fafc;
+    margin: 0 0 0.85rem;
+  }
+
+  :global([data-theme="light"]) .cauchy-step-card h4 {
+    color: #0f172a;
+  }
+
+  .math-step-expr {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 1.05rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin: 0.85rem 0;
+  }
+
+  :global([data-theme="light"]) .math-step-expr {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+  }
+
+  .math-step-expr.highlight-gold {
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.1);
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .math-step-expr.highlight-gold {
+    color: #b45309;
+    background: #fef3c7;
+    border-color: #f59e0b;
+  }
+
+  .math-step-expr.highlight-cyan {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  :global([data-theme="light"]) .math-step-expr.highlight-cyan {
+    color: #0284c7;
+    background: #e0f2fe;
+    border-color: #38bdf8;
+  }
+
+  .math-step-expr.highlight-purple {
+    color: #c084fc;
+    border-color: rgba(192, 132, 252, 0.35);
+    background: rgba(192, 132, 252, 0.08);
+  }
+
+  /* Cuadrícula de casos de poda */
+  .pruning-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .case-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.6rem;
+    padding: 1rem;
+  }
+
+  :global([data-theme="light"]) .case-box {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .case-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .case-label {
+    color: #0284c7;
+  }
+
+  .case-math {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 0.5rem 0;
+  }
+
+  .case-result {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #34d399;
+  }
+
+  /* Sección Platónicos */
+  .platonic-proof-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  :global([data-theme="light"]) .platonic-proof-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .algebraic-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .step-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .diophantine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .dio-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.65rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .dio-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .dio-pair {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .dio-sum {
+    display: block;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .dio-card h5 {
+    font-size: 1.05rem;
+    margin: 0.25rem 0;
+    color: #f1f5f9;
+  }
+
+  :global([data-theme="light"]) .dio-card h5 {
+    color: #0f172a;
+  }
+
+  .dio-card p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .impossibility-box {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 0.6rem;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #fca5a5;
+  }
+
+  :global([data-theme="light"]) .impossibility-box {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+  }
+
+  /* Defecto Descartes */
+  .descartes-concept-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .descartes-concept-card {
+    background: #ffffff;
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+
+  .concept-badge {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .descartes-examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .d-example-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .d-example-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .ex-name {
+    display: block;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .ex-name {
+    color: #b45309;
+  }
+
+  .ex-calc {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 0.35rem;
+  }
+
+  .ex-total {
+    margin-top: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #34d399;
+  }
+
+  /* Género y Topología */
+  .topology-jump-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .topology-jump-card {
+    background: #ffffff;
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  .jump-pill {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+  }
+
+  .genus-levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .genus-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .genus-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .genus-glyph {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #38bdf8;
+  }
+
+  .genus-card h4 {
+    font-size: 1.1rem;
+    margin: 0.25rem 0;
+    color: #f1f5f9;
+  }
+
+  :global([data-theme="light"]) .genus-card h4 {
+    color: #0f172a;
+  }
+
+  .genus-name {
+    display: block;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 0.65rem;
+  }
+
+  .genus-math {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #34d399;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.65rem;
+  }
+
+  :global([data-theme="light"]) .genus-math {
+    background: #ffffff;
+    color: #059669;
+  }
+
+  .genus-card p {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  .tunnel-explanation-box {
+    background: rgba(244, 63, 94, 0.08);
+    border-left: 4px solid #f43f5e;
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tunnel-explanation-box h5 {
+    color: #fb7185;
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+  }
+
+  :global([data-theme="light"]) .tunnel-explanation-box h5 {
+    color: #e11d48;
+  }
+
+  /* LABORATORIO INTERACTIVO 3D */
+  .polyhedra-lab-wrapper {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  :global([data-theme="light"]) .polyhedra-lab-wrapper {
+    background: #ffffff;
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .lab-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .solid-selector-tabs {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .solid-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .solid-tab-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #475569;
+  }
+
+  .solid-tab-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .solid-tab-btn.is-active {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .solid-tab-btn.is-torus {
+    border-color: rgba(244, 63, 94, 0.4);
+    color: #fb7185;
+  }
+
+  .solid-tab-btn.is-torus.is-active {
+    background: #e11d48;
+    border-color: #e11d48;
+    color: #ffffff;
+  }
+
+  .lab-render-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .render-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    cursor: pointer;
+  }
+
+  .lab-canvas-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .lab-canvas-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .canvas-container {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  :global([data-theme="light"]) .canvas-container {
+    background: #0f172a; /* Mantiene contraste elegante para los ejes 3D */
+  }
+
+  #polyhedra-3d-canvas {
+    max-width: 100%;
+    height: auto;
+    cursor: grab;
+  }
+
+  #polyhedra-3d-canvas:active {
+    cursor: grabbing;
+  }
+
+  .canvas-drag-hint {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    pointer-events: none;
+    letter-spacing: 0.03em;
+  }
+
+  /* Panel de métricas */
+  .metrics-panel {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :global([data-theme="light"]) .metrics-panel {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .ph-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .ph-title {
+    color: #0f172a;
+  }
+
+  .ph-genus {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  .ph-genus.is-sphere {
+    background: rgba(14, 165, 233, 0.15);
+    color: #38bdf8;
+  }
+
+  .ph-genus.is-torus {
+    background: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+  }
+
+  .metric-tiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .m-tile {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .m-tile {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .m-tile.highlight {
+    grid-column: span 2;
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .m-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 0.2rem;
+  }
+
+  .m-val {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.35rem;
+    font-weight: 800;
+  }
+
+  .m-val.gold { color: #fbbf24; }
+  .m-val.cyan { color: #38bdf8; }
+  .m-val.purple { color: #c084fc; }
+  .m-val.emerald { color: #34d399; font-size: 1.6rem; }
+
+  .live-calculation-box {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .live-calculation-box {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .calc-label {
+    display: block;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.05em;
+  }
+
+  .live-equation {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .descartes-defect-status {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .defect-val {
+    display: block;
+    font-family: var(--font-mono, monospace);
+    color: #fbbf24;
+    font-weight: 700;
+    margin-top: 0.2rem;
+  }
+
+  .solid-description-box {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #94a3b8;
+  }
+
+  /* Picos Universitarios */
+  .university-peaks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .peak-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.85rem;
+    padding: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .peak-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .peak-badge {
+    display: inline-block;
+    background: rgba(14, 165, 233, 0.15);
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .peak-card h4 {
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem;
+    color: #f1f5f9;
+  }
+
+  :global([data-theme="light"]) .peak-card h4 {
+    color: #0f172a;
+  }
+
+  .peak-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .peak-card p {
+    color: #475569;
+  }
+
+  /* Autoevaluación */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .quiz-question-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.85rem;
+    padding: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .quiz-question-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .q-badge {
+    display: inline-block;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 0.4rem;
+  }
+
+  .q-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin: 0 0 1.25rem;
+  }
+
+  :global([data-theme="light"]) .q-text {
+    color: #0f172a;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #334155;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+  }
+
+  .opt-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-right {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .q-feedback.is-correct {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+  }
+
+  .q-feedback.is-incorrect {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+</style>

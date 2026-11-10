@@ -258,12 +258,10 @@ const totalBlocks = ACADEMY_BLOCKS.length;
                             {
                               lesson.status === 'disponible' && lesson.href ? (
                                 <h3 class="lesson-title">
-                                  <a href={lesson.href} class="lesson-card-link" title={`Estudiar lección: ${lesson.title}`}>
-                                    {lesson.title}
-                                  </a>
+                                  <a href={lesson.href} class="lesson-card-link" title={`Estudiar lección: ${lesson.title.replace(/<[^>]*>/g, '')}`} set:html={lesson.title} />
                                 </h3>
                               ) : (
-                                <h3 class="lesson-title">{lesson.title}</h3>
+                                <h3 class="lesson-title" set:html={lesson.title} />
                               )
                             }
                             <p class="lesson-subtitle">{lesson.subtitle}</p>

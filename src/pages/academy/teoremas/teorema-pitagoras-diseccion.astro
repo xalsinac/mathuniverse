@@ -1,0 +1,1860 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-03')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-04');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL SIGNIFICADO GEOMÉTRICO ORIGINAL -->
+  <section class="lesson-section" id="significado-geometrico">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Significado Original: Una Igualdad de Superficies, no de Números</h2>
+
+    <p class="lead-paragraph">
+      Para la mente moderna, el Teorema de Pitágoras suele reducirse a una fórmula algebraica automática: <code class="inline-code">a² + b² = c²</code>. Sin embargo, en el mundo clásico los símbolos algebraicos no existían. Para los geómetras griegos, babilonios, indios y chinos, el teorema era una <strong>afirmación física sobre áreas tangibles de terreno</strong>:
+    </p>
+
+    <div class="pyth-statement-banner">
+      <span class="banner-badge">ENUNCIADO GEOMÉTRICO FUNDAMENTAL</span>
+      <p class="banner-text">
+        <em>«En todo triángulo rectángulo, el área del cuadrado construido sobre la hipotenusa es exactamente igual a la suma de las áreas de los dos cuadrados construidos sobre los catetos».</em>
+      </p>
+    </div>
+
+    <div class="pyth-intro-card">
+      <div class="intro-split-grid">
+        <div class="intro-col text-col">
+          <h4>La Conservación de la Superficie</h4>
+          <p>
+            Imagina que los dos cuadrados menores (de lados <code class="inline-code">a</code> y <code class="inline-code">b</code>) están hechos de cera o llenos de agua. Si fundimos ambos bloques o vertemos su líquido en el molde del cuadrado mayor (de lado <code class="inline-code">c</code>), <strong>el volumen llenará el contenedor mayor hasta el borde sin que sobre ni falte una sola gota</strong>.
+          </p>
+          <p>
+            Esta igualdad no depende de ninguna aproximación decimal ni de cálculos algebraicos complejos: puede demostrarse mediante <strong>disección pura</strong>, cortando y recolocando las piezas geométricas como un rompecabezas perfecto.
+          </p>
+        </div>
+
+        <div class="intro-col svg-col">
+          <svg viewBox="0 0 280 230" class="intro-svg" aria-label="Tres cuadrados sobre los lados de un triángulo rectángulo">
+            <!-- Triángulo rectángulo central: vértices (110, 150), (190, 150), (110, 90) -->
+            <!-- Cateto a (vertical) = 60, Cateto b (horizontal) = 80, Hipotenusa c = 100 -->
+            
+            <!-- Cuadrado cateto b (horizontal abajo: 80x80) -->
+            <rect x="110" y="150" width="80" height="70" fill="rgba(56, 189, 248, 0.15)" stroke="#38bdf8" stroke-width="2" />
+            <text x="140" y="190" fill="#38bdf8" font-size="12" font-weight="bold">Área b²</text>
+
+            <!-- Cuadrado cateto a (vertical izquierda: 60x60) -->
+            <rect x="50" y="90" width="60" height="60" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="2" />
+            <text x="65" y="125" fill="#fbbf24" font-size="12" font-weight="bold">Área a²</text>
+
+            <!-- Cuadrado hipotenusa c (inclinado) -->
+            <!-- Vector hipotenusa de (110, 90) a (190, 150): dx = 80, dy = 60. Normal perpendicular hacia afuera: (-60, 80) / rotación -->
+            <polygon points="110,90 190,150 130,230 50,170" fill="rgba(16, 185, 129, 0.18)" stroke="#10b981" stroke-width="2" />
+            <text x="105" y="155" fill="#10b981" font-size="12" font-weight="bold" transform="rotate(-37 105 155)">Área c² = a² + b²</text>
+
+            <!-- Triángulo rectángulo base -->
+            <polygon points="110,150 190,150 110,90" fill="#1e293b" stroke="#f8fafc" stroke-width="2" />
+            <!-- Ángulo recto -->
+            <rect x="110" y="140" width="10" height="10" fill="none" stroke="#f8fafc" stroke-width="1.5" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA DEMOSTRACIÓN CHINA DE ZHOUBI SUANJING -->
+  <section class="lesson-section" id="diseccion-china">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Disección Clásica China: Zhoubi Suanjing («Demostración Sin Palabras»)</h2>
+
+    <p class="lead-paragraph">
+      Una de las pruebas más elegantes e intuitivas de toda la historia de las matemáticas aparece documentada en el clásico chino <em>Zhoubi Suanjing</em> (c. 1000 a.C. - 200 a.C.). Esta demostración requiere únicamente mirar dos formas distintas de embaldosar exactamente el mismo cuadrado exterior de lado <code class="inline-code">(a + b)</code>:
+    </p>
+
+    <!-- Comparativa Visual lado a lado -->
+    <div class="china-comparison-card">
+      <div class="china-card-header">
+        <span class="china-badge">DISPOSICIÓN COMPARATIVA DE ÁREAS IDÉNTICAS</span>
+        <h4>El Gran Cuadrado de Lado (a + b)</h4>
+      </div>
+
+      <div class="dual-diagram-grid">
+        <!-- Figura A -->
+        <div class="diagram-box">
+          <span class="fig-tag">DISPOSICIÓN A: 4 Triángulos + Cuadrados de los Catetos</span>
+          <div class="svg-diagram-wrapper">
+            <svg viewBox="0 0 200 200" class="tile-svg" aria-label="Cuadrado (a+b) descompuesto en a², b² y 4 triángulos">
+              <!-- Cuadrado total 200x200 con a=70, b=130 -->
+              <rect x="5" y="5" width="190" height="190" fill="#0f172a" stroke="rgba(255,255,255,0.15)" stroke-width="2" />
+              <!-- Cuadrado a² (70x70) arriba-izquierda -->
+              <rect x="5" y="5" width="70" height="70" fill="rgba(251, 191, 36, 0.25)" stroke="#fbbf24" stroke-width="2" />
+              <text x="35" y="45" fill="#fbbf24" font-size="14" font-weight="bold" text-anchor="middle">a²</text>
+              <!-- Cuadrado b² (120x120) abajo-derecha -->
+              <rect x="75" y="75" width="120" height="120" fill="rgba(56, 189, 248, 0.25)" stroke="#38bdf8" stroke-width="2" />
+              <text x="135" y="140" fill="#38bdf8" font-size="16" font-weight="bold" text-anchor="middle">b²</text>
+              <!-- Triángulo 1 (arriba derecha: base 120, altura 70) -->
+              <polygon points="75,5 195,5 75,75" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <!-- Triángulo 2 (arriba derecha complementario) -->
+              <polygon points="195,5 195,75 75,75" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <!-- Triángulo 3 (abajo izquierda: base 70, altura 120) -->
+              <polygon points="5,75 75,75 5,195" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <!-- Triángulo 4 (abajo izquierda complementario) -->
+              <polygon points="5,195 75,75 75,195" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="fig-caption">
+            Área = <span class="gold-txt">a²</span> + <span class="cyan-txt">b²</span> + 4·(<span class="gray-txt">½·a·b</span>)
+          </div>
+        </div>
+
+        <!-- Figura B -->
+        <div class="diagram-box">
+          <span class="fig-tag green">DISPOSICIÓN B: 4 Triángulos + Cuadrado de la Hipotenusa</span>
+          <div class="svg-diagram-wrapper">
+            <svg viewBox="0 0 200 200" class="tile-svg" aria-label="Cuadrado (a+b) descompuesto en c² y 4 triángulos">
+              <!-- Cuadrado total 200x200 con a=70, b=120 -->
+              <rect x="5" y="5" width="190" height="190" fill="#0f172a" stroke="rgba(255,255,255,0.15)" stroke-width="2" />
+              <!-- Cuadrado central c² inclinado: vértices (5+70, 5), (195, 5+70), (195-70, 195), (5, 195-70) -->
+              <polygon points="75,5 195,75 125,195 5,125" fill="rgba(16, 185, 129, 0.3)" stroke="#10b981" stroke-width="2" />
+              <text x="100" y="105" fill="#34d399" font-size="18" font-weight="bold" text-anchor="middle">c²</text>
+              <!-- Los 4 triángulos en las esquinas -->
+              <polygon points="5,5 75,5 5,125" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <polygon points="75,5 195,5 195,75" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <polygon points="195,75 195,195 125,195" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+              <polygon points="125,195 5,195 5,125" fill="rgba(148, 163, 184, 0.2)" stroke="#94a3b8" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="fig-caption">
+            Área = <span class="emerald-txt">c²</span> + 4·(<span class="gray-txt">½·a·b</span>)
+          </div>
+        </div>
+      </div>
+
+      <!-- Deducción sin palabras -->
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Ambos cuadrados exteriores tienen exactamente el mismo tamaño de lado <code class="inline-code">(a + b)</code> y, por tanto, la misma superficie total:</span>
+            <div class="math-step-expr">Área(Figura A) = Área(Figura B)</div>
+          </div>
+        </div>
+        <div class="math-step-line">
+          <span class="math-step-tag">2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sustituimos la descomposición de cada figura en función de sus piezas interiores:</span>
+            <div class="math-step-expr">a² + b² + 4·(<span class="math-frac"><span class="num">1</span><span class="den">2</span></span> a·b) = c² + 4·(<span class="math-frac"><span class="num">1</span><span class="den">2</span></span> a·b)</div>
+          </div>
+        </div>
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">CONCLUSIÓN</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Restamos los cuatro triángulos rectángulos idénticos de ambos lados de la balanza:</span>
+            <div class="math-step-expr">a² + b² = c² &emsp; <span class="math-qed">■ Q.E.D.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LA PROPOSICIÓN I.47 DE EUCLIDES (EL MOLINO DE VIENTO) -->
+  <section class="lesson-section" id="molino-euclides">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Proposición I.47 de Euclides: La Demostración del «Molino de Viento»</h2>
+
+    <p class="lead-paragraph">
+      La demostración de los matemáticos chinos es sumamente visual, pero requería justificar formalmente que el cuadrilátero central inclinado de la Figura B es verdaderamente un cuadrado perfecto (con 4 ángulos rectos exactos de 90°). En el año 300 a.C., <strong>Euclides de Alejandría</strong> coronó el Libro I de sus <em>Elementos</em> (Proposición 47) con una demostración geométrica inexpugnable, conocida popularmente como el <strong>Molino de Viento</strong> (o la <em>Novia de Euclides</em>).
+    </p>
+
+    <!-- Tarjeta del Molino de Viento de Euclides -->
+    <div class="windmill-card">
+      <div class="windmill-badge">CUMBRE DE LA GEOMETRÍA DEDUCTIVA</div>
+      
+      <div class="windmill-split">
+        <div class="windmill-text">
+          <h4>La Estrategia de Euclides: Cizallamiento y Congruencia</h4>
+          <p>
+            1. <strong>Trazar la perpendicular:</strong> Desde el vértice del ángulo recto <code class="inline-code">A</code>, Euclides traza una línea perpendicular a la hipotenusa prolongada hasta cortar el cuadrado mayor <code class="inline-code">BCED</code>. Esta línea divide el cuadrado de la hipotenusa en <strong>dos rectángulos</strong>: el rectángulo izquierdo <code class="inline-code">R₁</code> y el derecho <code class="inline-code">R₂</code>.
+          </p>
+          <p>
+            2. <strong>Cizallamiento de triángulos:</strong> Por el principio fundamental de que dos triángulos con la misma base y comprendidos entre las mismas paralelas tienen áreas iguales:
+          </p>
+          <div class="math-display-eq">
+            Área(Cuadrado a²) = 2 · Área(△FBA) = 2 · Área(△CBD) = Área(Rectángulo R₁)
+          </div>
+          <p>
+            3. Del mismo modo, el cuadrado del cateto <code class="inline-code">b²</code> tiene exactamente la misma área que el rectángulo <code class="inline-code">R₂</code>. Como la suma de los dos rectángulos reconstruye el cuadrado completo de la hipotenusa:
+          </p>
+          <div class="math-display-eq">
+            c² = Área(R₁) + Área(R₂) = a² + b²
+          </div>
+        </div>
+
+        <div class="windmill-svg-box">
+          <svg viewBox="0 0 320 320" class="windmill-svg" aria-label="El Molino de Viento de Euclides (Proposición I.47)">
+            <!-- Triángulo central ABC: A=(160, 140), B=(100, 180), C=(220, 180) -->
+            <!-- Cuadrado sobre BC (hipotenusa): de (100,180) a (220,180), baja 120 hacia (220,300), (100,300) -->
+            <rect x="100" y="180" width="120" height="120" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="2" />
+            <!-- Línea divisoria de altura desde A=(160, 140) perpendicular hasta (160, 300) -->
+            <line x1="160" y1="180" x2="160" y2="300" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 3" />
+            <text x="120" y="245" fill="#38bdf8" font-size="11" font-weight="bold">R₁ = a²</text>
+            <text x="180" y="245" fill="#fbbf24" font-size="11" font-weight="bold">R₂ = b²</text>
+
+            <!-- Cuadrado sobre cateto AB (inclinado a la izquierda) -->
+            <polygon points="100,180 160,140 120,80 60,120" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" stroke-width="2" />
+            <text x="100" y="130" fill="#38bdf8" font-size="12" font-weight="bold">a²</text>
+
+            <!-- Cuadrado sobre cateto AC (inclinado a la derecha) -->
+            <polygon points="160,140 220,180 260,120 200,80" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="2" />
+            <text x="210" y="130" fill="#fbbf24" font-size="12" font-weight="bold">b²</text>
+
+            <!-- Triángulo central ABC -->
+            <polygon points="160,140 100,180 220,180" fill="#1e293b" stroke="#f8fafc" stroke-width="2" />
+            <!-- Vértices rotulados -->
+            <circle cx="160" cy="140" r="4" fill="#fbbf24" />
+            <text x="156" y="130" fill="#f8fafc" font-size="11" font-weight="bold">A</text>
+            <circle cx="100" cy="180" r="4" fill="#38bdf8" />
+            <text x="85" y="185" fill="#f8fafc" font-size="11" font-weight="bold">B</text>
+            <circle cx="220" cy="180" r="4" fill="#10b981" />
+            <text x="228" y="185" fill="#f8fafc" font-size="11" font-weight="bold">C</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: BHASKARA II Y EL TRAPECIO DE GARFIELD -->
+  <section class="lesson-section" id="bhaskara-garfield">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Disección de Bhaskara II y el Trapecio Presidencial de Garfield</h2>
+
+    <p class="lead-paragraph">
+      A lo largo de los siglos, decenas de pensadores idearon variantes asombrosas del teorema. Dos de las más célebres son la prueba india de <strong>Bhaskara II</strong> y la demostración hallada en 1876 por <strong>James A. Garfield</strong> (vigésimo presidente de los Estados Unidos):
+    </p>
+
+    <div class="proofs-dual-cards">
+      <!-- Bhaskara -->
+      <div class="proof-half-card">
+        <div class="card-pill">SIGLO XII · INDIA</div>
+        <h4>La Disección de Bhaskara II («¡Mira!»)</h4>
+        <p>
+          En su tratado <em>Bijaganita</em>, el matemático hindú Bhaskara dibujó un cuadrado de lado <code class="inline-code">c</code> dividido en cuatro triángulos rectángulos y un pequeño cuadrado central de lado <code class="inline-code">(b - a)</code>. Acompañó la figura con una sola palabra: <em>«¡Mira!»</em>.
+        </p>
+        <div class="bhaskara-box">
+          <div class="math-derivation-chain compact-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">ÁREA</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">c² = 4·(<span class="math-frac"><span class="num">a·b</span><span class="den">2</span></span>) + (b - a)²</div>
+              </div>
+            </div>
+            <div class="math-step-line">
+              <span class="math-step-tag">EXP</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">c² = 2ab + (b² - 2ab + a²)</div>
+              </div>
+            </div>
+            <div class="math-step-line is-highlight-qed">
+              <span class="math-step-tag gold">RESULTADO</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">c² = a² + b²</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Garfield -->
+      <div class="proof-half-card">
+        <div class="card-pill cyan">AÑO 1876 · ESTADOS UNIDOS</div>
+        <h4>El Trapecio de James A. Garfield</h4>
+        <p>
+          Siendo congresista de EE.UU. (años antes de ser presidente), Garfield publicó en el <em>New England Journal of Education</em> una prueba basada en construir un solo <strong>trapecio</strong> sumando dos triángulos rectángulos congruentes y medio cuadrado de la hipotenusa (<code class="inline-code">c²/2</code>):
+        </p>
+        <div class="garfield-box">
+          <div class="math-derivation-chain compact-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">TRAPECIO</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">Área = <span class="math-frac"><span class="num">(a + b)</span><span class="den">2</span></span> · (a + b) = 2·(<span class="math-frac"><span class="num">a·b</span><span class="den">2</span></span>) + <span class="math-frac"><span class="num">c²</span><span class="den">2</span></span></div>
+              </div>
+            </div>
+            <div class="math-step-line">
+              <span class="math-step-tag">MULT ×2</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">(a + b)² = 2ab + c² ⟹ a² + 2ab + b² = 2ab + c²</div>
+              </div>
+            </div>
+            <div class="math-step-line is-highlight-qed">
+              <span class="math-step-tag gold">RESULTADO</span>
+              <div class="math-step-content">
+                <div class="math-step-expr">a² + b² = c²</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-pitagoras">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: Simulador Dinámico de Áreas y Ternas Pitagóricas</h2>
+
+    <p class="lead-paragraph">
+      Modifica los catetos <code class="inline-code">a</code> y <code class="inline-code">b</code> con los deslizadores, observa en tiempo real cómo se transforman los cuadrados geométricos sobre cada lado, y detecta automáticamente si has formado una <strong>Terna Pitagórica Entera</strong>:
+    </p>
+
+    <!-- Contenedor del Simulador -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR GEOMÉTRICO DINÁMICO DE CONSERVACIÓN DE ÁREAS</span>
+      </div>
+
+      <!-- Presets de Ternas Clásicas -->
+      <div class="lab-preset-bar">
+        <span class="preset-label">TERNAS PITAGÓRICAS HISTÓRICAS:</span>
+        <button type="button" class="preset-btn is-active" data-a="3" data-b="4">(3, 4, 5) Egipcia</button>
+        <button type="button" class="preset-btn" data-a="5" data-b="12">(5, 12, 13) Babilonia</button>
+        <button type="button" class="preset-btn" data-a="8" data-b="15">(8, 15, 17) Pitagórica</button>
+        <button type="button" class="preset-btn" data-a="7" data-b="24">(7, 24, 25) Platónica</button>
+        <button type="button" class="preset-btn" data-a="6" data-b="8">(6, 8, 10) Escalar 2x</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Panel Izquierdo: SVG Interactivo -->
+        <div class="lab-visual-panels">
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag gold">VISUALIZACIÓN GEOMÉTRICA DE SUPERFICIES</span>
+              <span class="graph-metric" id="lab-triple-status">TERNA ENTERA: (3, 4, 5)</span>
+            </div>
+
+            <div class="svg-stage-wrapper">
+              <svg id="svg-pitagoras" viewBox="0 0 540 320" class="lab-svg" aria-label="Visualización interactiva de áreas de Pitágoras">
+                <!-- Se inyecta dinámicamente con JavaScript -->
+              </svg>
+            </div>
+
+            <!-- Controles Deslizadores -->
+            <div class="lab-controls-panel">
+              <div class="control-group">
+                <div class="control-label-row">
+                  <label for="slider-cat-a">Cateto vertical a:</label>
+                  <span class="control-val-display" id="disp-cat-a">3</span>
+                </div>
+                <input type="range" id="slider-cat-a" min="1" max="25" step="1" value="3" class="lab-range-input" />
+              </div>
+
+              <div class="control-group">
+                <div class="control-label-row">
+                  <label for="slider-cat-b">Cateto horizontal b:</label>
+                  <span class="control-val-display" id="disp-cat-b">4</span>
+                </div>
+                <input type="range" id="slider-cat-b" min="1" max="25" step="1" value="4" class="lab-range-input" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Telemetría de Áreas -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>TELEMETRÍA DE ÁREAS</h5>
+            <span class="telemetry-badge" id="tele-status">a² + b² = c²</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">ÁREA a² (CATETO a)</span>
+              <span class="t-val gold" id="tele-val-a2">9.00</span>
+              <span class="t-sub" id="tele-sub-a">Lado a = 3</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">ÁREA b² (CATETO b)</span>
+              <span class="t-val cyan" id="tele-val-b2">16.00</span>
+              <span class="t-sub" id="tele-sub-b">Lado b = 4</span>
+            </div>
+
+            <div class="t-cell full-width primary-area-cell">
+              <span class="t-label">ÁREA c² (HIPOTENUSA c)</span>
+              <span class="t-val big-val" id="tele-val-c2">25.00</span>
+              <span class="t-sub" id="tele-sub-c">Hipotenusa c = 5.000000</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <div class="t-flex-row">
+                <span class="t-label">BALANCE DE SUPERFICIES</span>
+                <span class="t-val small" id="tele-balance">9 + 16 = 25 ✓</span>
+              </div>
+              <div class="area-stacked-bar">
+                <div class="bar-a" id="bar-part-a" style="width: 36%; background: #fbbf24;"></div>
+                <div class="bar-b" id="bar-part-b" style="width: 64%; background: #38bdf8;"></div>
+              </div>
+              <span class="meter-caption" id="tele-balance-caption">
+                El 100% de la superficie del cuadrado c² queda exactamente cubierto por la combinación a² + b².
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: GENERALIZACIONES PROFUNDAS -->
+  <section class="lesson-section" id="generalizaciones">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Generalizaciones Profundas: De las Lúnulas de Hipócrates al Teorema del Coseno</h2>
+
+    <p class="lead-paragraph">
+      El Teorema de Pitágoras no es un fenómeno aislado; es el epicentro del cual nacen las generalizaciones más asombrosas de la geometría:
+    </p>
+
+    <div class="gen-deep-grid">
+      <!-- Generalización 1: Figuras Semejantes -->
+      <div class="gen-deep-card">
+        <div class="gen-tag">TEOREMA DE LAS FIGURAS SEMEJANTES</div>
+        <h4>No solo funciona con cuadrados</h4>
+        <p>
+          En la Proposición VI.31 de los <em>Elementos</em>, Euclides demostró que la relación de áreas se mantiene <strong>para cualquier figura semejante construida sobre los tres lados</strong>: triángulos equiláteros, pentágonos regulares, o incluso figuras con silueta arbitraria.
+        </p>
+        <p>
+          El caso más célebre son las <strong>Lúnulas de Hipócrates de Quíos</strong>: si construimos semicírculos sobre los dos catetos y sobre la hipotenusa, la suma de las áreas de las dos lunas crecientes resultantes es exactamente igual al área del triángulo rectángulo interior:
+        </p>
+        <div class="math-display-eq">
+          Área(Lúnula₁) + Área(Lúnula₂) = Área(△ABC)
+        </div>
+        <span class="gen-footer">¡La primera cuadratura exacta de una figura curva en la historia humana!</span>
+      </div>
+
+      <!-- Generalización 2: Teorema del Coseno -->
+      <div class="gen-deep-card">
+        <div class="gen-tag cyan">TRIGONOMETRÍA UNIVERSAL</div>
+        <h4>El Teorema del Coseno (Para Cualquier Ángulo)</h4>
+        <p>
+          ¿Qué ocurre si el ángulo comprendido entre los lados <code class="inline-code">a</code> y <code class="inline-code">b</code> no es de 90°? La relación se expande con un término de corrección proyectiva proporcional al coseno del ángulo <code class="inline-code">C</code>:
+        </p>
+        <div class="math-display-eq">
+          c² = a² + b² - 2ab · cos(C)
+        </div>
+        <p>
+          • Si <code class="inline-code">C &lt; 90°</code> (acutángulo), <code class="inline-code">cos(C) &gt; 0</code> ⟹ <code class="inline-code">c² &lt; a² + b²</code>.<br/>
+          • Si <code class="inline-code">C = 90°</code> (rectángulo), <code class="inline-code">cos(90°) = 0</code> ⟹ <strong>c² = a² + b² (Pitágoras)</strong>.<br/>
+          • Si <code class="inline-code">C &gt; 90°</code> (obtusángulo), <code class="inline-code">cos(C) &lt; 0</code> ⟹ <code class="inline-code">c² &gt; a² + b²</code>.
+        </p>
+        <span class="gen-footer cyan">El Teorema de Pitágoras es simplemente el Teorema del Coseno cuando cos(C) = 0.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS Y MALENTENDIDOS HABITUALES -->
+  <section class="lesson-section" id="trampas-pitagoras">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Trampas y Malentendidos Habituales</h2>
+
+    <p class="lead-paragraph">
+      Reconoce y desactiva los 4 errores conceptuales más frecuentes al trabajar con relaciones pitagóricas y disecciones geométricas:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 01</div>
+        <h4>Confundir la suma de áreas con la suma de longitudes</h4>
+        <p>
+          Creer erróneamente que la relación cuadrática permite deducir que <code class="inline-code">a + b = c</code> o que <code class="inline-code">√(a² + b²) = a + b</code>.
+        </p>
+        <div class="sin-bad">
+          ✕ «Si a = 3 y b = 4, entonces c = 3 + 4 = 7».
+        </div>
+        <div class="sin-good">
+          ✓ «Por la desigualdad triangular, el camino directo (hipotenusa) siempre es estrictamente más corto que la suma de los catetos: c = 5 &lt; 3 + 4 = 7».
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 02</div>
+        <h4>La Paradoja del Cuadrado Perdido (Falacia de Curry)</h4>
+        <p>
+          Creer que ciertas disecciones visuales de triángulos "demuestran" que 64 = 65 haciendo aparecer un hueco vacío.
+        </p>
+        <div class="sin-bad">
+          ✕ «Al reordenar las piezas del triángulo se pierde una casilla entera de área».
+        </div>
+        <div class="sin-good">
+          ✓ «Las supuestas hipotenusas de las piezas no forman una línea recta: tienen pendientes ligeramente distintas (2/5 = 0.40 vs 3/8 = 0.375), creando un paralelogramo casi invisible de área 1».
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 03</div>
+        <h4>Asumir que toda terna pitagórica es un múltiplo de (3, 4, 5)</h4>
+        <p>
+          Pensar que todos los triángulos rectángulos con lados enteros proceden de escalar la terna egipcia básica.
+        </p>
+        <div class="sin-bad">
+          ✕ «Cualquier triángulo con catetos enteros es semejante al triángulo 3-4-5».
+        </div>
+        <div class="sin-good">
+          ✓ «Existen infinitas ternas pitagóricas primitivas totalmente irreducibles: (5, 12, 13), (8, 15, 17), (7, 24, 25), (20, 21, 29), generadas por la fórmula de Euclides m² - n², 2mn, m² + n²».
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 04</div>
+        <h4>Creer que el teorema es universal en cualquier geometría</h4>
+        <p>
+          Aplicar <code class="inline-code">a² + b² = c²</code> sobre la superficie de la Tierra o en relatividad general sin corrección de curvatura.
+        </p>
+        <div class="sin-bad">
+          ✕ «El teorema de Pitágoras se cumple en cualquier superficie del universo».
+        </div>
+        <div class="sin-good">
+          ✓ «El Teorema de Pitágoras es lógicamente equivalente al Quinto Postulado de Euclides (postulado de las paralelas). En geometría esférica c² &lt; a² + b²; en geometría hiperbólica c² &gt; a² + b²».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Comprueba tu dominio de las demostraciones por disección y los fundamentos geométricos del teorema:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>En la demostración china del Zhoubi Suanjing, ¿por qué podemos asegurar que a² + b² = c² sin calcular ecuaciones complejas?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque medimos con regla los lados de ambos dibujos y coinciden los milímetros.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque ambas figuras embaldosan exactamente el mismo cuadrado exterior (a+b)², y al restar 4 triángulos rectángulos idénticos de ambas partes, las áreas restantes deben ser forzosamente iguales.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque el Teorema Fundamental del Álgebra obliga a que c² sea divisible por a·b.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Solo es válida si a y b son números primos entre sí.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>¿Cuál es la idea geométrica clave en la demostración del «Molino de Viento» de Euclides (I.47)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Bajar una altura perpendicular desde el ángulo recto que divide el cuadrado de la hipotenusa en dos rectángulos cuyas áreas igualan exactamente a a² y b² mediante cizallamiento de triángulos.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Usar cálculo integral de Barrow para integrar el volumen de revolución del triángulo.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Reducir el triángulo a una sola dimensión utilizando fracciones continuas infinitas.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Aproximar la hipotenusa mediante la fórmula de Bhaskara para círculos.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Si construimos semicírculos sobre los catetos de longitudes 6 y 8, y sobre la hipotenusa de longitud 10, ¿cuánto vale la suma de las áreas de los dos semicírculos menores?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Es estrictamente mayor que el área del semicírculo mayor por el factor π.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Es exactamente igual al área del semicírculo de la hipotenusa (por el Teorema de las Figuras Semejantes de Euclides VI.31).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">No se puede saber sin conocer los ángulos interiores del semicírculo.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">La relación pitagórica solo es aplicable a polígonos de bordes rectos.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Por qué la relación a² + b² = c² falla en la superficie de una esfera terrestre?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Por el rozamiento del aire y la fuerza de Coriolis.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque el Teorema de Pitágoras es equivalente al Quinto Postulado de Euclides (geometría plana); en una esfera con curvatura positiva, la suma de ángulos de un triángulo supera los 180° y c² < a² + b².</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque en una esfera no existen líneas rectas ni ángulos medibles.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Solo falla si el triángulo cruza la línea del ecuador.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // LABORATORIO INTERACTIVO: SIMULADOR DINÁMICO DE PITÁGORAS
+  // =========================================================================
+
+  let curA = 3;
+  let curB = 4;
+
+  const sliderA = document.getElementById('slider-cat-a') as HTMLInputElement | null;
+  const sliderB = document.getElementById('slider-cat-b') as HTMLInputElement | null;
+  const dispA = document.getElementById('disp-cat-a');
+  const dispB = document.getElementById('disp-cat-b');
+
+  const svgEl = document.getElementById('svg-pitagoras') as SVGSVGElement | null;
+  const tripleStatus = document.getElementById('lab-triple-status');
+
+  const teleValA2 = document.getElementById('tele-val-a2');
+  const teleValB2 = document.getElementById('tele-val-b2');
+  const teleValC2 = document.getElementById('tele-val-c2');
+  const teleSubA = document.getElementById('tele-sub-a');
+  const teleSubB = document.getElementById('tele-sub-b');
+  const teleSubC = document.getElementById('tele-sub-c');
+  const teleBalance = document.getElementById('tele-balance');
+  const barPartA = document.getElementById('bar-part-a');
+  const barPartB = document.getElementById('bar-part-b');
+
+  function isPythagoreanTriple(a: number, b: number, c: number): boolean {
+    return Math.abs(c - Math.round(c)) < 1e-6;
+  }
+
+  function updateSim() {
+    const a = curA;
+    const b = curB;
+    const a2 = a * a;
+    const b2 = b * b;
+    const c2 = a2 + b2;
+    const c = Math.sqrt(c2);
+
+    if (dispA) dispA.textContent = String(a);
+    if (dispB) dispB.textContent = String(b);
+
+    const isTriple = isPythagoreanTriple(a, b, c);
+    const roundC = Math.round(c);
+
+    if (tripleStatus) {
+      if (isTriple) {
+        tripleStatus.textContent = `TERNA ENTERA: (${a}, ${b}, ${roundC})`;
+        tripleStatus.className = 'graph-metric is-triple';
+      } else {
+        tripleStatus.textContent = `c = ${c.toFixed(3)} (Irracional)`;
+        tripleStatus.className = 'graph-metric';
+      }
+    }
+
+    if (teleValA2) teleValA2.textContent = a2.toFixed(2);
+    if (teleValB2) teleValB2.textContent = b2.toFixed(2);
+    if (teleValC2) teleValC2.textContent = c2.toFixed(2);
+
+    if (teleSubA) teleSubA.textContent = `Lado a = ${a}`;
+    if (teleSubB) teleSubB.textContent = `Lado b = ${b}`;
+    if (teleSubC) teleSubC.textContent = `Hipotenusa c = ${c.toFixed(6)}`;
+
+    if (teleBalance) {
+      teleBalance.textContent = `${a2} + ${b2} = ${c2} ✓`;
+    }
+
+    const pctA = (a2 / c2) * 100;
+    const pctB = (b2 / c2) * 100;
+    if (barPartA) barPartA.style.width = `${pctA}%`;
+    if (barPartB) barPartB.style.width = `${pctB}%`;
+
+    // Renderizar gráfico vectorial en SVG
+    renderSVG(a, b, c);
+  }
+
+  function renderSVG(a: number, b: number, c: number) {
+    if (!svgEl) return;
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const a2 = a * a;
+    const b2 = b * b;
+    const c2 = a2 + b2;
+    const isTriple = isPythagoreanTriple(a, b, c);
+    const roundC = Math.round(c);
+
+    // Tamaño de canvas viewBox="0 0 540 320"
+    const W_svg = 540;
+    const H_svg = 320;
+
+    // Escala dinámica para centrar perfectamente el bounding box (2a + b) x (a + 2b)
+    const scale = Math.min(460 / (2 * a + b), 260 / (a + 2 * b));
+    const sA = a * scale;
+    const sB = b * scale;
+
+    // Vértice del ángulo recto C en (xC, yC) centrado en el canvas
+    const xC = W_svg / 2 - sB / 2;
+    const yC = H_svg / 2 + sA / 2;
+
+    // Vértices del triángulo:
+    // C es el ángulo recto en (xC, yC)
+    // A sobre el cateto vertical a (hacia arriba): (xC, yC - sA)
+    // B sobre el cateto horizontal b (hacia la derecha): (xC + sB, yC)
+    const ax = xC;
+    const ay = yC - sA;
+    const bx = xC + sB;
+    const by = yC;
+
+    // Cuadrado de la hipotenusa AB:
+    // Vector normal perpendicular hacia afuera: (sA, -sB)
+    const p3x = bx + sA;
+    const p3y = by - sB;
+    const p4x = ax + sA;
+    const p4y = ay - sB;
+
+    // Centro del cuadrado c² y ángulo de inclinación
+    const cMidX = xC + (sA + sB) / 2;
+    const cMidY = yC - (sA + sB) / 2;
+    const angleDeg = -Math.atan2(sA, sB) * (180 / Math.PI);
+
+    // Tipografía proporcional
+    const fsMain = Math.max(10, Math.min(16, scale * 1.1));
+    const fsSub = Math.max(9, Math.min(13, scale * 0.9));
+    const rSize = Math.max(6, Math.min(14, Math.min(sA, sB) * 0.22));
+
+    const colorA = isLight ? '#d97706' : '#fbbf24';
+    const bgA = isLight ? 'rgba(217, 119, 6, 0.16)' : 'rgba(251, 191, 36, 0.2)';
+
+    const colorB = isLight ? '#0284c7' : '#38bdf8';
+    const bgB = isLight ? 'rgba(2, 132, 199, 0.16)' : 'rgba(56, 189, 248, 0.2)';
+
+    const colorC = isLight ? '#059669' : '#10b981';
+    const textC = isLight ? '#047857' : '#34d399';
+    const bgC = isLight ? 'rgba(16, 185, 129, 0.18)' : 'rgba(16, 185, 129, 0.22)';
+
+    const triFill = isLight ? '#e2e8f0' : '#1e293b';
+    const triStroke = isLight ? '#0f172a' : '#f8fafc';
+
+    svgEl.innerHTML = `
+      <!-- Cuadrado cateto a² (a la izquierda de C) -->
+      <rect x="${xC - sA}" y="${yC - sA}" width="${sA}" height="${sA}" fill="${bgA}" stroke="${colorA}" stroke-width="2" rx="3" />
+      <text x="${xC - sA / 2}" y="${yC - sA / 2 + 4}" fill="${colorA}" font-size="${fsMain}" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">a² = ${a2}</text>
+
+      <!-- Cuadrado cateto b² (debajo de C) -->
+      <rect x="${xC}" y="${yC}" width="${sB}" height="${sB}" fill="${bgB}" stroke="${colorB}" stroke-width="2" rx="3" />
+      <text x="${xC + sB / 2}" y="${yC + sB / 2 + 4}" fill="${colorB}" font-size="${fsMain}" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">b² = ${b2}</text>
+
+      <!-- Cuadrado hipotenusa c² (inclinado, estrictamente ortogonal) -->
+      <polygon points="${ax},${ay} ${bx},${by} ${p3x},${p3y} ${p4x},${p4y}" fill="${bgC}" stroke="${colorC}" stroke-width="2" />
+      <g transform="rotate(${angleDeg} ${cMidX} ${cMidY})">
+        <text x="${cMidX}" y="${cMidY - 3}" fill="${textC}" font-size="${fsMain + 1}" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">c² = ${c2}</text>
+        <text x="${cMidX}" y="${cMidY + fsSub + 1}" fill="${textC}" font-size="${fsSub}" font-family="'JetBrains Mono', monospace" text-anchor="middle">c = ${isTriple ? roundC : c.toFixed(2)}</text>
+      </g>
+
+      <!-- Triángulo rectángulo base ABC -->
+      <polygon points="${xC},${yC} ${ax},${ay} ${bx},${by}" fill="${triFill}" stroke="${triStroke}" stroke-width="2.5" />
+      
+      <!-- Cuadradito de ángulo recto en el vértice C (hacia el interior del triángulo) -->
+      <rect x="${xC}" y="${yC - rSize}" width="${rSize}" height="${rSize}" fill="none" stroke="${triStroke}" stroke-width="1.5" />
+
+      <!-- Etiquetas de catetos a y b en los bordes del triángulo -->
+      <text x="${xC + 8}" y="${yC - sA / 2 + 4}" fill="${colorA}" font-size="${fsSub}" font-weight="bold" font-family="'JetBrains Mono', monospace">a = ${a}</text>
+      <text x="${xC + sB / 2}" y="${yC - 8}" fill="${colorB}" font-size="${fsSub}" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">b = ${b}</text>
+    `;
+  }
+
+  // Escuchadores de eventos para los sliders
+  if (sliderA) {
+    sliderA.addEventListener('input', (e) => {
+      curA = parseInt((e.target as HTMLInputElement).value, 10);
+      updateSim();
+    });
+  }
+
+  if (sliderB) {
+    sliderB.addEventListener('input', (e) => {
+      curB = parseInt((e.target as HTMLInputElement).value, 10);
+      updateSim();
+    });
+  }
+
+  // Presets
+  const presetBtns = document.querySelectorAll('.lab-preset-bar .preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      const a = parseInt(btn.getAttribute('data-a') || '3', 10);
+      const b = parseInt(btn.getAttribute('data-b') || '4', 10);
+
+      curA = a;
+      curB = b;
+      if (sliderA) sliderA.value = String(a);
+      if (sliderB) sliderB.value = String(b);
+      updateSim();
+    });
+  });
+
+  // Inicializar simulación
+  updateSim();
+
+  // Observador de cambio de tema claro / oscuro
+  const themeObserver = new MutationObserver(() => {
+    updateSim();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // =========================================================================
+  // SISTEMA INTERACTIVO DE AUTOEVALUACIÓN (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll('.quiz-card');
+  quizCards.forEach((card) => {
+    const buttons = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const feedback = card.querySelector<HTMLDivElement>('.q-feedback');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => {
+          b.disabled = true;
+          if (b.getAttribute('data-correct') === 'true') {
+            b.classList.add('is-correct');
+          }
+        });
+
+        const isCorrect = btn.getAttribute('data-correct') === 'true';
+        if (!isCorrect) {
+          btn.classList.add('is-wrong');
+        }
+
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = `q-feedback ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+          feedback.innerHTML = isCorrect
+            ? '<strong>✓ ¡Correcto!</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1')
+            : '<strong>✕ Incorrecto.</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1');
+        }
+      });
+    });
+  });
+
+  function getQuizExplanation(qId: string): string {
+    switch (qId) {
+      case '1':
+        return 'Ambas configuraciones encajan dentro del mismo contenedor cuadrado de lado (a+b). Como las cuatro esquinas contienen triángulos rectángulos idénticos de área ½·ab, al quitarlos ambos espacios restantes (a²+b² por un lado y c² por el otro) deben ser exactamente idénticos.';
+      case '2':
+        return 'Euclides demostró que la altura divide el cuadrado de la hipotenusa en dos rectángulos. Mediante cizallamiento y congruencia de triángulos LAL, cada rectángulo tiene la misma área que el cuadrado del cateto adyacente.';
+      case '3':
+        return 'Por la Proposición VI.31 de Euclides, las áreas de figuras semejantes son proporcionales al cuadrado de sus dimensiones lineales. Por tanto, la suma de las áreas de dos semicírculos sobre los catetos iguala con exactitud al semicírculo sobre la hipotenusa.';
+      case '4':
+        return 'El Teorema de Pitágoras es equivalente al Quinto Postulado de las paralelas de Euclides. En superficies con curvatura positiva como una esfera, los triángulos tienen una suma de ángulos mayor a 180° y la hipotenusa es más corta que en el plano (c² < a² + b²).';
+      default:
+        return '¡Excelente razonamiento!';
+    }
+  }
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: EL TEOREMA DE PITÁGORAS Y DEMOSTRACIONES POR DISECCIÓN
+     ========================================================================= */
+
+  /* 1. Banner de Enunciado Original */
+  .pyth-statement-banner {
+    background: rgba(251, 191, 36, 0.08);
+    border-left: 4px solid #fbbf24;
+    border-radius: 0 12px 12px 0;
+    padding: 1.4rem 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .banner-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .banner-text {
+    font-size: 1.05rem;
+    color: #f8fafc;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .pyth-intro-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .intro-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1.6rem;
+    align-items: center;
+  }
+
+  @media (max-width: 800px) {
+    .intro-split-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .intro-col h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.15rem;
+    color: #f8fafc;
+  }
+
+  .intro-col p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .intro-svg {
+    width: 100%;
+    max-width: 280px;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  }
+
+  /* 2. Disección China */
+  .china-comparison-card {
+    background: #0b1120;
+    border: 1.5px solid rgba(251, 191, 36, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .china-card-header {
+    margin-bottom: 1.4rem;
+  }
+
+  .china-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+  }
+
+  .china-card-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #f8fafc;
+  }
+
+  .dual-diagram-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .dual-diagram-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .diagram-box {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fig-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 0.8rem;
+    text-align: center;
+  }
+
+  .fig-tag.green {
+    color: #34d399;
+  }
+
+  .svg-diagram-wrapper {
+    width: 100%;
+    max-width: 220px;
+    margin: 0.5rem auto;
+  }
+
+  .tile-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .fig-caption {
+    font-size: 0.88rem;
+    font-family: monospace;
+    color: #cbd5e1;
+    margin-top: 0.8rem;
+  }
+
+  .gold-txt { color: #fbbf24; font-weight: bold; }
+  .cyan-txt { color: #38bdf8; font-weight: bold; }
+  .emerald-txt { color: #34d399; font-weight: bold; }
+  .gray-txt { color: #94a3b8; }
+
+  /* 3. Molino de Viento */
+  .windmill-card {
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .windmill-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 1.2rem;
+  }
+
+  .windmill-split {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.6rem;
+    align-items: center;
+  }
+
+  @media (max-width: 800px) {
+    .windmill-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .windmill-text h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.15rem;
+    color: #f8fafc;
+  }
+
+  .windmill-text p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .windmill-svg-box {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .windmill-svg {
+    width: 100%;
+    display: block;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
+  }
+
+  /* 4. Bhaskara y Garfield */
+  .proofs-dual-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .proofs-dual-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .proof-half-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-pill {
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 0.8rem;
+  }
+
+  .card-pill.cyan {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .proof-half-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .proof-half-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .bhaskara-box,
+  .garfield-box {
+    margin-top: auto;
+  }
+
+  /* 5. Laboratorio Interactivo */
+  .lab-container {
+    background: #0b1120;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .preset-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-right: 0.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all 0.2s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .preset-btn.is-active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .graph-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .graph-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+  }
+
+  .graph-metric {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .graph-metric.is-triple {
+    color: #10b981;
+    font-weight: 800;
+  }
+
+  .svg-stage-wrapper {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .lab-controls-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  @media (max-width: 600px) {
+    .lab-controls-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .control-val-display {
+    font-family: monospace;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .telemetry-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    font-family: monospace;
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.85rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .t-label {
+    display: block;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .t-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #f8fafc;
+  }
+
+  .t-val.gold { color: #fbbf24; }
+  .t-val.cyan { color: #38bdf8; }
+  .t-val.big-val { font-size: 1.4rem; color: #34d399; }
+  .t-val.small { font-size: 0.82rem; }
+
+  .t-sub {
+    display: block;
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .area-stacked-bar {
+    height: 8px;
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .area-stacked-bar .bar-a,
+  .area-stacked-bar .bar-b {
+    height: 100%;
+    transition: width 0.2s ease;
+  }
+
+  .meter-caption {
+    display: block;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  /* 6. Generalizaciones */
+  .gen-deep-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .gen-deep-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .gen-deep-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gen-tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 0.8rem;
+  }
+
+  .gen-tag.cyan {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .gen-deep-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .gen-deep-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .gen-footer {
+    margin-top: auto;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.78rem;
+    color: #fbbf24;
+    font-style: italic;
+  }
+
+  .gen-footer.cyan {
+    color: #38bdf8;
+  }
+
+  /* 7. Trampas (Sins) */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .sin-pill {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    margin-bottom: 0.6rem;
+  }
+
+  .sin-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+  }
+
+  .sin-card p {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #fca5a5;
+    margin-bottom: 0.6rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #6ee7b7;
+    line-height: 1.45;
+  }
+
+  /* 8. Quiz */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .q-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .q-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .q-header h4 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: #38bdf8;
+    color: #f8fafc;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: #10b981 !important;
+    color: #6ee7b7 !important;
+    font-weight: 700;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .opt-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .feedback-correct {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .feedback-wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     MODO CLARO (LIGHT THEME SUPPORT)
+     ========================================================================= */
+  :global([data-theme="light"]) .pyth-statement-banner {
+    background: #fffbeb;
+    border-left-color: #d97706;
+  }
+
+  :global([data-theme="light"]) .banner-text {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .pyth-intro-card,
+  :global([data-theme="light"]) .china-comparison-card,
+  :global([data-theme="light"]) .diagram-box,
+  :global([data-theme="light"]) .windmill-card,
+  :global([data-theme="light"]) .proof-half-card,
+  :global([data-theme="light"]) .lab-container,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .gen-deep-card,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+
+  :global([data-theme="light"]) .intro-col h4,
+  :global([data-theme="light"]) .china-card-header h4,
+  :global([data-theme="light"]) .windmill-text h4,
+  :global([data-theme="light"]) .proof-half-card h4,
+  :global([data-theme="light"]) .gen-deep-card h4,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .intro-col p,
+  :global([data-theme="light"]) .windmill-text p,
+  :global([data-theme="light"]) .proof-half-card p,
+  :global([data-theme="light"]) .control-label-row,
+  :global([data-theme="light"]) .gen-deep-card p,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .svg-stage-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .t-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .t-val.gold { color: #d97706; }
+  :global([data-theme="light"]) .t-val.cyan { color: #0284c7; }
+  :global([data-theme="light"]) .t-val.big-val { color: #059669; }
+
+  :global([data-theme="light"]) .preset-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .preset-btn:hover {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .preset-btn.is-active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #38bdf8;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>

@@ -1,0 +1,1889 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-04')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-03');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-05');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: LA BÚSQUEDA DE LAS RAÍCES Y EL CIERRE ALGEBRAICO -->
+  <section class="lesson-section" id="incompletitud-reales">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. La Búsqueda Milenaria de Raíces y la Clausura del Universo Numérico</h2>
+
+    <p class="lead-paragraph">
+      Durante siglos, la historia de las matemáticas fue una constante carrera de fuga para salvar ecuaciones sin solución. Cada vez que surgía un polinomio insoluble, la humanidad se veía forzada a inventar un nuevo reino numérico más amplio:
+    </p>
+
+    <!-- Línea histórica de expansión de los números -->
+    <div class="number-evolution-card">
+      <div class="evo-chain">
+        <div class="evo-step">
+          <span class="evo-set">ℕ</span>
+          <span class="evo-eq">x + 5 = 2</span>
+          <span class="evo-arrow">⟹</span>
+          <span class="evo-target">Enteros ℤ</span>
+        </div>
+        <div class="evo-step">
+          <span class="evo-set">ℤ</span>
+          <span class="evo-eq">3x = 7</span>
+          <span class="evo-arrow">⟹</span>
+          <span class="evo-target">Racionales ℚ</span>
+        </div>
+        <div class="evo-step">
+          <span class="evo-set">ℚ</span>
+          <span class="evo-eq">x² = 2</span>
+          <span class="evo-arrow">⟹</span>
+          <span class="evo-target">Reales ℝ</span>
+        </div>
+        <div class="evo-step highlight-step">
+          <span class="evo-set">ℝ</span>
+          <span class="evo-eq">x² + 1 = 0</span>
+          <span class="evo-arrow">⟹</span>
+          <span class="evo-target gold">Complejos ℂ (i = √-1)</span>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      Tras introducir la unidad imaginaria <code class="inline-code">i = √-1</code> en el siglo XVI por obra de Cardano y Bombelli, los algebristas se toparon con una duda angustiosa: <em>¿Qué ocurrirá si intentamos resolver ecuaciones polinómicas aún más enrevesadas, como <code class="inline-code">x⁵ - 3x² + i·x + (2 - 5i) = 0</code>? ¿Tendremos que inventar «hiper-complejos», luego «ultra-complejos» y así en una cascada infinita de nuevos entes matemáticos?</em>
+    </p>
+
+    <!-- Banner del milagro del cierre algebraico -->
+    <div class="fta-hero-banner">
+      <div class="banner-badge">LA CULMINACIÓN DEL ÁLGEBRA</div>
+      <p class="banner-main-text">
+        La respuesta definitiva es un rotundo <strong>NO</strong>: el plano de los números complejos <code class="inline-code">ℂ</code> es <strong>algebraicamente cerrado</strong>. Ningún polinomio, por disparatado o gigantesco que sea su grado, puede escapar de los números complejos.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: EL ENUNCIADO RIGUROSO Y LA FACTORIZACIÓN -->
+  <section class="lesson-section" id="enunciado-factorizacion">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. El Enunciado Canónico y la Factorización Total en Factores Lineales</h2>
+
+    <p class="lead-paragraph">
+      El Teorema Fundamental del Álgebra (TFA) se enuncia con una sobriedad geométrica admirable:
+    </p>
+
+    <div class="theorem-statement-card">
+      <div class="card-tag">TEOREMA DE D'ALEMBERT - GAUSS</div>
+      <h4>Teorema Fundamental del Álgebra (Existencia de Raíz)</h4>
+      <div class="math-display-eq">
+        ∀ P(z) = a<sub>n</sub>z<sup>n</sup> + a<sub>n-1</sub>z<sup>n-1</sup> + &hellip; + a₁z + a₀ &emsp; (con a<sub>n</sub> ≠ 0, n ≥ 1, a<sub>k</sub> ∈ ℂ)
+      </div>
+      <div class="math-display-eq gold-box">
+        ∃ z₀ ∈ ℂ &nbsp;tal que&nbsp; P(z₀) = 0
+      </div>
+      <p class="statement-desc">
+        Todo polinomio no constante con coeficientes complejos posee <strong>al menos una raíz</strong> en el plano complejo.
+      </p>
+    </div>
+
+    <!-- Corolario: Factorización Completa -->
+    <div class="corollary-box">
+      <div class="cor-header">
+        <span class="cor-badge">COROLARIO INMEDIATO VÍA REGLA DE RUFFINI</span>
+        <h4>Descomposición en exactamente n factores lineales</h4>
+      </div>
+      <p>
+        Al hallar la primera raíz <code class="inline-code">z₁</code>, podemos dividir <code class="inline-code">P(z)</code> entre <code class="inline-code">(z - z₁)</code> obteniendo un cociente de grado <code class="inline-code">n - 1</code>. Repitiendo el proceso inductivamente exactamente <code class="inline-code">n</code> veces, el polinomio queda <strong>totalmente desintegrado</strong> en producto de factores lineales simples:
+      </p>
+      <div class="math-display-eq">
+        P(z) = a<sub>n</sub> · (z - z₁) · (z - z₂) · &hellip; · (z - z<sub>n</sub>)
+      </div>
+      <p>
+        Todo polinomio de grado <code class="inline-code">n</code> tiene <strong>exactamente n raíces complejas</strong>, contando cada raíz con su respectiva multiplicidad algebraica.
+      </p>
+    </div>
+
+    <!-- Consecuencia para Polinomios Reales -->
+    <div class="real-poly-card">
+      <div class="real-badge">CONSECUENCIA VITAL PARA EL BACHILLERATO</div>
+      <h4>El Teorema de las Raíces Complejas Conjugadas en Polinomios Reales</h4>
+      <p>
+        Si un polinomio tiene coeficientes puramente reales (<code class="inline-code">a<sub>k</sub> ∈ ℝ</code>), las raíces imaginarias aparecen <strong>obligatoriamente en parejas conjugadas</strong>: si <code class="inline-code">z = α + βi</code> es raíz, su conjugado <code class="inline-code">z̄ = α - βi</code> es raíz idéntica. Al multiplicar ambos factores:
+      </p>
+      <div class="math-display-eq">
+        (x - (α + βi)) · (x - (α - βi)) = (x - α)² + β² = x² - 2αx + (α² + β²)
+      </div>
+      <p>
+        Esto demuestra que <strong>todo polinomio real se puede factorizar únicamente en factores lineales reales <code class="inline-code">(x - r)</code> y factores cuadráticos irreducibles <code class="inline-code">(x² + px + q)</code> con discriminante negativo</strong>. ¡Esta es la razón matemática exacta por la cual la descomposición en fracciones simples para integrales racionales nunca requiere denominadores de grado mayor que 2!
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LA DEMOSTRACIÓN VISUAL DEL ÍNDICE DE GIRO -->
+  <section class="lesson-section" id="demostracion-giro">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Demostración Geométrica de Gauss: El Índice de Giro (Winding Number)</h2>
+
+    <p class="lead-paragraph">
+      A pesar de su nombre, el Teorema Fundamental del Álgebra <strong>no puede demostrarse usando únicamente álgebra pura</strong>. Requiere inevitablemente la topología o el análisis del continuo real. La demostración más intuitiva y deslumbrante se basa en seguir la trayectoria de un círculo al transformarse bajo el polinomio:
+    </p>
+
+    <!-- Pasos de la prueba topológica -->
+    <div class="winding-proof-card">
+      <div class="winding-header">
+        <span class="proof-tag">ARGUMENTO TOPOLÓGICO DE CARL FRIEDRICH GAUSS (1799)</span>
+        <h4>El Mapeo de Círculos Concéntricos en el Plano Complejo</h4>
+      </div>
+
+      <div class="math-derivation-chain">
+        <!-- Paso 1 -->
+        <div class="math-step-line">
+          <span class="math-step-tag">1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>El Círculo de Prueba en el Dominio:</strong> Trazamos en el plano complejo un círculo centrado en el origen de radio <code class="inline-code">R</code>:</span>
+            <div class="math-step-expr">z(θ) = R · e<sup>iθ</sup> &emsp; (para θ de 0 a 2π)</div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="math-step-line">
+          <span class="math-step-tag">2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>Comportamiento en el Origen (R → 0):</strong> Cuando el radio es microscópico, todos los términos con <code class="inline-code">z</code> tienden a 0 y domina el término independiente <code class="inline-code">a₀</code>:</span>
+            <div class="math-step-expr">P(z) ≈ a₀ ≠ 0 ⟹ La curva imagen es un punto diminuto que NO contiene al origen (0,0).</div>
+            <div class="math-step-expr gold">Índice de giro (vueltas al origen) = 0</div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="math-step-line">
+          <span class="math-step-tag">3</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>Comportamiento en el Infinito (R → ∞):</strong> Cuando el radio es gigantesco, el término de mayor grado <code class="inline-code">a<sub>n</sub>z<sup>n</sup></code> aplasta sin piedad a todos los demás términos del polinomio:</span>
+            <div class="math-step-expr">P(z) ≈ a<sub>n</sub> · (R · e<sup>iθ</sup>)<sup>n</sup> = a<sub>n</sub> · R<sup>n</sup> · e<sup>i·nθ</sup></div>
+            <div class="math-step-expr cyan">Cuando z da 1 vuelta (θ de 0 a 2π), P(z) da exactamente n vueltas completas alrededor de (0,0).</div>
+            <div class="math-step-expr cyan">Índice de giro (vueltas al origen) = n ≥ 1</div>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">CLÍMAX</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>La Continuidad Imposible:</strong> El índice de giro alrededor del origen es una cantidad topológica discreta (número entero de vueltas: 0, 1, 2, ..., n). Al hacer crecer continuamente el radio <code class="inline-code">R</code> desde 0 hasta el infinito, el número de vueltas no puede saltar de 0 a n sin que, en algún radio intermedio <code class="inline-code">R₀</code>, <strong>la curva cerrada cruce exactamente el origen (0,0)</strong>:</span>
+            <div class="math-step-expr">∃ z₀ con |z₀| = R₀ &nbsp;tal que&nbsp; P(z₀) = 0 &emsp; <span class="math-qed">■ Q.E.D.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LA DEMOSTRACIÓN DEL MÓDULO MÍNIMO -->
+  <section class="lesson-section" id="modulo-minimo">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Demostración Analítica del Módulo Mínimo (Lema de d'Alembert - Argand)</h2>
+
+    <p class="lead-paragraph">
+      Una ruta analítica alternativa, debida a <strong>Jean le Rond d'Alembert</strong> y formalizada rigurosamente por <strong>Jean-Robert Argand</strong> en 1806, concibe el polinomio como un relieve montañoso donde buscamos el punto más profundo:
+    </p>
+
+    <div class="argand-proof-grid">
+      <div class="argand-col text-col">
+        <h4>El Paisaje del Módulo |P(z)|</h4>
+        <p>
+          Consideramos la función real no negativa <code class="inline-code">f(z) = |P(z)| ≥ 0</code>. Al alejarnos hacia el infinito en cualquier dirección del plano complejo (<code class="inline-code">|z| → ∞</code>), el módulo explota hacia el infinito (<code class="inline-code">|P(z)| → ∞</code>).
+        </p>
+        <p>
+          Por el <strong>Teorema de Weierstraß de los Valores Extremos</strong> sobre un disco compacto cerrado, la función continua <code class="inline-code">|P(z)|</code> debe alcanzar forzosamente un <strong>mínimo absoluto</strong> en algún punto <code class="inline-code">z₀ ∈ ℂ</code>.
+        </p>
+        <div class="math-display-eq">
+          m = |P(z₀)| ≤ |P(z)| &emsp; (∀ z ∈ ℂ)
+        </div>
+      </div>
+
+      <div class="argand-col lemma-col">
+        <div class="dalembert-box">
+          <span class="dal-badge">LEMA DE D'ALEMBERT</span>
+          <h5>Si P(z₀) ≠ 0, el punto no puede ser un mínimo local</h5>
+          <p>
+            Si fuera <code class="inline-code">|P(z₀)| = c &gt; 0</code>, podemos desarrollar el polinomio en potencias alrededor de <code class="inline-code">z₀</code>:
+          </p>
+          <div class="math-step-expr small-expr">P(z₀ + h) = P(z₀) + c<sub>k</sub> · h<sup>k</sup> + O(h<sup>k+1</sup>)</div>
+          <p>
+            Eligiendo con precisión el ángulo del paso complejo <code class="inline-code">h</code> para que <code class="inline-code">c<sub>k</sub> · h<sup>k</sup></code> apunte en <strong>sentido opuesto</strong> al vector complejo <code class="inline-code">P(z₀)</code>, se logra reducir el módulo:
+          </p>
+          <div class="math-step-expr gold">|P(z₀ + h)| &lt; |P(z₀)|</div>
+          <p>
+            ¡Contradicción con que <code class="inline-code">z₀</code> era el mínimo absoluto! La única posibilidad matemática consistente es que el valor del mínimo sea exactamente cero: <strong>|P(z₀)| = 0 ⟹ P(z₀) = 0</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-fta">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: El Explorador de Giro Topológico en el Plano Complejo</h2>
+
+    <p class="lead-paragraph">
+      Observa en vivo el argumento de Gauss: haz variar el radio del círculo de prueba <code class="inline-code">R</code> en el plano dominio <code class="inline-code">Z</code> y mira cómo la curva transformada <code class="inline-code">W = P(z)</code> se retuerce, rodea el origen y <strong>cruza exactamente el centro (0,0) en el valor exacto donde se encuentran las raíces</strong>:
+    </p>
+
+    <!-- Contenedor del Simulador -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR DEL ÍNDICE DE GIRO Y MAPEO TOPOLÓGICO P(z)</span>
+      </div>
+
+      <!-- Presets de Polinomios Famosos -->
+      <div class="lab-preset-bar">
+        <span class="preset-label">POLINOMIOS DE PRUEBA:</span>
+        <button type="button" class="preset-btn is-active" data-poly="z2p1">P(z) = z² + 1 (Raíces en ±i)</button>
+        <button type="button" class="preset-btn" data-poly="z3m1">P(z) = z³ - 1 (3 Raíces Cúbicas)</button>
+        <button type="button" class="preset-btn" data-poly="z2m2zp2">P(z) = z² - 2z + 2 (Raíces 1 ± i)</button>
+        <button type="button" class="preset-btn" data-poly="z4m1">P(z) = z⁴ - 1 (4 Raíces en círculo)</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Panel Izquierdo: Doble Plano Complejo SVG -->
+        <div class="lab-visual-panels">
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag gold">PLANO DOMINIO Z  vs  PLANO IMAGEN W = P(Z)</span>
+              <span class="graph-metric" id="lab-root-alert">RAÍZ NO ALCANZADA</span>
+            </div>
+
+            <div class="dual-canvas-wrapper">
+              <svg id="svg-fta" viewBox="0 0 540 280" class="lab-svg" aria-label="Mapeo topológico de curvas en plano complejo">
+                <!-- Se inyecta dinámicamente con JavaScript -->
+              </svg>
+            </div>
+
+            <!-- Control Deslizador del Radio R -->
+            <div class="lab-controls-panel">
+              <div class="control-group">
+                <div class="control-label-row">
+                  <label for="slider-radius-r">Radio del Círculo de Prueba R:</label>
+                  <span class="control-val-display" id="disp-radius-r">1.00</span>
+                </div>
+                <input type="range" id="slider-radius-r" min="0.1" max="2.6" step="0.02" value="1.00" class="lab-range-input" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Telemetría de Giro Topológico -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>TELEMETRÍA TOPOLÓGICA</h5>
+            <span class="telemetry-badge" id="tele-status">R = 1.00</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">RADIO ACTUAL R</span>
+              <span class="t-val gold" id="tele-val-r">1.00</span>
+              <span class="t-sub">En plano dominio Z</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">ÍNDICE DE GIRO W(P, 0)</span>
+              <span class="t-val cyan" id="tele-val-wind">0 vueltas</span>
+              <span class="t-sub">Vueltas al origen (0,0)</span>
+            </div>
+
+            <div class="t-cell full-width primary-root-cell">
+              <span class="t-label">DISTANCIA MÍNIMA AL ORIGEN:</span>
+              <span class="t-val big-val" id="tele-dist-origin">0.000</span>
+              <span class="t-sub" id="tele-dist-sub">¡La curva pasa exactamente por el centro!</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <div class="t-flex-row">
+                <span class="t-label">ESTADO DE CAPTURA DE RAÍCES</span>
+                <span class="t-val small" id="tele-roots-captured">0 / 2 raíces</span>
+              </div>
+              <div class="fta-meter-bar">
+                <div class="meter-fill" id="fta-meter-fill" style="width: 50%; background: #10b981;"></div>
+              </div>
+              <span class="meter-caption" id="tele-caption">
+                Al crecer R, el índice de giro salta discretamente al englobar cada raíz del polinomio.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: CONSECUENCIAS PROFUNDAS -->
+  <section class="lesson-section" id="aplicaciones-fta">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Consecuencias Fundamentales en el Bachillerato y la Ciencia Moderna</h2>
+
+    <p class="lead-paragraph">
+      El Teorema Fundamental del Álgebra es la viga maestra sobre la cual descansa la mayor parte del edificio matemático moderno:
+    </p>
+
+    <div class="conseq-grid">
+      <!-- 1: Integración de Funciones Racionales -->
+      <div class="conseq-card">
+        <div class="conseq-pill">CÁLCULO INTEGRAL (BACHILLERATO)</div>
+        <h4>Descomposición en Fracciones Simples</h4>
+        <p>
+          Gracias al TFA, cualquier polinomio real se descompone únicamente en factores lineales <code class="inline-code">(x - a)</code> y cuadráticos <code class="inline-code">(x² + px + q)</code>. Esto garantiza que <strong>toda función racional <code class="inline-code">P(x) / Q(x)</code> puede integrarse siempre</strong> en términos de funciones elementales: solo aparecen polinomios, logaritmos y arcotangentes.
+        </p>
+      </div>
+
+      <!-- 2: Álgebra Lineal -->
+      <div class="conseq-card">
+        <div class="conseq-pill cyan">ÁLGEBRA LINEAL Y GEOMETRÍA</div>
+        <h4>Existencia Universal de Autovalores</h4>
+        <p>
+          El polinomio característico de una matriz de tamaño <code class="inline-code">n × n</code> tiene grado <code class="inline-code">n</code>: <code class="inline-code">det(A - λI) = 0</code>. Por el TFA, <strong>todo operador lineal en ℂⁿ posee al menos un autovalor y autovector</strong>. Esto permite la descomposición en Forma Canónica de Jordan y la diagonalización cuántica.
+        </p>
+      </div>
+
+      <!-- 3: Mecánica Cuántica -->
+      <div class="conseq-card">
+        <div class="conseq-pill gold">FÍSICA TEÓRICA Y CUÁNTICA</div>
+        <h4>Completitud del Espectro Cuántico</h4>
+        <p>
+          La formulación de la física cuántica utiliza espacios de Hilbert sobre el cuerpo de los números complejos <code class="inline-code">ℂ</code> precisamente porque el TFA garantiza que las ecuaciones de autovalores de la energía (Ecuación de Schrödinger) tienen soluciones bien definidas y no requieren extensiones numéricas ad-hoc.
+        </p>
+      </div>
+
+      <!-- 4: Polinomios Reales Impares -->
+      <div class="conseq-card">
+        <div class="conseq-pill purple">PROPIEDAD POLINÓMICA UNIVERSAL</div>
+        <h4>Todo Polinomio Real de Grado Impar tiene Raíz Real</h4>
+        <p>
+          Como las raíces complejas vienen siempre por parejas conjugadas <code class="inline-code">(2k)</code>, un polinomio real de grado impar <code class="inline-code">2k + 1</code> debe tener obligatoriamente <strong>al menos una raíz real</strong> huérfana de pareja conjugada.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS Y MALENTENDIDOS HABITUALES -->
+  <section class="lesson-section" id="trampas-fta">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Trampas y Malentendidos Habituales</h2>
+
+    <p class="lead-paragraph">
+      Distingue los matices rigurosos del TFA para no caer en los 4 errores más comunes de examen y literatura:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 01</div>
+        <h4>Confundir número de raíces con número de valores distintos</h4>
+        <p>
+          Afirmar que un polinomio de grado 3 siempre tiene tres números distintos como soluciones.
+        </p>
+        <div class="sin-bad">
+          ✕ «P(x) = (x - 2)³ tiene 3 raíces distintas».
+        </div>
+        <div class="sin-good">
+          ✓ «Tiene una única raíz x = 2 con multiplicidad algebraica 3. La suma de las multiplicidades siempre es exactamente igual al grado n».
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 02</div>
+        <h4>Asumir que las raíces complejas siempre son conjugadas</h4>
+        <p>
+          Pensar que la regla del conjugado aplica a cualquier polinomio con números complejos.
+        </p>
+        <div class="sin-bad">
+          ✕ «Si z = i es raíz de P(z) = z² - iz, entonces z = -i también es raíz».
+        </div>
+        <div class="sin-good">
+          ✓ «P(i) = i² - i(i) = 0, pero P(-i) = (-i)² - i(-i) = -1 - 1 = -2 ≠ 0. Las raíces son conjugadas ÚNICAMENTE si todos los coeficientes del polinomio son números reales».
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 03</div>
+        <h4>Confundir el TFA con el Teorema de Abel-Ruffini</h4>
+        <p>
+          Creer que el TFA contradice la imposibilidad de resolver polinomios de grado 5 mediante fórmulas con radicales.
+        </p>
+        <div class="sin-bad">
+          ✕ «Como todo polinomio tiene 5 raíces, debe existir una fórmula general con raíces cuadradas y cúbicas para grado 5».
+        </div>
+        <div class="sin-good">
+          ✓ «El TFA garantiza que las 5 raíces EXISTEN en ℂ. Abel y Galois demostraron que no siempre se pueden despejar mediante sumas, productos y radicales finitos».
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 04</div>
+        <h4>Creer que el teorema es un método para calcular las raíces</h4>
+        <p>
+          Confundir un teorema puro de existencia con un algoritmo numérico de cómputo.
+        </p>
+        <div class="sin-bad">
+          ✕ «Uso el Teorema Fundamental del Álgebra para despejar las raíces de x⁶ - 4x + 1 = 0».
+        </div>
+        <div class="sin-good">
+          ✓ «El TFA es un teorema de existencia no constructivo: demuestra que las raíces están ahí, pero no da una receta numérica para calcularlas (para eso se usan métodos como Newton-Raphson o Durand-Kerner)».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Resuelve estas 4 cuestiones rigurosas para consolidar el dominio del plano complejo y el cierre algebraico:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>¿Por qué se dice que el cuerpo de los números complejos ℂ es «algebraicamente cerrado»?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque no se puede dividir entre cero bajo ninguna circunstancia.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque todo polinomio con coeficientes en ℂ tiene todas sus raíces dentro de ℂ, sin necesidad de inventar nuevos conjuntos numéricos ampliados.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque el plano complejo tiene una frontera física finita a distancia |z| = 1000.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Porque todas las matrices cuadradas tienen determinante positivo.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>En la demostración topológica de Gauss, ¿qué ocurre con el índice de giro cuando el radio R pasa de R → 0 a R → ∞?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">El índice de giro permanece siempre constante en 1 vuelta.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">El índice de giro disminuye de n a 0 al alejarse hacia el infinito.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Pasa de 0 vueltas (cuando R es pequeño y domina a₀) a n vueltas (cuando R es grande y domina aₙzⁿ), obligando a la curva a cruzar el origen (0,0) por continuidad.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">El índice de giro se vuelve imaginario puro.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>¿Por qué todo polinomio de grado 5 con coeficientes reales tiene obligatoriamente al menos una raíz real?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque 5 es un número primo y los números primos son indivisibles.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque las raíces complejas no reales aparecen en parejas conjugadas pares (0, 2 o 4 raíces complejas); al ser 5 impar, al menos 1 raíz debe ser obligatoriamente real.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque la regla de Ruffini solo admite números enteros positivos.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Porque el discriminante de orden 5 siempre es mayor que cero.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Cuál es la diferencia capital entre el Teorema Fundamental del Álgebra y el Teorema de Abel-Ruffini?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">El TFA fue demostrado por Euclides y Abel-Ruffini por Newton.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">El TFA garantiza que las n raíces existen en ℂ; Abel-Ruffini demuestra que para grado ≥ 5 no existe una fórmula general por radicales algebraicos elementales para expresarlas.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">El TFA solo se aplica a polinomios cuadráticos y Abel-Ruffini a polinomios cúbicos.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Son dos nombres distintos para el mismo teorema.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // LABORATORIO INTERACTIVO: EL EXPLORADOR DE GIRO TOPOLÓGICO DEL TFA
+  // =========================================================================
+
+  interface Complex {
+    re: number;
+    im: number;
+  }
+
+  function cAdd(a: Complex, b: Complex): Complex {
+    return { re: a.re + b.re, im: a.im + b.im };
+  }
+
+  function cMul(a: Complex, b: Complex): Complex {
+    return { re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re };
+  }
+
+  function cPower(c: Complex, n: number): Complex {
+    let res: Complex = { re: 1, im: 0 };
+    for (let i = 0; i < n; i++) {
+      res = cMul(res, c);
+    }
+    return res;
+  }
+
+  interface PolyConfig {
+    name: string;
+    degree: number;
+    eval: (z: Complex) => Complex;
+    roots: Complex[];
+    maxR: number;
+  }
+
+  const POLYS: Record<string, PolyConfig> = {
+    z2p1: {
+      name: 'P(z) = z² + 1',
+      degree: 2,
+      eval: (z) => {
+        const z2 = cPower(z, 2);
+        return { re: z2.re + 1, im: z2.im };
+      },
+      roots: [{ re: 0, im: 1 }, { re: 0, im: -1 }],
+      maxR: 2.2
+    },
+    z3m1: {
+      name: 'P(z) = z³ - 1',
+      degree: 3,
+      eval: (z) => {
+        const z3 = cPower(z, 3);
+        return { re: z3.re - 1, im: z3.im };
+      },
+      roots: [
+        { re: 1, im: 0 },
+        { re: -0.5, im: Math.sqrt(3) / 2 },
+        { re: -0.5, im: -Math.sqrt(3) / 2 }
+      ],
+      maxR: 2.2
+    },
+    z2m2zp2: {
+      name: 'P(z) = z² - 2z + 2',
+      degree: 2,
+      eval: (z) => {
+        const z2 = cPower(z, 2);
+        return { re: z2.re - 2 * z.re + 2, im: z2.im - 2 * z.im };
+      },
+      roots: [{ re: 1, im: 1 }, { re: 1, im: -1 }],
+      maxR: 2.5
+    },
+    z4m1: {
+      name: 'P(z) = z⁴ - 1',
+      degree: 4,
+      eval: (z) => {
+        const z4 = cPower(z, 4);
+        return { re: z4.re - 1, im: z4.im };
+      },
+      roots: [
+        { re: 1, im: 0 },
+        { re: -1, im: 0 },
+        { re: 0, im: 1 },
+        { re: 0, im: -1 }
+      ],
+      maxR: 2.2
+    }
+  };
+
+  let curPolyKey = 'z2p1';
+  let curR = 1.0;
+
+  const sliderR = document.getElementById('slider-radius-r') as HTMLInputElement | null;
+  const dispR = document.getElementById('disp-radius-r');
+  const svgEl = document.getElementById('svg-fta') as SVGSVGElement | null;
+
+  const rootAlert = document.getElementById('lab-root-alert');
+  const teleStatus = document.getElementById('tele-status');
+  const teleValR = document.getElementById('tele-val-r');
+  const teleValWind = document.getElementById('tele-val-wind');
+  const teleDistOrigin = document.getElementById('tele-dist-origin');
+  const teleDistSub = document.getElementById('tele-dist-sub');
+  const teleRootsCaptured = document.getElementById('tele-roots-captured');
+  const ftaMeterFill = document.getElementById('fta-meter-fill');
+  const teleCaption = document.getElementById('tele-caption');
+
+  function updateLab() {
+    const poly = POLYS[curPolyKey];
+    if (!poly) return;
+
+    if (dispR) dispR.textContent = curR.toFixed(2);
+    if (teleValR) teleValR.textContent = curR.toFixed(2);
+    if (teleStatus) teleStatus.textContent = `R = ${curR.toFixed(2)}`;
+
+    // Contar cuántas raíces tienen |root| <= curR
+    const rootsInside = poly.roots.filter((rt) => Math.hypot(rt.re, rt.im) <= curR + 0.04);
+    const numInside = rootsInside.length;
+
+    // Calcular distancia mínima de la curva P(R e^it) al origen
+    const SAMPLES = 120;
+    let minDist = Infinity;
+    let pathWPoints: { x: number; y: number }[] = [];
+
+    // Calcular winding number aproximado sumando ángulos de cambio dtheta
+    let totalAngleChange = 0;
+    let prevAngle = 0;
+
+    for (let i = 0; i <= SAMPLES; i++) {
+      const theta = (i / SAMPLES) * 2 * Math.PI;
+      const z: Complex = { re: curR * Math.cos(theta), im: curR * Math.sin(theta) };
+      const w = poly.eval(z);
+      const dist = Math.hypot(w.re, w.im);
+      if (dist < minDist) minDist = dist;
+
+      const angle = Math.atan2(w.im, w.re);
+      if (i > 0) {
+        let diff = angle - prevAngle;
+        while (diff > Math.PI) diff -= 2 * Math.PI;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        totalAngleChange += diff;
+      }
+      prevAngle = angle;
+    }
+
+    const windingNumber = Math.round(totalAngleChange / (2 * Math.PI));
+
+    const isAtRoot = minDist < 0.25;
+
+    if (rootAlert) {
+      if (isAtRoot) {
+        rootAlert.textContent = '¡LA CURVA CRUZA EL ORIGEN! (P(z) = 0)';
+        rootAlert.className = 'graph-metric is-root';
+      } else {
+        rootAlert.textContent = `ÍNDICE DE GIRO: ${windingNumber} ${windingNumber === 1 ? 'VUELTA' : 'VUELTAS'}`;
+        rootAlert.className = 'graph-metric';
+      }
+    }
+
+    if (teleValWind) {
+      teleValWind.textContent = `${windingNumber} ${windingNumber === 1 ? 'vuelta' : 'vueltas'}`;
+    }
+
+    if (teleDistOrigin) {
+      teleDistOrigin.textContent = minDist.toFixed(3);
+      teleDistOrigin.className = isAtRoot ? 't-val big-val is-zero' : 't-val big-val';
+    }
+
+    if (teleDistSub) {
+      teleDistSub.textContent = isAtRoot
+        ? '¡La curva cruza exactamente el centro (0,0)! ¡Raíz hallada!'
+        : `Distancia al origen en W. El centro no se toca aún.`;
+    }
+
+    if (teleRootsCaptured) {
+      teleRootsCaptured.textContent = `${numInside} / ${poly.roots.length} raíces`;
+    }
+
+    if (ftaMeterFill) {
+      const pct = (numInside / poly.roots.length) * 100;
+      ftaMeterFill.style.width = `${pct}%`;
+      ftaMeterFill.style.background = pct === 100 ? '#10b981' : pct > 0 ? '#38bdf8' : '#fbbf24';
+    }
+
+    if (teleCaption) {
+      teleCaption.textContent = isAtRoot
+        ? `¡Momento exacto del TFA! El radio R = ${curR.toFixed(2)} coincide con el módulo de la raíz del polinomio.`
+        : `Al incrementar R, el índice de giro salta discretamente cuando el círculo Z engloba cada una de las raíces.`;
+    }
+
+    renderDualPlanes(poly, curR, isAtRoot);
+  }
+
+  function renderDualPlanes(poly: PolyConfig, R: number, isAtRoot: boolean) {
+    if (!svgEl) return;
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const W = 540;
+    const H = 280;
+
+    // Plano Z: centro (135, 140), radio de visualización 110 px para R_max = 2.5 (escala = 42 px / unidad)
+    const zCenterX = 135;
+    const zCenterY = 140;
+    const zScale = 44;
+
+    // Plano W: centro (405, 140), radio de visualización ajustado
+    const wCenterX = 405;
+    const wCenterY = 140;
+    const wScale = 22; // Ajustado para contener valores mayores de P(z)
+
+    const axisColor = isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)';
+    const textColor = isLight ? '#475569' : '#94a3b8';
+    const circleZColor = '#fbbf24';
+    const curveWColor = isAtRoot ? '#10b981' : '#38bdf8';
+    const rootColor = '#ef4444';
+
+    // Construir curva Z (círculo)
+    const circleZRadius = R * zScale;
+
+    // Construir curva W con 120 puntos
+    const SAMPLES = 120;
+    let pathWStr = '';
+    for (let i = 0; i <= SAMPLES; i++) {
+      const theta = (i / SAMPLES) * 2 * Math.PI;
+      const z: Complex = { re: R * Math.cos(theta), im: R * Math.sin(theta) };
+      const w = poly.eval(z);
+      const wx = wCenterX + w.re * wScale;
+      const wy = wCenterY - w.im * wScale;
+      if (i === 0) {
+        pathWStr += `M ${wx.toFixed(1)} ${wy.toFixed(1)}`;
+      } else {
+        pathWStr += ` L ${wx.toFixed(1)} ${wy.toFixed(1)}`;
+      }
+    }
+    pathWStr += ' Z';
+
+    // Raíces en plano Z
+    const rootsZStr = poly.roots
+      .map((rt) => {
+        const rx = zCenterX + rt.re * zScale;
+        const ry = zCenterY - rt.im * zScale;
+        const isEnclosed = Math.hypot(rt.re, rt.im) <= R + 0.04;
+        return `
+        <circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${isEnclosed ? '5' : '4'}" fill="${isEnclosed ? '#10b981' : '#ef4444'}" stroke="#f8fafc" stroke-width="1.5" />
+      `;
+      })
+      .join('');
+
+    svgEl.innerHTML = `
+      <!-- ================= PLANO Z (DOMINIO) ================= -->
+      <!-- Divisoria vertical suave -->
+      <line x1="270" y1="20" x2="270" y2="260" stroke="${axisColor}" stroke-dasharray="3 3" />
+
+      <!-- Título Plano Z -->
+      <text x="${zCenterX}" y="28" fill="${textColor}" font-size="11" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">PLANO DOMINIO Z</text>
+      
+      <!-- Ejes coordenados Plano Z -->
+      <line x1="25" y1="${zCenterY}" x2="245" y2="${zCenterY}" stroke="${axisColor}" stroke-width="1.5" />
+      <line x1="${zCenterX}" y1="35" x2="${zCenterX}" y2="255" stroke="${axisColor}" stroke-width="1.5" />
+      <text x="240" y="${zCenterY - 6}" fill="${textColor}" font-size="10" font-family="monospace">Re(z)</text>
+      <text x="${zCenterX + 6}" y="45" fill="${textColor}" font-size="10" font-family="monospace">Im(z)</text>
+
+      <!-- Círculo de prueba de radio R en Z -->
+      <circle cx="${zCenterX}" cy="${zCenterY}" r="${circleZRadius.toFixed(1)}" fill="rgba(251, 191, 36, 0.08)" stroke="${circleZColor}" stroke-width="2" stroke-dasharray="4 2" />
+      <text x="${zCenterX + circleZRadius + 5}" y="${zCenterY - 6}" fill="${circleZColor}" font-size="10" font-weight="bold" font-family="monospace">R=${R.toFixed(2)}</text>
+
+      <!-- Raíces teóricas en Z -->
+      ${rootsZStr}
+
+      <!-- ================= PLANO W = P(Z) (IMAGEN) ================= -->
+      <!-- Título Plano W -->
+      <text x="${wCenterX}" y="28" fill="${textColor}" font-size="11" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">PLANO IMAGEN W = P(z)</text>
+
+      <!-- Ejes coordenados Plano W -->
+      <line x1="295" y1="${wCenterY}" x2="515" y2="${wCenterY}" stroke="${axisColor}" stroke-width="1.5" />
+      <line x1="${wCenterX}" y1="35" x2="${wCenterX}" y2="255" stroke="${axisColor}" stroke-width="1.5" />
+      <text x="510" y="${wCenterY - 6}" fill="${textColor}" font-size="10" font-family="monospace">Re(w)</text>
+      <text x="${wCenterX + 6}" y="45" fill="${textColor}" font-size="10" font-family="monospace">Im(w)</text>
+
+      <!-- Origen (0,0) en W -->
+      <circle cx="${wCenterX}" cy="${wCenterY}" r="4" fill="${isAtRoot ? '#10b981' : '#f8fafc'}" stroke="${isAtRoot ? '#10b981' : '#ef4444'}" stroke-width="2" />
+      <text x="${wCenterX - 8}" y="${wCenterY + 14}" fill="${textColor}" font-size="10" font-family="monospace">0</text>
+
+      <!-- Curva transformada cerrada W = P(z) -->
+      <path d="${pathWStr}" fill="${isAtRoot ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.1)'}" stroke="${curveWColor}" stroke-width="${isAtRoot ? '3' : '2'}" />
+    `;
+  }
+
+  // Deslizador de radio R
+  if (sliderR) {
+    sliderR.addEventListener('input', (e) => {
+      curR = parseFloat((e.target as HTMLInputElement).value);
+      updateLab();
+    });
+  }
+
+  // Presets de Polinomios
+  const presetBtns = document.querySelectorAll('.lab-preset-bar .preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      const polyKey = btn.getAttribute('data-poly') || 'z2p1';
+      curPolyKey = polyKey;
+      curR = 1.0;
+      if (sliderR) sliderR.value = '1.00';
+      updateLab();
+    });
+  });
+
+  // Inicializar simulación
+  updateLab();
+
+  // Observador de cambio de tema claro / oscuro
+  const themeObserver = new MutationObserver(() => {
+    updateLab();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // =========================================================================
+  // SISTEMA INTERACTIVO DE AUTOEVALUACIÓN (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll('.quiz-card');
+  quizCards.forEach((card) => {
+    const buttons = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const feedback = card.querySelector<HTMLDivElement>('.q-feedback');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => {
+          b.disabled = true;
+          if (b.getAttribute('data-correct') === 'true') {
+            b.classList.add('is-correct');
+          }
+        });
+
+        const isCorrect = btn.getAttribute('data-correct') === 'true';
+        if (!isCorrect) {
+          btn.classList.add('is-wrong');
+        }
+
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = `q-feedback ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+          feedback.innerHTML = isCorrect
+            ? '<strong>✓ ¡Correcto!</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1')
+            : '<strong>✕ Incorrecto.</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1');
+        }
+      });
+    });
+  });
+
+  function getQuizExplanation(qId: string): string {
+    switch (qId) {
+      case '1':
+        return 'Un cuerpo es algebraicamente cerrado si cualquier polinomio no constante con coeficientes en dicho cuerpo tiene todas sus raíces en el propio cuerpo. El plano complejo ℂ no requiere ninguna extensión algebraica adicional.';
+      case '2':
+        return 'Para R muy pequeño la curva rodea al término independiente a₀ (0 vueltas). Para R muy grande domina aₙzⁿ que da n vueltas. Al crecer R continuamente, la curva debe forzosamente cruzar el origen (0,0), lo que garantiza la existencia de al menos una raíz P(z₀) = 0.';
+      case '3':
+        return 'Por el Teorema del Conjugado, en polinomios reales las raíces imaginarias vienen siempre emparejadas (α ± βi). Como el grado es 5 (impar), no todas las raíces pueden agruparse en parejas de dos, forzando a que al menos una raíz sea puramente real.';
+      case '4':
+        return 'El TFA es un teorema de existencia pura (las n raíces existen y habitan en ℂ). Abel y Galois demostraron que para polinomios de grado 5 o superior no existe ninguna fórmula universal que exprese dichas raíces mediante radicales algebraicos.';
+      default:
+        return '¡Excelente dominio conceptual!';
+    }
+  }
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: EL TEOREMA FUNDAMENTAL DEL ÁLGEBRA (D'ALEMBERT - GAUSS)
+     ========================================================================= */
+
+  /* 1. Evolución numérica */
+  .number-evolution-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.4rem 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .evo-chain {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .evo-step {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+  }
+
+  .evo-step.highlight-step {
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.06);
+  }
+
+  .evo-set {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #94a3b8;
+    font-family: serif;
+  }
+
+  .evo-eq {
+    font-family: monospace;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+  }
+
+  .evo-arrow {
+    color: #64748b;
+  }
+
+  .evo-target {
+    font-weight: 700;
+    color: #38bdf8;
+    margin-left: auto;
+  }
+
+  .evo-target.gold {
+    color: #fbbf24;
+  }
+
+  .fta-hero-banner {
+    background: rgba(251, 191, 36, 0.08);
+    border-left: 4px solid #fbbf24;
+    border-radius: 0 12px 12px 0;
+    padding: 1.4rem 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .banner-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .banner-main-text {
+    font-size: 1.05rem;
+    color: #f8fafc;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* 2. Tarjetas de Enunciado y Corolarios */
+  .theorem-statement-card {
+    background: #0b1120;
+    border: 1.5px solid rgba(251, 191, 36, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 0.8rem;
+  }
+
+  .theorem-statement-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .gold-box {
+    color: #fbbf24 !important;
+    font-size: 1.25rem !important;
+    font-weight: 700;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.08);
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+
+  .statement-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .corollary-box {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .cor-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .corollary-box h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .corollary-box p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .real-poly-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .real-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .real-poly-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+  }
+
+  .real-poly-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  /* 3. Winding Proof Card */
+  .winding-proof-card {
+    background: #0b1120;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .winding-header {
+    margin-bottom: 1.4rem;
+  }
+
+  .proof-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .winding-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #f8fafc;
+  }
+
+  .math-step-expr.gold { color: #fbbf24; font-weight: 700; }
+  .math-step-expr.cyan { color: #38bdf8; font-weight: 700; }
+
+  /* 4. Argand & d'Alembert */
+  .argand-proof-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem;
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .argand-proof-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .argand-col h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.12rem;
+    color: #f8fafc;
+  }
+
+  .argand-col p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .dalembert-box {
+    background: #0f172a;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .dal-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .dalembert-box h5 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1rem;
+    color: #f8fafc;
+  }
+
+  .dalembert-box p {
+    font-size: 0.86rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .small-expr {
+    font-size: 0.85rem !important;
+  }
+
+  /* 5. Laboratorio Interactivo */
+  .lab-container {
+    background: #0b1120;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .preset-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-right: 0.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all 0.2s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .preset-btn.is-active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .graph-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .graph-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+  }
+
+  .graph-metric {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .graph-metric.is-root {
+    color: #10b981;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+
+  .dual-canvas-wrapper {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .lab-controls-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .control-val-display {
+    font-family: monospace;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .telemetry-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-family: monospace;
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.85rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .t-label {
+    display: block;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .t-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #f8fafc;
+  }
+
+  .t-val.gold { color: #fbbf24; }
+  .t-val.cyan { color: #38bdf8; }
+  .t-val.big-val { font-size: 1.4rem; color: #f8fafc; }
+  .t-val.big-val.is-zero { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+  .t-val.small { font-size: 0.82rem; }
+
+  .t-sub {
+    display: block;
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .fta-meter-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: all 0.25s ease;
+  }
+
+  .meter-caption {
+    display: block;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  /* 6. Consecuencias */
+  .conseq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .conseq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .conseq-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .conseq-pill {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    margin-bottom: 0.6rem;
+  }
+
+  .conseq-pill.cyan { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+  .conseq-pill.gold { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+  .conseq-pill.purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+  .conseq-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+  }
+
+  .conseq-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* 7. Trampas (Sins) */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .sin-pill {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    margin-bottom: 0.6rem;
+  }
+
+  .sin-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+  }
+
+  .sin-card p {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #fca5a5;
+    margin-bottom: 0.6rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #6ee7b7;
+    line-height: 1.45;
+  }
+
+  /* 8. Quiz */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .q-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .q-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .q-header h4 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: #38bdf8;
+    color: #f8fafc;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: #10b981 !important;
+    color: #6ee7b7 !important;
+    font-weight: 700;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .opt-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .feedback-correct {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .feedback-wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     MODO CLARO (LIGHT THEME SUPPORT)
+     ========================================================================= */
+  :global([data-theme="light"]) .number-evolution-card,
+  :global([data-theme="light"]) .theorem-statement-card,
+  :global([data-theme="light"]) .corollary-box,
+  :global([data-theme="light"]) .real-poly-card,
+  :global([data-theme="light"]) .winding-proof-card,
+  :global([data-theme="light"]) .dalembert-box,
+  :global([data-theme="light"]) .lab-container,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .conseq-card,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+
+  :global([data-theme="light"]) .fta-hero-banner {
+    background: #fffbeb;
+    border-left-color: #d97706;
+  }
+
+  :global([data-theme="light"]) .banner-main-text {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .theorem-statement-card h4,
+  :global([data-theme="light"]) .corollary-box h4,
+  :global([data-theme="light"]) .real-poly-card h4,
+  :global([data-theme="light"]) .winding-header h4,
+  :global([data-theme="light"]) .argand-col h4,
+  :global([data-theme="light"]) .dalembert-box h5,
+  :global([data-theme="light"]) .conseq-card h4,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .statement-desc,
+  :global([data-theme="light"]) .corollary-box p,
+  :global([data-theme="light"]) .real-poly-card p,
+  :global([data-theme="light"]) .argand-col p,
+  :global([data-theme="light"]) .dalembert-box p,
+  :global([data-theme="light"]) .control-label-row,
+  :global([data-theme="light"]) .conseq-card p,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .evo-step {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .evo-eq {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .dual-canvas-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .t-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .t-val.gold { color: #d97706; }
+  :global([data-theme="light"]) .t-val.cyan { color: #0284c7; }
+  :global([data-theme="light"]) .t-val.big-val { color: #0f172a; }
+  :global([data-theme="light"]) .t-val.big-val.is-zero { color: #059669; }
+
+  :global([data-theme="light"]) .preset-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .preset-btn:hover {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .preset-btn.is-active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #38bdf8;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>

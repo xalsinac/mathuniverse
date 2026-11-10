@@ -1,0 +1,1838 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-01')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'prb-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-02');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: LA CRISIS PITAGÓRICA -->
+  <section class="lesson-section" id="crisis-pitagorica">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. La Crisis Pitagórica y la Conmoción del Mundo Griego</h2>
+
+    <p class="lead-paragraph">
+      En el siglo V a.C., la hermandad fundada por <strong>Pitágoras de Samos</strong> gobernaba el pensamiento filosófico bajo un dogma místico supremo: <em>«Todo es número»</em>. Para los pitagóricos, el cosmos era una sinfonía ordenada donde cualquier magnitud física, astronómica o musical podía expresarse como una relación armónica entre dos números enteros: una razón racional <code class="inline-code">a / b</code>.
+    </p>
+
+    <p>
+      Esa visión del universo colapsó ante la figura geométrica más elemental imaginable: <strong>la diagonal de un cuadrado de lado 1</strong>.
+    </p>
+
+    <!-- Tarjeta Visual del Colapso Pitagórico -->
+    <div class="pythagoras-card">
+      <div class="pyth-badge">EL CISMA DE LA INCONMENSURABILIDAD</div>
+      
+      <div class="pyth-split-grid">
+        <div class="pyth-col text-col">
+          <h4>El Triángulo de Lados 1, 1 y d</h4>
+          <p>
+            Al aplicar su propio Teorema de Pitágoras sobre un cuadrado unitario:
+          </p>
+          <div class="math-display-eq">
+            d² = 1² + 1² = 2 ⟹ d = <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span>
+          </div>
+          <p>
+            La intuición dictaba que, si se dividía el lado en suficientes partes minúsculas, alguna de esas partes microscópicas debía caber un número exacto de veces en la diagonal. Sin embargo, el matemático <strong>Hípaso de Metaponto</strong> demostró que <em>no existe ninguna unidad de medida común</em>, por diminuta que sea, que mida simultáneamente ambos segmentos. Eran <strong>inconmensurables</strong>.
+          </p>
+        </div>
+
+        <div class="pyth-col svg-col">
+          <svg viewBox="0 0 280 230" class="pyth-svg" aria-label="Cuadrado unitario con diagonal raíz de 2">
+            <!-- Cuadrado unitario -->
+            <rect x="35" y="35" width="160" height="160" fill="rgba(251, 191, 36, 0.08)" stroke="#fbbf24" stroke-width="2" rx="4" />
+            
+            <!-- Diagonal d = sqrt(2) -->
+            <line x1="35" y1="195" x2="195" y2="35" stroke="#f43f5e" stroke-width="2.8" stroke-linecap="round" />
+            
+            <!-- Ángulo recto -->
+            <path d="M 195 180 L 180 180 L 180 195" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+
+            <!-- Rótulos de dimensiones -->
+            <text x="115" y="215" font-size="14" font-weight="700" fill="#fbbf24" text-anchor="middle" font-family="monospace">lado = 1</text>
+            <text x="15" y="120" font-size="14" font-weight="700" fill="#fbbf24" text-anchor="middle" font-family="monospace">1</text>
+            <text x="90" y="105" font-size="15" font-weight="800" fill="#f43f5e" font-family="monospace">d = √2</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="pyth-footer">
+        <p>
+          <strong>La Leyenda del Ahogamiento:</strong> Cuenta la tradición matemática que el descubrimiento de que <code class="inline-code">√2</code> no podía escribirse como cociente de enteros causó tal pánico religioso que los pitagóricos juraron mantenerlo en secreto. Cuando Hípaso divulgó la existencia de los números irracionales, fue arrojado al mar durante una travesía para aplacar la cólera de los dioses.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA GEOMETRÍA DE LA INCONMENSURABILIDAD -->
+  <section class="lesson-section" id="antiferesis">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Geometría de la Inconmensurabilidad y la Antiféresis</h2>
+
+    <p class="lead-paragraph">
+      Para los griegos no existía la notación decimal. Dos longitudes <code class="inline-code">A</code> y <code class="inline-code">B</code> eran conmensurables si el <strong>algoritmo de Euclides de restas sucesivas</strong> (llamado <em>antiféresis</em>) terminaba en un número finito de pasos con un resto exactamente igual a cero.
+    </p>
+
+    <div class="antiferesis-box">
+      <span class="box-badge">EL BUCLE INFINITO DE EUCLIDES</span>
+      <p>
+        Si intentamos medir la diagonal <code class="inline-code">d = √2</code> con el lado <code class="inline-code">L = 1</code>:
+      </p>
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">El lado cabe 1 vez en la diagonal y sobra un segmento resto r₁:</span>
+            <div class="math-step-expr">
+              r₁ = <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> - 1 ≈ 0.4142...
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Ahora intentamos medir el lado 1 con el resto r₁ racionalizando el denominador:</span>
+            <div class="math-step-expr">
+              <span class="math-frac">
+                <span class="num">1</span>
+                <span class="den"><span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> - 1</span>
+              </span>
+              <span>=</span>
+              <span class="math-frac">
+                <span class="num"><span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> + 1</span>
+                <span class="den">(<span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> - 1)(<span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> + 1)</span>
+              </span>
+              <span>= <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> + 1 = 2 + (<span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> - 1) = 2 + r₁</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight">
+          <span class="math-step-tag">BUCLE</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">¡El nuevo resto vuelve a ser exactamente r₁! El proceso se repite idénticamente hasta el infinito generando la fracción continua periódica:</span>
+            <div class="continued-fraction-container">
+              <div class="cf-left">
+                <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> = 1 +
+              </div>
+              <div class="cf-stack">
+                <span class="math-frac">
+                  <span class="num">1</span>
+                  <span class="den">
+                    2 + <span class="math-frac">
+                      <span class="num">1</span>
+                      <span class="den">
+                        2 + <span class="math-frac">
+                          <span class="num">1</span>
+                          <span class="den">2 + &hellip;</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+              <div class="cf-notation">
+                = [1; 2, 2, 2, &hellip;]
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="antiferesis-desc">
+        Como la fracción continua nunca termina, el resto jamás es cero: <strong>lado y diagonal jamás tendrán una medida común</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: EL LEMA ARITMÉTICO CLAVE -->
+  <section class="lesson-section" id="lema-paridad">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. El Lema Aritmético Clave: Paridad de los Cuadrados</h2>
+
+    <p class="lead-paragraph">
+      Para construir la demostración canónica de Euclides, necesitamos antes fijar dos pilares inquebrantables de la teoría de números:
+    </p>
+
+    <!-- Lema de Paridad -->
+    <div class="lemma-card">
+      <div class="lemma-header">
+        <span class="lemma-tag">LEMA FUNDAMENTAL</span>
+        <h4>Si el cuadrado de un entero es par, el entero original es obligatoriamente par</h4>
+      </div>
+      <div class="lemma-statement">
+        <div class="math-display-eq">
+          a² es par ⟹ a es par &emsp; (∀ a ∈ ℤ)
+        </div>
+      </div>
+      <div class="lemma-proof">
+        <span class="proof-label">DEMOSTRACIÓN POR CONTRAPOSICIÓN (CONTRARRECÍPROCO):</span>
+        <p>
+          En lugar de probar directamente <code class="inline-code">P ⟹ Q</code>, demostramos la afirmación equivalente <code class="inline-code">¬Q ⟹ ¬P</code>: <em>«Si a es impar, entonces a² es impar»</em>.
+        </p>
+        <p>
+          1. Si <code class="inline-code">a</code> es impar, por definición existe un entero <code class="inline-code">k</code> tal que <code class="inline-code">a = 2k + 1</code>.
+        </p>
+        <p>
+          2. Elevamos al cuadrado mediante la identidad notable:
+        </p>
+        <div class="math-display-eq">
+          a² = (2k + 1)² = 4k² + 4k + 1 = 2(2k² + 2k) + 1
+        </div>
+        <p>
+          3. Llamando <code class="inline-code">m = 2k² + 2k</code> (que es un entero), tenemos <code class="inline-code">a² = 2m + 1</code>, lo que demuestra formalmente que <code class="inline-code">a²</code> es impar.
+        </p>
+        <p>
+          Por contraposición, si <code class="inline-code">a²</code> es par, <code class="inline-code">a</code> no puede ser impar: tiene que ser par. <span class="math-qed">■ Q.E.D.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- El Principio de Fracción Irreducible -->
+    <div class="coprime-box">
+      <span class="box-badge amber">EL PILAR DE LA IRREDUCTIBILIDAD</span>
+      <h4>Fracciones Irreducibles y Números Coprimos</h4>
+      <p>
+        Cualquier número racional puede escribirse como una fracción irreducible <code class="inline-code">a / b</code> simplificando todos los factores comunes hasta que el máximo común divisor sea 1:
+      </p>
+      <div class="math-display-eq">
+        mcd(a, b) = 1 &emsp; (a y b son coprimos o primos entre sí)
+      </div>
+      <p class="coprime-rule">
+        <strong>Consecuencia Crucial para la Demostración:</strong> Si <code class="inline-code">mcd(a, b) = 1</code>, es <strong>imposible que a y b sean ambos pares simultáneamente</strong>, ya que si ambos fueran pares tendrían al menos el factor común 2, y la fracción no sería irreducible.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LA DEMOSTRACIÓN DE EUCLIDES -->
+  <section class="lesson-section" id="demostracion-euclides">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Demostración Clásica de Euclides (Elementos, Libro X)</h2>
+
+    <p class="lead-paragraph">
+      Esta demostración, recogida hacia el año 300 a.C. en la Proposición 117 del Libro X de los <em>Elementos de Euclides</em>, es considerada por los matemáticos modernos como una de las cumbres estéticas de la mente humana:
+    </p>
+
+    <div class="canonical-theorem-card euclid-card">
+      <div class="canon-badge gold">TEOREMA DE INCONMENSURABILIDAD (EUCLIDES)</div>
+      <div class="canon-statement">
+        <p>
+          El número <code class="inline-code">√2</code> no es un número racional: no puede expresarse como el cociente de dos números enteros.
+        </p>
+        <div class="canon-thesis euclid-thesis">
+          <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> ∉ ℚ &emsp; (√2 es estrictamente irracional)
+        </div>
+      </div>
+    </div>
+
+    <!-- Cadena de Demostración por Reducción al Absurdo -->
+    <div class="formal-proof-wrapper">
+      <div class="proof-card-header">
+        <span class="proof-tag">DEMOSTRACIÓN COMPLETA POR REDUCCIÓN AL ABSURDO</span>
+        <h4>Deducción analítica paso a paso</h4>
+      </div>
+
+      <div class="math-derivation-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>Hipótesis de partida (Por Absurdo):</strong> Asumimos que √2 sí es racional. Por tanto, puede escribirse como una fracción de enteros irreducible:</span>
+            <div class="math-step-expr">
+              <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> = <span class="math-frac"><span class="num">a</span><span class="den">b</span></span> &emsp; con &emsp; a, b ∈ ℤ⁺, &emsp; b ≠ 0, &emsp; mcd(a, b) = 1
+            </div>
+            <span class="math-step-subnote">Recordatorio: a y b no pueden ser ambos pares.</span>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Elevamos ambos miembros al cuadrado para eliminar el radical:</span>
+            <div class="math-step-expr">
+              2 = <span class="math-frac"><span class="num">a²</span><span class="den">b²</span></span> ⟹ 2b² = a²
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 3</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Como a² es el doble de un entero (2b²), a² es obligatoriamente <strong>par</strong>. Aplicando nuestro Lema de Paridad:</span>
+            <div class="math-step-expr">
+              a² es par ⟹ <strong>a es par</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 4</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Al ser a par, podemos expresarlo formalmente como a = 2k para algún entero k ∈ ℤ⁺. Sustituimos esta expresión en la ecuación del Paso 2:</span>
+            <div class="math-step-expr">
+              2b² = (2k)² = 4k²
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 5</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Dividimos ambos miembros entre 2:</span>
+            <div class="math-step-expr">
+              b² = 2k²
+            </div>
+            <span class="math-step-subnote">Como b² es el doble de un entero (2k²), b² es necesariamente par. Aplicando de nuevo el lema: <strong>b es par</strong>.</span>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight-contradiction">
+          <span class="math-step-tag red">CONTRADICCIÓN</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Hemos demostrado deductivamente dos conclusiones simultáneas:</span>
+            <div class="math-step-expr alert-expr">
+              a es par &emsp; y &emsp; b es par ⟹ mcd(a, b) ≥ 2
+            </div>
+            <p class="contradiction-text">
+              ¡Esto contradice frontalmente la hipótesis del Paso 1, donde establecimos que la fracción era <strong>irreducible</strong> (<code class="inline-code">mcd(a, b) = 1</code>)!
+            </p>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">CONCLUSIÓN</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Puesto que el razonamiento lógico deductivo ha sido impecable, la única fuente del error debe ser la suposición inicial: suponer que √2 era racional era falso.</span>
+            <div class="math-step-expr">
+              <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">2</span></span> ∈ ℝ \ ℚ &emsp; <span class="math-qed">■ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-irracional">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: El Cazador de Fracciones y la Ecuación de Pell</h2>
+
+    <p class="lead-paragraph">
+      Durante siglos se intentó encontrar dos números enteros gigantescos <code class="inline-code">a</code> y <code class="inline-code">b</code> cuya razón fuera exactamente <code class="inline-code">√2</code>. Prueba tú mismo con las mejores aproximaciones racionales conocidas por la humanidad y observa cómo el error cuadrático <code class="inline-code">|a² - 2b²|</code> jamás es cero:
+    </p>
+
+    <!-- Simulador Interactivo SVG -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR DEL CAZADOR DE APROXIMACIONES RACIONALES</span>
+      </div>
+
+      <!-- Presets de Fracciones Históricas -->
+      <div class="lab-preset-bar">
+        <button type="button" class="preset-btn is-active" data-a="3" data-b="2">3 / 2 (Pitágoras)</button>
+        <button type="button" class="preset-btn" data-a="7" data-b="5">7 / 5 (Babilonia)</button>
+        <button type="button" class="preset-btn" data-a="17" data-b="12">17 / 12 (Alejandría)</button>
+        <button type="button" class="preset-btn" data-a="41" data-b="29">41 / 29 (Platón)</button>
+        <button type="button" class="preset-btn" data-a="99" data-b="70">99 / 70 (Euclides)</button>
+        <button type="button" class="preset-btn" data-a="577" data-b="408">577 / 408 (India antigua)</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Visualizador Geométrico de Cuadrados de Tennenbaum -->
+        <div class="lab-visual-panels">
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag gold">DESCENSO INFINITO GEOMÉTRICO (STANLEY TENNENBAUM)</span>
+              <span class="graph-metric" id="metric-ratio">a / b = 1.50000000</span>
+            </div>
+            <div class="svg-stage-wrapper">
+              <svg id="svg-tennenbaum" viewBox="0 0 580 260" class="lab-svg" aria-label="Visualización geométrica del descenso infinito de Tennenbaum">
+                <!-- Se inyecta dinámicamente con JS -->
+              </svg>
+            </div>
+            <div class="tennenbaum-caption">
+              Un cuadrado de lado <code class="inline-code">a</code> contiene dos cuadrados de lado <code class="inline-code">b</code>. El solapamiento central genera un nuevo cuadrado de lados enteros aún más pequeños: ¡descenso infinito imposible!
+            </div>
+          </div>
+
+          <!-- Controles de Numerador y Denominador -->
+          <div class="lab-controls-panel">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-num-a">Numerador a:</label>
+                <span class="control-val-display" id="disp-val-a">3</span>
+              </div>
+              <input type="range" id="slider-num-a" min="1" max="140" step="1" value="3" class="lab-range-input" />
+            </div>
+
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-den-b">Denominador b:</label>
+                <span class="control-val-display" id="disp-val-b">2</span>
+              </div>
+              <input type="range" id="slider-den-b" min="1" max="100" step="1" value="2" class="lab-range-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetría y Ecuación de Pell -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>TELEMETRÍA DE PELL</h5>
+            <span class="telemetry-badge" id="tele-status">NUNCA CERO</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">VALOR a / b</span>
+              <span class="t-val gold" id="tele-frac-val">1.500000</span>
+              <span class="t-sub">Aproximación decimal</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">VALOR REAL √2</span>
+              <span class="t-val cyan">1.414213...</span>
+              <span class="t-sub">Infinitos decimales</span>
+            </div>
+
+            <div class="t-cell full-width primary-pell-cell">
+              <span class="t-label">ECUACIÓN DE PELL: a² - 2b²</span>
+              <span class="t-val big-val" id="tele-pell">+1</span>
+              <span class="t-sub">Si fuera racional, este valor debería ser exactamente 0</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <div class="t-flex-row">
+                <span class="t-label">PRECISIÓN ALCANZADA</span>
+                <span class="t-val small" id="tele-err-pct">Error: 0.085786</span>
+              </div>
+              <div class="convergence-meter">
+                <div class="meter-fill" id="pell-meter" style="width: 90%; background: #fbbf24;"></div>
+              </div>
+              <span class="meter-caption" id="tele-pell-caption">
+                Las mejores fracciones alternan estrictamente a² - 2b² = +1 y a² - 2b² = -1. ¡La distancia al 0 es una barrera aritmética infranqueable!
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: GENERALIZACIÓN -->
+  <section class="lesson-section" id="generalizacion-primos">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Generalización: La Irracionalidad de √p y el Teorema Fundamental de la Aritmética</h2>
+
+    <p class="lead-paragraph">
+      ¿Qué tiene de especial el número 2? Absolutamente nada. El mismo argumento euclidiano demuestra que <strong>la raíz cuadrada de cualquier número primo es irracional</strong>.
+    </p>
+
+    <div class="prime-gen-card">
+      <div class="gen-badge">DEMOSTRACIÓN POR FACTORIZACIÓN ÚNICA</div>
+      <h4>La Paridad de los Exponentes Primos</h4>
+      <p>
+        Existe una demostración aún más elegante y general mediante el <strong>Teorema Fundamental de la Aritmética</strong> (todo número entero se descompone de forma única en producto de números primos):
+      </p>
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Si <code class="inline-code">√p = a / b</code> con <code class="inline-code">p</code> primo, elevamos al cuadrado:</span>
+            <div class="math-step-expr">p · b² = a²</div>
+          </div>
+        </div>
+        <div class="math-step-line">
+          <span class="math-step-tag">2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Analizamos cuántas veces aparece el factor primo p en la descomposición de cada miembro:</span>
+            <div class="math-step-expr">
+              En a², el primo p aparece un número <strong>PAR</strong> de veces (2 · exponente de p en a).
+            </div>
+            <div class="math-step-expr">
+              En p · b², el primo p aparece 1 + (número par) = número <strong>IMPAR</strong> de veces.
+            </div>
+          </div>
+        </div>
+        <div class="math-step-line is-highlight-contradiction">
+          <span class="math-step-tag red">ABSURDO</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Por la unicidad de factorización en primos, un número entero no puede tener a la vez un exponente par e impar para el factor p.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gen-theorem-box">
+        <strong>Teorema Universal de las Raíces Enteras:</strong>
+        <p>
+          Para cualquier número natural <code class="inline-code">n ∈ ℕ</code>, la raíz cuadrada <code class="inline-code">√n</code> es <strong>entera</strong> (si <code class="inline-code">n</code> es un cuadrado perfecto) o es <strong>estrictamente irracional</strong>. Jamás puede ser una fracción no entera como <code class="inline-code">7/3</code> o <code class="inline-code">4.5</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS Y MALENTENDIDOS -->
+  <section class="lesson-section" id="trampas-irracionalidad">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Trampas y Malentendidos Habituales en la Demostración</h2>
+
+    <p class="lead-paragraph">
+      Identifica los cuatro errores argumentativos más extendidos entre estudiantes y entusiastas:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 01</div>
+        <h4>Creer que «tener infinitos decimales» significa ser irracional</h4>
+        <p>
+          Afirmar: «1/3 es irracional porque en la calculadora sale 0.333333... con infinitos decimales».
+        </p>
+        <div class="sin-bad">
+          ✕ Confundir infinitud de cifras con ausencia de período racional.
+        </div>
+        <div class="sin-good">
+          ✓ «Todo número racional periódico tiene infinitos decimales pero se expresa como cociente exacto 1/3. La irracionalidad exige infinitos decimales no periódicos».
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 02</div>
+        <h4>Omitir la hipótesis de fracción irreducible en la prueba</h4>
+        <p>
+          Iniciar la demostración diciendo: «Sea √2 = a/b» sin exigir que mcd(a, b) = 1.
+        </p>
+        <div class="sin-bad">
+          ✕ Si la fracción no es irreducible, que a y b sean pares no genera ninguna contradicción (ej. 6/4 ambos son pares).
+        </div>
+        <div class="sin-good">
+          ✓ «La contradicción nace obligatoriamente de asumir que todos los factores comunes habían sido eliminados previamente».
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 03</div>
+        <h4>Intentar demostrarlo mediante comprobación numérica con calculadora</h4>
+        <p>
+          «He probado con la calculadora y √2 = 1.41421356... nunca se repite».
+        </p>
+        <div class="sin-bad">
+          ✕ Una calculadora solo tiene 10 o 16 dígitos de memoria; no puede inspeccionar infinitos dígitos.
+        </div>
+        <div class="sin-good">
+          ✓ «Una demostración matemática es un argumento lógico deductivo para toda la eternidad, no una inspección empírica finita».
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 04</div>
+        <h4>Confundir Número Irracional con Número Trascendente</h4>
+        <p>
+          Pensar que √2 tiene la misma naturaleza que π o e.
+        </p>
+        <div class="sin-bad">
+          ✕ «√2 es trascendente como pi».
+        </div>
+        <div class="sin-good">
+          ✓ «√2 es un número irracional ALGEBRAICO, ya que es raíz del polinomio x² - 2 = 0 con coeficientes enteros. Los números trascendentes (como π y e) no son raíz de ningún polinomio algebraico».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Resuelve estas 4 cuestiones rigurosas para afianzar el dominio de la reducción al absurdo y la inconmensurabilidad:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>¿Dónde radica exactamente la contradicción lógica en la demostración de Euclides?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">En que 2b² no puede ser igual a un número elevado al cuadrado.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">En que a y b resultan ser ambos pares, contradiciendo la hipótesis de que la fracción a/b era irreducible (mcd(a, b) = 1).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">En que la raíz de 2 no puede dibujarse en el plano cartesiano.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>¿Por qué el mismo argumento no funciona para intentar demostrar que √4 es irracional?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque 4b² = a² implica que a es múltiplo de 4 (o par), pero al sustituir a = 2k se obtiene 4b² = 4k² ⟹ b² = k², lo que no fuerza a b a ser par.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque el número 4 no es divisible entre 2.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque Euclides no conocía el número 4.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Si a² es múltiplo de 3, ¿es a necesariamente múltiplo de 3?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, porque 3 es un número primo (por el Lema de Euclides: si un primo divide a a², divide a a).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, solo se cumple para potencias pares como el 2 y el 4.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Depende de si a es positivo o negativo.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Cuál es la naturaleza algebraica del número √2?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Número trascendente, porque no puede construirse con regla y compás.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Número irracional algebraico, ya que es solución de la ecuación polinómica x² - 2 = 0.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Número imaginario puro.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // SIMULADOR INTERACTIVO DEL CAZADOR DE APROXIMACIONES RACIONALES (PELL)
+  // =========================================================================
+
+  let curA = 3;
+  let curB = 2;
+
+  const svgTennen = document.getElementById('svg-tennenbaum') as SVGSVGElement | null;
+  const sliderA = document.getElementById('slider-num-a') as HTMLInputElement | null;
+  const sliderB = document.getElementById('slider-den-b') as HTMLInputElement | null;
+
+  const dispValA = document.getElementById('disp-val-a');
+  const dispValB = document.getElementById('disp-val-b');
+
+  const metricRatio = document.getElementById('metric-ratio');
+  const teleFracVal = document.getElementById('tele-frac-val');
+  const telePell = document.getElementById('tele-pell');
+  const teleErrPct = document.getElementById('tele-err-pct');
+  const pellMeter = document.getElementById('pell-meter');
+  const telePellCaption = document.getElementById('tele-pell-caption');
+
+  const SQRT2 = Math.SQRT2;
+  const W = 580;
+  const H = 260;
+
+  function renderSim() {
+    if (!svgTennen) return;
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const a = curA;
+    const b = curB;
+    const ratio = a / b;
+    const pellVal = (a * a) - (2 * b * b);
+    const err = Math.abs(ratio - SQRT2);
+
+    // Geometría del cuadrado de Tennenbaum
+    // Dibujamos un cuadrado grande de lado a, y dos cuadrados de lado b en esquinas opuestas
+    const maxBoxSize = 210;
+    const scale = maxBoxSize / Math.max(a, b * SQRT2, 1);
+    const sizeA = Math.max(60, Math.min(maxBoxSize, a * scale));
+    const sizeB = (b / a) * sizeA;
+
+    const startX = (W / 2) - (sizeA / 2);
+    const startY = (H / 2) - (sizeA / 2);
+
+    // Esquinas de los dos cuadrados B
+    // B1: esquina superior izquierda (startX, startY)
+    // B2: esquina inferior derecha (startX + sizeA - sizeB, startY + sizeA - sizeB)
+    const b2x = startX + sizeA - sizeB;
+    const b2y = startY + sizeA - sizeB;
+
+    // Región de solapamiento central (nuevo cuadrado menor):
+    // ancho del solapamiento: 2b - a
+    const overlapW = Math.max(0, (2 * sizeB) - sizeA);
+
+    const goldBorder = isLight ? '#d97706' : '#fbbf24';
+    const textCol = isLight ? '#0f172a' : '#f8fafc';
+    const subCol = isLight ? '#64748b' : '#94a3b8';
+
+    let svgHtml = `
+      <!-- Cuadrado Grande de Lado a -->
+      <rect x="${startX}" y="${startY}" width="${sizeA}" height="${sizeA}" rx="4" fill="rgba(251, 191, 36, 0.08)" stroke="${goldBorder}" stroke-width="2.2" />
+      <text x="${startX + sizeA / 2}" y="${startY - 8}" font-size="12" font-weight="800" fill="${goldBorder}" text-anchor="middle" font-family="monospace">
+        Área total = a² = ${a * a}
+      </text>
+
+      <!-- Cuadrado B1 (Superior Izquierdo) -->
+      <rect x="${startX}" y="${startY}" width="${sizeB}" height="${sizeB}" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="3,3" />
+
+      <!-- Cuadrado B2 (Inferior Derecho) -->
+      <rect x="${b2x}" y="${b2y}" width="${sizeB}" height="${sizeB}" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="1.6" stroke-dasharray="3,3" />
+
+      <!-- Cuadrado de Solapamiento Central (Descenso Infinito) -->
+      ${overlapW > 4 ? `
+        <rect x="${b2x}" y="${b2y}" width="${overlapW}" height="${overlapW}" fill="rgba(244, 63, 94, 0.55)" stroke="#f43f5e" stroke-width="1.8" />
+        <text x="${b2x + overlapW / 2}" y="${b2y + overlapW / 2 + 4}" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle" font-family="monospace">
+          (2b - a)²
+        </text>
+      ` : ''}
+
+      <!-- Rótulos de dimensiones -->
+      <text x="${startX - 10}" y="${startY + sizeA / 2 + 4}" font-size="12" font-weight="800" fill="${goldBorder}" text-anchor="end" font-family="monospace">
+        a = ${a}
+      </text>
+      <text x="${startX + sizeB / 2}" y="${startY + sizeB + 16}" font-size="11" font-weight="700" fill="#38bdf8" text-anchor="middle" font-family="monospace">
+        b = ${b}
+      </text>
+      <text x="${b2x + sizeB / 2}" y="${b2y - 6}" font-size="11" font-weight="700" fill="#10b981" text-anchor="middle" font-family="monospace">
+        b = ${b}
+      </text>
+    `;
+
+    svgTennen.innerHTML = svgHtml;
+
+    // Actualizar Textos
+    if (dispValA) dispValA.textContent = String(a);
+    if (dispValB) dispValB.textContent = String(b);
+    if (metricRatio) metricRatio.textContent = `a / b = ${ratio.toFixed(8)}`;
+    if (teleFracVal) teleFracVal.textContent = ratio.toFixed(6);
+
+    if (telePell) {
+      telePell.textContent = (pellVal > 0 ? `+${pellVal}` : String(pellVal));
+      if (Math.abs(pellVal) === 1) {
+        telePell.style.color = '#10b981';
+      } else {
+        telePell.style.color = '#fbbf24';
+      }
+    }
+
+    if (teleErrPct) teleErrPct.textContent = `Error: ${err.toFixed(6)}`;
+
+    if (pellMeter) {
+      // Si el error es menor, barra más alta
+      const pct = Math.max(5, Math.min(100, (1 - err / 0.1) * 100));
+      pellMeter.style.width = `${pct}%`;
+    }
+
+    if (telePellCaption) {
+      if (Math.abs(pellVal) === 1) {
+        telePellCaption.textContent = `¡Excelente aproximación armónica! a² - 2b² = ${pellVal > 0 ? '+1' : '-1'}. Es la mejor aproximación posible para números de este tamaño.`;
+      } else {
+        telePellCaption.textContent = `El residuo de Pell es a² - 2b² = ${pellVal}. Para aproximarse a √2, busca pares de números donde este residuo sea exactamente ±1.`;
+      }
+    }
+  }
+
+  // Event Listeners Sliders
+  if (sliderA) {
+    sliderA.addEventListener('input', (e) => {
+      curA = parseInt((e.target as HTMLInputElement).value, 10);
+      renderSim();
+    });
+  }
+
+  if (sliderB) {
+    sliderB.addEventListener('input', (e) => {
+      curB = parseInt((e.target as HTMLInputElement).value, 10);
+      renderSim();
+    });
+  }
+
+  // Presets Históricos
+  const presetBtns = document.querySelectorAll<HTMLButtonElement>('.preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      curA = parseInt(btn.dataset.a || '3', 10);
+      curB = parseInt(btn.dataset.b || '2', 10);
+
+      if (sliderA) {
+        sliderA.max = String(Math.max(140, curA));
+        sliderA.value = String(curA);
+      }
+      if (sliderB) {
+        sliderB.max = String(Math.max(100, curB));
+        sliderB.value = String(curB);
+      }
+
+      renderSim();
+    });
+  });
+
+  // Tema Claro / Oscuro
+  const themeObserver = new MutationObserver(() => {
+    renderSim();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  renderSim();
+
+  // =========================================================================
+  // SISTEMA DE AUTOEVALUACIÓN CONCEPTUAL (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+  const FEEDBACK_MSGS: Record<string, { correct: string; incorrect: string }> = {
+    '1': {
+      correct: '¡Brillante! El motor de la prueba es precisamente ese: partimos de la hipótesis de que la fracción estaba totalmente simplificada (mcd=1), pero el razonamiento nos lleva inexorablemente a que tanto a como b son pares (mcd≥2), lo cual es imposible.',
+      incorrect: 'Incorrecto. La contradicción surge de la naturaleza de las fracciones irreducibles: si la fracción es irreducible, numerador y denominador no pueden ser ambos pares.',
+    },
+    '2': {
+      correct: '¡Exacto! Al ser 4 un cuadrado perfecto (2²), 4b² = (2k)² da 4b² = 4k² ⟹ b² = k², lo que no impone que b deba tener ningún factor 2. La prueba colapsa de forma natural.',
+      incorrect: 'Incorrecto. En el caso de √4 = 2, la ecuación es b² = k², lo que no exige que b sea par ni genera ninguna contradicción aritmética.',
+    },
+    '3': {
+      correct: '¡Totalmente correcto! Es una propiedad directa de los números primos (Lema de Euclides): si un número primo p divide a un producto (a · a), forzosamente debe dividir a uno de los factores.',
+      incorrect: 'Incorrecto. Por el Teorema Fundamental de la Aritmética y el Lema de Euclides, si un número primo divide a a², necesariamente divide a a.',
+    },
+    '4': {
+      correct: '¡Impecable! √2 es la raíz del polinomio algebraico x² - 2 = 0 con coeficientes enteros. Por tanto es un irracional algebraico, no trascendente.',
+      incorrect: 'Incorrecto. √2 no es trascendente: es una solución exacta del polinomio elemental x² - 2 = 0. Los números trascendentes son aquellos que no son raíz de ningún polinomio algebraico.',
+    },
+  };
+
+  quizCards.forEach((card) => {
+    const qId = card.dataset.q || '';
+    const btns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const fbBox = card.querySelector<HTMLElement>('.q-feedback');
+    const fbText = card.querySelector<HTMLElement>('.fb-text');
+
+    btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const isCorrect = btn.dataset.correct === 'true';
+
+        btns.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') {
+            b.classList.add('is-right');
+          } else if (b === btn) {
+            b.classList.add('is-wrong');
+          }
+        });
+
+        if (fbBox && fbText) {
+          fbBox.classList.remove('hidden', 'success', 'failure');
+          fbBox.classList.add(isCorrect ? 'success' : 'failure');
+          fbText.textContent = isCorrect ? FEEDBACK_MSGS[qId]?.correct : FEEDBACK_MSGS[qId]?.incorrect;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: LA IRRACIONALIDAD DE √2 (DEMOSTRACIÓN DE EUCLIDES)
+     ========================================================================= */
+
+  /* 1. Tarjeta Hero Pitagórica */
+  .pythagoras-card {
+    background: #0f172a;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .pyth-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 1.2rem;
+  }
+
+  .pyth-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1.6rem;
+    align-items: center;
+  }
+
+  @media (max-width: 800px) {
+    .pyth-split-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pyth-col h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.12rem;
+    color: #f8fafc;
+  }
+
+  .pyth-col p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .pyth-svg {
+    width: 100%;
+    max-width: 280px;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  }
+
+  .pyth-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1.2rem;
+    margin-top: 1.2rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #94a3b8;
+  }
+
+  /* 2. Antiféresis y Lema */
+  .antiferesis-box,
+  .lemma-card,
+  .coprime-box,
+  .canonical-theorem-card,
+  .prime-gen-card {
+    border-radius: 14px;
+    padding: 1.6rem 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .antiferesis-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  .box-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.8rem;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+  }
+
+  .box-badge.amber {
+    background: rgba(245, 158, 11, 0.18);
+    color: #f59e0b;
+  }
+
+  .compact-chain {
+    padding: 1rem 1.2rem;
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  .antiferesis-desc {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin-top: 0.8rem;
+  }
+
+  /* Fracción continua visualmente espaciosa */
+  .continued-fraction-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    padding: 1.2rem 1.6rem;
+    margin: 1rem 0 0.5rem 0;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cf-left {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #fbbf24;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .cf-stack {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.05rem;
+    padding: 0.4rem 0.6rem;
+    line-height: 1.35;
+  }
+
+  .cf-stack :global(.math-frac) {
+    font-size: 0.95em;
+  }
+
+  .cf-stack :global(.math-frac .num),
+  .cf-stack :global(.math-frac .den) {
+    font-size: 0.95em;
+    padding: 0.15em 0.35em;
+  }
+
+  .cf-notation {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+
+  [data-theme="light"] .antiferesis-desc {
+    color: #475569;
+  }
+
+  [data-theme="light"] .continued-fraction-container {
+    background: #f8fafc;
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  [data-theme="light"] .cf-left {
+    color: #d97706;
+  }
+
+  [data-theme="light"] .cf-notation {
+    color: #0284c7;
+    background: #e0f2fe;
+    border-color: rgba(2, 132, 199, 0.35);
+  }
+
+  .lemma-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .lemma-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .lemma-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fbbf24;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lemma-header h4 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+  }
+
+  .lemma-proof {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .proof-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .coprime-box {
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .coprime-box h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.05rem;
+    color: #f8fafc;
+  }
+
+  .coprime-box p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .coprime-rule {
+    margin-top: 0.8rem !important;
+    padding: 0.8rem 1rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border-left: 3px solid #fbbf24;
+  }
+
+  /* 3. Teorema de Euclides */
+  .canonical-theorem-card.euclid-card {
+    background: #151109;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .canon-badge.gold {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+  }
+
+  .canon-thesis.euclid-thesis {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+    font-size: 1.25rem;
+  }
+
+  .formal-proof-wrapper {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.8rem 0;
+  }
+
+  .proof-card-header h4 {
+    margin: 0.4rem 0 1.2rem 0;
+    color: #f8fafc;
+    font-size: 1.05rem;
+  }
+
+  .proof-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: 0.08em;
+  }
+
+  .is-highlight-contradiction {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+  }
+
+  .math-step-tag.red {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+  }
+
+  .alert-expr {
+    color: #fca5a5 !important;
+    font-size: 1.1rem;
+  }
+
+  .contradiction-text {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.88rem;
+    color: #fca5a5;
+  }
+
+  .math-step-subnote {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.3rem;
+  }
+
+  /* 4. Laboratorio Interactivo */
+  .lab-container {
+    background: #0d1527;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fbbf24;
+    box-shadow: 0 0 10px #fbbf24;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #fbbf24;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .preset-btn:hover {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  .preset-btn.is-active {
+    background: rgba(251, 191, 36, 0.18);
+    color: #fbbf24;
+    border-color: #fbbf24;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 1.4rem;
+  }
+
+  @media (max-width: 990px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lab-visual-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .graph-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .graph-tag {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .graph-tag.gold {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+  }
+
+  .graph-metric {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e2e8f0;
+  }
+
+  .svg-stage-wrapper {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .tennenbaum-caption {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: 0.6rem;
+    line-height: 1.45;
+  }
+
+  .lab-controls-panel {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+  }
+
+  .control-val-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #fbbf24;
+    cursor: pointer;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .telemetry-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: span 2;
+  }
+
+  .t-cell.primary-pell-cell {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .t-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val.gold { color: #fbbf24; }
+  .t-val.cyan { color: #38bdf8; }
+  .t-val.big-val { font-size: 1.55rem; color: #fbbf24; }
+  .t-val.small { font-size: 0.86rem; color: #34d399; }
+
+  .t-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .convergence-meter {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin: 0.4rem 0;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: width 0.15s ease;
+  }
+
+  .meter-caption {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    line-height: 1.35;
+  }
+
+  /* 5. Generalización Primos */
+  .prime-gen-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .gen-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.8rem;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .prime-gen-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .gen-theorem-box {
+    margin-top: 1.4rem;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid #38bdf8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .gen-theorem-box strong {
+    color: #38bdf8;
+  }
+
+  /* 6. Pecados y Trampas */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 850px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .sin-pill {
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .sin-card h4 {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #f8fafc;
+    line-height: 1.4;
+  }
+
+  .sin-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #6ee7b7;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  /* 7. Autoevaluación Conceptual */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .q-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: 0.08em;
+  }
+
+  .q-header h4 {
+    margin: 0.4rem 0 1.2rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    color: #cbd5e1;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-right {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .q-feedback.hidden {
+    display: none;
+  }
+
+  .q-feedback.success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .q-feedback.failure {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     ADAPTACIÓN AL MODO CLARO (THEME = LIGHT)
+     ========================================================================= */
+  :global([data-theme="light"]) .pythagoras-card,
+  :global([data-theme="light"]) .canonical-theorem-card.euclid-card,
+  :global([data-theme="light"]) .lab-container {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .pythagoras-card {
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  :global([data-theme="light"]) .antiferesis-box,
+  :global([data-theme="light"]) .lemma-card,
+  :global([data-theme="light"]) .coprime-box,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-controls-panel,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .prime-gen-card,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card,
+  :global([data-theme="light"]) .formal-proof-wrapper {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .pyth-col h4,
+  :global([data-theme="light"]) .lemma-header h4,
+  :global([data-theme="light"]) .coprime-box h4,
+  :global([data-theme="light"]) .prime-gen-card h4,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4,
+  :global([data-theme="light"]) .proof-card-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .pyth-col p,
+  :global([data-theme="light"]) .pyth-footer,
+  :global([data-theme="light"]) .antiferesis-desc,
+  :global([data-theme="light"]) .lemma-proof,
+  :global([data-theme="light"]) .coprime-box p,
+  :global([data-theme="light"]) .canon-statement p,
+  :global([data-theme="light"]) .tennenbaum-caption,
+  :global([data-theme="light"]) .prime-gen-card p,
+  :global([data-theme="light"]) .gen-theorem-box p,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .coprime-rule,
+  :global([data-theme="light"]) .gen-theorem-box,
+  :global([data-theme="light"]) .svg-stage-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .proof-label,
+  :global([data-theme="light"]) .t-sub,
+  :global([data-theme="light"]) .meter-caption {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .t-val.gold { color: #d97706; }
+  :global([data-theme="light"]) .t-val.big-val { color: #d97706; }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #fffbeb;
+    border-color: #fbbf24;
+    color: #d97706;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>

@@ -1,0 +1,1755 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-05')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-04');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-06');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL POEMA MATEMÁTICO SUPREMO -->
+  <section class="lesson-section" id="poema-euler">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Poema Matemático Supremo: Cinco Constantes en un Solo Aliento</h2>
+
+    <p class="lead-paragraph">
+      En 1988, la revista científica <em>The Mathematical Intelligencer</em> organizó una votación mundial entre matemáticos para elegir <strong>el teorema más bello de toda la historia humana</strong>. La fórmula ganadora por abrumadora mayoría fue la célebre ecuación legada por <strong>Leonhard Euler</strong> en su obra maestra <em>Introductio in analysin infinitorum</em> (1748):
+    </p>
+
+    <!-- Caja de la Identidad en Grande -->
+    <div class="euler-monument-card">
+      <div class="monument-badge">LA FÓRMULA MÁS BELLA DEL MUNDO</div>
+      <div class="math-display-eq euler-giant-eq">
+        e<sup>iπ</sup> + 1 = 0
+      </div>
+      <p class="monument-desc">
+        El físico Richard Feynman la definió como <em>«la fórmula más notable y casi mágica de todas las matemáticas»</em>. El matemático Benjamin Peirce afirmó en la Universidad de Harvard: <em>«Caballeros, es absolutamente paradójica; no podemos entenderla y no sabemos qué significa, pero la hemos demostrado y por tanto sabemos que debe ser una verdad eterna»</em>.
+      </p>
+    </div>
+
+    <!-- Las 5 Constantes Fundamentales -->
+    <div class="five-constants-grid">
+      <div class="const-card">
+        <span class="const-glyph gold">e</span>
+        <h5>La Base Neperiana</h5>
+        <span class="const-val">≈ 2.71828...</span>
+        <p>El motor del <strong>análisis infinitesimal</strong>, el cálculo diferencial y el crecimiento orgánico continuo.</p>
+      </div>
+
+      <div class="const-card">
+        <span class="const-glyph cyan">i</span>
+        <h5>La Unidad Imaginaria</h5>
+        <span class="const-val">√-1</span>
+        <p>El pilar del <strong>álgebra compleja</strong> y las rotaciones perpendiculares en dos dimensiones.</p>
+      </div>
+
+      <div class="const-card">
+        <span class="const-glyph purple">π</span>
+        <h5>El Número Pi</h5>
+        <span class="const-val">≈ 3.14159...</span>
+        <p>El corazón de la <strong>geometría euclidiana</strong>, el círculo y las oscilaciones periódicas del cosmos.</p>
+      </div>
+
+      <div class="const-card">
+        <span class="const-glyph emerald">1</span>
+        <h5>La Unidad Aritmética</h5>
+        <span class="const-val">1</span>
+        <p>El elemento neutro multiplicativo y el generador de todos los números naturales.</p>
+      </div>
+
+      <div class="const-card">
+        <span class="const-glyph slate">0</span>
+        <h5>El Neutro Aditivo</h5>
+        <span class="const-val">0</span>
+        <p>El origen del sistema de coordenadas y la frontera absoluta entre lo positivo y lo negativo.</p>
+      </div>
+    </div>
+
+    <p class="post-constants-desc">
+      Las ramas más distantes del conocimiento humano —la geometría del círculo, el cálculo exponencial del crecimiento, el álgebra abstracta de los imaginarios y la aritmética elemental del cero y el uno— se funden mediante tres operaciones sagradas: <strong>una multiplicación, una exponenciación y una suma</strong>.
+    </p>
+  </section>
+
+  <!-- SECCIÓN 2: LA FÓRMULA GENERAL DE EULER -->
+  <section class="lesson-section" id="formula-general">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Fórmula General de Euler: El Puente entre Exponenciales y Trigonometría</h2>
+
+    <p class="lead-paragraph">
+      La identidad <code class="inline-code">e<sup>iπ</sup> + 1 = 0</code> no es una coincidencia aislada; es simplemente el caso particular más sonoro de una ley mucho más vasta: la <strong>Fórmula de Euler para cualquier ángulo real θ</strong> medido en radianes:
+    </p>
+
+    <div class="theorem-statement-card">
+      <div class="card-tag">FÓRMULA GENERAL DE EULER (1748)</div>
+      <h4>La Relación Fundamental del Plano Complejo</h4>
+      <div class="math-display-eq gold-box">
+        e<sup>iθ</sup> = cos(θ) + i · sin(θ)
+      </div>
+      <p class="statement-desc">
+        Para cualquier número real <code class="inline-code">θ ∈ ℝ</code>, la función exponencial con argumento imaginario puro traza exactamente la circunferencia goniométrica unitaria en el plano complejo.
+      </p>
+    </div>
+
+    <!-- Deducción del Caso Particular θ = π -->
+    <div class="special-case-card">
+      <div class="special-badge">DEDUCCIÓN INMEDIATA DEL CASO PARTICULAR</div>
+      <h4>Sustitución en el Ángulo Llano: θ = π radianes (180°)</h4>
+      <p>
+        Evaluamos las funciones trigonométricas directas en el punto de media vuelta de la circunferencia:
+      </p>
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">1</span>
+          <div class="math-step-content">
+            <div class="math-step-expr">e<sup>iπ</sup> = cos(π) + i · sin(π)</div>
+          </div>
+        </div>
+        <div class="math-step-line">
+          <span class="math-step-tag">2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sabemos por la trigonometría del círculo unitario que <code class="inline-code">cos(π) = -1</code> y <code class="inline-code">sin(π) = 0</code>:</span>
+            <div class="math-step-expr">e<sup>iπ</sup> = (-1) + i · (0) = -1</div>
+          </div>
+        </div>
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">IDENTIDAD</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sumamos 1 en ambos miembros de la igualdad:</span>
+            <div class="math-step-expr">e<sup>iπ</sup> + 1 = 0 &emsp; <span class="math-qed">■ Q.E.D.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LA DEMOSTRACIÓN CANÓNICA POR SERIES DE TAYLOR -->
+  <section class="lesson-section" id="demostracion-taylor">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Demostración Canónica mediante Series Infinitas de Taylor</h2>
+
+    <p class="lead-paragraph">
+      ¿Cómo demostró Euler esta conexión milagrosa? A través de la herramienta más formidable del cálculo en el siglo XVIII: <strong>las series infinitas de potencias de Maclaurin-Taylor</strong>.
+    </p>
+
+    <!-- Tarjeta de las Series de Potencias -->
+    <div class="taylor-proof-card">
+      <div class="taylor-header">
+        <span class="proof-tag">DESARROLLOS EN SERIE ALREDEDOR DE CERO</span>
+        <h4>Los Tres Desarrollos Clásicos</h4>
+      </div>
+
+      <div class="series-definitions-grid">
+        <div class="series-col">
+          <span class="series-name gold">EXPONENCIAL e<sup>x</sup></span>
+          <div class="math-display-eq series-box">
+            e<sup>x</sup> = 1 + x + <span class="math-frac"><span class="num">x²</span><span class="den">2!</span></span> + <span class="math-frac"><span class="num">x³</span><span class="den">3!</span></span> + <span class="math-frac"><span class="num">x⁴</span><span class="den">4!</span></span> + <span class="math-frac"><span class="num">x⁵</span><span class="den">5!</span></span> + &hellip;
+          </div>
+        </div>
+        <div class="series-col">
+          <span class="series-name cyan">COSENO cos(x) (PAR)</span>
+          <div class="math-display-eq series-box">
+            cos(x) = 1 - <span class="math-frac"><span class="num">x²</span><span class="den">2!</span></span> + <span class="math-frac"><span class="num">x⁴</span><span class="den">4!</span></span> - <span class="math-frac"><span class="num">x⁶</span><span class="den">6!</span></span> + &hellip;
+          </div>
+        </div>
+        <div class="series-col">
+          <span class="series-name purple">SENO sin(x) (IMPAR)</span>
+          <div class="math-display-eq series-box">
+            sin(x) = x - <span class="math-frac"><span class="num">x³</span><span class="den">3!</span></span> + <span class="math-frac"><span class="num">x⁵</span><span class="den">5!</span></span> - <span class="math-frac"><span class="num">x⁷</span><span class="den">7!</span></span> + &hellip;
+          </div>
+        </div>
+      </div>
+
+      <!-- El Salto Genial de Euler: x = iθ -->
+      <div class="math-derivation-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>La audacia de Euler:</strong> Sustituimos formalmente la variable real <code class="inline-code">x</code> por el imaginario puro <code class="inline-code">iθ</code> en la serie de la exponencial:</span>
+            <div class="math-step-expr">
+              e<sup>iθ</sup> = 1 + (iθ) + <span class="math-frac"><span class="num">(iθ)²</span><span class="den">2!</span></span> + <span class="math-frac"><span class="num">(iθ)³</span><span class="den">3!</span></span> + <span class="math-frac"><span class="num">(iθ)⁴</span><span class="den">4!</span></span> + <span class="math-frac"><span class="num">(iθ)⁵</span><span class="den">5!</span></span> + <span class="math-frac"><span class="num">(iθ)⁶</span><span class="den">6!</span></span> + &hellip;
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>El Ciclo de Potencias de la Unidad Imaginaria:</strong> Calculamos las potencias sucesivas de <code class="inline-code">i</code>, las cuales siguen un ciclo exacto de cuatro pasos:</span>
+            <div class="math-step-expr">
+              i¹ = i, &emsp; i² = -1, &emsp; i³ = -i, &emsp; i⁴ = +1, &emsp; i⁵ = i, &emsp; i⁶ = -1 &hellip;
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 3</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>Sustitución de los signos según las potencias de i:</strong></span>
+            <div class="math-step-expr">
+              e<sup>iθ</sup> = 1 + iθ - <span class="math-frac"><span class="num">θ²</span><span class="den">2!</span></span> - i<span class="math-frac"><span class="num">θ³</span><span class="den">3!</span></span> + <span class="math-frac"><span class="num">θ⁴</span><span class="den">4!</span></span> + i<span class="math-frac"><span class="num">θ⁵</span><span class="den">5!</span></span> - <span class="math-frac"><span class="num">θ⁶</span><span class="den">6!</span></span> - i<span class="math-frac"><span class="num">θ⁷</span><span class="den">7!</span></span> + &hellip;
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 4</span>
+          <div class="math-step-content">
+            <span class="math-step-expl"><strong>Reorganización en Parte Real y Parte Imaginaria:</strong> Agrupamos los términos que no contienen <code class="inline-code">i</code> (potencias pares) y factorizamos <code class="inline-code">i</code> en los términos con potencias impares:</span>
+            <div class="math-step-expr">
+              e<sup>iθ</sup> = [ 1 - <span class="math-frac"><span class="num">θ²</span><span class="den">2!</span></span> + <span class="math-frac"><span class="num">θ⁴</span><span class="den">4!</span></span> - <span class="math-frac"><span class="num">θ⁶</span><span class="den">6!</span></span> + &hellip; ] + i · [ θ - <span class="math-frac"><span class="num">θ³</span><span class="den">3!</span></span> + <span class="math-frac"><span class="num">θ⁵</span><span class="den">5!</span></span> - <span class="math-frac"><span class="num">θ⁷</span><span class="den">7!</span></span> + &hellip; ]
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">IDENTIFICACIÓN</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">¡El primer corchete es idéntico a la serie del coseno y el segundo es la serie del seno!</span>
+            <div class="math-step-expr">
+              e<sup>iθ</sup> = cos(θ) + i · sin(θ) &emsp; <span class="math-qed">■ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: DEMOSTRACIÓN POR ECUACIONES DIFERENCIALES -->
+  <section class="lesson-section" id="demostracion-edo">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Demostración Alternativa por Ecuaciones Diferenciales y Unicidad</h2>
+
+    <p class="lead-paragraph">
+      Para evitar la manipulación de infinitos sumandos y cuestiones de radio de convergencia, existe una segunda demostración deslumbrante mediante el <strong>Teorema de Existencia y Unicidad de Ecuaciones Diferenciales Ordinarias</strong>:
+    </p>
+
+    <div class="edo-proof-card">
+      <div class="edo-header">
+        <span class="edo-badge">MÉTODO DEL COCIENTE DIFERENCIAL</span>
+        <h4>Definición de la Función Auxiliar</h4>
+      </div>
+
+      <p>
+        Consideremos la función de variable real <code class="inline-code">g(θ) = [cos(θ) + i · sin(θ)] · e<sup>-iθ</sup></code>. Vamos a calcular su derivada respecto a <code class="inline-code">θ</code> aplicando la regla del producto:
+      </p>
+
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">DERIV</span>
+          <div class="math-step-content">
+            <div class="math-step-expr">g'(θ) = [-sin(θ) + i · cos(θ)] · e<sup>-iθ</sup> + [cos(θ) + i · sin(θ)] · (-i · e<sup>-iθ</sup>)</div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">FACTOR</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Factorizamos <code class="inline-code">i</code> en el primer corchete recordando que <code class="inline-code">-sin(θ) = i² · sin(θ)</code>:</span>
+            <div class="math-step-expr">[-sin(θ) + i · cos(θ)] = i · [cos(θ) + i · sin(θ)]</div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">ANULA</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sustituyendo y agrupando términos:</span>
+            <div class="math-step-expr">g'(θ) = i · [cos(θ) + i · sin(θ)] · e<sup>-iθ</sup> - i · [cos(θ) + i · sin(θ)] · e<sup>-iθ</sup> = 0</div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">CONST</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Como su derivada es idénticamente cero en todo ℝ, la función <code class="inline-code">g(θ)</code> es constante. Evaluamos en <code class="inline-code">θ = 0</code>:</span>
+            <div class="math-step-expr">g(0) = [cos(0) + i·sin(0)] · e⁰ = [1 + 0] · 1 = 1 ⟹ g(θ) = 1 &emsp; (∀ θ ∈ ℝ)</div>
+            <div class="math-step-expr gold">Multiplicando por e<sup>iθ</sup>: cos(θ) + i·sin(θ) = e<sup>iθ</sup> &emsp; ■</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-fasor">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: El Fasor de Euler y la Rotación en el Plano Complejo</h2>
+
+    <p class="lead-paragraph">
+      Visualiza en tiempo real cómo multiplicar por <code class="inline-code">e<sup>iθ</sup></code> actúa como un <strong>operador puro de rotación</strong>: no altera la longitud del vector, simplemente gira el fasor a lo largo de la circunferencia unitaria:
+    </p>
+
+    <!-- Contenedor del Simulador -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR DEL FASOR COMPLEJO TRIGONOMÉTRICO DE EULER</span>
+      </div>
+
+      <!-- Presets de Ángulos Notables -->
+      <div class="lab-preset-bar">
+        <span class="preset-label">ÁNGULOS CARDINALES θ:</span>
+        <button type="button" class="preset-btn" data-angle="0">θ = 0 (e⁰ = 1)</button>
+        <button type="button" class="preset-btn" data-angle="0.785398">θ = π/4 (45°)</button>
+        <button type="button" class="preset-btn" data-angle="1.570796">θ = π/2 (e<sup>iπ/2</sup> = i)</button>
+        <button type="button" class="preset-btn is-active" data-angle="3.141593">θ = π (e<sup>iπ</sup> = -1)</button>
+        <button type="button" class="preset-btn" data-angle="4.712389">θ = 3π/2 (e<sup>i3π/2</sup> = -i)</button>
+        <button type="button" class="preset-btn" data-angle="6.283185">θ = 2π (e<sup>i2π</sup> = 1)</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Panel Izquierdo: SVG del Plano Complejo -->
+        <div class="lab-visual-panels">
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag gold">PLANO COMPLEJO GAUSSIANO</span>
+              <span class="graph-metric" id="lab-euler-status">¡IDENTIDAD DE EULER ALCANZADA!</span>
+            </div>
+
+            <div class="svg-stage-wrapper">
+              <svg id="svg-euler" viewBox="0 0 540 320" class="lab-svg" aria-label="Visualización interactiva del fasor de Euler en plano complejo">
+                <!-- Se inyecta dinámicamente con JavaScript -->
+              </svg>
+            </div>
+
+            <!-- Control Deslizador del Ángulo θ -->
+            <div class="lab-controls-panel">
+              <div class="control-group">
+                <div class="control-label-row">
+                  <label for="slider-angle-theta">Ángulo de rotación θ (radianes):</label>
+                  <span class="control-val-display" id="disp-angle-theta">3.14 rad (π)</span>
+                </div>
+                <input type="range" id="slider-angle-theta" min="0" max="6.283185" step="0.01" value="3.141593" class="lab-range-input" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Telemetría de Componentes -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>COMPONENTES DEL FASOR</h5>
+            <span class="telemetry-badge" id="tele-status">θ = π (180°)</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">PARTE REAL: cos(θ)</span>
+              <span class="t-val gold" id="tele-val-cos">-1.0000</span>
+              <span class="t-sub">Eje horizontal Re</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">PARTE IMAGINARIA: sin(θ)</span>
+              <span class="t-val cyan" id="tele-val-sin">0.0000</span>
+              <span class="t-sub">Eje vertical Im</span>
+            </div>
+
+            <div class="t-cell full-width primary-euler-cell">
+              <span class="t-label">VALOR DE e<sup>iθ</sup></span>
+              <span class="t-val big-val" id="tele-val-phasor">-1.000 + 0.000 i</span>
+              <span class="t-sub" id="tele-sub-phasor">e<sup>iπ</sup> = -1 ⟹ e<sup>iπ</sup> + 1 = 0</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <div class="t-flex-row">
+                <span class="t-label">MÓDULO DEL VECTOR |e<sup>iθ</sup>|</span>
+                <span class="t-val small" id="tele-val-mod">|z| = 1.0000 (INVARIANTE)</span>
+              </div>
+              <div class="euler-meter-bar">
+                <div class="meter-fill" id="euler-meter-fill" style="width: 100%; background: #10b981;"></div>
+              </div>
+              <span class="meter-caption" id="tele-caption">
+                El módulo de e<sup>iθ</sup> es estrictamente 1 para cualquier ángulo: la energía se conserva, solo cambia la fase de rotación.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: LA MAGIA DE ELEVAR COMPLEJOS (i^i ES REAL) -->
+  <section class="lesson-section" id="magia-compleja">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. La Magia de las Potencias Complejas: ¿Cuánto Vale i<sup>i</sup>?</h2>
+
+    <p class="lead-paragraph">
+      La fórmula de Euler abre la puerta a paradojas y prodigios del análisis complejo que desconciertan a primera vista. La más asombrosa de todas es elevar la unidad imaginaria a sí misma:
+    </p>
+
+    <div class="magic-power-card">
+      <div class="magic-header">
+        <span class="magic-badge">EL MISTERIO DE i ELEVADO A i</span>
+        <h4>¿Es i<sup>i</sup> un número imaginario?</h4>
+      </div>
+
+      <p>
+        Cualquiera esperaría que un número imaginario elevado a otro número imaginario diera un resultado aún más abstracto o multidimensional. Apliquemos con rigor la fórmula de Euler:
+      </p>
+
+      <div class="math-derivation-chain compact-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Escribimos la base <code class="inline-code">i</code> en su forma polar exponencial usando <code class="inline-code">θ = π/2</code> (rotación de 90°):</span>
+            <div class="math-step-expr">i = cos(π/2) + i·sin(π/2) = e<sup>iπ/2</sup></div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Elevamos ambos miembros al exponente <code class="inline-code">i</code> y aplicamos la propiedad de potencia de una potencia:</span>
+            <div class="math-step-expr">i<sup>i</sup> = (e<sup>iπ/2</sup>)<sup>i</sup> = e<sup>i · i · (π/2)</sup> = e<sup>i² · (π/2)</sup></div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight-qed">
+          <span class="math-step-tag gold">PRODIGIO</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Como <code class="inline-code">i² = -1</code>, ¡la unidad imaginaria desaparece por completo!:</span>
+            <div class="math-step-expr">
+              i<sup>i</sup> = e<sup>-π/2</sup> = <span class="math-frac"><span class="num">1</span><span class="den">e<sup>π/2</sup></span></span> ≈ 0.20787957635&hellip; &emsp; <span class="math-qed">(¡NÚMERO PURAMENTE REAL!)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="magic-caption">
+        ¡Un número imaginario puro elevado a una potencia imaginaria pura produce un <strong>número real estricto</strong>! Es una consecuencia directa e indiscutible de la fórmula de Euler.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS Y MALENTENDIDOS HABITUALES -->
+  <section class="lesson-section" id="trampas-euler">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Trampas y Malentendidos Habituales</h2>
+
+    <p class="lead-paragraph">
+      Evita estos 4 errores clásicos de interpretación para dominar la trigonometría exponencial con absoluta precisión:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 01</div>
+        <h4>Medir el ángulo θ en grados sexagesimales</h4>
+        <p>
+          Intentar calcular la serie de Taylor sustituyendo el ángulo en grados (ej. <code class="inline-code">θ = 180</code> en vez de <code class="inline-code">θ = π</code>).
+        </p>
+        <div class="sin-bad">
+          ✕ «e<sup>i·180</sup> = -1».
+        </div>
+        <div class="sin-good">
+          ✓ «Las series de potencias de eˣ, sin(x) y cos(x) se obtienen derivando funciones trigonométricas con derivada (sin x)' = cos x, lo cual EXIGE rigurosamente que x esté medido en radianes».
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 02</div>
+        <h4>Olvidar la periodicidad del logaritmo complejo</h4>
+        <p>
+          Creer que <code class="inline-code">ln(-1)</code> tiene un único valor numérico en el análisis complejo.
+        </p>
+        <div class="sin-bad">
+          ✕ «ln(-1) = iπ y nada más».
+        </div>
+        <div class="sin-good">
+          ✓ «Como e<sup>i(π + 2kπ)</sup> = -1 para cualquier k ∈ ℤ, la función logaritmo complejo es multivaluada: ln(-1) = iπ + 2kπi. El valor iπ es únicamente la Rama Principal (k = 0)».
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 03</div>
+        <h4>Asumir que e<sup>iθ</sup> altera la magnitud del vector</h4>
+        <p>
+          Pensar que al multiplicar un número complejo por <code class="inline-code">e<sup>iθ</sup></code> el número se hace más grande o más pequeño.
+        </p>
+        <div class="sin-bad">
+          ✕ «Multiplicar por e<sup>iπ/2</sup> estira el número complejo».
+        </div>
+        <div class="sin-good">
+          ✓ «|e<sup>iθ</sup>| = √(cos²θ + sin²θ) = 1 siempre. Multiplicar por e<sup>iθ</sup> es una ISOMETRÍA: una rotación rígida en el plano que conserva distancias y áreas».
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR 04</div>
+        <h4>Confundir la identidad de Euler con una simple convención</h4>
+        <p>
+          Afirmar que los matemáticos simplemente «decidieron inventar» que <code class="inline-code">e<sup>iπ</sup> = -1</code> por comodidad.
+        </p>
+        <div class="sin-bad">
+          ✕ «e<sup>iπ</sup> = -1 es una definición acordada por convenio».
+        </div>
+        <div class="sin-good">
+          ✓ «Es un teorema matemático deducido de las propiedades inmutables del cálculo diferencial, las series de potencias y la estructura del plano euclidiano».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Resuelve estas 4 cuestiones rigurosas para afianzar el dominio de la identidad más célebre de las matemáticas:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>¿Por qué las series de potencias de eˣ, cos(x) y sin(x) encajan tan milagrosamente al sustituir x = iθ?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque Euler alteró los coeficientes de las derivadas para forzar la igualdad.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque las potencias pares de i generan la alternancia de signos (+1, -1) idéntica a cos(θ), y las impares factorizan i reproduciendo la serie de sin(θ).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Solo encajan si el ángulo θ es menor que 1 radián.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Porque el Teorema Fundamental del Álgebra obliga a que toda serie sea convergente a cero.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>¿Cuál es el significado geométrico exacto de multiplicar un número complejo z por el factor e<sup>iπ/2</sup>?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Multiplicar su módulo por π y dejar su dirección inalterada.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Rotar el vector exactamente 90° en sentido antihorario manteniendo constante su longitud (ya que e<sup>iπ/2</sup> = i).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Invertir su parte real y anular su parte imaginaria.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Trasladar el punto z una distancia de 1.57 unidades hacia la derecha.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>¿Por qué el resultado de i<sup>i</sup> es un número estrictamente real (≈ 0.20788)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque se redondea al entero más próximo para evitar indeterminaciones.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque al escribir i = e<sup>iπ/2</sup> y elevarlo a i, el producto de exponentes es i · i = i² = -1, quedando e<sup>-π/2</sup>, que carece de parte imaginaria.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Es un error de la calculadora; en matemáticas puras no se pueden elevar números imaginarios.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Porque la constante π cancela a la unidad imaginaria en el denominador.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Qué ocurre si derivamos la función f(θ) = cos(θ) + i·sin(θ) respecto a θ?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">La derivada es siempre 0 porque la longitud del vector es constante.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Se obtiene exactamente i · f(θ), demostrando que satisface la ecuación diferencial característica de la función exponencial e<sup>iθ</sup>.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">La derivada diverge en todos los múltiplos impares de π.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">D</span>
+            <span class="opt-text">Da como resultado la función tangente compleja.</span>
+          </button>
+        </div>
+        <div class="q-feedback" style="display: none;"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // LABORATORIO INTERACTIVO: EL FASOR DINÁMICO DE EULER
+  // =========================================================================
+
+  let curTheta = Math.PI; // Iniciar en pi
+
+  const sliderTheta = document.getElementById('slider-angle-theta') as HTMLInputElement | null;
+  const dispTheta = document.getElementById('disp-angle-theta');
+  const svgEl = document.getElementById('svg-euler') as SVGSVGElement | null;
+
+  const eulerStatus = document.getElementById('lab-euler-status');
+  const teleStatus = document.getElementById('tele-status');
+  const teleValCos = document.getElementById('tele-val-cos');
+  const teleValSin = document.getElementById('tele-val-sin');
+  const teleValPhasor = document.getElementById('tele-val-phasor');
+  const teleSubPhasor = document.getElementById('tele-sub-phasor');
+
+  function updateEulerLab() {
+    const theta = curTheta;
+    const cosVal = Math.cos(theta);
+    const sinVal = Math.sin(theta);
+
+    const deg = Math.round((theta * 180) / Math.PI);
+
+    if (dispTheta) {
+      if (Math.abs(theta - Math.PI) < 0.03) {
+        dispTheta.textContent = `3.14 rad (θ = π)`;
+      } else if (Math.abs(theta - Math.PI / 2) < 0.03) {
+        dispTheta.textContent = `1.57 rad (θ = π/2)`;
+      } else if (Math.abs(theta - 2 * Math.PI) < 0.03) {
+        dispTheta.textContent = `6.28 rad (θ = 2π)`;
+      } else {
+        dispTheta.textContent = `${theta.toFixed(2)} rad (${deg}°)`;
+      }
+    }
+
+    if (teleStatus) teleStatus.textContent = `θ = ${deg}° (${(theta / Math.PI).toFixed(2)}π)`;
+
+    if (teleValCos) teleValCos.textContent = cosVal.toFixed(4);
+    if (teleValSin) teleValSin.textContent = sinVal.toFixed(4);
+
+    const signIm = sinVal >= 0 ? '+' : '-';
+    const absIm = Math.abs(sinVal).toFixed(4);
+    if (teleValPhasor) {
+      teleValPhasor.textContent = `${cosVal.toFixed(4)} ${signIm} ${absIm} i`;
+    }
+
+    const isEulerIdentity = Math.abs(theta - Math.PI) < 0.05;
+
+    if (eulerStatus) {
+      if (isEulerIdentity) {
+        eulerStatus.textContent = '¡IDENTIDAD DE EULER: e^(iπ) + 1 = 0!';
+        eulerStatus.className = 'graph-metric is-euler';
+      } else {
+        eulerStatus.textContent = `e^(iθ) = cos(θ) + i·sin(θ)`;
+        eulerStatus.className = 'graph-metric';
+      }
+    }
+
+    if (teleSubPhasor) {
+      if (isEulerIdentity) {
+        teleSubPhasor.innerHTML = '<strong>e<sup>iπ</sup> = -1 ⟹ e<sup>iπ</sup> + 1 = 0</strong> (¡Identidad Cumbre!)';
+      } else {
+        teleSubPhasor.innerHTML = `Fasor unitario girado ${deg}° en sentido antihorario.`;
+      }
+    }
+
+    renderEulerSVG(theta, cosVal, sinVal, isEulerIdentity);
+  }
+
+  function renderEulerSVG(theta: number, cosVal: number, sinVal: number, isIdentity: boolean) {
+    if (!svgEl) return;
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const W = 540;
+    const H = 320;
+    const cx = W / 2;
+    const cy = H / 2;
+    const R = 110; // Radio del círculo unitario en píxeles
+
+    const axisColor = isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)';
+    const circleColor = isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)';
+    const textColor = isLight ? '#475569' : '#94a3b8';
+
+    // Extremo del fasor:
+    // x va hacia la derecha, y va hacia arriba (en pantalla hacia abajo: cy - sinVal * R)
+    const px = cx + cosVal * R;
+    const py = cy - sinVal * R;
+
+    // Arco de barrido del ángulo theta
+    const arcRadius = 32;
+    const largeArc = theta > Math.PI ? 1 : 0;
+    const arcEndX = cx + arcRadius * Math.cos(theta);
+    const arcEndY = cy - arcRadius * Math.sin(theta);
+    const arcPath = `M ${cx + arcRadius} ${cy} A ${arcRadius} ${arcRadius} 0 ${largeArc} 0 ${arcEndX} ${arcEndY}`;
+
+    svgEl.innerHTML = `
+      <!-- Ejes Re e Im -->
+      <line x1="40" y1="${cy}" x2="${W - 40}" y2="${cy}" stroke="${axisColor}" stroke-width="1.5" />
+      <line x1="${cx}" y1="30" x2="${cx}" y2="${H - 30}" stroke="${axisColor}" stroke-width="1.5" />
+      <text x="${W - 35}" y="${cy - 8}" fill="${textColor}" font-size="11" font-family="'JetBrains Mono', monospace">Re</text>
+      <text x="${cx + 8}" y="42" fill="${textColor}" font-size="11" font-family="'JetBrains Mono', monospace">Im</text>
+
+      <!-- Círculo unitario |z| = 1 -->
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${circleColor}" stroke-width="1.5" stroke-dasharray="4 3" />
+      <text x="${cx + R + 6}" y="${cy + 16}" fill="${textColor}" font-size="10" font-family="monospace">+1</text>
+      <text x="${cx - R - 20}" y="${cy + 16}" fill="${isIdentity ? '#fbbf24' : textColor}" font-size="${isIdentity ? '12' : '10'}" font-weight="${isIdentity ? 'bold' : 'normal'}" font-family="monospace">-1</text>
+      <text x="${cx + 8}" y="${cy - R + 4}" fill="${textColor}" font-size="10" font-family="monospace">+i</text>
+      <text x="${cx + 8}" y="${cy + R + 14}" fill="${textColor}" font-size="10" font-family="monospace">-i</text>
+
+      <!-- Triángulo rectángulo auxiliar de descomposición -->
+      <!-- Cateto real horizontal (oro) -->
+      <line x1="${cx}" y1="${cy}" x2="${px}" y2="${cy}" stroke="#fbbf24" stroke-width="2.5" />
+      <!-- Cateto imaginario vertical (cian) -->
+      <line x1="${px}" y1="${cy}" x2="${px}" y2="${py}" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="3 2" />
+
+      <!-- Arco de ángulo θ -->
+      <path d="${arcPath}" fill="none" stroke="#fbbf24" stroke-width="2" />
+      <text x="${cx + 40}" y="${cy - 12}" fill="#fbbf24" font-size="11" font-weight="bold" font-family="monospace">θ</text>
+
+      <!-- Fasor vector complejo e^(iθ) desde el origen hasta (px, py) -->
+      <line x1="${cx}" y1="${cy}" x2="${px}" y2="${py}" stroke="${isIdentity ? '#10b981' : '#f8fafc'}" stroke-width="${isIdentity ? '3.5' : '2.5'}" />
+      
+      <!-- Punto en la punta del vector -->
+      <circle cx="${px}" cy="${py}" r="${isIdentity ? '7' : '5'}" fill="${isIdentity ? '#10b981' : '#38bdf8'}" stroke="#f8fafc" stroke-width="2" />
+
+      <!-- Etiqueta del fasor rotando -->
+      <text x="${px + (cosVal >= 0 ? 10 : -75)}" y="${py + (sinVal >= 0 ? -10 : 18)}" fill="${isIdentity ? '#10b981' : '#f8fafc'}" font-size="12" font-weight="bold" font-family="'JetBrains Mono', monospace">
+        e<sup>iθ</sup>
+      </text>
+    `;
+  }
+
+  // Slider de ángulo
+  if (sliderTheta) {
+    sliderTheta.addEventListener('input', (e) => {
+      curTheta = parseFloat((e.target as HTMLInputElement).value);
+      updateEulerLab();
+    });
+  }
+
+  // Presets
+  const presetBtns = document.querySelectorAll('.lab-preset-bar .preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      const ang = parseFloat(btn.getAttribute('data-angle') || '3.141593');
+      curTheta = ang;
+      if (sliderTheta) sliderTheta.value = String(ang);
+      updateEulerLab();
+    });
+  });
+
+  // Inicializar simulación
+  updateEulerLab();
+
+  // Observador de cambio de tema claro / oscuro
+  const themeObserver = new MutationObserver(() => {
+    updateEulerLab();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // =========================================================================
+  // SISTEMA INTERACTIVO DE AUTOEVALUACIÓN (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll('.quiz-card');
+  quizCards.forEach((card) => {
+    const buttons = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const feedback = card.querySelector<HTMLDivElement>('.q-feedback');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => {
+          b.disabled = true;
+          if (b.getAttribute('data-correct') === 'true') {
+            b.classList.add('is-correct');
+          }
+        });
+
+        const isCorrect = btn.getAttribute('data-correct') === 'true';
+        if (!isCorrect) {
+          btn.classList.add('is-wrong');
+        }
+
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.className = `q-feedback ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}`;
+          feedback.innerHTML = isCorrect
+            ? '<strong>✓ ¡Correcto!</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1')
+            : '<strong>✕ Incorrecto.</strong> ' + getQuizExplanation(card.getAttribute('data-q') || '1');
+        }
+      });
+    });
+  });
+
+  function getQuizExplanation(qId: string): string {
+    switch (qId) {
+      case '1':
+        return 'Al calcular las potencias de i (i, -1, -i, 1), los términos pares se vuelven reales alternando signos (+1, -θ²/2!, +θ⁴/4!, ...) reproduciendo la serie de cos(θ), y los impares conservan el factor i (iθ, -iθ³/3!, ...) igualando a i·sin(θ).';
+      case '2':
+        return 'Multiplicar por e^(iπ/2) = i rota cualquier vector complejo 90° en sentido antihorario sin modificar su longitud (isometría rígida del plano complejo).';
+      case '3':
+        return 'Escribiendo la base en forma polar i = e^(iπ/2), al elevar a la potencia i multiplicamos los exponentes: i · (iπ/2) = i²·(π/2) = -π/2. El resultado es el número puramente real e^(-π/2) ≈ 0.20788.';
+      case '4':
+        return 'Derivando f(θ) = cos(θ) + i·sin(θ) se obtiene -sin(θ) + i·cos(θ) = i·(cos θ + i·sin θ) = i·f(θ). Por unicidad de ecuaciones diferenciales, f(θ) debe ser la función exponencial e^(iθ).';
+      default:
+        return '¡Excelente razonamiento!';
+    }
+  }
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: LA IDENTIDAD DE EULER (e^(iπ) + 1 = 0)
+     ========================================================================= */
+
+  /* 1. Monumento de Euler */
+  .euler-monument-card {
+    background: #0b1120;
+    border: 1.5px solid rgba(251, 191, 36, 0.35);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 1.8rem 0;
+    text-align: center;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  }
+
+  .monument-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 1rem;
+  }
+
+  .euler-giant-eq {
+    font-size: 2.2rem !important;
+    font-weight: 800;
+    color: #fbbf24 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0.6rem 0 !important;
+    padding: 0 !important;
+    text-shadow: 0 0 25px rgba(251, 191, 36, 0.35);
+  }
+
+  .monument-desc {
+    font-size: 0.94rem;
+    color: #cbd5e1;
+    line-height: 1.65;
+    max-width: 680px;
+    margin: 1rem auto 0;
+  }
+
+  /* 2. Las 5 Constantes */
+  .five-constants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.9rem;
+    margin: 1.6rem 0;
+  }
+
+  .const-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.1rem 0.9rem;
+    text-align: center;
+  }
+
+  .const-glyph {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: serif;
+    margin-bottom: 0.4rem;
+    line-height: 1;
+  }
+
+  .const-glyph.gold { color: #fbbf24; }
+  .const-glyph.cyan { color: #38bdf8; }
+  .const-glyph.purple { color: #c084fc; }
+  .const-glyph.emerald { color: #34d399; }
+  .const-glyph.slate { color: #94a3b8; }
+
+  .const-card h5 {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.85rem;
+    color: #f8fafc;
+  }
+
+  .const-val {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-family: monospace;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .const-card p {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .post-constants-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 1.2rem 0;
+  }
+
+  /* 3. Fórmula General y Especial */
+  .theorem-statement-card {
+    background: #0b1120;
+    border: 1.5px solid rgba(251, 191, 36, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    margin-bottom: 0.8rem;
+  }
+
+  .theorem-statement-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .gold-box {
+    color: #fbbf24 !important;
+    font-size: 1.3rem !important;
+    font-weight: 700;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.08);
+    border-radius: 8px;
+    padding: 0.9rem 1.4rem;
+    margin: 0.8rem 0;
+  }
+
+  .statement-desc {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .special-case-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .special-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .special-case-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .special-case-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  /* 4. Taylor Proof */
+  .taylor-proof-card {
+    background: #0b1120;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .taylor-header {
+    margin-bottom: 1.4rem;
+  }
+
+  .proof-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .taylor-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #f8fafc;
+  }
+
+  .series-definitions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .series-col {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+  }
+
+  .series-name {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+
+  .series-name.gold { color: #fbbf24; }
+  .series-name.cyan { color: #38bdf8; }
+  .series-name.purple { color: #c084fc; }
+
+  .series-box {
+    margin: 0.4rem 0 0 0 !important;
+    padding: 0.5rem 0.8rem !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 1.05rem !important;
+  }
+
+  /* EDO Proof */
+  .edo-proof-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .edo-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .edo-proof-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .edo-proof-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  /* 5. Laboratorio Interactivo */
+  .lab-container {
+    background: #0b1120;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .preset-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-right: 0.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all 0.2s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .preset-btn.is-active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .graph-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .graph-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+  }
+
+  .graph-metric {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .graph-metric.is-euler {
+    color: #10b981;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
+
+  .svg-stage-wrapper {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .lab-controls-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .control-val-display {
+    font-family: monospace;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .telemetry-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-family: monospace;
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.85rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .t-label {
+    display: block;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .t-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: #f8fafc;
+  }
+
+  .t-val.gold { color: #fbbf24; }
+  .t-val.cyan { color: #38bdf8; }
+  .t-val.big-val { font-size: 1.4rem; color: #10b981; }
+  .t-val.small { font-size: 0.82rem; }
+
+  .t-sub {
+    display: block;
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .euler-meter-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: all 0.25s ease;
+  }
+
+  .meter-caption {
+    display: block;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  /* 6. Magia de Potencias */
+  .magic-power-card {
+    background: #0f172a;
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 14px;
+    padding: 1.6rem 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .magic-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #c084fc;
+    background: rgba(192, 132, 252, 0.15);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .magic-power-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.12rem;
+    color: #f8fafc;
+  }
+
+  .magic-power-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .magic-caption {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  /* 7. Trampas (Sins) */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .sin-pill {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    margin-bottom: 0.6rem;
+  }
+
+  .sin-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+  }
+
+  .sin-card p {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #fca5a5;
+    margin-bottom: 0.6rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    color: #6ee7b7;
+    line-height: 1.45;
+  }
+
+  /* 8. Quiz */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .q-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .q-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .q-header h4 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: #38bdf8;
+    color: #f8fafc;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: #10b981 !important;
+    color: #6ee7b7 !important;
+    font-weight: 700;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .opt-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .feedback-correct {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .feedback-wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     MODO CLARO (LIGHT THEME SUPPORT)
+     ========================================================================= */
+  :global([data-theme="light"]) .euler-monument-card,
+  :global([data-theme="light"]) .const-card,
+  :global([data-theme="light"]) .theorem-statement-card,
+  :global([data-theme="light"]) .special-case-card,
+  :global([data-theme="light"]) .taylor-proof-card,
+  :global([data-theme="light"]) .series-col,
+  :global([data-theme="light"]) .edo-proof-card,
+  :global([data-theme="light"]) .magic-power-card,
+  :global([data-theme="light"]) .lab-container,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+
+  :global([data-theme="light"]) .euler-giant-eq {
+    color: #d97706 !important;
+  }
+
+  :global([data-theme="light"]) .monument-desc,
+  :global([data-theme="light"]) .post-constants-desc,
+  :global([data-theme="light"]) .statement-desc,
+  :global([data-theme="light"]) .special-case-card p,
+  :global([data-theme="light"]) .edo-proof-card p,
+  :global([data-theme="light"]) .magic-power-card p,
+  :global([data-theme="light"]) .control-label-row,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .const-card h5,
+  :global([data-theme="light"]) .theorem-statement-card h4,
+  :global([data-theme="light"]) .special-case-card h4,
+  :global([data-theme="light"]) .taylor-header h4,
+  :global([data-theme="light"]) .edo-proof-card h4,
+  :global([data-theme="light"]) .magic-power-card h4,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .svg-stage-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .t-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .t-val.gold { color: #d97706; }
+  :global([data-theme="light"]) .t-val.cyan { color: #0284c7; }
+  :global([data-theme="light"]) .t-val.big-val { color: #059669; }
+
+  :global([data-theme="light"]) .preset-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .preset-btn:hover {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .preset-btn.is-active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #38bdf8;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>
