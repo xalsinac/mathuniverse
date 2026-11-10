@@ -474,6 +474,31 @@ import { site } from '../config/site';
     background: var(--bg-raised);
   }
 
+  /* Mayor contraste entre secciones y relieve en modo oscuro */
+  :global(:root[data-theme='dark']) .about.section-band {
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 80%),
+      linear-gradient(180deg, rgba(24, 29, 42, 0.45) 0%, rgba(17, 20, 29, 0.25) 100%);
+  }
+
+  :global(:root[data-theme='dark']) .principles-section.section-band {
+    background: rgba(14, 17, 25, 0.6);
+  }
+
+  :global(:root[data-theme='dark']) .principle-cell {
+    background: rgba(24, 29, 42, 0.65);
+    backdrop-filter: blur(8px);
+  }
+
+  :global(:root[data-theme='dark']) .principle-cell:hover {
+    background: rgba(30, 38, 56, 0.95);
+    box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.3), 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+  }
+
+  :global(:root[data-theme='dark']) .footer-section.section-band {
+    background: linear-gradient(180deg, rgba(17, 20, 29, 0) 0%, rgba(12, 14, 21, 0.8) 100%);
+  }
+
   .principle-top {
     align-items: center;
     display: flex;

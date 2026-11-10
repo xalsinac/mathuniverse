@@ -1,0 +1,1926 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-01')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-04');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL GRAN ERROR PEDAGÓGICO -->
+  <section class="lesson-section" id="el-error-pedagogico">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Gran Error: Calcular un límite NO es sustituir el número</h2>
+
+    <p class="lead-paragraph">
+      En la enseñanza secundaria se suele introducir el cálculo de límites como un trámite aritmético: <em>«para calcular el límite cuando x tiende a 2, sustituye la x por 2»</em>. Esta simplificación oculta el salto conceptual más trascendental del análisis matemático y provoca una confusión fatal entre <strong>el valor de la función en un punto puntual</strong> y <strong>su comportamiento en un entorno infinitesimal</strong>.
+    </p>
+
+    <!-- Tarjeta de Contraste Fundamental -->
+    <div class="contrast-limit-grid">
+      <div class="contrast-card">
+        <div class="c-tag">EVALUACIÓN PUNTUAL</div>
+        <h4>f(a): ¿Qué ocurre EN el punto?</h4>
+        <p>
+          Es una operación algebraica estática. Evalúa la imagen directa del número real <code class="inline-code">a</code> bajo la regla de correspondencia de <code class="inline-code">f</code>. Si el valor <code class="inline-code">a</code> no pertenece al dominio, <code class="inline-code">f(a)</code> simplemente <strong>no existe</strong>.
+        </p>
+        <div class="contrast-formula-box">
+          <code>f(1) para f(x) = (x² - 1)/(x - 1) ⟹ 0/0 (No definido)</code>
+        </div>
+      </div>
+
+      <div class="contrast-card">
+        <div class="c-tag tag-limit">OPERACIÓN ASINTÓTICA</div>
+        <h4>lim f(x): ¿Hacia dónde viaja la función?</h4>
+        <p>
+          Es una operación dinámica sobre un <strong>entorno perforado</strong>. Pregunta a qué valor se aproximan las imágenes <code class="inline-code">f(x)</code> a medida que <code class="inline-code">x</code> se acerca a <code class="inline-code">a</code> tanto como queramos, <strong>sin que x llegue jamás a ser igual a a</strong>.
+        </p>
+        <div class="contrast-formula-box box-limit">
+          <code>lim_(x→1) (x² - 1)/(x - 1) = lim_(x→1) (x + 1) = 2</code>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      El hecho de que para funciones continuas elementales ambos valores coincidan (<code class="inline-code">lim f(x) = f(a)</code>) es una <em>propiedad especial de la continuidad</em>, no la definición de límite. El límite existe con total independencia de lo que ocurra exactamente en el punto.
+    </p>
+  </section>
+
+  <!-- SECCIÓN 2: APROXIMACIÓN NUMÉRICA Y LÍMITES LATERALES -->
+  <section class="lesson-section" id="limites-laterales">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Aproximación Numérica y los Límites Laterales</h2>
+
+    <p class="lead-paragraph">
+      En la recta real <code class="inline-code">ℝ</code>, solo existen dos direcciones posibles para aproximarse a un punto <code class="inline-code">x = a</code>: desde valores estrictamente menores (por la izquierda, <code class="inline-code">x &lt; a</code>) o desde valores estrictamente mayores (por la derecha, <code class="inline-code">x &gt; a</code>).
+    </p>
+
+    <!-- Tabla de convergencia numérica -->
+    <div class="convergence-table-card">
+      <div class="table-card-header">
+        <span class="t-badge">TABLA DE CONVERGENCIA NUMÉRICA</span>
+        <h4>Estudio de f(x) = (x² - 1)/(x - 1) en las proximidades de a = 1</h4>
+      </div>
+
+      <div class="dual-tables-grid">
+        <!-- Izquierda -->
+        <div class="sub-table-col">
+          <div class="sub-table-title">Por la izquierda (x → 1⁻, x &lt; 1)</div>
+          <table class="numeric-eval-table">
+            <thead>
+              <tr>
+                <th>x</th>
+                <th>f(x)</th>
+                <th>Distancia |x - 1|</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>0.9</td>
+                <td>1.9</td>
+                <td>0.1</td>
+              </tr>
+              <tr>
+                <td>0.99</td>
+                <td>1.99</td>
+                <td>0.01</td>
+              </tr>
+              <tr>
+                <td>0.999</td>
+                <td>1.999</td>
+                <td>0.001</td>
+              </tr>
+              <tr class="row-target">
+                <td>0.9999</td>
+                <td><strong>1.9999</strong></td>
+                <td>0.0001</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="limit-result-note">lim_(x→1⁻) f(x) = 2</div>
+        </div>
+
+        <!-- Derecha -->
+        <div class="sub-table-col">
+          <div class="sub-table-title">Por la derecha (x → 1⁺, x &gt; 1)</div>
+          <table class="numeric-eval-table">
+            <thead>
+              <tr>
+                <th>x</th>
+                <th>f(x)</th>
+                <th>Distancia |x - 1|</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.1</td>
+                <td>2.1</td>
+                <td>0.1</td>
+              </tr>
+              <tr>
+                <td>1.01</td>
+                <td>2.01</td>
+                <td>0.01</td>
+              </tr>
+              <tr>
+                <td>1.001</td>
+                <td>2.001</td>
+                <td>0.001</td>
+              </tr>
+              <tr class="row-target">
+                <td>1.0001</td>
+                <td><strong>2.0001</strong></td>
+                <td>0.0001</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="limit-result-note">lim_(x→1⁺) f(x) = 2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teorema de Existencia -->
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA FUNDAMENTAL DE EXISTENCIA</span>
+      <h3>«El límite global de una función en un punto existe si y solo si ambos límites laterales existen y coinciden en el mismo valor finito L»</h3>
+      <code class="theorem-symbolic">lim_(x→a) f(x) = L ⟺ lim_(x→a⁻) f(x) = L  ∧  lim_(x→a⁺) f(x) = L</code>
+    </div>
+
+    <!-- Caso de Discrepancia -->
+    <div class="discrepancy-box">
+      <div class="disc-header">
+        <span class="disc-tag">DISCREPANCIA LATERAL</span>
+        <h4>¿Qué ocurre si los límites laterales no coinciden?</h4>
+      </div>
+      <p>
+        Consideremos la función signo <code class="inline-code">f(x) = |x| / x</code> en el origen <code class="inline-code">a = 0</code>:
+      </p>
+      <div class="disc-formulas">
+        <div class="disc-f-item">
+          <span>Por la izquierda (x &lt; 0):</span>
+          <code>lim_(x→0⁻) (-x)/x = -1</code>
+        </div>
+        <div class="disc-f-item">
+          <span>Por la derecha (x &gt; 0):</span>
+          <code>lim_(x→0⁺) (x)/x = +1</code>
+        </div>
+      </div>
+      <p class="disc-conclusion">
+        Puesto que <code class="inline-code">-1 ≠ +1</code>, <strong>el límite global lim_(x→0) f(x) NO EXISTE</strong>. La gráfica experimenta una ruptura insalvable conocida como <em>salto finito</em>.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LA INTUICIÓN DE LA DEFINICIÓN ÉPSILON-DELTA -->
+  <section class="lesson-section" id="definicion-epsilon-delta">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Definición Rigurosa (Épsilon - Delta): El Desafío de Precisión</h2>
+
+    <p class="lead-paragraph">
+      Durante más de un siglo tras Newton y Leibniz, el cálculo operó con la noción ambigua de «cantidades infinitamente pequeñas que casi son cero pero no lo son». A mediados del siglo XIX, Augustin-Louis Cauchy y Karl Weierstrass erradicaron cualquier sombra de misticismo transformando el límite en un <strong>juego estricto de tolerancias y desafíos métricos</strong>:
+    </p>
+
+    <!-- Enunciado formal -->
+    <div class="weierstrass-card">
+      <div class="w-header">
+        <span class="w-badge">DEFINICIÓN DE WEIERSTRASS (1861)</span>
+        <h4>Definición Formal de Límite Finito</h4>
+      </div>
+      <div class="w-symbolic">
+        <code>∀ ε > 0, ∃ δ > 0 : 0 &lt; |x - a| &lt; δ ⟹ |f(x) - L| &lt; ε</code>
+      </div>
+      <div class="w-breakdown-grid">
+        <div class="w-item">
+          <span class="w-symbol">∀ ε &gt; 0</span>
+          <p><strong>El Desafío (Tolerancia vertical):</strong> «Dame cualquier margen de error positivo ε, por minúsculo que sea (ej. 0.000001) alrededor del límite L».</p>
+        </div>
+        <div class="w-item">
+          <span class="w-symbol">∃ δ &gt; 0</span>
+          <p><strong>La Respuesta (Ventana horizontal):</strong> «Seré capaz de encontrar una distancia horizontal δ alrededor de a tal que...»</p>
+        </div>
+        <div class="w-item">
+          <span class="w-symbol">0 &lt; |x - a| &lt; δ</span>
+          <p><strong>Entorno perforado:</strong> «Para cualquier x a distancia menor que δ de a, <em>con x ≠ a</em>...»</p>
+        </div>
+        <div class="w-item">
+          <span class="w-symbol">|f(x) - L| &lt; ε</span>
+          <p><strong>Garantía de confinamiento:</strong> «La imagen f(x) queda irremediablemente atrapada dentro de tu margen de tolerancia L ± ε».</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Representación visual esquemática de la banda epsilon-delta -->
+    <div class="epsilon-delta-visual">
+      <div class="visual-header">
+        <span class="v-label">GEOMETRÍA DEL CONFINAMIENTO MÉTRICO</span>
+        <span class="v-sub">La banda horizontal ε confina obligatoriamente a la banda vertical δ</span>
+      </div>
+      <div class="visual-diagram-box">
+        <svg viewBox="0 0 500 240" class="curve-svg" aria-label="Diagrama épsilon-delta de Weierstrass">
+          <!-- Ejes cartesianos sutiles -->
+          <line x1="60" y1="210" x2="480" y2="210" stroke="var(--line)" stroke-width="1.5" />
+          <line x1="60" y1="20" x2="60" y2="210" stroke="var(--line)" stroke-width="1.5" />
+
+          <!-- Banda Epsilon (Horizontal) -->
+          <rect x="60" y="70" width="420" height="80" fill="rgba(16, 185, 129, 0.08)" stroke="rgba(16, 185, 129, 0.35)" stroke-dasharray="4" />
+          <text x="16" y="75" fill="#10b981" font-family="var(--mono)" font-size="12" font-weight="bold">L + ε</text>
+          <line x1="60" y1="110" x2="480" y2="110" stroke="rgba(16, 185, 129, 0.4)" stroke-dasharray="2" />
+          <text x="38" y="114" fill="#10b981" font-family="var(--mono)" font-size="13" font-weight="bold">L</text>
+          <text x="16" y="153" fill="#10b981" font-family="var(--mono)" font-size="12" font-weight="bold">L - ε</text>
+
+          <!-- Banda Delta (Vertical) -->
+          <rect x="200" y="20" width="120" height="190" fill="rgba(56, 189, 248, 0.08)" stroke="rgba(56, 189, 248, 0.35)" stroke-dasharray="4" />
+          <line x1="260" y1="20" x2="260" y2="210" stroke="rgba(56, 189, 248, 0.4)" stroke-dasharray="2" />
+          <text x="180" y="230" fill="#38bdf8" font-family="var(--mono)" font-size="12" font-weight="bold">a - δ</text>
+          <text x="256" y="230" fill="#38bdf8" font-family="var(--mono)" font-size="13" font-weight="bold">a</text>
+          <text x="310" y="230" fill="#38bdf8" font-family="var(--mono)" font-size="12" font-weight="bold">a + δ</text>
+
+          <!-- Curva continua f(x) -->
+          <path d="M 80,195 Q 260,110 450,30" fill="none" stroke="#10b981" stroke-width="3" />
+          
+          <!-- Punto objetivo perforado en (a, L) = (260, 110) -->
+          <circle cx="260" cy="110" r="6" fill="var(--bg-sunken)" stroke="#10b981" stroke-width="2.5" />
+        </svg>
+      </div>
+      <p class="visual-caption">
+        Observa que en el centro <code class="inline-code">(a, L)</code> hay un <strong>círculo perforado</strong>: a la definición formal no le importa en absoluto si la curva tiene un punto relleno, un agujero o un punto desplazado en <code class="inline-code">x = a</code>. Solo importa que la curva atraviese la ventana rectangular sin salirse por arriba ni por abajo.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DE LÍMITES -->
+  <section class="lesson-section" id="laboratorio-limites">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Simulador de Límites y Discontinuidades</h2>
+
+    <p class="lead-paragraph">
+      Explora en tiempo real las cuatro tipologías fundamentales de límites y discontinuidades. Modifica el parámetro de proximidad <code class="inline-code">Δx</code> para observar con altísima precisión numérica cómo las aproximaciones por la izquierda y por la derecha convergen o divergen:
+    </p>
+
+    <!-- Card del Laboratorio -->
+    <div class="limits-lab-card" id="limits-lab-app">
+      <div class="lab-header-bar">
+        <span class="lab-badge">SIMULADOR EN TIEMPO REAL · ANÁLISIS INFINITESIMAL</span>
+        
+        <!-- Botones de Modelos de Estudio -->
+        <div class="lab-cases-selector">
+          <span class="selector-tag">CASOS DE ESTUDIO:</span>
+          <button type="button" class="case-btn is-active" data-case="hole">
+            1. Discontinuidad Evitable (Agujero 0/0)
+          </button>
+          <button type="button" class="case-btn" data-case="jump">
+            2. Salto Finito (|x|/x)
+          </button>
+          <button type="button" class="case-btn" data-case="asymptote">
+            3. Asíntota Vertical (1/(x - 2))
+          </button>
+          <button type="button" class="case-btn" data-case="continuous">
+            4. Función Continua (x² + 1)
+          </button>
+        </div>
+      </div>
+
+      <!-- Ficha descriptiva de la función seleccionada -->
+      <div class="function-banner">
+        <div class="f-info-main">
+          <span class="f-label">FUNCIÓN EN ESTUDIO:</span>
+          <h3 id="current-func-formula">f(x) = (x² - 4) / (x - 2)</h3>
+        </div>
+        <div class="f-info-point">
+          <span class="f-label">PUNTO DE TENDENCIA:</span>
+          <code id="current-point-a">a = 2</code>
+        </div>
+      </div>
+
+      <!-- Control de Proximidad Δx -->
+      <div class="proximity-control-box">
+        <div class="prox-header">
+          <label for="prox-slider" class="prox-label">
+            Distancia de aproximación al punto (<code class="inline-code">Δx = |x - a|</code>):
+            <span class="prox-val" id="prox-val-display">Δx = 0.01</span>
+          </label>
+          <div class="prox-quick-presets">
+            <span class="quick-lbl">Zoom Infinitesimal:</span>
+            <button type="button" class="zoom-btn" data-set-dx="0.5">0.5</button>
+            <button type="button" class="zoom-btn" data-set-dx="0.1">0.1</button>
+            <button type="button" class="zoom-btn" data-set-dx="0.01">0.01</button>
+            <button type="button" class="zoom-btn" data-set-dx="0.001">0.001</button>
+            <button type="button" class="zoom-btn" data-set-dx="0.0001">0.0001</button>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="prox-slider"
+          class="prox-range-input"
+          min="1"
+          max="5"
+          step="1"
+          value="3"
+        />
+        <div class="prox-range-labels">
+          <span>0.5 (Macro)</span>
+          <span>0.1</span>
+          <span>0.01 (Preciso)</span>
+          <span>0.001</span>
+          <span>0.0001 (Micro)</span>
+        </div>
+      </div>
+
+      <!-- Tablas de Aproximación Simultánea en Vivo -->
+      <div class="lab-approximations-grid">
+        <!-- Lado Izquierdo -->
+        <div class="approx-card approx-left">
+          <div class="approx-card-header">
+            <h4>Límite Lateral Izquierdo (x → a⁻)</h4>
+            <span class="approx-tag tag-left">x &lt; a</span>
+          </div>
+          <div class="approx-body">
+            <div class="approx-row">
+              <span class="a-label">Punto de prueba x:</span>
+              <code class="a-val" id="left-x-val">1.990000</code>
+            </div>
+            <div class="approx-row highlight-row">
+              <span class="a-label">Imagen f(x):</span>
+              <code class="a-val" id="left-fx-val">3.990000</code>
+            </div>
+            <div class="approx-tendency">
+              <span>Tendencia lateral inferida:</span>
+              <strong id="left-tendency-display">lim_(x→2⁻) = 4</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lado Derecho -->
+        <div class="approx-card approx-right">
+          <div class="approx-card-header">
+            <h4>Límite Lateral Derecho (x → a⁺)</h4>
+            <span class="approx-tag tag-right">x &gt; a</span>
+          </div>
+          <div class="approx-body">
+            <div class="approx-row">
+              <span class="a-label">Punto de prueba x:</span>
+              <code class="a-val" id="right-x-val">2.010000</code>
+            </div>
+            <div class="approx-row highlight-row">
+              <span class="a-label">Imagen f(x):</span>
+              <code class="a-val" id="right-fx-val">4.010000</code>
+            </div>
+            <div class="approx-tendency">
+              <span>Tendencia lateral inferida:</span>
+              <strong id="right-tendency-display">lim_(x→2⁺) = 4</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Veredicto Analítico del Límite Global -->
+      <div class="lab-verdict-box" id="lab-verdict-banner">
+        <div class="v-header-row">
+          <span class="verdict-type-badge" id="v-status-badge">LÍMITE EXISTENTE (FINITO)</span>
+          <h3 id="v-limit-statement">lim_(x→2) f(x) = 4</h3>
+        </div>
+        <p class="v-desc" id="v-desc-text">
+          Como el límite lateral izquierdo (4) coincide exactamente con el límite lateral derecho (4), el límite global existe y vale 4, a pesar de que f(2) no esté definida (0/0).
+        </p>
+        <div class="v-continuity-note" id="v-continuity-text">
+          <strong>Diagnóstico de Continuidad:</strong> Presenta una <em>Discontinuidad Evitable</em> en x = 2. Redefiniendo f(2) = 4, la función devendría continua en todo ℝ.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: EL PUENTE HACIA LA CONTINUIDAD -->
+  <section class="lesson-section" id="puente-continuidad">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. El Puente hacia la Continuidad Real</h2>
+
+    <p class="lead-paragraph">
+      Una vez comprendido el límite, la definición matemática de <strong>función continua</strong> deja de ser la vaga intuición escolar de «poder dibujar la curva sin levantar el lápiz del papel». La continuidad exige una armonía perfecta entre tres condiciones simultáneas:
+    </p>
+
+    <!-- Las 3 condiciones de continuidad -->
+    <div class="continuity-rules-grid">
+      <div class="rule-card">
+        <div class="rule-index">1</div>
+        <h4>Existe f(a)</h4>
+        <p>
+          El punto <code class="inline-code">a</code> pertenece al dominio de la función. Existe un punto concreto en el plano coordenado <code class="inline-code">(a, f(a))</code>.
+        </p>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-index">2</div>
+        <h4>Existe lim f(x)</h4>
+        <p>
+          Los límites laterales existen, son números reales finitos y coinciden:
+          <code class="inline-code">lim_(x→a⁻) f(x) = lim_(x→a⁺) f(x) = L</code>.
+        </p>
+      </div>
+
+      <div class="rule-card rule-card-gold">
+        <div class="rule-index">3</div>
+        <h4>Coincidencia Total</h4>
+        <p>
+          El valor puntual y la tendencia asintótica convergen en el mismo número:
+          <code class="inline-code">lim_(x→a) f(x) = f(a)</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tipología de discontinuidades -->
+    <div class="discontinuities-summary-card">
+      <h4>Clasificación de Discontinuidades por Comportamiento de Límites</h4>
+      <div class="disc-types-list">
+        <div class="d-type-item">
+          <strong>Discontinuidad Evitable:</strong> Existe el límite finito <code class="inline-code">L</code>, pero o bien no existe <code class="inline-code">f(a)</code>, o bien <code class="inline-code">f(a) ≠ L</code> (un agujero o punto desplazado).
+        </div>
+        <div class="d-type-item">
+          <strong>Discontinuidad de Salto Finito:</strong> Existen ambos límites laterales finitos, pero son distintos: <code class="inline-code">lim_(x→a⁻) ≠ lim_(x→a⁺)</code>. Salto = <code class="inline-code">|L₁ - L₂|</code>.
+        </div>
+        <div class="d-type-item">
+          <strong>Discontinuidad de Salto Infinito (Asintótica):</strong> Al menos uno de los límites laterales es infinito (<code class="inline-code">±∞</code>). Representa una asíntota vertical en <code class="inline-code">x = a</code>.
+        </div>
+        <div class="d-type-item">
+          <strong>Discontinuidad Esencial:</strong> Al menos uno de los límites laterales no existe de ninguna forma (por ejemplo, oscilación infinita en <code class="inline-code">sin(1/x)</code>).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: TRAMPAS HABITUALES EN EXÁMENES -->
+  <section class="lesson-section" id="trampas-examen">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Trampas Habituales en Exámenes y PAU</h2>
+
+    <div class="traps-grid">
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 1</span>
+          <h4>«f(a) no existe ⟹ el límite no existe»</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> Afirmar que como <code class="inline-code">f(2) = 0/0</code>, la función no tiene límite en 2.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> El límite estudia el entorno perforado, jamás el punto. Que <code class="inline-code">f(a)</code> no exista solo impide la continuidad, pero el límite puede existir y ser perfectamente finito.
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 2</span>
+          <h4>Olvidar límites laterales con valor absoluto</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> Al calcular <code class="inline-code">lim_(x→0) |x|/x</code>, cancelar directamente sin desdoblar el signo.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> Todo valor absoluto exige obligatoriamente estudiar por separado <code class="inline-code">x → 0⁻</code> (donde <code class="inline-code">|x| = -x</code>) y <code class="inline-code">x → 0⁺</code> (donde <code class="inline-code">|x| = x</code>).
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 3</span>
+          <h4>Escribir «k/0 = ∞» sin signo</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> Concluir <code class="inline-code">lim_(x→1) 1/(x - 1) = ∞</code> sin evaluar laterales.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> Por la izquierda <code class="inline-code">1/(0⁻) = -∞</code> y por la derecha <code class="inline-code">1/(0⁺) = +∞</code>. Como tienen signos opuestos, no existe límite global unificado.
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 4</span>
+          <h4>Confundir indeterminación con inexistencia</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> Declarar que una indeterminación <code class="inline-code">0/0</code> o <code class="inline-code">∞ - ∞</code> significa que no hay límite.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> «Indeterminado» significa que con la información inicial no podemos saber el resultado. Exige aplicar técnicas algebraicas (factorización, conjugado, regla de L'Hôpital) para resolverlo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Autoevaluación Interactiva</h2>
+
+    <p class="lead-paragraph">
+      Verifica tu dominio deductivo del concepto de límite con estas 3 cuestiones de razonamiento analítico:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-question="1">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q1</span>
+          <p class="quiz-question-text">
+            Si se sabe que lim_(x→3⁻) f(x) = 5 y f(3) = 10, ¿qué podemos afirmar con absoluta certeza sobre el límite global lim_(x→3) f(x)?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            A) El límite global no existe porque f(3) = 10 no coincide con 5.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            B) El límite global vale 10 porque el valor puntual prevalece sobre los laterales.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            C) No podemos concluir si el límite global existe o no hasta conocer el límite lateral derecho lim_(x→3⁺) f(x). El valor f(3) = 10 es irrelevante para la existencia del límite.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) El límite global vale (5 + 10)/2 = 7.5.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-question="2">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q2</span>
+          <p class="quiz-question-text">
+            En la definición formal de Weierstrass, si para un desafío de tolerancia ε = 0.01 encontramos que con δ = 0.005 se cumple la condición, ¿qué ocurriría si un evaluador elige un valor de δ aún más pequeño, por ejemplo δ' = 0.001?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="true">
+            A) La condición se sigue cumpliendo perfectamente, porque al reducir δ la ventana de x se restringe todavía más, quedando más adentro del margen ε.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            B) Deja de cumplirse porque δ debe ser exactamente único.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            C) El límite cambiaría de valor L.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) Provoca una indeterminación 0/0.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-question="3">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q3</span>
+          <p class="quiz-question-text">
+            Dada la función f(x) = (x - 4) / |x - 4|, ¿cuál es el valor de lim_(x→4) f(x)?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            A) Vale 1.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            B) Vale 0 porque el numerador se anula.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            C) NO existe, porque por la izquierda x &lt; 4 da (x - 4)/(-(x - 4)) = -1 y por la derecha x &gt; 4 da +1 (salto finito de 2 unidades).
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) Es indeterminado infinito.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<!-- SCRIPT DEL LABORATORIO Y QUIZ -->
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // ------------------------------------------------------------------------
+    // LABORATORIO DE LÍMITES Y DISCONTINUIDADES
+    // ------------------------------------------------------------------------
+    const caseButtons = document.querySelectorAll('.case-btn');
+    const zoomButtons = document.querySelectorAll('.zoom-btn');
+    const proxSlider = document.getElementById('prox-slider');
+    const proxValDisplay = document.getElementById('prox-val-display');
+
+    const currentFuncFormula = document.getElementById('current-func-formula');
+    const currentPointA = document.getElementById('current-point-a');
+
+    const leftXVal = document.getElementById('left-x-val');
+    const leftFxVal = document.getElementById('left-fx-val');
+    const leftTendency = document.getElementById('left-tendency-display');
+
+    const rightXVal = document.getElementById('right-x-val');
+    const rightFxVal = document.getElementById('right-fx-val');
+    const rightTendency = document.getElementById('right-tendency-display');
+
+    const verdictBanner = document.getElementById('lab-verdict-banner');
+    const vStatusBadge = document.getElementById('v-status-badge');
+    const vLimitStatement = document.getElementById('v-limit-statement');
+    const vDescText = document.getElementById('v-desc-text');
+    const vContinuityText = document.getElementById('v-continuity-text');
+
+    const DX_VALUES = [0.5, 0.1, 0.01, 0.001, 0.0001];
+    let currentCase = 'hole';
+    let currentDx = 0.01;
+
+    const STUDY_CASES = {
+      hole: {
+        formula: 'f(x) = (x² - 4) / (x - 2)',
+        a: 2,
+        eval: (x) => {
+          if (Math.abs(x - 2) < 1e-12) return NaN;
+          return (x * x - 4) / (x - 2); // Equivalente a x + 2
+        },
+        leftLimit: '4',
+        rightLimit: '4',
+        globalLimit: '4',
+        hasLimit: true,
+        statusBadge: 'LÍMITE EXISTENTE (FINITO)',
+        badgeClass: 'badge-green',
+        desc: 'Como el límite lateral izquierdo (4) coincide exactamente con el límite lateral derecho (4), el límite global existe y vale 4, a pesar de que f(2) no esté definida (0/0).',
+        continuity: 'Presenta una Discontinuidad Evitable en x = 2. Redefiniendo f(2) = 4, la función sería continua en todo ℝ.',
+      },
+      jump: {
+        formula: 'f(x) = |x| / x  (Función Signo)',
+        a: 0,
+        eval: (x) => {
+          if (Math.abs(x) < 1e-12) return NaN;
+          return Math.abs(x) / x;
+        },
+        leftLimit: '-1',
+        rightLimit: '+1',
+        globalLimit: 'NO EXISTE',
+        hasLimit: false,
+        statusBadge: 'LÍMITE NO EXISTE (SALTO FINITO)',
+        badgeClass: 'badge-red',
+        desc: 'El límite lateral izquierdo (-1) y el límite lateral derecho (+1) son finitos pero distintos. Por el teorema de existencia, el límite global NO EXISTE.',
+        continuity: 'Presenta una Discontinuidad Inevitable de Salto Finito en x = 0 (magnitud del salto = 2 unidades).',
+      },
+      asymptote: {
+        formula: 'f(x) = 1 / (x - 2)',
+        a: 2,
+        eval: (x) => {
+          if (Math.abs(x - 2) < 1e-12) return Infinity;
+          return 1 / (x - 2);
+        },
+        leftLimit: '-∞',
+        rightLimit: '+∞',
+        globalLimit: 'NO EXISTE',
+        hasLimit: false,
+        statusBadge: 'LÍMITE NO EXISTE (ASÍNTOTA VERTICAL)',
+        badgeClass: 'badge-red',
+        desc: 'Por la izquierda la función cae sin cota hacia -∞ y por la derecha crece hacia +∞. Los límites laterales divergen con signos opuestos.',
+        continuity: 'Presenta una Discontinuidad Inevitable de Salto Infinito en x = 2 (Asíntota vertical x = 2).',
+      },
+      continuous: {
+        formula: 'f(x) = x² + 1  (Parábola continua)',
+        a: 1,
+        eval: (x) => x * x + 1,
+        leftLimit: '2',
+        rightLimit: '2',
+        globalLimit: '2',
+        hasLimit: true,
+        statusBadge: 'FUNCIÓN CONTINUA (lim = f(a))',
+        badgeClass: 'badge-green',
+        desc: 'Ambos límites laterales existen, valen 2 y coinciden exactamente con f(1) = 1² + 1 = 2. Cumple las 3 condiciones de continuidad.',
+        continuity: 'Función Continua en x = 1 (y en todo ℝ).',
+      },
+    };
+
+    function updateSimulation() {
+      const data = STUDY_CASES[currentCase];
+      const a = data.a;
+
+      currentFuncFormula.textContent = data.formula;
+      currentPointA.textContent = `a = ${a}`;
+
+      const xLeft = a - currentDx;
+      const xRight = a + currentDx;
+
+      const fLeft = data.eval(xLeft);
+      const fRight = data.eval(xRight);
+
+      // Formatear coordenadas
+      leftXVal.textContent = xLeft.toFixed(6);
+      rightXVal.textContent = xRight.toFixed(6);
+
+      if (currentCase === 'asymptote') {
+        leftFxVal.textContent = fLeft < -1000 ? fLeft.toExponential(2) : fLeft.toFixed(4);
+        rightFxVal.textContent = fRight > 1000 ? fRight.toExponential(2) : fRight.toFixed(4);
+      } else {
+        leftFxVal.textContent = fLeft.toFixed(6);
+        rightFxVal.textContent = fRight.toFixed(6);
+      }
+
+      leftTendency.textContent = `lim_(x→${a}⁻) = ${data.leftLimit}`;
+      rightTendency.textContent = `lim_(x→${a}⁺) = ${data.rightLimit}`;
+
+      // Banner veredicto
+      vStatusBadge.textContent = data.statusBadge;
+      vStatusBadge.className = 'verdict-type-badge ' + data.badgeClass;
+
+      vLimitStatement.textContent = data.hasLimit
+        ? `lim_(x→${a}) f(x) = ${data.globalLimit}`
+        : `lim_(x→${a}) f(x) NO EXISTE`;
+
+      vDescText.textContent = data.desc;
+      vContinuityText.innerHTML = `<strong>Diagnóstico de Continuidad:</strong> ${data.continuity}`;
+
+      verdictBanner.className = 'lab-verdict-box ' + (data.hasLimit ? 'verdict-pass' : 'verdict-fail');
+    }
+
+    // Eventos selector de casos
+    caseButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        caseButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentCase = btn.getAttribute('data-case');
+        updateSimulation();
+      });
+    });
+
+    // Evento slider
+    proxSlider.addEventListener('input', (e) => {
+      const idx = parseInt(e.target.value, 10) - 1;
+      currentDx = DX_VALUES[idx];
+      proxValDisplay.textContent = `Δx = ${currentDx}`;
+      updateSimulation();
+    });
+
+    // Botones zoom
+    zoomButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const dx = parseFloat(btn.getAttribute('data-set-dx'));
+        currentDx = dx;
+        const idx = DX_VALUES.indexOf(dx);
+        if (idx !== -1) {
+          proxSlider.value = idx + 1;
+        }
+        proxValDisplay.textContent = `Δx = ${dx}`;
+        updateSimulation();
+      });
+    });
+
+    // Iniciar simulación
+    updateSimulation();
+
+    // ------------------------------------------------------------------------
+    // AUTOEVALUACIÓN INTERACTIVA (QUIZ)
+    // ------------------------------------------------------------------------
+    const quizCards = document.querySelectorAll('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const options = card.querySelectorAll('.quiz-opt');
+      const feedback = card.querySelector('.quiz-feedback');
+
+      options.forEach((opt) => {
+        opt.addEventListener('click', () => {
+          const isCorrect = opt.getAttribute('data-correct') === 'true';
+
+          options.forEach((o) => {
+            o.disabled = true;
+            if (o.getAttribute('data-correct') === 'true') {
+              o.classList.add('is-correct');
+            } else if (o === opt) {
+              o.classList.add('is-incorrect');
+            }
+          });
+
+          feedback.style.display = 'block';
+          if (isCorrect) {
+            feedback.className = 'quiz-feedback feedback-success';
+            feedback.textContent = '¡Correcto! Has razonado con precisión las hipótesis del análisis real y la definición de límite.';
+          } else {
+            feedback.className = 'quiz-feedback feedback-error';
+            feedback.textContent = 'Incorrecto. Recuerda que el límite estudia el entorno perforado de aproximación y requiere igualdad estricta de ambos laterales.';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  /* ------------------------------------------------------------------------ */
+  /* ESTILOS DE LA LECCIÓN: EL CONCEPTO RIGUROSO DE LÍMITE (BLOQUE 03 CÁLCULO) */
+  /* ------------------------------------------------------------------------ */
+
+  .lesson-section {
+    position: relative;
+    margin-bottom: 4.5rem;
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .marker-num {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--block-accent, #10b981);
+    letter-spacing: 0.08em;
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  h2 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .lead-paragraph {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 1.8rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    background: var(--bg-sunken);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 0.9em;
+  }
+
+  /* Tarjetas de Contraste Fundamental */
+  .contrast-limit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .contrast-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .c-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    background: var(--bg-sunken);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--line);
+  }
+
+  .c-tag.tag-limit {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  :global([data-theme="light"]) .c-tag.tag-limit {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+  }
+
+  .contrast-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 0.7rem 0;
+  }
+
+  .contrast-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 1rem 0;
+  }
+
+  .contrast-formula-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+
+  .contrast-formula-box.box-limit {
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.06);
+  }
+
+  :global([data-theme="light"]) .contrast-formula-box.box-limit {
+    color: #059669;
+  }
+
+  /* Tabla de convergencia numérica */
+  .convergence-table-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 2rem 0;
+  }
+
+  .t-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .t-badge {
+    color: #059669;
+  }
+
+  .table-card-header h4 {
+    margin: 0 0 1.2rem 0;
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+
+  .dual-tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .sub-table-col {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .sub-table-title {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .numeric-eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    text-align: right;
+  }
+
+  .numeric-eval-table th {
+    color: var(--ink-muted);
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .numeric-eval-table td {
+    padding: 0.5rem 0.6rem;
+    color: var(--ink-soft);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .row-target td {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  :global([data-theme="light"]) .row-target td {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.08);
+  }
+
+  .limit-result-note {
+    margin-top: 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #10b981;
+    text-align: center;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 0.4rem;
+    border-radius: 6px;
+  }
+
+  :global([data-theme="light"]) .limit-result-note {
+    color: #059669;
+  }
+
+  /* Banner Teorema Formal */
+  .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.03) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0.02) 100%);
+    border-color: rgba(5, 150, 105, 0.3);
+  }
+
+  .theorem-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 0.9rem;
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.12);
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 1.2rem 0;
+    line-height: 1.45;
+  }
+
+  .theorem-symbolic {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #10b981;
+    background: var(--bg-sunken);
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    color: #059669;
+  }
+
+  /* Discrepancia lateral */
+  .discrepancy-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin-top: 1.5rem;
+  }
+
+  .disc-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .disc-header h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .disc-formulas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1rem 0;
+    background: var(--bg-sunken);
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .disc-f-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+
+  .disc-f-item code {
+    font-family: var(--mono);
+    color: #ef4444;
+    font-weight: 700;
+  }
+
+  .disc-conclusion {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* Definición Épsilon - Delta de Weierstrass */
+  .weierstrass-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 2rem 0;
+  }
+
+  .w-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+  }
+
+  :global([data-theme="light"]) .w-badge {
+    color: #059669;
+  }
+
+  .w-header h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: var(--ink);
+  }
+
+  .w-symbolic {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.1rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    color: #10b981;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .w-symbolic {
+    color: #059669;
+  }
+
+  .w-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .w-item {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.1rem;
+  }
+
+  .w-symbol {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .w-symbol {
+    color: #0284c7;
+  }
+
+  .w-item p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  /* Esquema visual Epsilon-Delta */
+  .epsilon-delta-visual {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+  }
+
+  .visual-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .v-label {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .v-sub {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+
+  .visual-diagram-box {
+    position: relative;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .curve-svg {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    display: block;
+  }
+    height: 100%;
+  }
+
+  .visual-caption {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 1.2rem 0 0 0;
+  }
+
+  /* Laboratorio Interactivo */
+  .limits-lab-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .lab-header-bar {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lab-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  :global([data-theme="light"]) .lab-badge {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+  }
+
+  .lab-cases-selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .selector-tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    margin-right: 0.4rem;
+  }
+
+  .case-btn {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    font-family: var(--sans);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .case-btn:hover {
+    border-color: #10b981;
+    color: var(--ink);
+  }
+
+  .case-btn.is-active {
+    background: #10b981;
+    border-color: #10b981;
+    color: #0b0f19;
+    font-weight: 700;
+  }
+
+  /* Ficha de función */
+  .function-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .f-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .f-info-main h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-family: var(--mono);
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .f-info-main h3 {
+    color: #059669;
+  }
+
+  .f-info-point code {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* Control de proximidad */
+  .proximity-control-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .prox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .prox-label {
+    font-size: 0.95rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .prox-val {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.2rem 0.7rem;
+    border-radius: 6px;
+  }
+
+  :global([data-theme="light"]) .prox-val {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.12);
+  }
+
+  .prox-quick-presets {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .quick-lbl {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+  }
+
+  .zoom-btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.2rem 0.55rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+
+  .zoom-btn:hover {
+    border-color: #10b981;
+    color: var(--ink);
+  }
+
+  .prox-range-input {
+    width: 100%;
+    accent-color: #10b981;
+    cursor: pointer;
+    margin-bottom: 0.4rem;
+  }
+
+  .prox-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+  }
+
+  /* Grid de aproximaciones */
+  .lab-approximations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.4rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .approx-card {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .approx-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .approx-card-header h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+
+  .approx-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .tag-left { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+  .tag-right { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
+  .approx-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .approx-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+  }
+
+  .a-label {
+    color: var(--ink-soft);
+  }
+
+  .a-val {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .highlight-row {
+    background: var(--bg-raised);
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+  }
+
+  .highlight-row .a-val {
+    color: #10b981;
+    font-size: 0.98rem;
+  }
+
+  :global([data-theme="light"]) .highlight-row .a-val {
+    color: #059669;
+  }
+
+  .approx-tendency {
+    margin-top: 0.6rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--ink-soft);
+  }
+
+  .approx-tendency strong {
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  /* Veredicto de Laboratorio */
+  .lab-verdict-box {
+    border-radius: 12px;
+    padding: 1.8rem;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    transition: all 0.3s ease;
+  }
+
+  .lab-verdict-box.verdict-pass {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .lab-verdict-box.verdict-fail {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .v-header-row {
+    margin-bottom: 0.8rem;
+  }
+
+  .verdict-type-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+  }
+
+  .badge-green { background: #10b981; color: #0b0f19; }
+  .badge-red { background: #ef4444; color: #ffffff; }
+
+  .v-header-row h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .v-desc {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 1rem 0;
+  }
+
+  .v-continuity-note {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  /* Continuidad 3 Reglas */
+  .continuity-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .rule-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    position: relative;
+  }
+
+  .rule-card-gold {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: linear-gradient(135deg, var(--bg-raised) 0%, rgba(16, 185, 129, 0.06) 100%);
+  }
+
+  .rule-index {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #10b981;
+    margin-bottom: 0.6rem;
+  }
+
+  :global([data-theme="light"]) .rule-index {
+    color: #059669;
+  }
+
+  .rule-card h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .rule-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* Discontinuidades Resumen */
+  .discontinuities-summary-card {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin-top: 2rem;
+  }
+
+  .discontinuities-summary-card h4 {
+    margin: 0 0 1.2rem 0;
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+
+  .disc-types-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .d-type-item {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    background: var(--bg-raised);
+    padding: 0.9rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .d-type-item strong {
+    color: var(--ink);
+    margin-right: 0.3rem;
+  }
+
+  /* Trampas de examen */
+  .traps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .trap-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .trap-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .trap-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .trap-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .trap-wrong {
+    background: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #ef4444;
+    margin: 0 0 0.8rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .trap-right {
+    background: rgba(16, 185, 129, 0.08);
+    border-left: 3px solid #10b981;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .trap-right strong {
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .trap-right strong {
+    color: #059669;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .quiz-question-header {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 1.2rem;
+  }
+
+  .quiz-num {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .quiz-num {
+    color: #059669;
+  }
+
+  .quiz-question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .quiz-opt.is-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+    font-weight: 600;
+  }
+
+  .quiz-opt.is-incorrect {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  .quiz-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .feedback-success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10b981;
+    color: #10b981;
+  }
+
+  .feedback-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+</style>

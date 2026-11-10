@@ -37,8 +37,9 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 ---
 
 <div class="craft-hero-orbit" data-craft-orbit-system aria-label="Taller de juegos Math Craft">
-  <!-- Neblina cósmica atmosférica (rosáceos, rojizos, púrpuras) en modo claro -->
+  <!-- Neblina cósmica atmosférica: rosada/cálida en modo claro, azul cósmico en modo oscuro -->
   <div class="craft-nebula-light" aria-hidden="true"></div>
+  <div class="craft-nebula-dark" aria-hidden="true"></div>
 
   <!-- Canvas de fondo: Estrellas quietas en el fondo + Órbitas y arcos de neón giratorios -->
   <canvas class="orbit-bg-canvas" data-craft-orbit-canvas aria-hidden="true"></canvas>
@@ -280,6 +281,27 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
 
   :root[data-theme='light'] .craft-nebula-light {
     display: block;
+  }
+
+  /* Neblina cósmica azul para modo oscuro en Craft */
+  .craft-nebula-dark {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transform: translateZ(0);
+    contain: strict;
+    background:
+      radial-gradient(ellipse 75% 65% at 50% 36%, rgba(37, 99, 235, 0.22) 0%, transparent 72%),
+      radial-gradient(ellipse 60% 50% at 22% 30%, rgba(56, 189, 248, 0.16) 0%, transparent 65%),
+      radial-gradient(ellipse 65% 55% at 78% 62%, rgba(99, 102, 241, 0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 48% 44% at 74% 24%, rgba(14, 165, 233, 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 50% at 30% 74%, rgba(59, 130, 246, 0.13) 0%, transparent 65%);
+  }
+
+  :root[data-theme='light'] .craft-nebula-dark {
+    display: none;
   }
 
   /* CANVAS DE FONDO */

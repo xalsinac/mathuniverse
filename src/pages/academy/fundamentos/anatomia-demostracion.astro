@@ -1,0 +1,2275 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-01')!;
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-02');
+---
+
+<AcademyLessonLayout lesson={lessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL ENGAÑO DE LOS 1.000 EJEMPLOS -->
+  <section class="lesson-section" id="ilusion-inductiva">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+    
+    <h2>1. La Ilusión de los Mil Ejemplos: Inducción Empírica vs. Deducción Matemática</h2>
+    
+    <p class="prose-lead">
+      En la física, la química o la biología, si un experimento se repite mil veces en idénticas condiciones y arroja siempre el mismo resultado, se formula una ley científica con altísima confianza. 
+      <strong>En matemáticas, comprobar mil casos no demuestra absolutamente nada.</strong>
+    </p>
+
+    <p>
+      Una conjetura matemática sobre los números enteros (ℤ) o los números reales (ℝ) involucra una infinidad de casos. Comprobar un millón de ejemplos apenas cubre el 0% de la totalidad del universo numérico.
+    </p>
+
+    <!-- Caja de Ejemplo Histórico de Euler -->
+    <div class="math-callout is-historic">
+      <div class="callout-header">
+        <span class="callout-badge">CASO HISTÓRICO REAL</span>
+        <h3>La Falsa Promesa del Polinomio de Euler</h3>
+      </div>
+      <p>
+        En 1772, Leonhard Euler estudió la siguiente expresión cuadrática para generar números primos:
+      </p>
+      <div class="formula-spotlight">
+        <code>P(n) = n² + n + 41</code>
+      </div>
+      <div class="callout-table-wrapper">
+        <table class="compact-math-table">
+          <thead>
+            <tr>
+              <th>Valor de n</th>
+              <th>Cálculo P(n)</th>
+              <th>Resultado</th>
+              <th>¿Es Primo?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>n = 0</td>
+              <td>0² + 0 + 41</td>
+              <td><strong>41</strong></td>
+              <td><span class="pill-yes">Sí (primo)</span></td>
+            </tr>
+            <tr>
+              <td>n = 1</td>
+              <td>1² + 1 + 41</td>
+              <td><strong>43</strong></td>
+              <td><span class="pill-yes">Sí (primo)</span></td>
+            </tr>
+            <tr>
+              <td>n = 2</td>
+              <td>2² + 2 + 41</td>
+              <td><strong>47</strong></td>
+              <td><span class="pill-yes">Sí (primo)</span></td>
+            </tr>
+            <tr>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td><span class="pill-yes">Sí (todos primos)</span></td>
+            </tr>
+            <tr>
+              <td>n = 39</td>
+              <td>39² + 39 + 41</td>
+              <td><strong>1601</strong></td>
+              <td><span class="pill-yes">Sí (primo)</span></td>
+            </tr>
+            <tr class="highlight-failure">
+              <td><strong>n = 40</strong></td>
+              <td>40² + 40 + 41 = 40(40 + 1) + 41</td>
+              <td><strong>1681 = 41²</strong></td>
+              <td><span class="pill-no">¡FALSO! 41 × 41 (compuesto)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout-caption">
+        ¡La fórmula acierta durante <strong>40 números consecutivos</strong> (n = 0 hasta n = 39)! 
+        Cualquier observador empírico habría concluido que siempre produce números primos. Sin embargo, al llegar a n = 40, la propiedad colapsa.
+      </p>
+    </div>
+
+    <!-- El Problema de Moser (Círculo y Regiones) -->
+    <div class="math-callout is-danger">
+      <div class="callout-header">
+        <span class="callout-badge is-danger">TRAMPA DE PATRÓN</span>
+        <h3>El Enigma del Círculo de Moser (1, 2, 4, 8, 16... ¿32?)</h3>
+      </div>
+      <p>
+        Si colocas <em>n</em> puntos sobre una circunferencia y los unes todos entre sí con líneas rectas, ¿en cuántas regiones dividen el círculo?
+      </p>
+      <div class="pattern-sequence">
+        <div class="pattern-item">
+          <span class="pt-n">1 punto</span>
+          <span class="pt-val">1 región</span>
+          <span class="pt-math">(2⁰)</span>
+        </div>
+        <div class="pattern-item">
+          <span class="pt-n">2 puntos</span>
+          <span class="pt-val">2 regiones</span>
+          <span class="pt-math">(2¹)</span>
+        </div>
+        <div class="pattern-item">
+          <span class="pt-n">3 puntos</span>
+          <span class="pt-val">4 regiones</span>
+          <span class="pt-math">(2²)</span>
+        </div>
+        <div class="pattern-item">
+          <span class="pt-n">4 puntos</span>
+          <span class="pt-val">8 regiones</span>
+          <span class="pt-math">(2³)</span>
+        </div>
+        <div class="pattern-item">
+          <span class="pt-n">5 puntos</span>
+          <span class="pt-val">16 regiones</span>
+          <span class="pt-math">(2⁴)</span>
+        </div>
+        <div class="pattern-item is-trap">
+          <span class="pt-n">6 puntos</span>
+          <span class="pt-val">¡31 regiones!</span>
+          <span class="pt-math">(≠ 32)</span>
+        </div>
+      </div>
+      <p class="callout-caption">
+        Todo el cerebro humano espera <strong>32</strong>, pero el resultado geométrico real es <strong>31</strong>. La verdadera fórmula analítica es la combinación combinatoria:
+        <code>R(n) = (n⁴ - 6n³ + 23n² - 18n + 24) / 24</code>.
+      </p>
+    </div>
+
+    <div class="prose-axiom-quote">
+      <span class="quote-symbol">∴</span>
+      <blockquote>
+        «Un ejemplo ilustra una idea; cien ejemplos sugieren un patrón; pero solo una <strong>demostración deductiva</strong> establece una verdad matemática para la eternidad.»
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA ARQUITECTURA DEL SABER -->
+  <section class="lesson-section" id="arquitectura-saber">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Las Piezas del Engranaje: Axiomas, Definiciones y Teoremas</h2>
+
+    <p>
+      Para construir un razonamiento que no tenga fisuras, la matemática utiliza cuatro piezas arquitectónicas estrictamente jerárquicas:
+    </p>
+
+    <div class="academic-cards-grid">
+      <div class="academic-concept-card">
+        <div class="concept-head">
+          <span class="concept-num">01</span>
+          <h3>Axioma / Postulado</h3>
+        </div>
+        <p class="concept-def">
+          <strong>La base intocable.</strong> Una proposición tan elemental y evidente que se acepta como punto de partida sin demostración previa.
+        </p>
+        <div class="concept-example">
+          <span class="ex-label">Ejemplo canónico:</span>
+          <em>«Por dos puntos distintos en el plano pasa una y solo una recta»</em> (Euclides).
+        </div>
+      </div>
+
+      <div class="academic-concept-card">
+        <div class="concept-head">
+          <span class="concept-num">02</span>
+          <h3>Definición Formal</h3>
+        </div>
+        <p class="concept-def">
+          <strong>El contrato del lenguaje.</strong> Fija el significado exacto de un término para desterrar toda ambigüedad. Sin definición formal, no se puede operar.
+        </p>
+        <div class="concept-example">
+          <span class="ex-label">Ejemplo canónico:</span>
+          <code>n ∈ ℤ es par ⟺ ∃ k ∈ ℤ tal que n = 2k</code>
+        </div>
+      </div>
+
+      <div class="academic-concept-card">
+        <div class="concept-head">
+          <span class="concept-num">03</span>
+          <h3>Teorema</h3>
+        </div>
+        <p class="concept-def">
+          <strong>La afirmación demostrada.</strong> Una proposición matemática que ha sido deducida de forma rigurosa encadenando axiomas, definiciones y teoremas ya probados.
+        </p>
+        <div class="concept-example">
+          <span class="ex-label">Ejemplo canónico:</span>
+          <em>Teorema de Pitágoras: en todo triángulo rectángulo, a² + b² = c².</em>
+        </div>
+      </div>
+
+      <div class="academic-concept-card">
+        <div class="concept-head">
+          <span class="concept-num">04</span>
+          <h3>Lema y Corolario</h3>
+        </div>
+        <p class="concept-def">
+          <strong>El andamio y la cosecha.</strong> Un <em>lema</em> es un teorema auxiliar previo para allanar el camino; un <em>corolario</em> es una consecuencia directa casi inmediata de un teorema mayor.
+        </p>
+        <div class="concept-example">
+          <span class="ex-label">Ejemplo:</span>
+          <em>Corolario: La hipotenusa de un triángulo rectángulo es siempre mayor que cualquiera de sus catetos.</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LA FORMA CANÓNICA: HIPÓTESIS Y TESIS -->
+  <section class="lesson-section" id="hipotesis-tesis">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Estructura Canónica: Hipótesis (H) y Tesis (T)</h2>
+
+    <p>
+      Casi todo teorema en el currículo de Secundaria y Bachillerato adopta la forma de una <strong>proposición condicional</strong>:
+    </p>
+
+    <div class="implication-structure-box">
+      <div class="implication-part is-hypothesis">
+        <span class="part-badge">CONDICIÓN DE PARTIDA</span>
+        <h4>HIPÓTESIS (H)</h4>
+        <p>Lo que el problema o teorema te entrega como <strong>cierto</strong>. Son los datos y supuestos sobre la mesa.</p>
+        <span class="part-example">«Si n es un número impar...»</span>
+      </div>
+
+      <div class="implication-arrow-block">
+        <span class="arrow-glyph">⟹</span>
+        <span class="arrow-text">IMPLICA</span>
+      </div>
+
+      <div class="implication-part is-thesis">
+        <span class="part-badge is-thesis">OBJETIVO OBLIGATORIO</span>
+        <h4>TESIS (T)</h4>
+        <p>Lo que debes deducir y <strong>demostrar de forma ineludible</strong> usando únicamente lógica y álgebra.</p>
+        <span class="part-example">«...entonces n² es impar»</span>
+      </div>
+    </div>
+
+    <!-- El Pecado Capital: Razonamiento Circular -->
+    <div class="math-warning-box">
+      <div class="warning-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="warning-body">
+        <h4>El Gran Error en Exámenes de Bachillerato: La Petición de Principio (Razonamiento Circular)</h4>
+        <p>
+          Muchos estudiantes intentan demostrar que <em>A = B</em> escribiendo desde la primera línea <em>A = B</em>, sumando o multiplicando cosas a ambos lados hasta llegar a <em>0 = 0</em>, y concluyen triunfantes: <em>«¡Como 0 = 0 es verdad, entonces A = B!»</em>.
+        </p>
+        <p>
+          <strong>Esto es un cero en cualquier examen de Bachillerato o Selectividad/PAU.</strong> No puedes utilizar lo que quieres demostrar como si ya fuera cierto. Partes de la <em>Hipótesis</em> y construyes hacia adelante; jamás asumes la <em>Tesis</em>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DE IMPLICACIONES -->
+  <section class="lesson-section" id="laboratorio-falacias">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: ¿Es lo mismo P ⟹ Q que Q ⟹ P?</h2>
+    
+    <p>
+      Uno de los fallos más graves en el razonamiento lógico formal consiste en confundir una <strong>implicación</strong> (P ⟹ Q) con su <strong>recíproco</strong> (Q ⟹ P). Usa este laboratorio para explorar por qué la flecha de la implicación no es una calle de doble sentido:
+    </p>
+
+    <!-- WIDGET INTERACTIVO: DETECTOR DE FALACIAS -->
+    <div class="logic-lab-widget" id="logic-widget">
+      <div class="widget-head">
+        <div class="widget-title-group">
+          <span class="widget-tag">LABORATORIO DE LÓGICA PROPOSICIONAL</span>
+          <h3>Explorador de Recíprocos y Contraejemplos</h3>
+        </div>
+        <div class="widget-selector-wrap">
+          <label for="statement-select">Elige un teorema para analizar:</label>
+          <select id="statement-select" class="math-select">
+            <option value="multiplo">1. Múltiplos de 4 y Números Pares</option>
+            <option value="derivable">2. Derivabilidad y Continuidad (Cálculo de Bachillerato)</option>
+            <option value="cuadrado">3. Cuadriláteros: Cuadrados y Rectángulos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="widget-body">
+        <div class="statement-comparison-grid">
+          <!-- Sentido Directo -->
+          <div class="stmt-card is-direct">
+            <span class="stmt-direction">TEOREMA DIRECTO: P ⟹ Q</span>
+            <div class="stmt-text" id="direct-text">Si un número es múltiplo de 4, entonces es un número par.</div>
+            <div class="stmt-verdict is-true">
+              <span class="verdict-icon">✓</span>
+              <span><strong>VERDADERO</strong> · Demostrable analíticamente: 4k = 2(2k)</span>
+            </div>
+          </div>
+
+          <!-- Sentido Recíproco -->
+          <div class="stmt-card is-converse">
+            <span class="stmt-direction">RECÍPROCO: Q ⟹ P</span>
+            <div class="stmt-text" id="converse-text">Si un número es par, entonces es múltiplo de 4.</div>
+            <div class="stmt-verdict is-false">
+              <span class="verdict-icon">✕</span>
+              <span><strong>FALSO</strong> (Falacia de afirmación del consecuente)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explicación Visual y Contraejemplo -->
+        <div class="widget-feedback-box">
+          <div class="feedback-badge">CONTRAEJEMPLO DEMOLEDOR:</div>
+          <div class="feedback-content" id="counterexample-text">
+            El número <strong>6</strong> es un número par (6 = 2 × 3), pero <strong>no es divisible por 4</strong> (6 / 4 = 1.5). 
+            Un solo caso basta para destruir la validez del recíproco.
+          </div>
+          <div class="venn-insight">
+            <div class="venn-diagram-box">
+              <div class="venn-outer" id="venn-outer-label">Conjunto Q (Pares)</div>
+              <div class="venn-inner" id="venn-inner-label">Conjunto P (Múltiplos de 4)</div>
+            </div>
+            <p class="venn-desc">
+              Todo elemento de <em>P</em> vive dentro de <em>Q</em> (P ⊆ Q). Pero hay elementos en <em>Q</em> que se quedan fuera de <em>P</em>. Por tanto, <strong>P ⟹ Q no garantiza Q ⟹ P</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: TALLER PRÁCTICO PASO A PASO -->
+  <section class="lesson-section" id="taller-demostracion">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Taller de Demostración Rigurosa: El Teorema de la Suma de Impares</h2>
+
+    <p>
+      Vamos a demostrar formalmente un resultado intuitivo para que aprecies la exactitud de cada paso:
+    </p>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA FUNDAMENTAL DE PARIDAD</span>
+      <h3>«La suma de dos números impares cualesquiera es siempre un número par»</h3>
+      <code class="theorem-symbolic">∀ a, b ∈ ℤ, (a es impar ∧ b es impar) ⟹ (a + b) es par</code>
+    </div>
+
+    <!-- DESARROLLO PASO A PASO CON JUSTIFICACIONES OBLIGATORIAS -->
+    <div class="proof-stepper-container">
+      <div class="proof-stepper-header">
+        <h4>DEMOSTRACIÓN DEDUCTIVA PASO A PASO</h4>
+        <span class="stepper-hint">Pulsa cada paso para estudiar su justificación analítica</span>
+      </div>
+
+      <div class="proof-steps-list">
+        <!-- Paso 1 -->
+        <div class="proof-step-card is-active">
+          <div class="step-num-col">01</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Traducción a lenguaje algebraico riguroso</strong>
+              <span class="step-rule">Definición de número impar</span>
+            </div>
+            <p>
+              Por la definición axiomática de paridad, si <em>a</em> y <em>b</em> son impares, existen dos enteros <em>k, m</em> ∈ ℤ tales que:
+            </p>
+            <div class="step-equation">
+              <code>a = 2k + 1 &emsp;y&emsp; b = 2m + 1</code>
+            </div>
+            <div class="step-note">
+              <em>¡Atención al rigor!</em> Usamos <em>k</em> y <em>m</em> diferentes porque <em>a</em> y <em>b</em> no tienen por qué ser el mismo número impar. Usar la misma letra para ambos es un error de generalidad.
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">02</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Planteamiento de la operación suma</strong>
+              <span class="step-rule">Sustitución algebraica de H</span>
+            </div>
+            <p>
+              Calculamos la expresión correspondiente a <em>a + b</em> sustituyendo sus valores definidos:
+            </p>
+            <div class="step-equation">
+              <code>a + b = (2k + 1) + (2m + 1)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">03</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Reagrupación de términos</strong>
+              <span class="step-rule">Propiedad asociativa y conmutativa en (ℤ, +)</span>
+            </div>
+            <p>
+              Gracias a las propiedades de la suma en el anillo de los números enteros:
+            </p>
+            <div class="step-equation">
+              <code>a + b = 2k + 2m + (1 + 1) = 2k + 2m + 2</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">04</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Extracción del factor común</strong>
+              <span class="step-rule">Propiedad distributiva del producto respecto a la suma</span>
+            </div>
+            <p>
+              Observamos que el coeficiente 2 es factor común en los tres sumandos:
+            </p>
+            <div class="step-equation">
+              <code>a + b = 2 · (k + m + 1)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">05</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Clausura algebraica y conclusión final</strong>
+              <span class="step-rule">Clausura de los enteros (ℤ) y Definición de Par</span>
+            </div>
+            <p>
+              Como <em>k</em> ∈ ℤ y <em>m</em> ∈ ℤ, la suma <em>p = k + m + 1</em> es necesariamente un número entero (<em>p</em> ∈ ℤ). Por consiguiente:
+            </p>
+            <div class="step-equation is-conclusive">
+              <code>a + b = 2p &emsp;con p ∈ ℤ</code>
+            </div>
+            <p>
+              Esta expresión encaja de manera exacta y completa con la definición de número par. Por tanto, queda demostrado que <em>a + b</em> es par.
+            </p>
+            <div class="qed-badge">
+              <span>∎ Q.E.D.</span>
+              <em>(Quod Erat Demonstrandum · Lo que se quería demostrar)</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMOSTRACIÓN VISUAL / GEOMÉTRICA INTERACTIVA -->
+    <div class="geometric-proof-widget">
+      <div class="geo-widget-header">
+        <h4>Comprobación Geométrica: La Ficha que Sobra</h4>
+        <p>Ajusta dos números impares y observa cómo sus dos «fichas sueltas» se emparejan siempre:</p>
+      </div>
+
+      <div class="geo-controls-row">
+        <div class="geo-input-group">
+          <label for="odd-a">Impar a = 2k + 1:</label>
+          <input type="range" id="odd-a" min="1" max="15" step="2" value="5" />
+          <span class="geo-val" id="val-a">5 (k=2)</span>
+        </div>
+        <div class="geo-input-group">
+          <label for="odd-b">Impar b = 2m + 1:</label>
+          <input type="range" id="odd-b" min="1" max="15" step="2" value="7" />
+          <span class="geo-val" id="val-b">7 (m=3)</span>
+        </div>
+      </div>
+
+      <div class="geo-visual-display">
+        <div class="geo-block" id="block-a">
+          <span class="block-label">Número a (5):</span>
+          <div class="pairs-display" id="pairs-a"></div>
+        </div>
+        <span class="geo-plus">+</span>
+        <div class="geo-block" id="block-b">
+          <span class="block-label">Número b (7):</span>
+          <div class="pairs-display" id="pairs-b"></div>
+        </div>
+        <span class="geo-equals">=</span>
+        <div class="geo-block is-total" id="block-total">
+          <span class="block-label">Suma total (12):</span>
+          <div class="pairs-display" id="pairs-total"></div>
+          <span class="geo-verdict" id="total-verdict">12 es PAR (6 parejas perfectas, 0 sueltas)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RÚBRICA DE RIGOR PARA EXÁMENES -->
+  <section class="lesson-section" id="rubrica-examen">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Los 4 Pecados Capitales en Bachillerato y PAU</h2>
+
+    <p>
+      Los correctores de exámenes de acceso a la universidad aplican criterios muy concretos de rigor. Evita a toda costa estos cuatro tropiezos:
+    </p>
+
+    <div class="rubric-grid">
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR FRECUENTE 01</span>
+          <h3>Variables Fantasma</h3>
+        </div>
+        <p class="rubric-desc">
+          Escribir letras auxiliares (<em>k, m, λ, μ</em>) sin especificar a qué conjunto pertenecen.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Forma correcta:</span>
+          <code>«Sea k ∈ ℤ...» o «Para todo x ∈ ℝ \ &#123;0&#125;...»</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR FRECUENTE 02</span>
+          <h3>El Abuso de la Flecha (⟹)</h3>
+        </div>
+        <p class="rubric-desc">
+          Usar el símbolo <strong>⟹</strong> como si fuera un punto y aparte decorativo o una flecha de lista de la compra.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Forma correcta:</span>
+          <em>Solo escribe ⟹ si la expresión izquierda realmente garantiza lógicamente la derecha.</em>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR FRECUENTE 03</span>
+          <h3>Confundir Implicación con Equivalencia</h3>
+        </div>
+        <p class="rubric-desc">
+          Poner <strong>⟺</strong> en operaciones que no tienen marcha atrás.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Ejemplo crítico:</span>
+          <code>x = 2 ⟹ x² = 4 (Verdadero) &emsp;pero&emsp; x² = 4 ⇎ x = 2 (Puede ser x = -2)</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR FRECUENTE 04</span>
+          <h3>Dejar la Demostración sin Rematar</h3>
+        </div>
+        <p class="rubric-desc">
+          Llegar al final de las operaciones y parar sin conectar el resultado con la tesis original que te pedían probar.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Forma correcta:</span>
+          <em>«Puesto que llegamos a la forma 2p con p ∈ ℤ, queda probado que la suma es par, como queríamos demostrar.»</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: AUTOEVALUACIÓN RÁPIDA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Autoevaluación de Conceptos: Demuestra lo que Sabes</h2>
+    <p>Pon a prueba tu rigor lógico respondiendo a estas tres preguntas conceptuales:</p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="quiz-question">
+          <span class="q-num">1.</span>
+          <p>Un estudiante comprueba que para <em>n</em> = 1, 2, 3, 4, 5, la expresión <em>n² + n + 17</em> es siempre un número primo. ¿Puede afirmar formalmente que la expresión genera números primos para todo <em>n</em> ∈ ℕ?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) Sí, porque 5 casos sucesivos forman una muestra estadísticamente representativa.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>B) No, porque la comprobación empírica no constituye una demostración; de hecho, para n = 17 la expresión es divisible por 17.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) Sí, siempre y cuando se demuestre con la regla de Ruffini.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="quiz-question">
+          <span class="q-num">2.</span>
+          <p>¿Cuál de las siguientes afirmaciones sobre la implicación <em>P ⟹ Q</em> es matemáticamente CIERTA?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) Si <em>P ⟹ Q</em> es verdadero, entonces su recíproco <em>Q ⟹ P</em> siempre es verdadero.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>B) La implicación <em>P ⟹ Q</em> es lógicamente equivalente a su contrarrecíproco: <em>¬Q ⟹ ¬P</em>.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) Si la hipótesis <em>P</em> es falsa, la implicación queda anulada y no tiene valor de verdad.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="quiz-question">
+          <span class="q-num">3.</span>
+          <p>¿Qué se necesita para DEMOLER por completo una proposición universal del tipo «Todos los múltiplos de 5 terminan en 5»?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) Encontrar al menos diez casos distintos donde no funcione.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>B) Demostrar que 5 no es divisible por 2.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>C) Presentar un único contraejemplo: el número 10 es múltiplo de 5 y termina en 0.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO DE LÓGICA INTERACTIVA (RECÍPROCOS Y CONTRAEJEMPLOS)
+    // =========================================================================
+    const selectEl = document.getElementById('statement-select') as HTMLSelectElement | null;
+    const directText = document.getElementById('direct-text');
+    const converseText = document.getElementById('converse-text');
+    const counterText = document.getElementById('counterexample-text');
+    const vennOuter = document.getElementById('venn-outer-label');
+    const vennInner = document.getElementById('venn-inner-label');
+
+    const statementsData: Record<string, { direct: string; converse: string; counter: string; outer: string; inner: string }> = {
+      multiplo: {
+        direct: 'Si un número es múltiplo de 4, entonces es un número par.',
+        converse: 'Si un número es par, entonces es múltiplo de 4.',
+        counter: 'El número 6 es un número par (6 = 2 × 3), pero NO es divisible por 4 (6 / 4 = 1.5). Un solo caso refuta por completo el recíproco.',
+        outer: 'Números Pares (Q)',
+        inner: 'Múltiplos de 4 (P)',
+      },
+      derivable: {
+        direct: 'Si una función f(x) es derivable en x₀, entonces f(x) es continua en x₀.',
+        converse: 'Si una función f(x) es continua en x₀, entonces f(x) es derivable en x₀.',
+        counter: 'La función valor absoluto f(x) = |x| es perfectamente continua en x = 0, pero presenta un punto anguloso y NO es derivable en x = 0 (sus derivadas laterales son -1 y +1).',
+        outer: 'Funciones Continuas (Q)',
+        inner: 'Funciones Derivables (P)',
+      },
+      cuadrado: {
+        direct: 'Si una figura geométrica es un cuadrado, entonces es un rectángulo.',
+        converse: 'Si una figura geométrica es un rectángulo, entonces es un cuadrado.',
+        counter: 'Una hoja de papel A4 tiene cuatro ángulos rectos de 90° (cumple la definición de rectángulo), pero sus lados no son iguales, por lo que NO es un cuadrado.',
+        outer: 'Rectángulos (Q)',
+        inner: 'Cuadrados (P)',
+      },
+    };
+
+    if (selectEl) {
+      selectEl.addEventListener('change', () => {
+        const val = selectEl.value;
+        const d = statementsData[val];
+        if (!d) return;
+
+        if (directText) directText.textContent = d.direct;
+        if (converseText) converseText.textContent = d.converse;
+        if (counterText) counterText.innerHTML = d.counter;
+        if (vennOuter) vennOuter.textContent = d.outer;
+        if (vennInner) vennInner.textContent = d.inner;
+      });
+    }
+
+    // =========================================================================
+    // 2. DEMOSTRACIÓN GEOMÉTRICA DE LA SUMA DE DOS IMPARES (FICHAS SUELTAS)
+    // =========================================================================
+    const inputA = document.getElementById('odd-a') as HTMLInputElement | null;
+    const inputB = document.getElementById('odd-b') as HTMLInputElement | null;
+    const valA = document.getElementById('val-a');
+    const valB = document.getElementById('val-b');
+    const pairsA = document.getElementById('pairs-a');
+    const pairsB = document.getElementById('pairs-b');
+    const pairsTotal = document.getElementById('pairs-total');
+    const totalVerdict = document.getElementById('total-verdict');
+
+    const renderGeoPairs = () => {
+      if (!inputA || !inputB) return;
+      const a = parseInt(inputA.value, 10);
+      const b = parseInt(inputB.value, 10);
+      const k = Math.floor(a / 2);
+      const m = Math.floor(b / 2);
+      const total = a + b;
+      const totalPairs = total / 2;
+
+      if (valA) valA.textContent = `${a} (k=${k})`;
+      if (valB) valB.textContent = `${b} (m=${m})`;
+
+      // Renderizar a: k parejas + 1 suelta
+      if (pairsA) {
+        pairsA.innerHTML = '';
+        for (let i = 0; i < k; i++) {
+          const p = document.createElement('span');
+          p.className = 'pair-token';
+          p.title = 'Pareja de fichas';
+          p.textContent = '●●';
+          pairsA.appendChild(p);
+        }
+        const loose = document.createElement('span');
+        loose.className = 'loose-token';
+        loose.title = 'Ficha impar suelta';
+        loose.textContent = '●';
+        pairsA.appendChild(loose);
+      }
+
+      // Renderizar b: m parejas + 1 suelta
+      if (pairsB) {
+        pairsB.innerHTML = '';
+        for (let i = 0; i < m; i++) {
+          const p = document.createElement('span');
+          p.className = 'pair-token';
+          p.title = 'Pareja de fichas';
+          p.textContent = '●●';
+          pairsB.appendChild(p);
+        }
+        const loose = document.createElement('span');
+        loose.className = 'loose-token';
+        loose.title = 'Ficha impar suelta';
+        loose.textContent = '●';
+        pairsB.appendChild(loose);
+      }
+
+      // Renderizar suma total: todas emparejadas perfectamente
+      if (pairsTotal) {
+        pairsTotal.innerHTML = '';
+        for (let i = 0; i < totalPairs; i++) {
+          const p = document.createElement('span');
+          p.className = 'pair-token is-joined';
+          p.textContent = '●●';
+          pairsTotal.appendChild(p);
+        }
+      }
+
+      if (totalVerdict) {
+        totalVerdict.innerHTML = `<strong>${total}</strong> es <strong>PAR</strong>: son exactamente ${totalPairs} parejas (${k} + ${m} + 1 nueva pareja con las dos fichas sueltas).`;
+      }
+    };
+
+    if (inputA && inputB) {
+      inputA.addEventListener('input', renderGeoPairs);
+      inputB.addEventListener('input', renderGeoPairs);
+      renderGeoPairs();
+    }
+
+    // =========================================================================
+    // 3. AUTOEVALUACIÓN INTERACTIVA
+    // =========================================================================
+    document.querySelectorAll<HTMLElement>('.quiz-card').forEach((card) => {
+      const options = card.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+      const explanation = card.querySelector<HTMLElement>('.quiz-explanation');
+
+      options.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          options.forEach((o) => {
+            o.disabled = true;
+            if (o.dataset.correct === 'true') {
+              o.classList.add('is-revealed-correct');
+            }
+          });
+
+          if (isCorrect) {
+            btn.classList.add('is-user-correct');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-good';
+              explanation.innerHTML = '<strong>¡Exacto!</strong> Has razonado con rigor formal matemático.';
+            }
+          } else {
+            btn.classList.add('is-user-wrong');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-bad';
+              explanation.innerHTML = '<strong>Incorrecto.</strong> Revisa el concepto: un solo contraejemplo refuta un enunciado universal, mientras que una colección finita de ejemplos no demuestra una ley.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS DE LA LECCIÓN: ANATOMÍA DE UNA DEMOSTRACIÓN
+     ========================================================================= */
+  .lesson-section {
+    position: relative;
+    margin-bottom: 4.5rem;
+    padding-top: 1rem;
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .marker-num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.12);
+    border: 1px solid var(--block-accent, #ffc14d);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  :global([data-theme="light"]) .marker-num {
+    background: #fff7ed;
+    color: #b45309;
+    border-color: #d97706;
+  }
+
+  .marker-line {
+    flex-grow: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--block-accent, #ffc14d) 0%, transparent 80%);
+    opacity: 0.4;
+  }
+
+  .lesson-section h2 {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 1.2rem;
+    line-height: 1.3;
+  }
+
+  :global([data-theme="light"]) .lesson-section h2 {
+    color: #0f172a;
+  }
+
+  .prose-lead {
+    font-size: 1.15rem;
+    line-height: 1.65;
+    color: var(--ink, #f3f2ec);
+    font-weight: 500;
+    margin-bottom: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .prose-lead {
+    color: #1e293b;
+  }
+
+  .lesson-section p {
+    font-size: 1.02rem;
+    line-height: 1.68;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .lesson-section p {
+    color: #334155;
+  }
+
+  /* Cajas de llamada Matemática */
+  .math-callout {
+    margin: 2rem 0;
+    padding: 1.8rem;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1.5px solid rgba(255, 193, 77, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  }
+
+  :global([data-theme="light"]) .math-callout {
+    background: linear-gradient(145deg, #ffffff 0%, #fbfbfa 100%);
+    border: 1.5px solid rgba(217, 119, 6, 0.3);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06), inset 0 1px 1px #ffffff;
+  }
+
+  .math-callout.is-danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%);
+  }
+
+  :global([data-theme="light"]) .math-callout.is-danger {
+    border-color: rgba(220, 38, 38, 0.35);
+    background: linear-gradient(145deg, #fff5f5 0%, #ffffff 100%);
+  }
+
+  .callout-header {
+    margin-bottom: 1rem;
+  }
+
+  .callout-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 193, 77, 0.2);
+    color: #ffc14d;
+    border: 1px solid #ffc14d;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .callout-badge {
+    background: #fff7ed;
+    color: #b45309;
+    border-color: #d97706;
+  }
+
+  .callout-badge.is-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border-color: #ef4444;
+  }
+
+  :global([data-theme="light"]) .callout-badge.is-danger {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #dc2626;
+  }
+
+  .callout-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .callout-header h3 {
+    color: #0f172a;
+  }
+
+  .formula-spotlight {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 193, 77, 0.35);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    text-align: center;
+    margin: 1rem 0 1.2rem;
+  }
+
+  :global([data-theme="light"]) .formula-spotlight {
+    background: #f8fafc;
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .formula-spotlight code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .formula-spotlight code {
+    color: #b45309;
+  }
+
+  /* Tabla Matemática */
+  .callout-table-wrapper {
+    overflow-x: auto;
+    margin: 1.2rem 0;
+  }
+
+  .compact-math-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .compact-math-table th, .compact-math-table td {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+  }
+
+  :global([data-theme="light"]) .compact-math-table th,
+  :global([data-theme="light"]) .compact-math-table td {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .compact-math-table th {
+    background: rgba(255, 255, 255, 0.04);
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .compact-math-table th {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  .compact-math-table td {
+    color: var(--muted, #cbd5e1);
+  }
+
+  :global([data-theme="light"]) .compact-math-table td {
+    color: #334155;
+  }
+
+  .highlight-failure {
+    background: rgba(239, 68, 68, 0.15) !important;
+  }
+
+  :global([data-theme="light"]) .highlight-failure {
+    background: #fee2e2 !important;
+  }
+
+  .pill-yes {
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .pill-no {
+    color: #ef4444;
+    font-weight: 800;
+  }
+
+  .callout-caption {
+    font-size: 0.88rem !important;
+    font-style: italic;
+    color: var(--muted, #94a3b8) !important;
+    margin-top: 0.8rem;
+    margin-bottom: 0 !important;
+  }
+
+  /* Secuencia de Patrón Moser */
+  .pattern-sequence {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.65rem;
+    margin: 1.2rem 0;
+  }
+
+  .pattern-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .pattern-item {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .pattern-item.is-trap {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+  }
+
+  :global([data-theme="light"]) .pattern-item.is-trap {
+    background: #fee2e2;
+    border-color: #dc2626;
+  }
+
+  .pt-n {
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    font-family: ui-monospace, monospace;
+  }
+
+  .pt-val {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.2rem 0;
+  }
+
+  :global([data-theme="light"]) .pt-val {
+    color: #0f172a;
+  }
+
+  .pattern-item.is-trap .pt-val {
+    color: #ef4444;
+  }
+
+  .pt-math {
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Cita de Axioma */
+  .prose-axiom-quote {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.6rem 2rem;
+    border-radius: 14px;
+    background: rgba(255, 193, 77, 0.05);
+    border-left: 4px solid var(--block-accent, #ffc14d);
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .prose-axiom-quote {
+    background: #fffdfa;
+    border-left-color: #d97706;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .quote-symbol {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--block-accent, #ffc14d);
+    line-height: 1;
+  }
+
+  :global([data-theme="light"]) .quote-symbol {
+    color: #d97706;
+  }
+
+  .prose-axiom-quote blockquote {
+    margin: 0;
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .prose-axiom-quote blockquote {
+    color: #1e293b;
+  }
+
+  /* 2. REJILLA DE PIEZAS ARQUITECTÓNICAS */
+  .academic-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.8rem 0;
+  }
+
+  .academic-concept-card {
+    padding: 1.4rem;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  :global([data-theme="light"]) .academic-concept-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  .concept-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .concept-num {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.15);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .concept-num {
+    background: #fff7ed;
+    color: #b45309;
+  }
+
+  .concept-head h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .concept-head h3 {
+    color: #0f172a;
+  }
+
+  .concept-def {
+    font-size: 0.9rem !important;
+    line-height: 1.55 !important;
+    color: var(--muted, #cbd5e1) !important;
+    margin-bottom: 0.9rem !important;
+  }
+
+  :global([data-theme="light"]) .concept-def {
+    color: #475569 !important;
+  }
+
+  .concept-example {
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.82rem;
+  }
+
+  :global([data-theme="light"]) .concept-example {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .ex-label {
+    display: block;
+    font-size: 0.68rem;
+    font-family: ui-monospace, monospace;
+    color: var(--block-accent, #ffc14d);
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+
+  :global([data-theme="light"]) .ex-label {
+    color: #b45309;
+  }
+
+  /* 3. CAJA DE ESTRUCTURA IMPLICACIÓN H => T */
+  .implication-structure-box {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .implication-part {
+    flex: 1;
+    padding: 1.6rem;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1.5px solid rgba(255, 193, 77, 0.35);
+  }
+
+  :global([data-theme="light"]) .implication-part {
+    background: #ffffff;
+    border-color: rgba(217, 119, 6, 0.35);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .implication-part.is-thesis {
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  :global([data-theme="light"]) .implication-part.is-thesis {
+    border-color: rgba(5, 150, 105, 0.35);
+  }
+
+  .part-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 193, 77, 0.15);
+    color: #ffc14d;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .part-badge {
+    background: #fff7ed;
+    color: #b45309;
+  }
+
+  .part-badge.is-thesis {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .part-badge.is-thesis {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .implication-part h4 {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin: 0 0 0.4rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .implication-part h4 {
+    color: #0f172a;
+  }
+
+  .implication-part p {
+    font-size: 0.88rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .part-example {
+    display: block;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--block-accent, #ffc14d);
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .part-example {
+    color: #b45309;
+  }
+
+  .implication-arrow-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.8rem;
+  }
+
+  .arrow-glyph {
+    font-size: 2.2rem;
+    color: var(--block-accent, #ffc14d);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  :global([data-theme="light"]) .arrow-glyph {
+    color: #d97706;
+  }
+
+  .arrow-text {
+    font-family: ui-monospace, monospace;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--muted, #94a3b8);
+  }
+
+  .math-warning-box {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 14px;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1.5px solid rgba(239, 68, 68, 0.35);
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .math-warning-box {
+    background: #fef2f2;
+    border-color: rgba(220, 38, 38, 0.3);
+  }
+
+  .warning-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .warning-body h4 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 0.4rem;
+    color: #f87171;
+  }
+
+  :global([data-theme="light"]) .warning-body h4 {
+    color: #b91c1c;
+  }
+
+  /* 4. WIDGET DE LÓGICA Y FALACIAS */
+  .logic-lab-widget {
+    margin: 2.5rem 0;
+    padding: 2rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1.5px solid var(--block-accent, #ffc14d);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .logic-lab-widget {
+    background: #ffffff;
+    border-color: #d97706;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  }
+
+  .widget-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    flex-wrap: wrap;
+  }
+
+  .widget-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    letter-spacing: 0.08em;
+  }
+
+  :global([data-theme="light"]) .widget-tag {
+    color: #d97706;
+  }
+
+  .widget-title-group h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0.2rem 0 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .widget-title-group h3 {
+    color: #0f172a;
+  }
+
+  .widget-selector-wrap label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+
+  .math-select {
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 193, 77, 0.4);
+    color: var(--ink, #f3f2ec);
+    font-size: 0.88rem;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+
+  :global([data-theme="light"]) .math-select {
+    background: #f8fafc;
+    border-color: rgba(217, 119, 6, 0.4);
+    color: #0f172a;
+  }
+
+  .statement-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stmt-card {
+    padding: 1.4rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .stmt-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .stmt-direction {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.5rem;
+  }
+
+  .stmt-text {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+    margin-bottom: 1rem;
+    line-height: 1.45;
+    min-height: 48px;
+  }
+
+  :global([data-theme="light"]) .stmt-text {
+    color: #0f172a;
+  }
+
+  .stmt-verdict {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+  }
+
+  .stmt-verdict.is-true {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  :global([data-theme="light"]) .stmt-verdict.is-true {
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .stmt-verdict.is-false {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  :global([data-theme="light"]) .stmt-verdict.is-false {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  .widget-feedback-box {
+    padding: 1.4rem;
+    border-radius: 12px;
+    background: rgba(255, 193, 77, 0.05);
+    border: 1px dashed rgba(255, 193, 77, 0.35);
+  }
+
+  :global([data-theme="light"]) .widget-feedback-box {
+    background: #fffdfa;
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+
+  .feedback-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    margin-bottom: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .feedback-badge {
+    color: #b45309;
+  }
+
+  .feedback-content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ink, #f3f2ec);
+    margin-bottom: 1.2rem;
+  }
+
+  :global([data-theme="light"]) .feedback-content {
+    color: #1e293b;
+  }
+
+  .venn-insight {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .venn-diagram-box {
+    position: relative;
+    width: 170px;
+    height: 110px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 193, 77, 0.4);
+  }
+
+  :global([data-theme="light"]) .venn-diagram-box {
+    background: #f8fafc;
+    border-color: rgba(217, 119, 6, 0.4);
+  }
+
+  .venn-outer {
+    position: absolute;
+    top: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    font-family: ui-monospace, monospace;
+  }
+
+  .venn-inner {
+    width: 90px;
+    height: 55px;
+    border-radius: 50%;
+    background: rgba(255, 193, 77, 0.15);
+    border: 1.5px solid #ffc14d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #ffc14d;
+    padding: 0.2rem;
+  }
+
+  :global([data-theme="light"]) .venn-inner {
+    background: #ffedd5;
+    border-color: #d97706;
+    color: #9a3412;
+  }
+
+  .venn-desc {
+    flex: 1;
+    font-size: 0.88rem !important;
+    margin: 0 !important;
+  }
+
+  /* 5. TALLER DE DEMOSTRACIÓN */
+  .formal-theorem-banner {
+    padding: 1.6rem;
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255, 193, 77, 0.08) 0%, rgba(255, 193, 77, 0.02) 100%);
+    border: 2px solid var(--block-accent, #ffc14d);
+    margin-bottom: 2rem;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: linear-gradient(145deg, #fff7ed 0%, #ffffff 100%);
+    border-color: #d97706;
+  }
+
+  .theorem-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    letter-spacing: 0.06em;
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: #b45309;
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.35rem;
+    font-weight: 900;
+    margin: 0.3rem 0 0.6rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner h3 {
+    color: #0f172a;
+  }
+
+  .theorem-symbolic {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    color: #b45309;
+  }
+
+  .proof-stepper-container {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .proof-stepper-header {
+    padding: 1.2rem 1.6rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header {
+    background: #f8fafc;
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .proof-stepper-header h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header h4 {
+    color: #0f172a;
+  }
+
+  .stepper-hint {
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .proof-steps-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .proof-step-card {
+    display: flex;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+    padding: 1.4rem 1.6rem;
+    gap: 1.2rem;
+  }
+
+  :global([data-theme="light"]) .proof-step-card {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .proof-step-card:last-child {
+    border-bottom: none;
+  }
+
+  .step-num-col {
+    font-family: ui-monospace, monospace;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--block-accent, #ffc14d);
+    opacity: 0.8;
+  }
+
+  :global([data-theme="light"]) .step-num-col {
+    color: #d97706;
+  }
+
+  .step-content {
+    flex: 1;
+  }
+
+  .step-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .step-head strong {
+    font-size: 1rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .step-head strong {
+    color: #0f172a;
+  }
+
+  .step-rule {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .step-rule {
+    color: #b45309;
+    background: #fff7ed;
+  }
+
+  .step-equation {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    margin: 0.7rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: #ffc14d;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .step-equation {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #b45309;
+  }
+
+  .step-equation.is-conclusive {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .step-equation.is-conclusive {
+    border-color: #059669;
+    background: #ecfdf5;
+    color: #047857;
+  }
+
+  .step-note {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--block-accent, #ffc14d);
+    margin-top: 0.5rem;
+  }
+
+  .qed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid #10b981;
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #10b981;
+  }
+
+  .qed-badge em {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    font-style: italic;
+  }
+
+  /* Widget Geométrico de Fichas Sueltas */
+  .geometric-proof-widget {
+    padding: 1.8rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .geometric-proof-widget {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+
+  .geo-widget-header h4 {
+    margin: 0 0 0.3rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  .geo-widget-header p {
+    font-size: 0.88rem !important;
+    margin-bottom: 1.2rem !important;
+  }
+
+  .geo-controls-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .geo-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .geo-input-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+  }
+
+  .geo-val {
+    font-family: ui-monospace, monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+  }
+
+  :global([data-theme="light"]) .geo-val {
+    color: #d97706;
+  }
+
+  .geo-visual-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+  }
+
+  :global([data-theme="light"]) .geo-visual-display {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .geo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .block-label {
+    font-size: 0.72rem;
+    font-family: ui-monospace, monospace;
+    color: var(--muted, #94a3b8);
+    font-weight: 700;
+  }
+
+  .pairs-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+  }
+
+  .pair-token {
+    display: inline-flex;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    background: rgba(255, 193, 77, 0.15);
+    border: 1px solid #ffc14d;
+    color: #ffc14d;
+    font-size: 0.85rem;
+    letter-spacing: -0.05em;
+  }
+
+  :global([data-theme="light"]) .pair-token {
+    background: #ffedd5;
+    border-color: #d97706;
+    color: #9a3412;
+  }
+
+  .pair-token.is-joined {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: #10b981;
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .pair-token.is-joined {
+    background: #ecfdf5;
+    border-color: #059669;
+    color: #047857;
+  }
+
+  .loose-token {
+    display: inline-flex;
+    padding: 0.2rem 0.35rem;
+    border-radius: 6px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1.5px solid #ef4444;
+    color: #ef4444;
+    font-size: 0.85rem;
+  }
+
+  :global([data-theme="light"]) .loose-token {
+    background: #fee2e2;
+    border-color: #dc2626;
+    color: #b91c1c;
+  }
+
+  .geo-plus, .geo-equals {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--muted, #94a3b8);
+  }
+
+  .geo-block.is-total {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .geo-verdict {
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 600;
+    margin-top: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .geo-verdict {
+    color: #047857;
+  }
+
+  /* 6. RÚBRICA DE EXAMEN */
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin: 1.8rem 0;
+  }
+
+  .rubric-card {
+    padding: 1.4rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  }
+
+  :global([data-theme="light"]) .rubric-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  .rubric-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .rubric-badge {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .rubric-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .rubric-card h3 {
+    color: #0f172a;
+  }
+
+  .rubric-desc {
+    font-size: 0.86rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .rubric-fix {
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .rubric-fix {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .fix-good {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #10b981;
+    margin-bottom: 0.2rem;
+  }
+
+  /* 7. AUTOEVALUACIÓN INTERACTIVA */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.8rem;
+  }
+
+  .quiz-card {
+    padding: 1.8rem;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  }
+
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .quiz-question {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .q-num {
+    font-family: ui-monospace, monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--block-accent, #ffc14d);
+    line-height: 1.2;
+  }
+
+  :global([data-theme="light"]) .q-num {
+    color: #d97706;
+  }
+
+  .quiz-question p {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  :global([data-theme="light"]) .quiz-question p {
+    color: #0f172a;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    color: var(--ink, #f3f2ec);
+    font-size: 0.92rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    background: rgba(255, 193, 77, 0.1);
+    border-color: var(--block-accent, #ffc14d);
+    transform: translateX(4px);
+  }
+
+  :global([data-theme="light"]) .quiz-opt {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .quiz-opt:hover:not(:disabled) {
+    background: #fff7ed;
+    border-color: #d97706;
+  }
+
+  .quiz-opt.is-user-correct, .quiz-opt.is-revealed-correct {
+    background: rgba(16, 185, 129, 0.2) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .quiz-opt.is-user-correct,
+  :global([data-theme="light"]) .quiz-opt.is-revealed-correct {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #059669 !important;
+  }
+
+  .quiz-opt.is-user-wrong {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  :global([data-theme="light"]) .quiz-opt.is-user-wrong {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+    border-color: #dc2626 !important;
+  }
+
+  .quiz-explanation {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .quiz-explanation.is-good {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .quiz-explanation.is-good {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+  }
+
+  .quiz-explanation.is-bad {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+
+  :global([data-theme="light"]) .quiz-explanation.is-bad {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+
+  @media (max-width: 768px) {
+    .implication-structure-box {
+      flex-direction: column;
+    }
+    .implication-arrow-block {
+      transform: rotate(90deg);
+      padding: 0.5rem 0;
+    }
+    .widget-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

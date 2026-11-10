@@ -1,0 +1,2010 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-02')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-01');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-03');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL GAMBITO DEL MATEMÁTICO -->
+  <section class="lesson-section" id="el-gambito">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+    
+    <h2>1. El Gambito del Matemático: Demostrar lo Imposible</h2>
+    
+    <p class="prose-lead">
+      En ocasiones, intentar demostrar una verdad matemática avanzando en línea recta es como intentar escalar una pared de cristal pulido: no hay ningún asidero evidente de donde tirar. 
+      Es en ese momento cuando el matemático recurre a su estrategia más elegante y devastadora: <strong>la reducción al absurdo</strong> (<em>reductio ad absurdum</em>).
+    </p>
+
+    <!-- Cita histórica formal de G.H. Hardy -->
+    <div class="prose-axiom-quote">
+      <div class="quote-symbol" aria-hidden="true">§</div>
+      <blockquote>
+        «La reducción al absurdo, que tanto amaba Euclides, es una de las armas más finas de un matemático. Es un gambito mucho más brillante que cualquier gambito de ajedrez: un jugador de ajedrez puede ofrecer el sacrificio de un peón o incluso de una pieza, pero el matemático ofrece el juego entero.»
+        <cite>— G. H. Hardy, <em>A Mathematician's Apology</em> (1940)</cite>
+      </blockquote>
+    </div>
+
+    <p>
+      El mecanismo es implacable: en lugar de probar directamente que una proposición <em>P</em> es verdadera, <strong>asumimos de forma temporal que <em>P</em> es falsa</strong> (es decir, que la proposición contraria <em>¬P</em> es cierta). Acto seguido, caminamos aplicando deducciones lógicas estrictas hasta chocar de frente con una imposibilidad matemática flagrante: una contradicción (<em>⊥</em>), como llegar a que <em>0 = 1</em> o que un número entero es par e impar simultáneamente.
+    </p>
+
+    <div class="math-callout">
+      <div class="callout-header">
+        <span class="callout-badge">PILAR LÓGICO FORMAL</span>
+        <h3>Los Dos Principios Fundamentales de la Lógica Clásica</h3>
+      </div>
+      <p>
+        La reducción al absurdo se sostiene sobre dos axiomas indestructibles del pensamiento deductivo:
+      </p>
+      <div class="academic-cards-grid">
+        <div class="academic-concept-card">
+          <div class="concept-head">
+            <span class="concept-num">A</span>
+            <h4>Principio de No Contradicción</h4>
+          </div>
+          <p class="concept-def">
+            Una proposición no puede ser verdadera y falsa a la vez en el mismo contexto formal: <code>¬(P ∧ ¬P)</code>.
+          </p>
+        </div>
+        <div class="academic-concept-card">
+          <div class="concept-head">
+            <span class="concept-num">B</span>
+            <h4>Principio del Tercero Excluido (Tertium non datur)</h4>
+          </div>
+          <p class="concept-def">
+            Cualquier enunciado matemático es necesariamente verdadero o falso. No existe una tercera alternativa: <code>P ∨ ¬P</code>.
+          </p>
+        </div>
+      </div>
+      <p class="callout-caption">
+        <strong>Conclusión lógica:</strong> Si la hipótesis adversaria <em>¬P</em> engendra inevitablemente una contradicción con la realidad matemática, <em>¬P</em> no puede ser verdadera. Por el Tercero Excluido, <strong>P queda probada como verdad ineludible</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA IRRACIONALIDAD DE RAÍZ DE 2 -->
+  <section class="lesson-section" id="irracionalidad-raiz-dos">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Demostración Reina: La Irracionalidad de √2</h2>
+
+    <p>
+      En el siglo V a.C., la escuela pitagórica veneraba la idea de que todo el orden del cosmos podía expresarse como una razón (fracción) de números enteros. 
+      Al aplicar el Teorema de Pitágoras a un triángulo rectángulo con catetos de longitud 1, se toparon con la hipotenusa <em>h = √2</em>. 
+      La demostración de que <strong>√2 no se puede escribir como fracción</strong> hizo tambalear los cimientos de la filosofía griega clásica.
+    </p>
+
+    <!-- Lema Previo Necesario -->
+    <div class="math-callout is-historic">
+      <div class="callout-header">
+        <span class="callout-badge">LEMA PREVIO OBLIGATORIO</span>
+        <h3>Lema de Paridad Cuadrática</h3>
+      </div>
+      <p>
+        Para que la demostración no tenga fisuras, primero debemos demostrar este resultado auxiliar:
+      </p>
+      <div class="formula-spotlight">
+        <code>∀ n ∈ ℤ : n² es par ⟹ n es par</code>
+      </div>
+      <p class="callout-caption">
+        <strong>Justificación por contrarrecíproco:</strong> Si <em>n</em> fuera impar, tendríamos <em>n = 2k + 1</em> para algún <em>k ∈ ℤ</em>. 
+        Al elevar al cuadrado: <em>n² = (2k + 1)² = 4k² + 4k + 1 = 2(2k² + 2k) + 1</em>, que por definición es impar. 
+        Por tanto, si <em>n²</em> es par, es matemáticamente imposible que <em>n</em> sea impar: <strong>n tiene que ser par</strong>.
+      </p>
+    </div>
+
+    <!-- Stepper de la Demostración de √2 -->
+    <div class="proof-stepper-container">
+      <div class="proof-stepper-header">
+        <h4>DEMOSTRACIÓN POR REDUCCIÓN AL ABSURDO: √2 ∉ ℚ</h4>
+        <span class="stepper-hint">Analiza minuciosamente el encadenamiento deductivo</span>
+      </div>
+
+      <div class="proof-steps-list">
+        <!-- Paso 1 -->
+        <div class="proof-step-card is-active">
+          <div class="step-num-col">01</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Planteamiento de la Hipótesis Adversaria</strong>
+              <span class="step-rule">Suposición temporal de ¬P</span>
+            </div>
+            <p>
+              Supongamos, por reducción al absurdo, que <strong>√2 es un número racional</strong> (<em>√2 ∈ ℚ</em>). 
+              Por la definición canónica de los números racionales, deben existir dos enteros <em>a, b ∈ ℤ</em> con <em>b ≠ 0</em> tales que:
+            </p>
+            <div class="step-equation">
+              <code>√2 = a / b &emsp;con mcd(a, b) = 1 (fracción irreducible)</code>
+            </div>
+            <div class="step-note">
+              <em>¡El nudo de la demostración!</em> Exigir que la fracción sea <strong>irreducible</strong> (que <em>a</em> y <em>b</em> no compartan factores comunes) es un derecho axiomático: cualquier fracción reducible puede simplificarse dividiendo por su máximo común divisor hasta agotarlo.
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">02</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Despeje algebraico y elevación al cuadrado</strong>
+              <span class="step-rule">Operaciones algebraicas en ℝ</span>
+            </div>
+            <p>
+              Elevamos ambos miembros al cuadrado para eliminar el radical:
+            </p>
+            <div class="step-equation">
+              <code>(√2)² = (a / b)² ⟹ 2 = a² / b² ⟹ a² = 2b²</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">03</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Primera deducción de paridad sobre 'a'</strong>
+              <span class="step-rule">Aplicación del Lema de Paridad</span>
+            </div>
+            <p>
+              Puesto que <em>b ∈ ℤ</em>, su cuadrado <em>b²</em> es un número entero. 
+              Por tanto, <em>a² = 2 · (b²)</em> es múltiplo de 2, lo que significa que <strong>a² es par</strong>.
+              Aplicando nuestro lema previo:
+            </p>
+            <div class="step-equation">
+              <code>a² es par ⟹ a es par (existe k ∈ ℤ tal que a = 2k)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">04</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Sustitución y deducción de paridad sobre 'b'</strong>
+              <span class="step-rule">Sustitución algebraica y simplificación</span>
+            </div>
+            <p>
+              Sustituimos la expresión <em>a = 2k</em> en la igualdad del Paso 2 (<em>a² = 2b²</em>):
+            </p>
+            <div class="step-equation">
+              <code>(2k)² = 2b² ⟹ 4k² = 2b² ⟹ b² = 2k²</code>
+            </div>
+            <p>
+              Como <em>k ∈ ℤ</em>, <em>k²</em> es un entero. Por tanto, <em>b² = 2(k²)</em> es divisible por 2. 
+              Esto implica que <strong>b² es par</strong>, y por el lema previo:
+            </p>
+            <div class="step-equation">
+              <code>b² es par ⟹ b es par</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">05</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>El Colapso Lógico: Contradicción con la Hipótesis</strong>
+              <span class="step-rule">Principio de No Contradicción (⊥)</span>
+            </div>
+            <p>
+              En el Paso 3 probamos que <strong>a es divisible por 2</strong>. En el Paso 4 probamos que <strong>b es divisible por 2</strong>.
+              Esto significa que 2 es un factor común tanto de <em>a</em> como de <em>b</em>:
+            </p>
+            <div class="step-equation is-conclusive">
+              <code>mcd(a, b) ≥ 2 &emsp;¡CONTRADICCIÓN DIRECTA con mcd(a, b) = 1!</code>
+            </div>
+            <p>
+              Hemos llegado a que la fracción es irreducible y reducible a la misma vez. 
+              Dado que ningún paso algebraico ha cometido error alguno, el único elemento defectuoso de toda la cadena fue asumir al principio que <em>√2 ∈ ℚ</em>.
+            </p>
+            <div class="qed-badge">
+              <span>∎ Q.E.D. · √2 es estrictamente irracional</span>
+              <em>(La hipótesis √2 ∈ ℚ es falsa; por tanto, √2 ∉ ℚ)</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO DE CONTRADICCIÓN -->
+  <section class="lesson-section" id="laboratorio-absurdo">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Interactivo: El Detector de Contradicciones</h2>
+    
+    <p>
+      Explora cómo opera la reducción al absurdo frente a diferentes teoremas canónicos. 
+      Selecciona un enunciado clásico para observar cómo la hipótesis adversaria se autoaniquila:
+    </p>
+
+    <!-- WIDGET INTERACTIVO: EXPLORADOR DE ABSURDOS -->
+    <div class="logic-lab-widget" id="absurd-lab">
+      <div class="widget-head">
+        <div class="widget-title-group">
+          <span class="widget-tag">SIMULADOR DEDUCTIVO</span>
+          <h3>Explorador de Teoremas por Reducción al Absurdo</h3>
+        </div>
+        <div class="widget-selector-wrap">
+          <label for="absurd-select">Selecciona el teorema a examinar:</label>
+          <select id="absurd-select" class="math-select">
+            <option value="raiz2">1. Irracionalidad de √2</option>
+            <option value="primos">2. Infinitud de los Números Primos (Euclides)</option>
+            <option value="mayorEntero">3. Inexistencia del mayor número entero</option>
+            <option value="sumaRacional">4. La suma de un racional y un irracional es irracional</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="widget-body">
+        <div class="statement-comparison-grid">
+          <!-- Tesis Buscada -->
+          <div class="stmt-card is-direct">
+            <span class="stmt-direction">TESIS QUE QUEREMOS DEMOSTRAR (P)</span>
+            <div class="stmt-text" id="thesis-text">√2 es un número irracional (√2 ∉ ℚ).</div>
+            <div class="stmt-verdict is-true">
+              <span class="verdict-icon">✓</span>
+              <span id="thesis-sub">Objetivo inquebrantable del tratado</span>
+            </div>
+          </div>
+
+          <!-- Suposición Adversaria -->
+          <div class="stmt-card is-converse">
+            <span class="stmt-direction">HIPÓTESIS ADVERSARIA QUE SUPONEMOS CIERTA (¬P)</span>
+            <div class="stmt-text" id="adversary-text">Supongamos que √2 es racional: √2 = a / b con fracción irreducible.</div>
+            <div class="stmt-verdict is-false">
+              <span class="verdict-icon">⊥</span>
+              <span id="adversary-sub">Destinada al colapso formal</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caja de Contradicción y Paradoja -->
+        <div class="widget-feedback-box">
+          <div class="feedback-badge" id="collision-badge">PUNTO DE IMPACTO / CONTRADICCIÓN LÓGICA (⊥):</div>
+          <div class="feedback-content" id="collision-desc">
+            Se deduce algebraicamente que <em>a</em> es par y <em>b</em> es par. Por consiguiente, ambos admiten a 2 como divisor común, lo cual contradice frontalmente que la fracción inicial era irreducible (mcd(a,b) = 1).
+          </div>
+          <div class="venn-insight">
+            <div class="paradox-meter">
+              <div class="meter-label">
+                <span>ESTADO DEL SISTEMA FORMAL:</span>
+                <strong id="system-status">CONTRADICCIÓN DETECTADA (0 = 1 en coherencia)</strong>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="meter-fill" style="width: 100%;"></div>
+              </div>
+            </div>
+            <p class="venn-desc" id="absurd-verdict">
+              La hipótesis contraria <em>¬P</em> produce una paradoja insostenible dentro de las reglas de la aritmética. Por tanto, <strong>P es obligatoriamente verdadera</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LA INFINITUD DE LOS PRIMOS DE EUCLIDES -->
+  <section class="lesson-section" id="primos-euclides">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Infinitud de los Primos: El Genio de Euclides (Proposición IX, 20)</h2>
+
+    <p>
+      ¿Se acaban alguna vez los números primos? ¿Hay un primo gigantesco tras el cual solo existen números compuestos?
+      En el año 300 a.C., Euclides zanjó la cuestión para la eternidad con una demostración por el absurdo de una economía y belleza deslumbrantes:
+    </p>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA DE EUCLIDES</span>
+      <h3>«Existen más números primos que cualquier cantidad finita propuesta»</h3>
+      <code class="theorem-symbolic">El conjunto ℙ = &#123;p ∈ ℕ : p es primo&#125; es infinito</code>
+    </div>
+
+    <!-- Stepper de la Demostración de Euclides -->
+    <div class="proof-stepper-container">
+      <div class="proof-stepper-header">
+        <h4>RAZONAMIENTO DEDUCTIVO POR CONTRADICCIÓN</h4>
+        <span class="stepper-hint">Observa cómo nace el 'Número de Euclides'</span>
+      </div>
+
+      <div class="proof-steps-list">
+        <!-- Paso 1 -->
+        <div class="proof-step-card is-active">
+          <div class="step-num-col">01</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Suposición adversaria: los primos son finitos</strong>
+              <span class="step-rule">Hipótesis ¬P</span>
+            </div>
+            <p>
+              Supongamos, por reducción al absurdo, que solo existe una cantidad finita <em>k</em> de números primos en todo el universo:
+            </p>
+            <div class="step-equation">
+              <code>ℙ = &#123;p₁, p₂, p₃, ..., p_k&#125;</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">02</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Construcción del Número de Euclides (N)</strong>
+              <span class="step-rule">Operación multiplicativa de todos los elementos</span>
+            </div>
+            <p>
+              Definimos un número entero <em>N</em> multiplicando todos y cada uno de los primos de la lista, y sumándole 1:
+            </p>
+            <div class="step-equation">
+              <code>N = (p₁ · p₂ · p₃ · ... · p_k) + 1</code>
+            </div>
+            <div class="step-note">
+              Evidentemente, <em>N &gt; 1</em> y <em>N &gt; p_k</em> (es mayor que el mayor de los primos supuestos).
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">03</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Prueba de divisibilidad por cualquier primo de la lista</strong>
+              <span class="step-rule">Algoritmo de la División de Euclides</span>
+            </div>
+            <p>
+              Tomemos cualquier primo <em>p_i</em> de nuestra lista supuestamente completa. ¿Divide <em>p_i</em> al número <em>N</em>?
+            </p>
+            <div class="step-equation">
+              <code>N / p_i = (p₁ · ... · p_i · ... · p_k) / p_i + 1 / p_i = Entero + 1 / p_i</code>
+            </div>
+            <p>
+              Al dividir <em>N</em> por <em>p_i</em>, el producto completo es divisible exactamente por <em>p_i</em>, <strong>pero queda un resto inexorable de 1</strong>. 
+              Por tanto, <strong>ningún primo p_i divide a N</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">04</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>El Teorema Fundamental de la Aritmética provoca el Absurdo</strong>
+              <span class="step-rule">Axioma de factorización única</span>
+            </div>
+            <p>
+              Todo número entero mayor que 1 tiene obligatoriamente al menos un divisor primo <em>q</em>. Pero hemos demostrado que ninguno de los primos <em>p₁, ..., p_k</em> divide a <em>N</em>. 
+              Por consiguiente:
+            </p>
+            <div class="step-equation is-conclusive">
+              <code>O bien N es primo en sí mismo, o bien N tiene un divisor primo q ∉ ℙ</code>
+            </div>
+            <p>
+              En ambos casos, existe al menos un número primo que <strong>no estaba en nuestra lista supuestamente exhaustiva</strong>. 
+              Esto contradice frontalmente la hipótesis de que <em>ℙ</em> contenía todos los primos posibles.
+            </p>
+            <div class="qed-badge">
+              <span>∎ Q.E.D. · El conjunto de los números primos es infinito</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generador Interactivo de Números de Euclides -->
+    <div class="euclid-calc-widget">
+      <div class="widget-header-title">
+        <h4>LABORATORIO VISUAL: LA MÁQUINA DE PRIMOS DE EUCLIDES</h4>
+        <p>Introduce los primeros primos para construir <em>N = (p₁ · p₂ · ... · p_k) + 1</em> y analiza su naturaleza:</p>
+      </div>
+
+      <div class="euclid-controls">
+        <label for="primes-count-slider">Cantidad de primos de partida en el producto:</label>
+        <div class="slider-row">
+          <input type="range" id="primes-count-slider" min="1" max="6" value="3" class="math-slider" />
+          <span class="slider-val-badge" id="primes-count-val">k = 3 primos (2, 3, 5)</span>
+        </div>
+      </div>
+
+      <div class="euclid-result-box">
+        <div class="euclid-formula-eval">
+          <span class="eval-label">Cálculo del número de Euclides:</span>
+          <code id="euclid-formula-text">N = (2 · 3 · 5) + 1 = 30 + 1 = 31</code>
+        </div>
+        <div class="euclid-verdict-card" id="euclid-verdict-box">
+          <div class="verdict-status-pill is-prime">31 ES PRIMO</div>
+          <p id="euclid-analysis-text">
+            ¡El número N generado es un <strong>nuevo número primo</strong> (31)! Es estrictamente mayor que todos los de la lista inicial (2, 3, 5).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: ¿REDUCCIÓN AL ABSURDO O CONTRARRECÍPROCO? -->
+  <section class="lesson-section" id="absurdo-vs-contrarreciproco">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. La Frontera Clave en Exámenes: ¿Absurdo o Contrarrecíproco?</h2>
+
+    <p class="prose-lead">
+      Uno de los errores conceptuales más frecuentes en exámenes de 1º y 2º de Bachillerato es no distinguir entre una 
+      <strong>demostración por contrarrecíproco</strong> y una <strong>demostración por reducción al absurdo</strong>. Aunque ambas usan la negación, su estructura lógica es radicalmente diferente:
+    </p>
+
+    <div class="contrast-table-container">
+      <table class="compact-math-table is-wide">
+        <thead>
+          <tr>
+            <th>Criterio Comparativo</th>
+            <th>Demostración por Contrarrecíproco</th>
+            <th>Demostración por Reducción al Absurdo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Objetivo formal</strong></td>
+            <td>Demostrar una implicación <em>P ⟹ Q</em></td>
+            <td>Demostrar cualquier enunciado <em>P</em> (o <em>P ⟹ Q</em>)</td>
+          </tr>
+          <tr>
+            <td><strong>Punto de partida</strong></td>
+            <td>Se asume únicamente la negación de la tesis: <strong>¬Q</strong></td>
+            <td>Se asume la hipótesis y la negación de la tesis: <strong>P ∧ ¬Q</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Objetivo de llegada</strong></td>
+            <td>Se deduce limpiamente la negación de la hipótesis: <strong>¬P</strong></td>
+            <td>Se persigue provocar <strong>cualquier contradicción (⊥)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Naturaleza lógica</strong></td>
+            <td>Equivalencia directa: <em>(P ⟹ Q) ≡ (¬Q ⟹ ¬P)</em></td>
+            <td>Tercero excluido y consistencia: <em>(¬P ⟹ ⊥) ⟹ P</em></td>
+          </tr>
+          <tr>
+            <td><strong>Ejemplo clásico</strong></td>
+            <td>Si <em>x²</em> es impar ⟹ <em>x</em> es impar (asumes <em>x</em> par y llegas a <em>x²</em> par).</td>
+            <td>√2 es irracional (asumes que es racional irreducible y llegas a que no es irreducible).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RÚBRICA PARA EXÁMENES DE BACHILLERATO Y PAU -->
+  <section class="lesson-section" id="rubrica-pau">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Los 4 Pecados Capitales en Exámenes de Reducción al Absurdo</h2>
+    <p>
+      En las correcciones de exámenes de Bachillerato y Selectividad/PAU, los correctores penalizan con severidad los siguientes tropiezos metodológicos:
+    </p>
+
+    <div class="rubric-grid">
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR METODOLÓGICO 01</span>
+          <h3>Omitir la Declaración de Intenciones</h3>
+        </div>
+        <p class="rubric-desc">
+          Empezar escribiendo ecuaciones de la nada con la negación sin avisar de que se trata de un marco hipotético por el absurdo.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Formulación obligatoria:</span>
+          <code>«Supongamos, por reducción al absurdo, que ¬P es cierto...»</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR METODOLÓGICO 02</span>
+          <h3>Olvidar las Condiciones de Clausura (Irreducibilidad)</h3>
+        </div>
+        <p class="rubric-desc">
+          En demostraciones de irracionalidad, asumir que <em>x = a/b</em> sin exigir explícitamente que <em>mcd(a,b) = 1</em>. Sin esa cláusula, que <em>a</em> y <em>b</em> sean pares no genera ninguna contradicción.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Formulación obligatoria:</span>
+          <code>«...donde a, b ∈ ℤ, con b ≠ 0 y la fracción a/b es irreducible (mcd(a,b)=1).»</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR METODOLÓGICO 03</span>
+          <h3>Inventar la Contradicción por un Error Operatorio</h3>
+        </div>
+        <p class="rubric-desc">
+          Cometer un fallo algebraico involuntario a mitad del desarrollo y exclamar triunfante que se ha hallado una contradicción. La contradicción debe emanar exclusivamente de la hipótesis adversaria.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Regla de oro:</span>
+          <em>Cada paso intermedio debe ser una tautología exacta según los axiomas del álgebra.</em>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR METODOLÓGICO 04</span>
+          <h3>Abandonar la Demostración sin el Veredicto Final</h3>
+        </div>
+        <p class="rubric-desc">
+          Llegar al choque absurdo y terminar el examen sin redactar la deducción final.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Cierre canónico:</span>
+          <em>«Como esto contradice [Hipótesis X], la suposición es falsa. En consecuencia, queda demostrado que P es verdadero.»</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion-absurdo">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Autoevaluación de Dominio: Pon a Prueba tu Lógica</h2>
+    <p>Responde a estas tres preguntas conceptuales para validar tu asimilación de la técnica:</p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="quiz-question">
+          <span class="q-num">1.</span>
+          <p>Para demostrar por reducción al absurdo que «No existe ningún número racional cuyo cuadrado sea exactamente 3» (√3 ∉ ℚ), ¿cuál es la hipótesis de partida correcta?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) Suponer que √3 es un número entero decimal periódico puro.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>B) Suponer que existen a, b ∈ ℤ con b ≠ 0 y mcd(a, b) = 1 tales que (a / b)² = 3.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) Suponer que 3 es un número primo par.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="quiz-question">
+          <span class="q-num">2.</span>
+          <p>En la demostración de Euclides sobre los primos, ¿por qué es IMPOSIBLE que cualquiera de los primos conocidos p_i divida a N = (p₁ · p₂ · ... · p_k) + 1?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>A) Porque p_i divide exactamente al producto (p₁ · ... · p_k), por lo que al dividir N deja siempre un resto irreducible de 1.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>B) Porque los números pares nunca pueden sumar una cantidad impar.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) Porque el Teorema de Pitágoras impide factores superiores a la hipotenusa.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="quiz-question">
+          <span class="q-num">3.</span>
+          <p>Si deseas demostrar la implicación: «Si n² + 1 es impar, entonces n es par», ¿cuál de los siguientes caminos representa una demostración por CONTRARRECÍPROCO y no por reducción al absurdo pura?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) Suponer que n² + 1 es impar Y ADEMÁS n es impar, y buscar una contradicción.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>B) Suponer que n es impar (n = 2k + 1), calcular directamente n² + 1 = 4k² + 4k + 2 = 2(2k² + 2k + 1) y concluir que n² + 1 es par.</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) Comprobar empíricamente que para n = 2, 4, 6 la fórmula funciona.</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO INTERACTIVO: EL DETECTOR DE CONTRADICCIONES
+    // =========================================================================
+    const absurdSelect = document.getElementById('absurd-select') as HTMLSelectElement | null;
+    const thesisText = document.getElementById('thesis-text');
+    const adversaryText = document.getElementById('adversary-text');
+    const collisionDesc = document.getElementById('collision-desc');
+    const systemStatus = document.getElementById('system-status');
+    const absurdVerdict = document.getElementById('absurd-verdict');
+
+    interface AbsurdScenario {
+      thesis: string;
+      adversary: string;
+      collision: string;
+      status: string;
+      verdict: string;
+    }
+
+    const scenarios: Record<string, AbsurdScenario> = {
+      raiz2: {
+        thesis: '√2 es un número irracional (√2 ∉ ℚ).',
+        adversary: 'Supongamos que √2 es racional: √2 = a / b con mcd(a,b) = 1 (irreducible).',
+        collision: 'Se deduce que tanto "a" como "b" son pares. Por consiguiente, ambos son divisibles por 2, lo cual contradice que la fracción fuera irreducible (mcd(a,b) ≥ 2 ≠ 1).',
+        status: 'CONTRADICCIÓN DETECTADA: mcd(a,b)=1 ∧ mcd(a,b)≥2',
+        verdict: 'La hipótesis adversaria √2 ∈ ℚ rompe la consistencia de la aritmética. Por tanto, √2 es estrictamente irracional.',
+      },
+      primos: {
+        thesis: 'Existen infinitos números primos en el conjunto ℕ.',
+        adversary: 'Supongamos que la lista completa de números primos es finita: ℙ = {p₁, p₂, ..., p_k}.',
+        collision: 'Construimos N = (p₁ · p₂ · ... · p_k) + 1. Ningún primo p_i puede dividir a N porque siempre deja resto 1. Sin embargo, todo entero mayor que 1 tiene factores primos. Existe un primo fuera de la lista.',
+        status: 'CONTRADICCIÓN DETECTADA: Lista completa que omite primos',
+        verdict: 'La suposición de que los primos caben en una lista finita es insostenible. El conjunto ℙ es infinito.',
+      },
+      mayorEntero: {
+        thesis: 'No existe un número entero que sea el mayor de todos.',
+        adversary: 'Supongamos que existe un entero "M" tal que M ≥ n para todo n ∈ ℤ.',
+        collision: 'Definimos el entero M\' = M + 1. Como 1 > 0, se cumple estrictamente que M\' > M. Pero M debía ser mayor o igual que cualquier entero existente.',
+        status: 'CONTRADICCIÓN DETECTADA: M\' > M cuando M debía ser el máximo',
+        verdict: 'La idea de un "último número entero" se autodestruye de inmediato sumándole 1. Los enteros son ilimitados superiormente.',
+      },
+      sumaRacional: {
+        thesis: 'La suma de un número racional y un número irracional es siempre irracional.',
+        adversary: 'Sean r ∈ ℚ e i ∉ ℚ. Supongamos que su suma es racional: r + i = q con q ∈ ℚ.',
+        collision: 'Despejamos el irracional: i = q - r. Como la resta de dos números racionales es siempre racional, se deduce que i ∈ ℚ, lo cual contradice la hipótesis inicial de que "i" era irracional.',
+        status: 'CONTRADICCIÓN DETECTADA: i ∈ ℚ ∧ i ∉ ℚ',
+        verdict: 'La suma r + i no puede ser jamás un número racional.',
+      },
+    };
+
+    if (absurdSelect) {
+      absurdSelect.addEventListener('change', () => {
+        const val = absurdSelect.value;
+        const s = scenarios[val];
+        if (!s) return;
+
+        if (thesisText) thesisText.textContent = s.thesis;
+        if (adversaryText) adversaryText.textContent = s.adversary;
+        if (collisionDesc) collisionDesc.innerHTML = s.collision;
+        if (systemStatus) systemStatus.textContent = s.status;
+        if (absurdVerdict) absurdVerdict.innerHTML = s.verdict;
+      });
+    }
+
+    // =========================================================================
+    // 2. GENERADOR INTERACTIVO DE NÚMEROS DE EUCLIDES
+    // =========================================================================
+    const slider = document.getElementById('primes-count-slider') as HTMLInputElement | null;
+    const sliderBadge = document.getElementById('primes-count-val');
+    const formulaText = document.getElementById('euclid-formula-text');
+    const verdictBox = document.getElementById('euclid-verdict-box');
+    const analysisText = document.getElementById('euclid-analysis-text');
+
+    const basePrimes = [2, 3, 5, 7, 11, 13];
+
+    const isPrime = (num: number): boolean => {
+      if (num < 2) return false;
+      for (let i = 2; i * i <= num; i++) {
+        if (num % i === 0) return false;
+      }
+      return true;
+    };
+
+    const updateEuclidDemo = () => {
+      if (!slider) return;
+      const k = parseInt(slider.value, 10);
+      const chosen = basePrimes.slice(0, k);
+
+      if (sliderBadge) {
+        sliderBadge.textContent = `k = ${k} primos (${chosen.join(', ')})`;
+      }
+
+      let product = 1;
+      for (const p of chosen) product *= p;
+      const euclidN = product + 1;
+
+      if (formulaText) {
+        formulaText.textContent = `N = (${chosen.join(' · ')}) + 1 = ${product} + 1 = ${euclidN}`;
+      }
+
+      const primeResult = isPrime(euclidN);
+
+      if (verdictBox && analysisText) {
+        if (primeResult) {
+          verdictBox.innerHTML = `
+            <div class="verdict-status-pill is-prime">${euclidN} ES PRIMO</div>
+            <p>¡El número <strong>${euclidN}</strong> es en sí mismo un nuevo número primo! Es estrictamente mayor que todos los de tu lista inicial (${chosen.join(', ')}).</p>
+          `;
+        } else {
+          // Hallar menor factor primo
+          let smallestFactor = 2;
+          for (let f = 2; f <= euclidN; f++) {
+            if (euclidN % f === 0) {
+              smallestFactor = f;
+              break;
+            }
+          }
+          verdictBox.innerHTML = `
+            <div class="verdict-status-pill is-composite">${euclidN} ES COMPUESTO</div>
+            <p>El número <strong>${euclidN}</strong> es compuesto. Su factor primo más pequeño es <strong>${smallestFactor}</strong>, el cual <strong>¡tampoco estaba en la lista inicial (${chosen.join(', ')})!</strong> El teorema se cumple con exactitud.</p>
+          `;
+        }
+      }
+    };
+
+    if (slider) {
+      slider.addEventListener('input', updateEuclidDemo);
+      updateEuclidDemo();
+    }
+
+    // =========================================================================
+    // 3. AUTOEVALUACIÓN INTERACTIVA
+    // =========================================================================
+    document.querySelectorAll<HTMLElement>('.quiz-card').forEach((card) => {
+      const options = card.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+      const explanation = card.querySelector<HTMLElement>('.quiz-explanation');
+
+      options.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          options.forEach((o) => {
+            o.disabled = true;
+            if (o.dataset.correct === 'true') {
+              o.classList.add('is-revealed-correct');
+            }
+          });
+
+          if (isCorrect) {
+            btn.classList.add('is-user-correct');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-good';
+              explanation.innerHTML = '<strong>¡Exacto!</strong> Has razonado con rigor formal deductivo.';
+            }
+          } else {
+            btn.classList.add('is-user-wrong');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-bad';
+              explanation.innerHTML = '<strong>Incorrecto.</strong> Revisa la estructura: la reducción al absurdo niega la tesis conservando la consistencia axiomática.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS DE LA LECCIÓN: REDUCCIÓN AL ABSURDO
+     ========================================================================= */
+
+  .lesson-section {
+    position: relative;
+    margin-bottom: 4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :global([data-theme="light"]) .lesson-section {
+    border-bottom-color: rgba(0, 0, 0, 0.07);
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .marker-num {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.12);
+    border: 1px solid rgba(255, 193, 77, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  :global([data-theme="light"]) .marker-num {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 193, 77, 0.3), transparent);
+  }
+
+  .lesson-section h2 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  :global([data-theme="light"]) .lesson-section h2 {
+    color: #0f172a;
+  }
+
+  .prose-lead {
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: var(--ink, #e2e8f0);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+
+  :global([data-theme="light"]) .prose-lead {
+    color: #334155;
+  }
+
+  .lesson-section p {
+    font-size: 0.98rem;
+    line-height: 1.68;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .lesson-section p {
+    color: #475569;
+  }
+
+  /* Citas de axiomas y citas históricas */
+  .prose-axiom-quote {
+    position: relative;
+    background: rgba(255, 193, 77, 0.04);
+    border: 1px solid rgba(255, 193, 77, 0.2);
+    border-left: 4px solid var(--block-accent, #ffc14d);
+    border-radius: 8px;
+    padding: 1.5rem 1.8rem;
+    margin: 1.75rem 0 2rem;
+  }
+
+  :global([data-theme="light"]) .prose-axiom-quote {
+    background: rgba(217, 119, 6, 0.05);
+    border-color: rgba(217, 119, 6, 0.2);
+    border-left-color: #d97706;
+  }
+
+  .quote-symbol {
+    position: absolute;
+    top: 0.8rem;
+    right: 1.2rem;
+    font-size: 2rem;
+    font-family: serif;
+    color: rgba(255, 193, 77, 0.2);
+    pointer-events: none;
+  }
+
+  .prose-axiom-quote blockquote {
+    margin: 0;
+    font-size: 1.02rem;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .prose-axiom-quote blockquote {
+    color: #1e293b;
+  }
+
+  .prose-axiom-quote cite {
+    display: block;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    font-style: normal;
+    color: var(--block-accent, #ffc14d);
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .prose-axiom-quote cite {
+    color: #d97706;
+  }
+
+  /* Math Callouts */
+  .math-callout {
+    background: rgba(18, 20, 29, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.75rem 0 2rem;
+    backdrop-filter: blur(8px);
+  }
+
+  :global([data-theme="light"]) .math-callout {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .callout-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .callout-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(255, 193, 77, 0.15);
+    color: var(--block-accent, #ffc14d);
+    border: 1px solid rgba(255, 193, 77, 0.3);
+  }
+
+  :global([data-theme="light"]) .callout-badge {
+    background: rgba(217, 119, 6, 0.1);
+    color: #d97706;
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+
+  .callout-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .callout-header h3 {
+    color: #0f172a;
+  }
+
+  .formula-spotlight {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    border-radius: 8px;
+    padding: 1rem 1.4rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formula-spotlight {
+    background: #fafaf9;
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+
+  .formula-spotlight code {
+    font-family: ui-monospace, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+  }
+
+  :global([data-theme="light"]) .formula-spotlight code {
+    color: #b45309;
+  }
+
+  .callout-caption {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    margin-top: 1rem;
+    margin-bottom: 0;
+    line-height: 1.55;
+  }
+
+  /* Academic Cards Grid */
+  .academic-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .academic-concept-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+
+  :global([data-theme="light"]) .academic-concept-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .concept-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .concept-num {
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.15);
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .concept-head h4 {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .concept-head h4 {
+    color: #0f172a;
+  }
+
+  .concept-def {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin: 0;
+    color: var(--muted, #cbd5e1);
+  }
+
+  .concept-def code {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 193, 77, 0.2);
+  }
+
+  :global([data-theme="light"]) .concept-def code {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #b45309;
+  }
+
+  /* Formal Theorem Banner */
+  .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(255, 193, 77, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 193, 77, 0.3);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 1.75rem 0 2rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.08), #ffffff);
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .theorem-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    background: rgba(255, 193, 77, 0.18);
+    color: var(--block-accent, #ffc14d);
+    border: 1px solid rgba(255, 193, 77, 0.35);
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    background: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.8rem 0 0.5rem;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner h3 {
+    color: #0f172a;
+  }
+
+  .theorem-symbolic {
+    display: inline-block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 193, 77, 0.2);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    margin-top: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    background: #fafaf9;
+    color: #9a3412;
+    border-color: #cbd5e1;
+  }
+
+  /* Stepper de demostración deductiva */
+  .proof-stepper-container {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  :global([data-theme="light"]) .proof-stepper-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .proof-stepper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header {
+    border-bottom-color: #e2e8f0;
+  }
+
+  .proof-stepper-header h4 {
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--block-accent, #ffc14d);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header h4 {
+    color: #d97706;
+  }
+
+  .stepper-hint {
+    font-size: 0.76rem;
+    color: var(--muted, #94a3b8);
+    font-style: italic;
+  }
+
+  .proof-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .proof-step-card {
+    display: flex;
+    gap: 1.2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .proof-step-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .step-num-col {
+    font-family: ui-monospace, monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--block-accent, #ffc14d);
+    opacity: 0.8;
+    line-height: 1;
+    padding-top: 0.15rem;
+  }
+
+  :global([data-theme="light"]) .step-num-col {
+    color: #d97706;
+  }
+
+  .step-content {
+    flex: 1;
+  }
+
+  .step-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-head strong {
+    font-size: 1.02rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .step-head strong {
+    color: #0f172a;
+  }
+
+  .step-rule {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.1);
+    border: 1px solid rgba(255, 193, 77, 0.2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .step-rule {
+    color: #b45309;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.2);
+  }
+
+  .step-equation {
+    background: rgba(0, 0, 0, 0.35);
+    border-left: 3px solid var(--block-accent, #ffc14d);
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .step-equation {
+    background: #ffffff;
+    border-left-color: #d97706;
+    border: 1px solid #e2e8f0;
+    border-left-width: 3px;
+    border-left-color: #d97706;
+    color: #0f172a;
+  }
+
+  .step-equation.is-conclusive {
+    border-left-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+  }
+
+  :global([data-theme="light"]) .step-equation.is-conclusive {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+    color: #b91c1c;
+  }
+
+  .step-note {
+    font-size: 0.85rem;
+    color: var(--muted, #94a3b8);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .qed-badge {
+    display: inline-flex;
+    flex-direction: column;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    margin-top: 0.75rem;
+    color: #34d399;
+    font-family: ui-monospace, monospace;
+    font-weight: 800;
+  }
+
+  .qed-badge em {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 0.2rem;
+  }
+
+  /* Laboratorio Interactivo de Contradicción */
+  .logic-lab-widget {
+    background: rgba(18, 20, 29, 0.75);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .logic-lab-widget {
+    background: #ffffff;
+    border-color: rgba(217, 119, 6, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .widget-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .widget-head {
+    border-bottom-color: #e2e8f0;
+  }
+
+  .widget-tag {
+    display: inline-block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.12);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .widget-tag {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+
+  .widget-title-group h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .widget-title-group h3 {
+    color: #0f172a;
+  }
+
+  .widget-selector-wrap label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.35rem;
+  }
+
+  .math-select {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 193, 77, 0.35);
+    border-radius: 6px;
+    color: #f8fafc;
+    font-size: 0.88rem;
+    padding: 0.55rem 0.9rem;
+    outline: none;
+    cursor: pointer;
+  }
+
+  :global([data-theme="light"]) .math-select {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  .statement-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stmt-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+
+  :global([data-theme="light"]) .stmt-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .stmt-direction {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .stmt-text {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ink, #f3f2ec);
+    margin-bottom: 0.9rem;
+  }
+
+  :global([data-theme="light"]) .stmt-text {
+    color: #0f172a;
+  }
+
+  .stmt-verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+  }
+
+  .stmt-verdict.is-true {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  :global([data-theme="light"]) .stmt-verdict.is-true {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #a7f3d0;
+  }
+
+  .stmt-verdict.is-false {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  :global([data-theme="light"]) .stmt-verdict.is-false {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+
+  .widget-feedback-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .widget-feedback-box {
+    background: #fff7ed;
+    border-color: #fed7aa;
+  }
+
+  .feedback-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .feedback-badge {
+    color: #c2410c;
+  }
+
+  .feedback-content {
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--ink, #f3f2ec);
+    margin-bottom: 1.2rem;
+  }
+
+  :global([data-theme="light"]) .feedback-content {
+    color: #334155;
+  }
+
+  .paradox-meter {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .paradox-meter {
+    background: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  .meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-family: ui-monospace, monospace;
+    margin-bottom: 0.5rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .meter-label strong {
+    color: #f87171;
+  }
+
+  :global([data-theme="light"]) .meter-label strong {
+    color: #dc2626;
+  }
+
+  .meter-bar-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .meter-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    transition: width 0.3s ease;
+  }
+
+  /* Widget Calculador de Euclides */
+  .euclid-calc-widget {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .euclid-calc-widget {
+    background: #ffffff;
+    border-color: rgba(217, 119, 6, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .widget-header-title h4 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    margin: 0 0 0.3rem;
+  }
+
+  :global([data-theme="light"]) .widget-header-title h4 {
+    color: #d97706;
+  }
+
+  .widget-header-title p {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    margin: 0 0 1.25rem;
+  }
+
+  .euclid-controls {
+    margin-bottom: 1.25rem;
+  }
+
+  .euclid-controls label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink, #f3f2ec);
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .euclid-controls label {
+    color: #1e293b;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .math-slider {
+    flex: 1;
+    accent-color: var(--block-accent, #ffc14d);
+    cursor: pointer;
+  }
+
+  .slider-val-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 193, 77, 0.12);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  :global([data-theme="light"]) .slider-val-badge {
+    color: #b45309;
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+
+  .euclid-result-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .euclid-result-box {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .euclid-formula-eval {
+    margin-bottom: 0.9rem;
+  }
+
+  .eval-label {
+    display: block;
+    font-size: 0.78rem;
+    font-family: ui-monospace, monospace;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.3rem;
+  }
+
+  .euclid-formula-eval code {
+    font-family: ui-monospace, monospace;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .euclid-formula-eval code {
+    color: #0f172a;
+  }
+
+  .euclid-verdict-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0.85rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  :global([data-theme="light"]) .euclid-verdict-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  .verdict-status-pill {
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .verdict-status-pill.is-prime {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .verdict-status-pill.is-composite {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  /* Tabla Comparativa */
+  .contrast-table-container {
+    overflow-x: auto;
+    margin: 1.75rem 0;
+  }
+
+  .compact-math-table.is-wide {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .compact-math-table.is-wide th,
+  .compact-math-table.is-wide td {
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  :global([data-theme="light"]) .compact-math-table.is-wide th,
+  :global([data-theme="light"]) .compact-math-table.is-wide td {
+    border-color: #e2e8f0;
+  }
+
+  .compact-math-table.is-wide th {
+    background: rgba(255, 193, 77, 0.08);
+    color: var(--block-accent, #ffc14d);
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .compact-math-table.is-wide th {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  /* Rúbrica de Rigor */
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+
+  .rubric-card {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .rubric-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .rubric-card.is-error {
+    border-top: 3px solid #ef4444;
+  }
+
+  :global([data-theme="light"]) .rubric-card.is-error {
+    border-top: 3px solid #dc2626;
+  }
+
+  .rubric-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: 0.05em;
+  }
+
+  .rubric-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.4rem 0 0.6rem;
+  }
+
+  :global([data-theme="light"]) .rubric-card h3 {
+    color: #0f172a;
+  }
+
+  .rubric-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 0.9rem;
+  }
+
+  .rubric-fix {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 0.84rem;
+  }
+
+  :global([data-theme="light"]) .rubric-fix {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .fix-good {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #34d399;
+    margin-bottom: 0.25rem;
+  }
+
+  :global([data-theme="light"]) .fix-good {
+    color: #059669;
+  }
+
+  .rubric-fix code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .rubric-fix code {
+    color: #0f172a;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 1.75rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.4rem;
+  }
+
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .quiz-question {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .q-num {
+    font-family: ui-monospace, monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+  }
+
+  :global([data-theme="light"]) .q-num {
+    color: #d97706;
+  }
+
+  .quiz-question p {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--ink, #f3f2ec);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .quiz-question p {
+    color: #0f172a;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.8rem 1.1rem;
+    color: var(--ink, #cbd5e1);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    background: rgba(255, 193, 77, 0.08);
+    border-color: var(--block-accent, #ffc14d);
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .quiz-opt {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .quiz-opt:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  .quiz-opt.is-user-correct,
+  .quiz-opt.is-revealed-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+    font-weight: 700;
+  }
+
+  .quiz-opt.is-user-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+  }
+
+  .quiz-explanation {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .quiz-explanation.is-good {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+  }
+
+  .quiz-explanation.is-bad {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+  }
+
+  @media (max-width: 768px) {
+    .widget-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .slider-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

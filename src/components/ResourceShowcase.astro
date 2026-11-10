@@ -568,6 +568,10 @@ import MathGlyph from './MathGlyph.astro';
       inset 0 1px 1px rgba(255, 255, 255, 0.42);
   }
 
+  :global(:root[data-theme='dark']) .showcase.section-band {
+    background: radial-gradient(ellipse 75% 45% at 50% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 100%);
+  }
+
   .app-tile.active .app-tile-squircle {
     border-color: #ffffff;
     box-shadow:

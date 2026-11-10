@@ -1,0 +1,1918 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-01')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-02');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL PECADO CAPITAL DEL ÁLGEBRA -->
+  <section class="lesson-section" id="el-pecado-universal">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+    
+    <h2>1. El Gran Error del Álgebra: ¿Por qué (a + b)² ≠ a² + b²?</h2>
+    
+    <p class="prose-lead">
+      En las aulas de secundaria y bachillerato de todo el mundo ocurre un tropiezo casi universal: cuando un estudiante ve la expresión <code>(a + b)²</code>, la intuición no entrenada le susurra escribir de inmediato <code>a² + b²</code>.
+      <strong>Esto es falso en cualquier cuerpo de números donde 1 + 1 ≠ 0.</strong>
+    </p>
+
+    <!-- Caja de advertencia analítica -->
+    <div class="math-warning-box">
+      <div class="warning-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="warning-body">
+        <h4>La Falacia de la Linealidad: El Exponente no es Distributivo respecto a la Suma</h4>
+        <p>
+          La potencia al cuadrado significa <em>multiplicar la base por sí misma</em>, es decir, <code>(a + b) · (a + b)</code>. 
+          No puedes "repartir" el exponente a cada sumando como si fuera una multiplicación. Comprobemos la catástrofe con un simple contraejemplo aritmético:
+        </p>
+      </div>
+    </div>
+
+    <!-- Comparativa Aritmética Demoledora -->
+    <div class="academic-cards-grid">
+      <div class="academic-concept-card is-correct-card">
+        <div class="concept-head">
+          <span class="concept-num">✓</span>
+          <h4>Cálculo Real Riguroso (a = 3, b = 4)</h4>
+        </div>
+        <p class="concept-def">
+          Primero resolvemos el paréntesis interior y elevamos al cuadrado:
+        </p>
+        <div class="step-equation">
+          <code>(3 + 4)² = 7² = 49</code>
+        </div>
+      </div>
+
+      <div class="academic-concept-card is-wrong-card">
+        <div class="concept-head">
+          <span class="concept-num is-danger">✕</span>
+          <h4>La Falsa Fórmula Olvidadiza</h4>
+        </div>
+        <p class="concept-def">
+          Si aplicamos el error de olvidar los términos cruzados:
+        </p>
+        <div class="step-equation is-conclusive">
+          <code>3² + 4² = 9 + 16 = 25 &emsp;(¡Faltan 24 unidades!)</code>
+        </div>
+      </div>
+    </div>
+
+    <p class="callout-caption">
+      ¿De dónde proceden exactamente esas <strong>24 unidades desaparecidas</strong>? 
+      Proceden con precisión milimétrica del <em>doble producto cruzado</em>: <code>2 · a · b = 2 · 3 · 4 = 24</code>. Y <code>25 + 24 = 49</code>.
+    </p>
+  </section>
+
+  <!-- SECCIÓN 2: PRIMERA IDENTIDAD (CUADRADO DE UNA SUMA) -->
+  <section class="lesson-section" id="cuadrado-suma">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Primera Identidad: Cuadrado de una Suma</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA DEL CUADRADO DE UN BINOMIO</span>
+      <h3>«El cuadrado de una suma es igual al cuadrado del primero, más el doble producto del primero por el segundo, más el cuadrado del segundo»</h3>
+      <code class="theorem-symbolic">∀ a, b ∈ ℝ : (a + b)² = a² + 2ab + b²</code>
+    </div>
+
+    <!-- Stepper de Deducción Algebraica -->
+    <div class="proof-stepper-container">
+      <div class="proof-stepper-header">
+        <h4>DEDUCCIÓN ALGEBRAICA FORMAL POR PROPIEDAD DISTRIBUTIVA</h4>
+        <span class="stepper-hint">Paso a paso en el anillo de los polinomios</span>
+      </div>
+
+      <div class="proof-steps-list">
+        <!-- Paso 1 -->
+        <div class="proof-step-card is-active">
+          <div class="step-num-col">01</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Definición axiomática de potencia</strong>
+              <span class="step-rule">x² = x · x</span>
+            </div>
+            <p>
+              Por definición de exponente cuadrático, multiplicar un binomio por sí mismo equivale a escribirlo como producto de dos factores:
+            </p>
+            <div class="step-equation">
+              <code>(a + b)² = (a + b) · (a + b)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">02</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Aplicación de la propiedad distributiva</strong>
+              <span class="step-rule">Distributividad del producto respecto a la suma</span>
+            </div>
+            <p>
+              Distribuimos cada término del primer paréntesis sobre todos los términos del segundo paréntesis:
+            </p>
+            <div class="step-equation">
+              <code>a · (a + b) + b · (a + b) = (a · a) + (a · b) + (b · a) + (b · b)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="proof-step-card">
+          <div class="step-num-col">03</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Conmutatividad del producto y reducción de términos semejantes</strong>
+              <span class="step-rule">Conmutatividad en (ℝ, ·): b · a = a · b</span>
+            </div>
+            <p>
+              Puesto que el orden de los factores no altera el producto en los números reales, los dos monomios centrales son idénticos:
+            </p>
+            <div class="step-equation is-conclusive">
+              <code>a² + ab + ab + b² = a² + 2ab + b²</code>
+            </div>
+            <div class="qed-badge">
+              <span>∎ Q.E.D. · El término '2ab' emerge con absoluta necesidad deductiva</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO GEOMÉTRICO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-geometrico">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Visual: La Geometría de los Elementos de Euclides</h2>
+
+    <p class="prose-lead">
+      En el Libro II de los <em>Elementos</em> (hacia 300 a.C.), Euclides no utilizaba letras ni álgebra simbólica moderna. 
+      Para los griegos, <code>(a + b)²</code> era literalmente el <strong>área física de un cuadrado de lado (a + b)</strong>.
+    </p>
+
+    <!-- WIDGET INTERACTIVO DE GEOMETRÍA DINÁMICA -->
+    <div class="geometry-lab-widget" id="geo-widget">
+      <div class="widget-head">
+        <div class="widget-title-group">
+          <span class="widget-tag">GEOMETRÍA DINÁMICA VECTORIAL</span>
+          <h3>Explorador Visual de Áreas y Términos Cruzados</h3>
+        </div>
+        <div class="identity-tabs">
+          <button type="button" class="tab-btn is-active" data-identity="suma">1. Cuadrado de la Suma (a + b)²</button>
+          <button type="button" class="tab-btn" data-identity="diferencia">2. Cuadrado de la Diferencia (a - b)²</button>
+          <button type="button" class="tab-btn" data-identity="conjugado">3. Suma por Diferencia (a + b)(a - b)</button>
+        </div>
+      </div>
+
+      <div class="widget-body">
+        <!-- Controles deslizantes de dimensiones -->
+        <div class="geo-sliders-panel">
+          <div class="slider-control">
+            <div class="slider-label-row">
+              <label for="slider-a">Segmento principal <em>a</em>:</label>
+              <span class="slider-val-pill" id="val-a-display">a = 4</span>
+            </div>
+            <input type="range" id="slider-a" min="2" max="6" value="4" step="1" class="math-slider" />
+          </div>
+
+          <div class="slider-control">
+            <div class="slider-label-row">
+              <label for="slider-b">Segmento secundario <em>b</em>:</label>
+              <span class="slider-val-pill" id="val-b-display">b = 2</span>
+            </div>
+            <input type="range" id="slider-b" min="1" max="4" value="2" step="1" class="math-slider" />
+          </div>
+        </div>
+
+        <!-- Lienzo SVG Interactivo con render inicial para carga instantánea -->
+        <div class="geo-interactive-stage">
+          <div class="svg-stage-container">
+            <svg id="geo-svg" viewBox="0 0 420 420" class="geometric-canvas" aria-label="Descomposición geométrica de áreas">
+              <!-- Cotas exteriores iniciales -->
+              <g stroke="#38bdf8" stroke-width="1.5" opacity="0.9">
+                <line x1="40" y1="28" x2="267" y2="28" stroke-dasharray="2 2" />
+                <line x1="40" y1="23" x2="40" y2="33" />
+                <line x1="267" y1="23" x2="267" y2="33" />
+                <text x="153.5" y="21" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle" font-family="monospace">a = 4</text>
+              </g>
+              <g stroke="#fbbf24" stroke-width="1.5" opacity="0.9">
+                <line x1="267" y1="28" x2="380" y2="28" stroke-dasharray="2 2" />
+                <line x1="267" y1="23" x2="267" y2="33" />
+                <line x1="380" y1="23" x2="380" y2="33" />
+                <text x="323.5" y="21" fill="#fbbf24" font-size="11" font-weight="700" text-anchor="middle" font-family="monospace">b = 2</text>
+              </g>
+              <g stroke="#38bdf8" stroke-width="1.5" opacity="0.9">
+                <line x1="28" y1="40" x2="28" y2="267" stroke-dasharray="2 2" />
+                <line x1="23" y1="40" x2="33" y2="40" />
+                <line x1="23" y1="267" x2="33" y2="267" />
+                <text x="22" y="157.5" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="end" font-family="monospace">a = 4</text>
+              </g>
+              <g stroke="#fbbf24" stroke-width="1.5" opacity="0.9">
+                <line x1="28" y1="267" x2="28" y2="380" stroke-dasharray="2 2" />
+                <line x1="23" y1="267" x2="33" y2="267" />
+                <line x1="23" y1="380" x2="33" y2="380" />
+                <text x="22" y="327.5" fill="#fbbf24" font-size="11" font-weight="700" text-anchor="end" font-family="monospace">b = 2</text>
+              </g>
+
+              <!-- Regiones geométricas -->
+              <!-- 1. Cuadrado a² -->
+              <rect x="40" y="40" width="227" height="227" rx="6" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="2" class="svg-piece" />
+              <text x="153.5" y="158.5" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">a² = 16</text>
+
+              <!-- 2. Rectángulo ab -->
+              <rect x="267" y="40" width="113" height="227" rx="6" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" stroke-width="2" class="svg-piece" />
+              <text x="323.5" y="158.5" fill="#ffffff" font-size="14" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">ab = 8</text>
+
+              <!-- 3. Rectángulo ba -->
+              <rect x="40" y="267" width="227" height="113" rx="6" fill="rgba(16, 185, 129, 0.35)" stroke="#10b981" stroke-width="2" class="svg-piece" />
+              <text x="153.5" y="328.5" fill="#ffffff" font-size="14" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">ba = 8</text>
+
+              <!-- 4. Cuadrado b² -->
+              <rect x="267" y="267" width="113" height="113" rx="6" fill="rgba(251, 191, 36, 0.4)" stroke="#fbbf24" stroke-width="2" class="svg-piece" />
+              <text x="323.5" y="328.5" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">b² = 4</text>
+            </svg>
+          </div>
+
+          <!-- Desglose analítico de las áreas en tiempo real -->
+          <div class="geo-metrics-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-tag">BALANCE EXACTO DE ÁREAS</span>
+              <h4 id="metrics-title">Área Total del Cuadrado (a + b)²</h4>
+            </div>
+
+            <div class="areas-breakdown-list" id="areas-list">
+              <div class="area-item" style="border-left: 3px solid #38bdf8;">
+                <span class="area-name">Cuadrado principal (a × a)</span>
+                <span class="area-val" style="color: #38bdf8;">16 u²</span>
+              </div>
+              <div class="area-item" style="border-left: 3px solid #10b981;">
+                <span class="area-name">Rectángulo superior (a × b)</span>
+                <span class="area-val" style="color: #10b981;">8 u²</span>
+              </div>
+              <div class="area-item" style="border-left: 3px solid #10b981;">
+                <span class="area-name">Rectángulo lateral (b × a)</span>
+                <span class="area-val" style="color: #10b981;">8 u²</span>
+              </div>
+              <div class="area-item" style="border-left: 3px solid #fbbf24;">
+                <span class="area-name">Cuadrado complementario (b × b)</span>
+                <span class="area-val" style="color: #fbbf24;">4 u²</span>
+              </div>
+            </div>
+
+            <div class="total-identity-eval">
+              <span class="eval-tag">IGUALDAD IDENTITARIA:</span>
+              <code id="identity-formula-eval">(4 + 2)² = 16 + 8 + 8 + 4 = 36</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: SEGUNDA IDENTIDAD (CUADRADO DE UNA DIFERENCIA) -->
+  <section class="lesson-section" id="cuadrado-diferencia">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Segunda Identidad: Cuadrado de una Diferencia</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA DE LA DIFERENCIA AL CUADRADO</span>
+      <h3>«El cuadrado de una diferencia es igual al cuadrado del primero, menos el doble producto del primero por el segundo, más el cuadrado del segundo»</h3>
+      <code class="theorem-symbolic">∀ a, b ∈ ℝ : (a - b)² = a² - 2ab + b²</code>
+    </div>
+
+    <p>
+      ¿Por qué el último término <code>+b²</code> lleva signo <strong>positivo</strong> si partíamos de una resta?
+      La respuesta reside en la ley fundamental de los signos del producto en el cuerpo de los números reales:
+    </p>
+
+    <div class="math-callout">
+      <div class="callout-header">
+        <span class="callout-badge">RIGOR DE SIGNOS</span>
+        <h3>Deducción como Suma con Elemento Opuesto</h3>
+      </div>
+      <p>
+        Podemos reescribir cualquier resta <em>a - b</em> como la suma de <em>a</em> con el opuesto de <em>b</em>: <code>a + (-b)</code>. 
+        Aplicando la Primera Identidad demostrada en la sección anterior:
+      </p>
+      <div class="formula-spotlight">
+        <code>(a - b)² = [a + (-b)]² = a² + 2 · a · (-b) + (-b)²</code>
+      </div>
+      <p class="callout-caption">
+        Puesto que <code>2 · a · (-b) = -2ab</code> y el producto de dos números negativos es positivo <code>(-b) · (-b) = +b²</code>, obtenemos sin excepción:
+        <strong>(a - b)² = a² - 2ab + b²</strong>.
+      </p>
+    </div>
+
+    <div class="geometric-insight-box">
+      <h4>La Explicación Geométrica del +b² (La Corrección de la Sobre-Sustracción)</h4>
+      <p>
+        Imagina un cuadrado grande de área <code>a²</code>. Queremos recortarlo para quedarnos solo con el cuadrado menor de lado <code>(a - b)</code>:
+      </p>
+      <ol class="geometric-steps-list">
+        <li>Restamos la franja horizontal superior de área <code>a · b</code>. Nos queda <code>a² - ab</code>.</li>
+        <li>Restamos la franja vertical derecha de área <code>a · b</code>. Nos queda <code>a² - 2ab</code>.</li>
+        <li><strong>¡Atención al cruce!</strong> La esquina superior derecha (de dimensiones <code>b × b</code> y área <code>b²</code>) <em>pertenecía a ambas franjas</em>, por lo que <strong>la hemos restado dos veces</strong>.</li>
+        <li>Para compensar esa doble resta, es geométricamente obligatorio <strong>sumar una vez la esquina</strong>: <code>+ b²</code>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: TERCERA IDENTIDAD (SUMA POR DIFERENCIA) -->
+  <section class="lesson-section" id="suma-por-diferencia">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Tercera Identidad: Suma por Diferencia (Diferencia de Cuadrados)</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">DIFERENCIA DE CUADRADOS</span>
+      <h3>«El producto de la suma de dos términos por su diferencia es igual a la diferencia de sus cuadrados»</h3>
+      <code class="theorem-symbolic">∀ a, b ∈ ℝ : (a + b)(a - b) = a² - b²</code>
+    </div>
+
+    <p>
+      Esta es sin duda la identidad más potente y utilizada de toda la educación secundaria y el bachillerato. 
+      A diferencia de las dos anteriores, <strong>aquí no aparece ningún término doble</strong>. ¿Por qué se desvanecen los términos intermedios?
+    </p>
+
+    <div class="proof-stepper-container">
+      <div class="proof-stepper-header">
+        <h4>ANULACIÓN POR ELEMENTOS OPUESTOS</h4>
+        <span class="stepper-hint">La cancelación exacta en (ℝ, +)</span>
+      </div>
+
+      <div class="proof-steps-list">
+        <div class="proof-step-card is-active">
+          <div class="step-num-col">01</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Desarrollo por doble distributividad</strong>
+              <span class="step-rule">Propiedad distributiva general</span>
+            </div>
+            <div class="step-equation">
+              <code>(a + b) · (a - b) = a(a - b) + b(a - b) = a² - ab + ba - b²</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="proof-step-card">
+          <div class="step-num-col">02</div>
+          <div class="step-content">
+            <div class="step-head">
+              <strong>Cancelación de los términos cruzados</strong>
+              <span class="step-rule">ba = ab ⟹ -ab + ab = 0</span>
+            </div>
+            <p>
+              El término <code>-ab</code> y el término <code>+ba = +ab</code> son elementos simétricos respecto a la suma (opuestos). Su suma da exactamente el elemento neutro cero (0):
+            </p>
+            <div class="step-equation is-conclusive">
+              <code>a² + (-ab + ab) - b² = a² + 0 - b² = a² - b²</code>
+            </div>
+            <div class="qed-badge">
+              <span>∎ Q.E.D. · Los términos cruzados se anulan mutuamente sin dejar residuo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RÚBRICA Y ERRORES DE EXAMEN -->
+  <section class="lesson-section" id="rubrica-examen">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Los 4 Pecados Capitales en Exámenes de Álgebra y PAU</h2>
+    <p>
+      En los exámenes de ESO, Bachillerato y pruebas de acceso a la universidad, las identidades notables aparecen camufladas en límites, derivadas, integrales y resolución de ecuaciones. Evita estos 4 tropiezos clásicos:
+    </p>
+
+    <div class="rubric-grid">
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR CLÁSICO 01</span>
+          <h3>La Trampa del Doble Menos: (-a - b)²</h3>
+        </div>
+        <p class="rubric-desc">
+          Creer que tener dos signos negativos convierte el resultado en negativo o en una diferencia.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Identidad real:</span>
+          <code>(-a - b)² = [-(a + b)]² = (-1)² · (a + b)² = (a + b)² = a² + 2ab + b²</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR CLÁSICO 02</span>
+          <h3>La Inversión en la Resta: (b - a)²</h3>
+        </div>
+        <p class="rubric-desc">
+          Dudar de si el orden importa al elevar una resta al cuadrado.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Identidad simétrica:</span>
+          <code>(b - a)² = [-(a - b)]² = (a - b)² = a² - 2ab + b² (¡Son exactamente iguales!)</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR CLÁSICO 03</span>
+          <h3>Olvidar la Racionalización por el Conjugado</h3>
+        </div>
+        <p class="rubric-desc">
+          En límites de 1º y 2º de Bachillerato con indeterminaciones del tipo 0/0 o ∞ - ∞ con raíces cuadradas, intentar multiplicar sin usar la diferencia de cuadrados.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Aplicación rigurosa:</span>
+          <code>(√x - 2)(√x + 2) = (√x)² - 2² = x - 4 (¡Elimina de raíz las indeterminaciones!)</code>
+        </div>
+      </div>
+
+      <div class="rubric-card is-error">
+        <div class="rubric-top">
+          <span class="rubric-badge">ERROR CLÁSICO 04</span>
+          <h3>No Reconocer la Factorización Inversa</h3>
+        </div>
+        <p class="rubric-desc">
+          Ver una expresión como <code>x² + 6x + 9</code> y no darse cuenta inmediatamente de que es el cuadrado perfecto <code>(x + 3)²</code>.
+        </p>
+        <div class="rubric-fix">
+          <span class="fix-good">Comprobación rápida:</span>
+          <em>¿Es el término independiente el cuadrado de la mitad del coeficiente lineal? (6 / 2)² = 3² = 9. ¡Sí!</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion-algebra">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Autoevaluación de Destreza Algebraica: Demuestra tu Dominio</h2>
+    <p>Responde a estas tres preguntas técnicas para consolidar las tres identidades notables:</p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="quiz-question">
+          <span class="q-num">1.</span>
+          <p>Al desarrollar y simplificar al máximo la expresión <code>(2x - 3y)²</code>, ¿cuál es el resultado matemáticamente correcto?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) 4x² - 9y²</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>B) 4x² - 6xy + 9y²</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>C) 4x² - 12xy + 9y²</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="quiz-question">
+          <span class="q-num">2.</span>
+          <p>¿Cuál es la factorización algebraica irreducible de la diferencia <code>49x² - 16</code>?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>A) (7x + 4)(7x - 4)</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>B) (7x - 4)²</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) (49x - 16)(49x + 16)</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="quiz-question">
+          <span class="q-num">3.</span>
+          <p>¿Qué valor numérico exacto debe tener la constante <em>k</em> para que el trinomio <code>x² + 10x + k</code> sea un cuadrado perfecto <code>(x + c)²</code>?</p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>A) k = 100</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            <span>B) k = 25</span>
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            <span>C) k = 20</span>
+          </button>
+        </div>
+        <div class="quiz-explanation" hidden></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO GEOMÉTRICO INTERACTIVO DE IDENTIDADES NOTABLES (SVG)
+    // =========================================================================
+    const svgEl = document.getElementById('geo-svg') as SVGSVGElement | null;
+    const sliderA = document.getElementById('slider-a') as HTMLInputElement | null;
+    const sliderB = document.getElementById('slider-b') as HTMLInputElement | null;
+    const valADisplay = document.getElementById('val-a-display');
+    const valBDisplay = document.getElementById('val-b-display');
+    const tabButtons = document.querySelectorAll<HTMLButtonElement>('.identity-tabs .tab-btn');
+    const metricsTitle = document.getElementById('metrics-title');
+    const areasList = document.getElementById('areas-list');
+    const identityEval = document.getElementById('identity-formula-eval');
+
+    let currentIdentity: 'suma' | 'diferencia' | 'conjugado' = 'suma';
+
+    const renderGeometry = () => {
+      if (!svgEl || !sliderA || !sliderB) return;
+      const a = parseInt(sliderA.value, 10);
+      const b = parseInt(sliderB.value, 10);
+
+      if (valADisplay) valADisplay.textContent = `a = ${a}`;
+      if (valBDisplay) valBDisplay.textContent = `b = ${b}`;
+
+      // Configuración de dimensiones y escala dentro del viewBox (420x420 con margen 40)
+      const offset = 40;
+      const maxSize = 340;
+
+      svgEl.innerHTML = ''; // Limpiar SVG
+
+      if (currentIdentity === 'suma') {
+        const totalUnits = a + b;
+        const scale = maxSize / totalUnits;
+        const pxA = a * scale;
+        const pxB = b * scale;
+
+        if (metricsTitle) metricsTitle.textContent = `Área Total del Cuadrado: (a + b)² = (${a} + ${b})²`;
+
+        // 1. Región a² (Cuadrado azul superior izquierdo)
+        createSvgRect(offset, offset, pxA, pxA, 'rgba(56, 189, 248, 0.35)', '#38bdf8', `a² = ${a * a}`);
+        // 2. Región ab (Rectángulo cian superior derecho)
+        createSvgRect(offset + pxA, offset, pxB, pxA, 'rgba(16, 185, 129, 0.35)', '#10b981', `ab = ${a * b}`);
+        // 3. Región ab (Rectángulo cian inferior izquierdo)
+        createSvgRect(offset, offset + pxA, pxA, pxB, 'rgba(16, 185, 129, 0.35)', '#10b981', `ba = ${b * a}`);
+        // 4. Región b² (Cuadrado dorado inferior derecho)
+        createSvgRect(offset + pxA, offset + pxA, pxB, pxB, 'rgba(251, 191, 36, 0.4)', '#fbbf24', `b² = ${b * b}`);
+
+        // Cotas y cotas de dimensión
+        createSvgDimension(offset, offset - 12, pxA, `a = ${a}`, '#38bdf8');
+        createSvgDimension(offset + pxA, offset - 12, pxB, `b = ${b}`, '#fbbf24');
+        createSvgDimension(offset - 12, offset, pxA, `a = ${a}`, '#38bdf8', true);
+        createSvgDimension(offset - 12, offset + pxA, pxB, `b = ${b}`, '#fbbf24', true);
+
+        const totalArea = Math.pow(a + b, 2);
+        if (areasList) {
+          areasList.innerHTML = `
+            <div class="area-metric-row is-a2">
+              <span class="row-indicator" style="background: #38bdf8;"></span>
+              <span class="row-label">Cuadrado mayor: a²</span>
+              <strong class="row-val">${a}² = ${a * a}</strong>
+            </div>
+            <div class="area-metric-row is-ab">
+              <span class="row-indicator" style="background: #10b981;"></span>
+              <span class="row-label">Rectángulo horizontal: ab</span>
+              <strong class="row-val">${a} × ${b} = ${a * b}</strong>
+            </div>
+            <div class="area-metric-row is-ab">
+              <span class="row-indicator" style="background: #10b981;"></span>
+              <span class="row-label">Rectángulo vertical: ba = ab</span>
+              <strong class="row-val">${b} × ${a} = ${b * a}</strong>
+            </div>
+            <div class="area-metric-row is-b2">
+              <span class="row-indicator" style="background: #fbbf24;"></span>
+              <span class="row-label">Cuadrado menor: b²</span>
+              <strong class="row-val">${b}² = ${b * b}</strong>
+            </div>
+          `;
+        }
+
+        if (identityEval) {
+          identityEval.innerHTML = `(${a} + ${b})² = ${a * a} + 2·(${a * b}) + ${b * b} = <strong>${totalArea}</strong>`;
+        }
+      } else if (currentIdentity === 'diferencia') {
+        // En diferencia, a debe ser mayor estricto que b
+        const effectiveA = Math.max(a, b + 1);
+        const scale = maxSize / effectiveA;
+        const pxA = effectiveA * scale;
+        const pxDiff = (effectiveA - b) * scale;
+        const pxB = b * scale;
+
+        if (metricsTitle) metricsTitle.textContent = `Área del Cuadrado Restante: (a - b)² = (${effectiveA} - ${b})²`;
+
+        // Fondo total a²
+        createSvgRect(offset, offset, pxA, pxA, 'rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.2)', `a² total = ${effectiveA * effectiveA}`);
+        // Cuadrado objetivo (a - b)²
+        createSvgRect(offset, offset, pxDiff, pxDiff, 'rgba(56, 189, 248, 0.45)', '#38bdf8', `(a - b)² = ${(effectiveA - b) * (effectiveA - b)}`);
+        // Franja horizontal restada
+        createSvgRect(offset, offset + pxDiff, pxA, pxB, 'rgba(239, 68, 68, 0.25)', '#ef4444', `Franja horizontal (-ab)`);
+        // Franja vertical restada
+        createSvgRect(offset + pxDiff, offset, pxB, pxA, 'rgba(239, 68, 68, 0.25)', '#ef4444', `Franja vertical (-ab)`);
+        // Esquina superpuesta sumada de vuelta (+b²)
+        createSvgRect(offset + pxDiff, offset + pxDiff, pxB, pxB, 'rgba(251, 191, 36, 0.55)', '#fbbf24', `+ b² compensado`);
+
+        createSvgDimension(offset, offset - 12, pxDiff, `a - b = ${effectiveA - b}`, '#38bdf8');
+        createSvgDimension(offset + pxDiff, offset - 12, pxB, `b = ${b}`, '#ef4444');
+
+        const diffArea = Math.pow(effectiveA - b, 2);
+        if (areasList) {
+          areasList.innerHTML = `
+            <div class="area-metric-row is-a2">
+              <span class="row-indicator" style="background: rgba(255,255,255,0.4);"></span>
+              <span class="row-label">Cuadrado completo de partida: a²</span>
+              <strong class="row-val">${effectiveA}² = ${effectiveA * effectiveA}</strong>
+            </div>
+            <div class="area-metric-row is-ab">
+              <span class="row-indicator" style="background: #ef4444;"></span>
+              <span class="row-label">Menos dos franjas de área ab: -2ab</span>
+              <strong class="row-val">-2·(${effectiveA}×${b}) = -${2 * effectiveA * b}</strong>
+            </div>
+            <div class="area-metric-row is-b2">
+              <span class="row-indicator" style="background: #fbbf24;"></span>
+              <span class="row-label">Más esquina superpuesta compensada: +b²</span>
+              <strong class="row-val">+${b}² = +${b * b}</strong>
+            </div>
+          `;
+        }
+
+        if (identityEval) {
+          identityEval.innerHTML = `(${effectiveA} - ${b})² = ${effectiveA * effectiveA} - ${2 * effectiveA * b} + ${b * b} = <strong>${diffArea}</strong>`;
+        }
+      } else if (currentIdentity === 'conjugado') {
+        const effectiveA = Math.max(a, b + 1);
+        const scale = maxSize / effectiveA;
+        const pxA = effectiveA * scale;
+        const pxB = b * scale;
+
+        if (metricsTitle) metricsTitle.textContent = `Diferencia de Cuadrados: a² - b² = (${effectiveA}² - ${b}²)`;
+
+        // 1. Cuadrado a² con esquina b² recortada (forma de L)
+        createSvgRect(offset, offset, pxA, pxA, 'rgba(56, 189, 248, 0.35)', '#38bdf8', `a²`);
+        // Recorte b² en esquina inferior derecha
+        createSvgRect(offset + pxA - pxB, offset + pxA - pxB, pxB, pxB, 'rgba(239, 68, 68, 0.45)', '#ef4444', `Recorte: -b² = -${b * b}`);
+
+        createSvgDimension(offset, offset - 12, pxA, `Lado a = ${effectiveA}`, '#38bdf8');
+        createSvgDimension(offset + pxA + 12, offset + pxA - pxB, pxB, `b = ${b}`, '#ef4444', true);
+
+        const conjugateArea = effectiveA * effectiveA - b * b;
+        if (areasList) {
+          areasList.innerHTML = `
+            <div class="area-metric-row is-a2">
+              <span class="row-indicator" style="background: #38bdf8;"></span>
+              <span class="row-label">Área del cuadrado inicial: a²</span>
+              <strong class="row-val">${effectiveA}² = ${effectiveA * effectiveA}</strong>
+            </div>
+            <div class="area-metric-row is-ab">
+              <span class="row-indicator" style="background: #ef4444;"></span>
+              <span class="row-label">Esquina recortada: -b²</span>
+              <strong class="row-val">-${b}² = -${b * b}</strong>
+            </div>
+            <div class="area-metric-row is-b2">
+              <span class="row-indicator" style="background: #10b981;"></span>
+              <span class="row-label">Rectángulo equivalente: (a+b)(a-b)</span>
+              <strong class="row-val">(${effectiveA}+${b}) · (${effectiveA}-${b}) = ${effectiveA + b} · ${effectiveA - b} = ${conjugateArea}</strong>
+            </div>
+          `;
+        }
+
+        if (identityEval) {
+          identityEval.innerHTML = `(${effectiveA} + ${b})(${effectiveA} - ${b}) = ${effectiveA * effectiveA} - ${b * b} = <strong>${conjugateArea}</strong>`;
+        }
+      }
+    };
+
+    // Funciones auxiliares para construcción de SVG limpio
+    const createSvgRect = (x: number, y: number, w: number, h: number, fill: string, stroke: string, label: string) => {
+      if (!svgEl) return;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x.toString());
+      rect.setAttribute('y', y.toString());
+      rect.setAttribute('width', w.toString());
+      rect.setAttribute('height', h.toString());
+      rect.setAttribute('fill', fill);
+      rect.setAttribute('stroke', stroke);
+      rect.setAttribute('stroke-width', '1.5');
+      rect.setAttribute('rx', '4');
+      svgEl.appendChild(rect);
+
+      if (w > 30 && h > 20) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', (x + w / 2).toString());
+        text.setAttribute('y', (y + h / 2 + 4).toString());
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', stroke);
+        text.setAttribute('font-family', 'ui-monospace, monospace');
+        text.setAttribute('font-weight', '700');
+        text.setAttribute('font-size', '12');
+        text.textContent = label;
+        svgEl.appendChild(text);
+      }
+    };
+
+    const createSvgDimension = (x: number, y: number, length: number, text: string, color: string, isVertical = false) => {
+      if (!svgEl) return;
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('fill', color);
+      t.setAttribute('font-family', 'ui-monospace, monospace');
+      t.setAttribute('font-size', '11');
+      t.setAttribute('font-weight', '700');
+
+      if (!isVertical) {
+        t.setAttribute('x', (x + length / 2).toString());
+        t.setAttribute('y', y.toString());
+        t.setAttribute('text-anchor', 'middle');
+      } else {
+        t.setAttribute('x', x.toString());
+        t.setAttribute('y', (y + length / 2 + 4).toString());
+        t.setAttribute('text-anchor', 'end');
+      }
+
+      t.textContent = text;
+      g.appendChild(t);
+      svgEl.appendChild(g);
+    };
+
+    if (sliderA && sliderB) {
+      sliderA.addEventListener('input', renderGeometry);
+      sliderB.addEventListener('input', renderGeometry);
+    }
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentIdentity = (btn.dataset.identity as any) || 'suma';
+        renderGeometry();
+      });
+    });
+
+    renderGeometry();
+
+    // =========================================================================
+    // 2. AUTOEVALUACIÓN INTERACTIVA
+    // =========================================================================
+    document.querySelectorAll<HTMLElement>('.quiz-card').forEach((card) => {
+      const options = card.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+      const explanation = card.querySelector<HTMLElement>('.quiz-explanation');
+
+      options.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          options.forEach((o) => {
+            o.disabled = true;
+            if (o.dataset.correct === 'true') {
+              o.classList.add('is-revealed-correct');
+            }
+          });
+
+          if (isCorrect) {
+            btn.classList.add('is-user-correct');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-good';
+              explanation.innerHTML = '<strong>¡Exacto!</strong> Has aplicado las identidades notables con pleno rigor formal.';
+            }
+          } else {
+            btn.classList.add('is-user-wrong');
+            if (explanation) {
+              explanation.hidden = false;
+              explanation.className = 'quiz-explanation is-bad';
+              explanation.innerHTML = '<strong>Incorrecto.</strong> Recuerda vigilar el doble producto 2ab y el cuadrado de los coeficientes numéricos.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: DEDUCCIÓN DE IDENTIDADES NOTABLES (ÁLGEBRA)
+     ========================================================================= */
+
+  .lesson-section {
+    position: relative;
+    margin-bottom: 4rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :global([data-theme="light"]) .lesson-section {
+    border-bottom-color: rgba(0, 0, 0, 0.07);
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .marker-num {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  :global([data-theme="light"]) .marker-num {
+    color: var(--block-accent-light, #0284c7);
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.3), transparent);
+  }
+
+  .lesson-section h2 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  :global([data-theme="light"]) .lesson-section h2 {
+    color: #0f172a;
+  }
+
+  .prose-lead {
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: var(--ink, #e2e8f0);
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .prose-lead {
+    color: #334155;
+  }
+
+  .lesson-section p {
+    font-size: 0.98rem;
+    line-height: 1.68;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .lesson-section p {
+    color: #475569;
+  }
+
+  /* Math Warning Box */
+  .math-warning-box {
+    display: flex;
+    gap: 1.25rem;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-left: 4px solid #ef4444;
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin: 1.75rem 0;
+  }
+
+  :global([data-theme="light"]) .math-warning-box {
+    background: #fef2f2;
+    border-color: #fecaca;
+    border-left-color: #dc2626;
+  }
+
+  .warning-icon {
+    color: #ef4444;
+    flex-shrink: 0;
+    padding-top: 0.2rem;
+  }
+
+  :global([data-theme="light"]) .warning-icon {
+    color: #dc2626;
+  }
+
+  .warning-body h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fca5a5;
+    margin: 0 0 0.5rem;
+  }
+
+  :global([data-theme="light"]) .warning-body h4 {
+    color: #991b1b;
+  }
+
+  .warning-body p {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .warning-body p {
+    color: #334155;
+  }
+
+  /* Academic Cards Grid */
+  .academic-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .academic-concept-card {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .academic-concept-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .academic-concept-card.is-correct-card {
+    border-top: 3px solid #10b981;
+  }
+
+  .academic-concept-card.is-wrong-card {
+    border-top: 3px solid #ef4444;
+  }
+
+  .concept-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .concept-num {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .concept-num.is-danger {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+  }
+
+  .concept-head h4 {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .concept-head h4 {
+    color: #0f172a;
+  }
+
+  .concept-def {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin: 0 0 0.6rem;
+    color: var(--muted, #cbd5e1);
+  }
+
+  :global([data-theme="light"]) .concept-def {
+    color: #475569;
+  }
+
+  /* Formal Theorem Banner */
+  .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 1.75rem 0 2rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.06), #ffffff);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  .theorem-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--block-accent, #38bdf8);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: var(--block-accent-light, #0284c7);
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.8rem 0 0.5rem;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner h3 {
+    color: #0f172a;
+  }
+
+  .theorem-symbolic {
+    display: inline-block;
+    font-family: ui-monospace, monospace;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    background: #fafaf9;
+    color: var(--block-accent-light, #0284c7);
+    border-color: #cbd5e1;
+  }
+
+  /* Proof Stepper */
+  .proof-stepper-container {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  :global([data-theme="light"]) .proof-stepper-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .proof-stepper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header {
+    border-bottom-color: #e2e8f0;
+  }
+
+  .proof-stepper-header h4 {
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--block-accent, #38bdf8);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .proof-stepper-header h4 {
+    color: var(--block-accent-light, #0284c7);
+  }
+
+  .stepper-hint {
+    font-size: 0.76rem;
+    color: var(--muted, #94a3b8);
+    font-style: italic;
+  }
+
+  .proof-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .proof-step-card {
+    display: flex;
+    gap: 1.2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+
+  :global([data-theme="light"]) .proof-step-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .step-num-col {
+    font-family: ui-monospace, monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--block-accent, #38bdf8);
+    opacity: 0.85;
+    line-height: 1;
+    padding-top: 0.15rem;
+  }
+
+  :global([data-theme="light"]) .step-num-col {
+    color: var(--block-accent-light, #0284c7);
+  }
+
+  .step-content {
+    flex: 1;
+  }
+
+  .step-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-head strong {
+    font-size: 1.02rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .step-head strong {
+    color: #0f172a;
+  }
+
+  .step-rule {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .step-rule {
+    color: var(--block-accent-light, #0284c7);
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  .step-equation {
+    background: rgba(0, 0, 0, 0.35);
+    border-left: 3px solid var(--block-accent, #38bdf8);
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .step-equation {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left-width: 3px;
+    border-left-color: var(--block-accent-light, #0284c7);
+    color: #0f172a;
+  }
+
+  .step-equation.is-conclusive {
+    border-left-color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+    color: #34d399;
+  }
+
+  :global([data-theme="light"]) .step-equation.is-conclusive {
+    background: #ecfdf5;
+    border-left-color: #059669;
+    color: #065f46;
+  }
+
+  .qed-badge {
+    display: inline-flex;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 6px;
+    padding: 0.55rem 0.95rem;
+    margin-top: 0.75rem;
+    color: #34d399;
+    font-family: ui-monospace, monospace;
+    font-weight: 800;
+    font-size: 0.88rem;
+  }
+
+  /* Widget Geométrico Interactivo */
+  .geometry-lab-widget {
+    background: rgba(18, 20, 29, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .geometry-lab-widget {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .widget-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .widget-head {
+    border-bottom-color: #e2e8f0;
+  }
+
+  .widget-tag {
+    display: inline-block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .widget-tag {
+    color: var(--block-accent-light, #0284c7);
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  .widget-title-group h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .widget-title-group h3 {
+    color: #0f172a;
+  }
+
+  .identity-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--muted, #cbd5e1);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    background: rgba(56, 189, 248, 0.1);
+    color: #f8fafc;
+  }
+
+  .tab-btn.is-active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--block-accent, #38bdf8);
+    color: var(--block-accent, #38bdf8);
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .tab-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .tab-btn.is-active {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  .geo-sliders-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global([data-theme="light"]) .geo-sliders-panel {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .slider-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .slider-label-row label {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .slider-label-row label {
+    color: #1e293b;
+  }
+
+  .slider-val-pill {
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .slider-val-pill {
+    color: var(--block-accent-light, #0284c7);
+    background: rgba(2, 132, 199, 0.08);
+  }
+
+  .math-slider {
+    width: 100%;
+    accent-color: var(--block-accent, #38bdf8);
+    cursor: pointer;
+  }
+
+  .geo-interactive-stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @media (max-width: 900px) {
+    .geo-interactive-stage {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .svg-stage-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1rem;
+    min-height: 380px;
+  }
+
+  :global([data-theme="light"]) .svg-stage-container {
+    background: #fafaf9;
+    border-color: #e2e8f0;
+  }
+
+  .geometric-canvas {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .geo-metrics-sidebar {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .geo-metrics-sidebar {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  :global([data-theme="light"]) .sidebar-header {
+    border-bottom-color: #e2e8f0;
+  }
+
+  .sidebar-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    letter-spacing: 0.06em;
+  }
+
+  .sidebar-header h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.3rem 0 0;
+  }
+
+  :global([data-theme="light"]) .sidebar-header h4 {
+    color: #0f172a;
+  }
+
+  .areas-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .area-metric-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.86rem;
+    color: var(--ink, #cbd5e1);
+  }
+
+  :global([data-theme="light"]) .area-metric-row {
+    color: #334155;
+  }
+
+  .row-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .row-label {
+    flex: 1;
+  }
+
+  .row-val {
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .row-val {
+    color: #0f172a;
+  }
+
+  .total-identity-eval {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+  }
+
+  :global([data-theme="light"]) .total-identity-eval {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  .eval-tag {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    margin-bottom: 0.25rem;
+  }
+
+  :global([data-theme="light"]) .eval-tag {
+    color: var(--block-accent-light, #0284c7);
+  }
+
+  .total-identity-eval code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .total-identity-eval code {
+    color: #0f172a;
+  }
+
+  .geometric-insight-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin: 1.75rem 0;
+  }
+
+  :global([data-theme="light"]) .geometric-insight-box {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .geometric-insight-box h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0 0 0.8rem;
+  }
+
+  :global([data-theme="light"]) .geometric-insight-box h4 {
+    color: #0f172a;
+  }
+
+  .geometric-steps-list {
+    margin: 0;
+    padding-left: 1.4rem;
+    color: var(--muted, #cbd5e1);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+
+  :global([data-theme="light"]) .geometric-steps-list {
+    color: #475569;
+  }
+
+  .geometric-steps-list li {
+    margin-bottom: 0.4rem;
+  }
+
+  /* Math Callout */
+  .math-callout {
+    background: rgba(18, 20, 29, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.75rem 0 2rem;
+  }
+
+  :global([data-theme="light"]) .math-callout {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .callout-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .callout-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--block-accent, #38bdf8);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  :global([data-theme="light"]) .callout-badge {
+    background: rgba(2, 132, 199, 0.08);
+    color: var(--block-accent-light, #0284c7);
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  .callout-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .callout-header h3 {
+    color: #0f172a;
+  }
+
+  .formula-spotlight {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 8px;
+    padding: 1rem 1.4rem;
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formula-spotlight {
+    background: #fafaf9;
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  .formula-spotlight code {
+    font-family: ui-monospace, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--block-accent, #38bdf8);
+  }
+
+  :global([data-theme="light"]) .formula-spotlight code {
+    color: var(--block-accent-light, #0284c7);
+  }
+
+  .callout-caption {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    margin-top: 1rem;
+    margin-bottom: 0;
+    line-height: 1.55;
+  }
+
+  /* Rúbrica */
+  .rubric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+
+  .rubric-card {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.3rem;
+  }
+
+  :global([data-theme="light"]) .rubric-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .rubric-card.is-error {
+    border-top: 3px solid #ef4444;
+  }
+
+  :global([data-theme="light"]) .rubric-card.is-error {
+    border-top: 3px solid #dc2626;
+  }
+
+  .rubric-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: 0.05em;
+  }
+
+  .rubric-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    margin: 0.4rem 0 0.6rem;
+  }
+
+  :global([data-theme="light"]) .rubric-card h3 {
+    color: #0f172a;
+  }
+
+  .rubric-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 0.9rem;
+  }
+
+  .rubric-fix {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 0.84rem;
+  }
+
+  :global([data-theme="light"]) .rubric-fix {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .fix-good {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #34d399;
+    margin-bottom: 0.25rem;
+  }
+
+  :global([data-theme="light"]) .fix-good {
+    color: #059669;
+  }
+
+  .rubric-fix code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .rubric-fix code {
+    color: #0f172a;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 1.75rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(18, 20, 29, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1.4rem;
+  }
+
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .quiz-question {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .q-num {
+    font-family: ui-monospace, monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+  }
+
+  :global([data-theme="light"]) .q-num {
+    color: var(--block-accent-light, #0284c7);
+  }
+
+  .quiz-question p {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--ink, #f3f2ec);
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .quiz-question p {
+    color: #0f172a;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.8rem 1.1rem;
+    color: var(--ink, #cbd5e1);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: var(--block-accent, #38bdf8);
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .quiz-opt {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .quiz-opt:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  .quiz-opt.is-user-correct,
+  .quiz-opt.is-revealed-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+    font-weight: 700;
+  }
+
+  .quiz-opt.is-user-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+  }
+
+  .quiz-explanation {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .quiz-explanation.is-good {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #34d399;
+  }
+
+  .quiz-explanation.is-bad {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+  }
+</style>

@@ -1,0 +1,1842 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-04');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL ENIGMA DE EVALUAR VS DIVIDIR -->
+  <section class="lesson-section" id="el-enigma">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Enigma: ¿Qué relación tienen evaluar y dividir polinomios?</h2>
+
+    <p class="lead-paragraph">
+      En la educación secundaria se enseña que para saber el valor de un polinomio en un número <code class="inline-code">x = a</code> hay que sustituir y operar potencias. Paralelamente, se enseña una tabla mecánica con flechas y multiplicaciones llamada <strong>Regla de Ruffini</strong> para dividir por <code class="inline-code">(x - a)</code>. Raras veces se explica que <em>ambas operaciones son matemáticamente la misma cosa</em>.
+    </p>
+
+    <!-- Tarjeta comparativa de métodos -->
+    <div class="contrast-methods-grid">
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-tag">MÉTODO DIRECTO (FUERZA BRUTA)</span>
+          <h4>Evaluar sustituyendo x = a</h4>
+        </div>
+        <p>
+          Para <code class="inline-code">P(x) = 2x³ - 5x² + x - 7</code> en <code class="inline-code">x = 3</code>:
+        </p>
+        <div class="method-code-box">
+          <code>P(3) = 2·(3)³ - 5·(3)² + 3 - 7 = 54 - 45 + 3 - 7 = 5</code>
+        </div>
+        <p class="method-desc">
+          Requiere calcular potencias elevadas, multiplicaciones complejas y sumas con números que crecen rápidamente. En polinomios de grado 5 o 6, el cálculo a mano es largo y propenso a errores.
+        </p>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-tag">MÉTODO EUCLÍDEO (EL ATAJO DE RUFFINI)</span>
+          <h4>Dividir entre (x - a)</h4>
+        </div>
+        <p>
+          Dividimos <code class="inline-code">P(x)</code> entre <code class="inline-code">(x - 3)</code>:
+        </p>
+        <div class="method-code-box">
+          <code>Cociente C(x) = 2x² + x + 4  |  Resto R = 5</code>
+        </div>
+        <p class="method-desc">
+          ¡El resto numérico final de la división es exactamente <code class="inline-code">5</code>! ¿Por qué el resto de una división contiene el valor numérico exacto de la sustitución? La respuesta es el <strong>Teorema del Resto</strong>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: DEMOSTRACIÓN FORMAL DEL TEOREMA DEL RESTO -->
+  <section class="lesson-section" id="demostracion-teorema-resto">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Demostración Formal del Teorema del Resto</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA DEL RESTO</span>
+      <h3>«El resto de la división de cualquier polinomio P(x) por un binomio mónico de primer grado (x - a) es idéntico al valor numérico P(a)»</h3>
+      <code class="theorem-symbolic">∀ P(x) ∈ ℝ[x], ∀ a ∈ ℝ : P(x) = (x - a)·C(x) + R ⟹ P(a) = R</code>
+    </div>
+
+    <p>
+      La prueba es una de las más elegantes y breves de toda el álgebra abstracta. Se basa únicamente en el <strong>algoritmo de división euclídea</strong> en el anillo de polinomios:
+    </p>
+
+    <!-- Tarjetas de demostración paso a paso -->
+    <div class="proof-stepper">
+      <div class="proof-step-card">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>La Identidad Fundamental de la División Euclídea</h4>
+          <span class="step-axiom">Propiedad de existencia y unicidad en ℝ[x]</span>
+          <p>
+            Al dividir un polinomio dividendo <code class="inline-code">P(x)</code> entre un divisor <code class="inline-code">d(x) = (x - a)</code>, existen un único cociente <code class="inline-code">C(x)</code> y un único resto <code class="inline-code">R(x)</code> tales que:
+          </p>
+          <div class="formula-box">
+            <code>P(x) = (x - a) · C(x) + R(x)</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-step-card">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Restricción de Grado: El resto es una constante numérica pura</h4>
+          <span class="step-axiom">Condición de parada del algoritmo de división</span>
+          <p>
+            Por definición de división euclídea, el grado del resto debe ser estrictamente menor que el grado del divisor:
+          </p>
+          <div class="formula-box">
+            <code>grado(R(x)) &lt; grado(x - a) = 1 ⟹ grado(R(x)) = 0 ⟹ R(x) = R ∈ ℝ</code>
+          </div>
+          <p>
+            El resto no puede contener ninguna variable <code class="inline-code">x</code>; es forzosamente un número real constante.
+          </p>
+        </div>
+      </div>
+
+      <div class="proof-step-card">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Evaluación de la Identidad en el punto crítico x = a</h4>
+          <span class="step-axiom">Propiedad de anulación por elemento neutro multiplicativo</span>
+          <p>
+            Dado que la identidad <code class="inline-code">P(x) = (x - a)·C(x) + R</code> es válida para todo número real, evaluamos específicamente en <code class="inline-code">x = a</code>:
+          </p>
+          <div class="formula-box highlight-box">
+            <code>P(a) = (a - a) · C(a) + R = 0 · C(a) + R = 0 + R = R  ∎</code>
+          </div>
+          <p class="proof-conclusion">
+            El factor <code class="inline-code">(a - a) = 0</code> anula instantáneamente todo el término del cociente, sin importar lo largo o complejo que sea <code class="inline-code">C(a)</code>. Lo único que sobrevive intacto es el resto <code class="inline-code">R</code>. Q.E.D.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: EL TEOREMA DEL FACTOR -->
+  <section class="lesson-section" id="teorema-del-factor">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. El Teorema del Factor: La Llave de la Factorización</h2>
+
+    <p>
+      El Teorema del Factor es el corolario inmediato más trascendental del Teorema del Resto, y es el fundamento teórico detrás de toda la factorización de polinomios en Bachillerato:
+    </p>
+
+    <div class="factor-theorem-card">
+      <div class="factor-header">
+        <span class="factor-kicker">COROLARIO VITAL</span>
+        <h3>«Un número x = a es RAÍZ de un polinomio P(x) si y solo si (x - a) es un DIVISOR EXACTO de P(x)»</h3>
+      </div>
+      <div class="factor-equivalence-chain">
+        <div class="chain-node">
+          <span class="node-title">Raíz</span>
+          <code>P(a) = 0</code>
+        </div>
+        <div class="chain-arrow">⟺</div>
+        <div class="chain-node">
+          <span class="node-title">División Exacta</span>
+          <code>Resto R = 0</code>
+        </div>
+        <div class="chain-arrow">⟺</div>
+        <div class="chain-node">
+          <span class="node-title">Factorización</span>
+          <code>P(x) = (x - a) · C(x)</code>
+        </div>
+      </div>
+      <p class="factor-implication">
+        <strong>Consecuencia práctica:</strong> Cada vez que encontramos un número <code class="inline-code">a</code> tal que el resto de Ruffini sea cero, hemos «extraído» un factor lineal <code class="inline-code">(x - a)</code> y reducido el problema a factorizar un cociente <code class="inline-code">C(x)</code> de un grado menor.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DE RUFFINI -->
+  <section class="lesson-section" id="laboratorio-ruffini">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Simulador de Ruffini y Verificación Doble</h2>
+
+    <p>
+      Introduce o elige un polinomio y un valor divisor <code class="inline-code">a</code>. Observa cómo la tabla de Ruffini y la sustitución algebraica directa calculan simultáneamente el mismo número exacto:
+    </p>
+
+    <!-- Simulador Dinámico -->
+    <div class="ruffini-lab-container">
+      <div class="lab-card-shell">
+        <div class="lab-controls-bar">
+          <div class="preset-selector">
+            <span class="control-label">Polinomio de ejemplo:</span>
+            <div class="preset-buttons">
+              <button type="button" class="preset-btn is-active" data-p="2,-3,-11,6" data-a="3">Ejemplo 1: 2x³ - 3x² - 11x + 6 (a = 3)</button>
+              <button type="button" class="preset-btn" data-p="1,0,-7,6" data-a="2">Ejemplo 2 con hueco: x³ - 7x + 6 (a = 2)</button>
+              <button type="button" class="preset-btn" data-p="1,-4,1,6" data-a="-1">Ejemplo 3 negativo: x³ - 4x² + x + 6 (a = -1)</button>
+            </div>
+          </div>
+
+          <div class="manual-inputs-row">
+            <div class="input-block">
+              <label for="input-poly">Coeficientes de P(x) separados por comas (de mayor a menor grado):</label>
+              <input type="text" id="input-poly" value="2, -3, -11, 6" class="code-input" spellcheck="false" />
+            </div>
+            <div class="input-block narrow-block">
+              <label for="input-val-a">Valor a de (x - a):</label>
+              <input type="number" id="input-val-a" value="3" class="code-input" step="1" />
+            </div>
+            <button type="button" id="btn-calc-ruffini" class="action-calc-btn">Calcular</button>
+          </div>
+        </div>
+
+        <!-- Escenario de Comparación: Ruffini vs Sustitución Directa -->
+        <div class="lab-stage-grid">
+          <!-- Columna 1: La Tabla de Ruffini -->
+          <div class="stage-pane ruffini-pane">
+            <div class="pane-header">
+              <span class="pane-tag">ALGORITMO DE RUFFINI</span>
+              <h4 id="div-title">División de P(x) entre (x - 3)</h4>
+            </div>
+
+            <div class="ruffini-table-wrapper">
+              <table class="ruffini-table" id="ruffini-table-display">
+                <!-- Se inyecta dinámicamente vía script -->
+                <tbody>
+                  <tr class="row-coeffs">
+                    <td class="cell-a-divider"></td>
+                    <td class="cell-num">2</td>
+                    <td class="cell-num">-3</td>
+                    <td class="cell-num">-11</td>
+                    <td class="cell-num">6</td>
+                  </tr>
+                  <tr class="row-multipliers">
+                    <td class="cell-a-label">a = 3</td>
+                    <td class="cell-num cell-empty"></td>
+                    <td class="cell-num cell-mult">6</td>
+                    <td class="cell-num cell-mult">9</td>
+                    <td class="cell-num cell-mult">-6</td>
+                  </tr>
+                  <tr class="row-results">
+                    <td class="cell-a-divider"></td>
+                    <td class="cell-num cell-res">2</td>
+                    <td class="cell-num cell-res">3</td>
+                    <td class="cell-num cell-res">-2</td>
+                    <td class="cell-num cell-remainder">0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="quotient-display-box">
+              <span class="box-tag">POLINOMIO COCIENTE C(x):</span>
+              <code id="quotient-formula">C(x) = 2x² + 3x - 2</code>
+            </div>
+          </div>
+
+          <!-- Columna 2: Evaluación Directa y Teorema del Factor -->
+          <div class="stage-pane eval-pane">
+            <div class="pane-header">
+              <span class="pane-tag">TEOREMA DEL RESTO</span>
+              <h4>Sustitución Directa P(a)</h4>
+            </div>
+
+            <div class="direct-eval-box">
+              <div class="eval-calc-line" id="direct-eval-trace">
+                P(3) = 2·(3)³ - 3·(3)² - 11·(3) + 6 = 54 - 27 - 33 + 6 = 0
+              </div>
+              <div class="identity-confirm-badge" id="identity-badge">
+                Resto Ruffini R = 0  ⟺  P(3) = 0
+              </div>
+            </div>
+
+            <!-- Veredicto de Raíz y Factorización -->
+            <div class="verdict-card" id="verdict-box">
+              <div class="verdict-header">
+                <span class="verdict-icon" id="verdict-icon">✓</span>
+                <span class="verdict-title" id="verdict-title">x = 3 ES RAÍZ EXACTA</span>
+              </div>
+              <p id="verdict-desc">
+                Como el resto es exactamente 0, <code class="inline-code">(x - 3)</code> divide de forma exacta al polinomio.
+              </p>
+              <div class="factor-decomposition" id="factor-decomp">
+                <code>P(x) = (x - 3) · (2x² + 3x - 2)</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: DEDUCCIÓN ALGEBRAICA DE LA REGLA DE RUFFINI -->
+  <section class="lesson-section" id="deduccion-ruffini">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. ¿De dónde sale la Regla de Ruffini? Deducción Algebraica</h2>
+
+    <p>
+      La tabla de Ruffini parece un juego de magia: «bajas el primero, multiplicas, sumas...». ¿Por qué funciona este algoritmo? Veamos cómo surge de manera inevitable al igualar coeficientes en una división cúbica general:
+    </p>
+
+    <div class="derivation-formal-card">
+      <p>
+        Sea el dividendo <code class="inline-code">P(x) = c₃x³ + c₂x² + c₁x + c₀</code> y el divisor <code class="inline-code">x - a</code>. Como el divisor es de grado 1, el cociente debe ser de grado 2: <code class="inline-code">C(x) = q₂x² + q₁x + q₀</code> con resto numérico <code class="inline-code">R</code>.
+      </p>
+
+      <div class="derivation-step">
+        <span class="derivation-num">Paso 1</span>
+        <p>Desarrollamos el producto <code class="inline-code">(x - a)·C(x) + R</code> por propiedad distributiva:</p>
+        <div class="math-dev-box">
+          <code>(x - a)(q₂x² + q₁x + q₀) + R = q₂x³ + (q₁ - a·q₂)x² + (q₀ - a·q₁)x + (R - a·q₀)</code>
+        </div>
+      </div>
+
+      <div class="derivation-step">
+        <span class="derivation-num">Paso 2</span>
+        <p>Igualamos coeficiente a coeficiente con <code class="inline-code">P(x) = c₃x³ + c₂x² + c₁x + c₀</code>:</p>
+        <div class="coefficients-matching-grid">
+          <div class="match-row">
+            <span class="deg-tag">Grado 3:</span>
+            <code>c₃ = q₂</code>
+            <span class="rule-explain">⟹ <strong>q₂ = c₃</strong> (Bajar el primer coeficiente tal cual).</span>
+          </div>
+          <div class="match-row">
+            <span class="deg-tag">Grado 2:</span>
+            <code>c₂ = q₁ - a·q₂</code>
+            <span class="rule-explain">⟹ <strong>q₁ = c₂ + a·q₂</strong> (Multiplicar por a y sumar).</span>
+          </div>
+          <div class="match-row">
+            <span class="deg-tag">Grado 1:</span>
+            <code>c₁ = q₀ - a·q₁</code>
+            <span class="rule-explain">⟹ <strong>q₀ = c₁ + a·q₁</strong> (Multiplicar por a y sumar).</span>
+          </div>
+          <div class="match-row">
+            <span class="deg-tag">Grado 0:</span>
+            <code>c₀ = R - a·q₀</code>
+            <span class="rule-explain">⟹ <strong>R = c₀ + a·q₀</strong> (Multiplicar por a y sumar da el resto).</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="horner-footnote">
+        Esta estructura recursiva es idéntica al <strong>esquema de Horner</strong>, el algoritmo óptimo en ciencias de la computación para evaluar polinomios en tiempo lineal <code class="inline-code">O(n)</code> minimizando operaciones algebraicas.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: CRITERIO DE LAS RAÍCES RACIONALES -->
+  <section class="lesson-section" id="raices-racionales">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. El Teorema de las Raíces Racionales: Dónde buscar candidatos</h2>
+
+    <p>
+      Al aplicar Ruffini para factorizar polinomios, los estudiantes a menudo prueban números al azar. El siguiente teorema matemático acota de forma exacta el conjunto finito de candidatos posibles:
+    </p>
+
+    <div class="rational-roots-card">
+      <div class="roots-header">
+        <span class="roots-tag">TEOREMA DE LAS RAÍCES RACIONALES</span>
+        <h3>«Si un polinomio con coeficientes enteros tiene una raíz racional irreducible p/q, entonces p divide al término independiente c₀ y q divide al coeficiente principal cₙ»</h3>
+      </div>
+      <div class="roots-formula-box">
+        <code>p | c₀   y   q | cₙ   ⟹   Candidatos a raíz = ± (Divisores de c₀) / (Divisores de cₙ)</code>
+      </div>
+
+      <div class="practical-case">
+        <h4>Caso habitual en secundaria y bachillerato (Polinomios Mónicos):</h4>
+        <p>
+          Si el coeficiente principal es <code class="inline-code">cₙ = 1</code> (ejemplo: <code class="inline-code">x³ - 4x² + x + 6 = 0</code>), sus divisores son solo <code class="inline-code">±1</code>. Por tanto, <strong>todas las posibles raíces enteras deben ser divisores de 6</strong>:
+        </p>
+        <div class="candidates-pill-stack">
+          <span class="cand-chip">±1</span>
+          <span class="cand-chip">±2</span>
+          <span class="cand-chip">±3</span>
+          <span class="cand-chip">±6</span>
+        </div>
+        <p class="cand-note">
+          Ningún otro número real racional (como 4, 5, 7, etc.) puede ser jamás raíz del polinomio. Solo necesitas probar esos 8 candidatos en Ruffini.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: RÚBRICA DE LOS 4 ERRORES CLÁSICOS EN EXÁMENES -->
+  <section class="lesson-section" id="errores-clasicos">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica de los 4 Errores Fatales en Exámenes y PAU</h2>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 01</span>
+          <span class="sin-title">El Signo en el Divisor (x + a) vs (x - a)</span>
+        </div>
+        <p>
+          Si te piden dividir entre <code class="inline-code">(x + 3)</code>, en la casilla de Ruffini debes colocar <code class="inline-code">-3</code>, porque <code class="inline-code">(x + 3) = (x - (-3))</code>:
+        </p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>Divisor (x + 3) ⟹ poner a = +3</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>Divisor (x + 3) ⟹ poner a = -3</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 02</span>
+          <span class="sin-title">Olvidar los Ceros de Monomios Inexistentes</span>
+        </div>
+        <p>
+          En <code class="inline-code">P(x) = x³ - 7x + 6</code> no hay término en <code class="inline-code">x²</code>. Si no colocas un <code class="inline-code">0</code> en su columna, toda la división queda falseada:
+        </p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>Fila Ruffini: [ 1,  -7,  6 ]</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>Fila Ruffini: [ 1,   0,  -7,  6 ]</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 03</span>
+          <span class="sin-title">Divisor con Coeficiente Principal (2x - 6)</span>
+        </div>
+        <p>
+          Si divides entre <code class="inline-code">(2x - 6) = 2(x - 3)</code>, aplicas Ruffini con <code class="inline-code">a = 3</code>, pero <strong>debes dividir el cociente resultante entre 2</strong>:
+        </p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>C(x) = fila de Ruffini directa</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>C(x) = (fila de Ruffini) / 2  (el Resto no cambia)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 04</span>
+          <span class="sin-title">Confundir la Raíz con el Factor</span>
+        </div>
+        <p>
+          Si en Ruffini la raíz es <code class="inline-code">a = -2</code>, el factor algebraico del polinomio es <code class="inline-code">(x + 2)</code>, jamás <code class="inline-code">(x - 2)</code>:
+        </p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>Raíz a = -2 ⟹ Factor (x - 2)</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>Raíz a = -2 ⟹ Factor (x - (-2)) = (x + 2)</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Rigor</h2>
+
+    <p>
+      Responde a estas tres preguntas conceptuales para validar tu comprensión del Teorema del Resto y la mecánica de Ruffini:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-item="1">
+        <div class="quiz-question-header">
+          <span class="quiz-num">1</span>
+          <p class="quiz-question-text">
+            Si al dividir <code class="inline-code">P(x)</code> entre <code class="inline-code">(x + 5)</code> el resto es <code class="inline-code">14</code>, ¿cuánto vale <code class="inline-code">P(-5)</code>?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A">
+            A) Vale -14 por el cambio de signo de la igualdad.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B" data-correct="true">
+            B) Vale exactamente 14, porque por el Teorema del Resto P(a) = R con a = -5.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C">
+            C) No se puede saber sin conocer todos los coeficientes de P(x).
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-item="2">
+        <div class="quiz-question-header">
+          <span class="quiz-num">2</span>
+          <p class="quiz-question-text">
+            ¿Por qué en la demostración del Teorema del Resto afirmamos con certeza que el resto <code class="inline-code">R</code> es una constante numérica y no contiene potencias de <code class="inline-code">x</code>?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A">
+            A) Porque el divisor (x - a) tiene coeficiente principal 1.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B" data-correct="true">
+            B) Porque en la división euclídea grado(R) &lt; grado(divisor), y como grado(x - a) = 1, el resto debe tener grado 0.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C">
+            C) Porque al multiplicar por cero todo polinomio se convierte en un escalar.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-item="3">
+        <div class="quiz-question-header">
+          <span class="quiz-num">3</span>
+          <p class="quiz-question-text">
+            Dado el polinomio <code class="inline-code">P(x) = x⁴ - 3x² + 5</code>, ¿cuál de los siguientes números NUNCA podría ser una raíz racional entera según el teorema correspondiente?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A" data-correct="true">
+            A) x = 3, porque 3 no divide al término independiente 5.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B">
+            B) x = -1, porque los números negativos no pueden ser raíces de polinomios pares.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C">
+            C) x = 5, porque daría un número demasiado grande.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO INTERACTIVO DE RUFFINI Y TEOREMA DEL RESTO
+    // =========================================================================
+    const inputPoly = document.getElementById('input-poly') as HTMLInputElement | null;
+    const inputValA = document.getElementById('input-val-a') as HTMLInputElement | null;
+    const btnCalc = document.getElementById('btn-calc-ruffini');
+    const presetBtns = document.querySelectorAll<HTMLButtonElement>('.preset-btn');
+
+    const divTitle = document.getElementById('div-title');
+    const tableDisplay = document.getElementById('ruffini-table-display');
+    const quotientFormula = document.getElementById('quotient-formula');
+    const directEvalTrace = document.getElementById('direct-eval-trace');
+    const identityBadge = document.getElementById('identity-badge');
+    const verdictIcon = document.getElementById('verdict-icon');
+    const verdictTitle = document.getElementById('verdict-title');
+    const verdictDesc = document.getElementById('verdict-desc');
+    const factorDecomp = document.getElementById('factor-decomp');
+
+    const computeRuffini = () => {
+      if (!inputPoly || !inputValA || !tableDisplay) return;
+
+      const rawCoeffs = inputPoly.value.split(',').map((s) => parseFloat(s.trim())).filter((n) => !isNaN(n));
+      const aVal = parseFloat(inputValA.value);
+
+      if (rawCoeffs.length < 2 || isNaN(aVal)) return;
+
+      const n = rawCoeffs.length;
+      const multipliers: number[] = [0];
+      const results: number[] = [rawCoeffs[0]];
+
+      for (let i = 1; i < n; i++) {
+        const mult = results[i - 1] * aVal;
+        multipliers.push(mult);
+        results.push(rawCoeffs[i] + mult);
+      }
+
+      const remainder = results[n - 1];
+      const quotientCoeffs = results.slice(0, n - 1);
+
+      // 1. Actualizar títulos
+      const signA = aVal >= 0 ? `- ${aVal}` : `+ ${Math.abs(aVal)}`;
+      if (divTitle) divTitle.textContent = `División de P(x) entre (x ${signA})`;
+
+      // 2. Renderizar tabla HTML de Ruffini
+      let tableHtml = '<tbody>';
+
+      // Fila 1: Coeficientes de P(x)
+      tableHtml += '<tr class="row-coeffs"><td class="cell-a-divider"></td>';
+      rawCoeffs.forEach((c) => {
+        tableHtml += `<td class="cell-num">${c}</td>`;
+      });
+      tableHtml += '</tr>';
+
+      // Fila 2: a y multiplicadores
+      tableHtml += `<tr class="row-multipliers"><td class="cell-a-label">a = ${aVal}</td>`;
+      tableHtml += '<td class="cell-num cell-empty"></td>';
+      for (let i = 1; i < n; i++) {
+        tableHtml += `<td class="cell-num cell-mult">${multipliers[i]}</td>`;
+      }
+      tableHtml += '</tr>';
+
+      // Fila 3: Resultados (Cociente + Resto)
+      tableHtml += '<tr class="row-results"><td class="cell-a-divider"></td>';
+      quotientCoeffs.forEach((q) => {
+        tableHtml += `<td class="cell-num cell-res">${q}</td>`;
+      });
+      tableHtml += `<td class="cell-num cell-remainder">${remainder}</td>`;
+      tableHtml += '</tr></tbody>';
+
+      tableDisplay.innerHTML = tableHtml;
+
+      // 3. Formatear fórmula del cociente
+      if (quotientFormula) {
+        let qStr = 'C(x) = ';
+        const deg = quotientCoeffs.length - 1;
+        const terms: string[] = [];
+
+        quotientCoeffs.forEach((c, idx) => {
+          const power = deg - idx;
+          if (c === 0 && quotientCoeffs.length > 1) return;
+
+          let term = '';
+          const absC = Math.abs(c);
+          const sign = c < 0 ? '- ' : '+ ';
+
+          if (terms.length === 0) {
+            term = c < 0 ? `-${absC === 1 && power > 0 ? '' : absC}` : `${absC === 1 && power > 0 ? '' : absC}`;
+          } else {
+            term = `${sign}${absC === 1 && power > 0 ? '' : absC}`;
+          }
+
+          if (power > 1) term += `x^${power}`;
+          else if (power === 1) term += 'x';
+          else if (power === 0 && (absC === 1 || absC !== 1)) term = `${terms.length === 0 ? c : sign + absC}`;
+
+          terms.push(term);
+        });
+
+        qStr += terms.join(' ') || '0';
+        // Sustituir ^ por superíndice legible
+        qStr = qStr.replace(/\^3/g, '³').replace(/\^2/g, '²').replace(/\^4/g, '⁴');
+        quotientFormula.textContent = qStr;
+      }
+
+      // 4. Formatear traza de sustitución directa
+      if (directEvalTrace) {
+        let evalStr = `P(${aVal}) = `;
+        let numericSum = 0;
+        const degP = rawCoeffs.length - 1;
+        const parts: string[] = [];
+
+        rawCoeffs.forEach((c, idx) => {
+          const power = degP - idx;
+          const val = c * Math.pow(aVal, power);
+          numericSum += val;
+
+          let part = '';
+          if (power > 0) {
+            part = `${c}·(${aVal})${power > 1 ? (power === 2 ? '²' : power === 3 ? '³' : '⁴') : ''}`;
+          } else {
+            part = `${c >= 0 ? '+' : ''}${c}`;
+          }
+          parts.push(part);
+        });
+
+        evalStr += `${parts.join(' + ')} = ${numericSum}`;
+        directEvalTrace.textContent = evalStr;
+      }
+
+      if (identityBadge) {
+        identityBadge.textContent = `Resto Ruffini R = ${remainder}  ⟺  P(${aVal}) = ${remainder}`;
+      }
+
+      // 5. Veredicto de raíz y factorización
+      const isExact = remainder === 0;
+
+      if (verdictIcon) {
+        verdictIcon.textContent = isExact ? '✓' : '≠';
+        verdictIcon.style.color = isExact ? '#10b981' : '#f59e0b';
+      }
+
+      if (verdictTitle) {
+        verdictTitle.textContent = isExact ? `x = ${aVal} ES RAÍZ EXACTA` : `x = ${aVal} NO ES RAÍZ (R ≠ 0)`;
+        verdictTitle.style.color = isExact ? '#10b981' : '#f59e0b';
+      }
+
+      if (verdictDesc) {
+        if (isExact) {
+          verdictDesc.innerHTML = `Como el resto es exactamente 0, <code class="inline-code">(x ${signA})</code> divide de forma exacta al polinomio.`;
+        } else {
+          verdictDesc.innerHTML = `Como el resto es <code class="inline-code">${remainder} ≠ 0</code>, la división no es exacta y <code class="inline-code">P(${aVal}) = ${remainder}</code>.`;
+        }
+      }
+
+      if (factorDecomp) {
+        if (isExact) {
+          const qText = quotientFormula?.textContent?.replace('C(x) = ', '') || '';
+          factorDecomp.innerHTML = `<code>P(x) = (x ${signA}) · (${qText})</code>`;
+          factorDecomp.style.display = 'block';
+        } else {
+          const qText = quotientFormula?.textContent?.replace('C(x) = ', '') || '';
+          factorDecomp.innerHTML = `<code>P(x) = (x ${signA}) · (${qText}) + ${remainder}</code>`;
+          factorDecomp.style.display = 'block';
+        }
+      }
+    };
+
+    btnCalc?.addEventListener('click', computeRuffini);
+
+    presetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        presetBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        if (inputPoly && btn.dataset.p) inputPoly.value = btn.dataset.p;
+        if (inputValA && btn.dataset.a) inputValA.value = btn.dataset.a;
+
+        computeRuffini();
+      });
+    });
+
+    // =========================================================================
+    // 2. AUTOEVALUACIÓN INTERACTIVA
+    // =========================================================================
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const options = card.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+      const feedback = card.querySelector<HTMLElement>('.quiz-feedback');
+
+      options.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          options.forEach((b) => {
+            b.disabled = true;
+            if (b.dataset.correct === 'true') {
+              b.classList.add('is-correct');
+            } else if (b === btn && !isCorrect) {
+              b.classList.add('is-incorrect');
+            }
+          });
+
+          if (feedback) {
+            feedback.style.display = 'block';
+            if (isCorrect) {
+              feedback.className = 'quiz-feedback feedback-success';
+              feedback.innerHTML = '<strong>Respuesta Correcta:</strong> Has identificado con exactitud la base deductiva del teorema.';
+            } else {
+              feedback.className = 'quiz-feedback feedback-error';
+              feedback.innerHTML = '<strong>Incorrecto:</strong> Revisa el desarrollo formal en los apartados 2 y 6 de la lección.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* Variables y estilos base específicos para Bloque 02 Álgebra */
+  .lead-paragraph {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.92em;
+    padding: 0.15rem 0.45rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .inline-code {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.2);
+    color: #0284c7;
+  }
+
+  /* 1. Tarjetas de comparación de métodos */
+  .contrast-methods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .method-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .method-header {
+    margin-bottom: 0.8rem;
+  }
+
+  .method-tag {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .method-tag {
+    color: #0284c7;
+  }
+
+  .method-header h4 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+
+  .method-code-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin: 1rem 0;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 0.95rem;
+    font-weight: 600;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .method-code-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .method-desc {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* 2. Banner de Teorema Formal */
+  .formal-theorem-banner {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.09) 0%, rgba(56, 189, 248, 0.02) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.35);
+  }
+
+  .theorem-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    color: #38bdf8;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: #0284c7;
+  }
+
+  .formal-theorem-banner h3 {
+    margin: 0 0 1rem;
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    color: var(--ink);
+    line-height: 1.35;
+  }
+
+  .theorem-symbolic {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(0.92rem, 1.35vw, 1.15rem);
+    color: #38bdf8;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+
+  /* Stepper de Demostración */
+  .proof-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    margin: 2rem 0;
+  }
+
+  .proof-step-card {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 1.2rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global([data-theme="light"]) .step-num {
+    background: rgba(2, 132, 199, 0.1);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  .step-content h4 {
+    margin: 0 0 0.3rem;
+    font-family: var(--display);
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .step-axiom {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.8rem;
+  }
+
+  .formula-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 0.8rem 0;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .formula-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .formula-box.highlight-box {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: #38bdf8;
+    font-weight: 800;
+  }
+
+  :global([data-theme="light"]) .formula-box.highlight-box {
+    background: #e0f2fe;
+    border-color: #0284c7;
+  }
+
+  .proof-conclusion {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0.8rem 0 0;
+    border-left: 2px solid #38bdf8;
+    padding-left: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .proof-conclusion {
+    border-color: #0284c7;
+  }
+
+  /* 3. Teorema del Factor Card */
+  .factor-theorem-card {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%);
+    border: 1.5px solid rgba(16, 185, 129, 0.35);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .factor-theorem-card {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+
+  .factor-kicker {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .factor-header h3 {
+    margin: 0.4rem 0 1.2rem;
+    font-family: var(--display);
+    font-size: 1.35rem;
+    color: var(--ink);
+    line-height: 1.35;
+  }
+
+  .factor-equivalence-chain {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: var(--bg-sunken);
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin: 1.2rem 0;
+  }
+
+  :global([data-theme="light"]) .factor-equivalence-chain {
+    background: #ffffff;
+  }
+
+  .chain-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .node-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .chain-node code {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .chain-node code {
+    color: #059669;
+  }
+
+  .chain-arrow {
+    font-size: 1.4rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .factor-implication {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 1rem 0 0;
+  }
+
+  /* =========================================================================
+     LABORATORIO RUFFINI Y TEOREMA DEL RESTO
+     ========================================================================= */
+  .ruffini-lab-container {
+    margin: 2.2rem 0;
+  }
+
+  .lab-card-shell {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 16px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    padding: clamp(1.4rem, 2.8vw, 2.4rem);
+  }
+
+  :global([data-theme="light"]) .lab-card-shell {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.28);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+  }
+
+  .lab-controls-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1.4rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .preset-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .control-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .preset-btn {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .preset-btn:hover {
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .preset-btn.is-active {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .preset-btn.is-active {
+    background: #e0f2fe;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  .manual-inputs-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .input-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .input-block.narrow-block {
+    flex: 0 0 140px;
+    min-width: 120px;
+  }
+
+  .input-block label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .code-input {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    color: #38bdf8;
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .code-input {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .action-calc-btn {
+    background: #38bdf8;
+    color: #080a10;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.65rem 1.4rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-calc-btn:hover {
+    background: #7dd3fc;
+    transform: translateY(-1px);
+  }
+
+  :global([data-theme="light"]) .action-calc-btn {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  /* Paneles de división y evaluación */
+  .lab-stage-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    gap: 1.6rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 900px) {
+    .lab-stage-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stage-pane {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+
+  .pane-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .pane-tag {
+    color: #0284c7;
+  }
+
+  .pane-header h4 {
+    margin: 0.35rem 0 0;
+    font-family: var(--display);
+    font-size: 1.25rem;
+    color: var(--ink);
+  }
+
+  /* Tabla clásica de Ruffini */
+  .ruffini-table-wrapper {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+    overflow-x: auto;
+  }
+
+  .ruffini-table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 1.15rem;
+  }
+
+  .ruffini-table td {
+    padding: 0.6rem 1.1rem;
+    text-align: center;
+  }
+
+  .cell-a-divider {
+    border-right: 2px solid var(--line-strong);
+    width: 70px;
+  }
+
+  .cell-a-label {
+    border-right: 2px solid var(--line-strong);
+    font-weight: 800;
+    color: #fbbf24;
+    white-space: nowrap;
+    padding-right: 1.2rem;
+  }
+
+  .row-coeffs td:not(.cell-a-divider) {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .row-multipliers td:not(.cell-a-label) {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .row-results td {
+    border-top: 2px solid var(--line-strong);
+  }
+
+  .cell-res {
+    color: #38bdf8;
+    font-weight: 800;
+  }
+
+  :global([data-theme="light"]) .cell-res {
+    color: #0284c7;
+  }
+
+  .cell-remainder {
+    color: #10b981;
+    font-weight: 800;
+    background: rgba(16, 185, 129, 0.15);
+    border-left: 1.5px dashed rgba(16, 185, 129, 0.4);
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.4);
+  }
+
+  .quotient-display-box {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+  }
+
+  .box-tag {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  #quotient-formula {
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) #quotient-formula {
+    color: #0284c7;
+  }
+
+  /* Panel derecho evaluación */
+  .direct-eval-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .eval-calc-line {
+    font-family: var(--mono);
+    color: var(--ink);
+    font-size: 0.96rem;
+    line-height: 1.6;
+    margin-bottom: 0.9rem;
+    word-break: break-all;
+  }
+
+  .identity-confirm-badge {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 6px;
+    padding: 0.55rem 0.85rem;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: #38bdf8;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .identity-confirm-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #0284c7;
+  }
+
+  .verdict-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .verdict-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .verdict-icon {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .verdict-title {
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  #verdict-desc {
+    font-size: 0.92rem;
+    color: var(--muted);
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+  }
+
+  .factor-decomposition {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.75rem 0.9rem;
+    font-family: var(--mono);
+    color: #10b981;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  :global([data-theme="light"]) .factor-decomposition {
+    color: #059669;
+  }
+
+  /* 5. Deducción de Ruffini */
+  .derivation-formal-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .derivation-step {
+    margin: 1.5rem 0;
+  }
+
+  .derivation-num {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  :global([data-theme="light"]) .derivation-num {
+    color: #0284c7;
+  }
+
+  .math-dev-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.02rem;
+    font-weight: 600;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .math-dev-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .coefficients-matching-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+  }
+
+  .match-row {
+    background: var(--bg-sunken);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.92rem;
+  }
+
+  .deg-tag {
+    color: #fbbf24;
+    font-weight: 700;
+    min-width: 80px;
+  }
+
+  .match-row code {
+    color: var(--ink);
+    font-weight: 700;
+    min-width: 150px;
+  }
+
+  .rule-explain {
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+
+  .rule-explain strong {
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .rule-explain strong {
+    color: #0284c7;
+  }
+
+  .horner-footnote {
+    font-size: 0.92rem;
+    color: var(--muted);
+    border-left: 2px solid #38bdf8;
+    padding-left: 0.8rem;
+    margin: 1.5rem 0 0;
+  }
+
+  :global([data-theme="light"]) .horner-footnote {
+    border-color: #0284c7;
+  }
+
+  /* 6. Raíces Racionales */
+  .rational-roots-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  .roots-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.12em;
+  }
+
+  :global([data-theme="light"]) .roots-tag {
+    color: #0284c7;
+  }
+
+  .roots-header h3 {
+    margin: 0.4rem 0 1rem;
+    font-family: var(--display);
+    font-size: 1.3rem;
+    color: var(--ink);
+    line-height: 1.35;
+  }
+
+  .roots-formula-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .roots-formula-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .practical-case {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .practical-case h4 {
+    margin: 0 0 0.5rem;
+    font-family: var(--display);
+    color: var(--ink);
+    font-size: 1.05rem;
+  }
+
+  .candidates-pill-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.9rem 0;
+  }
+
+  .cand-chip {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 6px;
+    padding: 0.35rem 0.8rem;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  :global([data-theme="light"]) .cand-chip {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #0284c7;
+  }
+
+  .cand-note {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* 7. Pecados Capitales Grid */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .sin-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .sin-header {
+    margin-bottom: 0.8rem;
+  }
+
+  .sin-num {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #ef4444;
+    letter-spacing: 0.12em;
+  }
+
+  .sin-title {
+    font-family: var(--display);
+    font-size: 1.08rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .sin-contrast-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .sin-bad,
+  .sin-good {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.84rem;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
+
+  .sin-cross {
+    font-weight: 800;
+    color: #ef4444;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+  }
+
+  .sin-check {
+    font-weight: 800;
+    color: #10b981;
+  }
+
+  /* 8. Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .quiz-question-header {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 1.2rem;
+  }
+
+  .quiz-num {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .quiz-num {
+    color: #0284c7;
+  }
+
+  .quiz-question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .quiz-opt.is-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+    font-weight: 600;
+  }
+
+  .quiz-opt.is-incorrect {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  .quiz-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .feedback-success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10b981;
+    color: #10b981;
+  }
+
+  .feedback-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+</style>

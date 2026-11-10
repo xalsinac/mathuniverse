@@ -110,7 +110,8 @@
       prevY: -9999,
       vx: 0,
       vy: 0,
-      radius: 170,
+      radius: 290, // Radio ampliado para una distorsión interactiva más generosa y fluida
+      waveRadius: 320, // Radio de influencia en las ondas
       active: false,
     };
 
@@ -281,14 +282,16 @@
         for (let x = 0; x <= width + step; x += step) {
           let y = w.yBase + Math.sin(x * w.k + time * w.w) * w.amp + Math.cos(x * (w.k * 0.65) - time * (w.w * 0.5)) * (w.amp * 0.45);
 
-          // Si el puntero está cerca, la onda se deforma dinámicamente
+          // Si el puntero está cerca, la onda se deforma dinámicamente con respuesta orgánica suave
           if (pointer.active) {
             const dx = x - pointer.x;
             const dy = y - pointer.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < pointer.radius) {
-              const influence = (1 - dist / pointer.radius);
-              y += (dy / (dist || 1)) * influence * 30;
+            const r = pointer.waveRadius || 320;
+            if (dist < r) {
+              const t = 1 - dist / r;
+              const smoothT = t * t * (3 - 2 * t); // Suavizado cúbico natural
+              y += (dy / (dist || 1)) * smoothT * 48;
             }
           }
 
@@ -326,20 +329,22 @@
         const slope = (Math.cos(b.x * b.freq + time * 1.1 + b.phase) * b.amplitude * b.freq);
         let targetAngle = Math.atan2(slope * b.speed, b.speed);
 
-        // Interacción física con el cursor (repulsión y estela)
+        // Interacción física con el cursor (repulsión y estela reactiva de amplio radio)
         if (pointer.active) {
           const dx = b.x - pointer.x;
           const dy = targetY - pointer.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
+          const r = pointer.radius || 290;
 
-          if (dist < pointer.radius && dist > 1) {
-            const force = (1 - dist / pointer.radius);
+          if (dist < r && dist > 1) {
+            const t = 1 - dist / r;
+            const force = t * t * (3 - 2 * t);
             const repelAngle = Math.atan2(dy, dx);
             
             // Mezclamos la dirección de la ola con la repulsión del cursor y el wake
-            targetAngle = targetAngle * (1 - force * 0.8) + repelAngle * (force * 0.8);
-            b.y += (dy / dist) * force * 3.5;
-            b.x += (dx / dist) * force * 1.8;
+            targetAngle = targetAngle * (1 - force * 0.85) + repelAngle * (force * 0.85);
+            b.y += (dy / dist) * force * 5.0;
+            b.x += (dx / dist) * force * 2.8;
           }
         }
 

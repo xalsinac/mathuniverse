@@ -1,0 +1,1940 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-02')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-01');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL DILEMA DEL DESPEJE -->
+  <section class="lesson-section" id="el-dilema">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Gran Dilema: ¿Por qué no podemos despejar la x directamente?</h2>
+
+    <p class="lead-paragraph">
+      En una ecuación de primer grado como <code class="inline-code">ax + b = 0</code>, despejar la incógnita es un proceso puramente lineal: restamos <code class="inline-code">b</code> y dividimos por <code class="inline-code">a</code>. Sin embargo, en cuanto aparece el término cuadrático en <code class="inline-code">ax² + bx + c = 0</code>, cualquier intento ingenuo de aislar la variable fracasa.
+    </p>
+
+    <!-- Caja de advertencia de error común -->
+    <div class="algebra-trap-card">
+      <div class="trap-header">
+        <svg class="trap-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="trap-title">EL CALLEJÓN SIN SALIDA DEL DESPEJE DIRECTO</span>
+      </div>
+      <p>
+        Si intentamos factorizar la <code class="inline-code">x</code> de los dos primeros términos:
+      </p>
+      <div class="bad-derivation-row">
+        <code>ax² + bx = -c ⟹ x · (ax + b) = -c ⟹ x = -c / (ax + b)</code>
+      </div>
+      <p class="trap-explanation">
+        La incógnita <code class="inline-code">x</code> no ha sido despejada: sigue atrapada en el denominador del lado derecho. Hemos transformado una ecuación polinómica en una ecuación racional sin avanzar un solo milímetro hacia la solución.
+      </p>
+    </div>
+
+    <div class="insight-callout">
+      <span class="insight-badge">EL SALTO CONCEPTUAL</span>
+      <p>
+        La genialidad del método consiste en una sola idea: <strong>reunir todos los términos que contienen x dentro de un único binomio al cuadrado</strong>. Si logramos escribir la ecuación como <code class="inline-code">(x + k)² = M</code>, la incógnita pasa de aparecer dos veces (al cuadrado y lineal) a aparecer exactamente <em>una sola vez</em>. A partir de ahí, basta con extraer la raíz cuadrada para liberarla.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA GEOMETRÍA DE AL-JUARISMI -->
+  <section class="lesson-section" id="geometria-historica">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Geometría de Al-Juarismi: Completar el Cuadrado Físico</h2>
+
+    <p>
+      Hace más de 1200 años en la Casa de la Sabiduría de Bagdad, el matemático persa <strong>Muhammad ibn Musa al-Juarismi</strong> demostró este resultado sin utilizar notación algebraica moderna. Para él, las ecuaciones representaban áreas físicas de terreno.
+    </p>
+
+    <div class="derivation-step-card">
+      <div class="step-num-pill">
+        <span>PASO A</span>
+        <span class="step-tag">EL CUADRADO INCOMPLETO</span>
+      </div>
+      <p>
+        Consideremos una ecuación normalizada de la forma <code class="inline-code">x² + px = q</code> (por ejemplo, con <code class="inline-code">p = b/a</code>). Tenemos un cuadrado de lado <code class="inline-code">x</code> (área <code class="inline-code">x²</code>) al que debemos sumar un área rectangular <code class="inline-code">px</code>.
+      </p>
+    </div>
+
+    <div class="derivation-step-card">
+      <div class="step-num-pill">
+        <span>PASO B</span>
+        <span class="step-tag">SIMETRÍA Y PARTICIÓN EN DOS FRANJAS</span>
+      </div>
+      <p>
+        Para preservar la forma cuadrada en lugar de estirar la figura en un rectángulo deforme, Al-Juarismi dividió el término lineal en <strong>dos franjas simétricas de anchura p/2</strong>:
+      </p>
+      <div class="formula-focus-box">
+        <code>px = (p / 2) · x + (p / 2) · x</code>
+      </div>
+      <p>
+        Colocamos una franja adosada a la derecha del cuadrado <code class="inline-code">x²</code> y la otra franja adosada debajo. La figura resultante es una «L» o un cuadrado casi completo, al que le falta exactamente una pequeña esquina inferior derecha.
+      </p>
+    </div>
+
+    <div class="derivation-step-card">
+      <div class="step-num-pill">
+        <span>PASO C</span>
+        <span class="step-tag">COMPLETAR LA ESQUINA FALTANTE</span>
+      </div>
+      <p>
+        ¿Qué dimensiones tiene la esquina que falta para cerrar el cuadrado perfecto? Sus lados miden exactamente la anchura de las franjas: <code class="inline-code">p/2</code> por <code class="inline-code">p/2</code>.
+      </p>
+      <div class="formula-focus-box">
+        <code>Área de la esquina = (p / 2) · (p / 2) = (p / 2)²</code>
+      </div>
+      <p>
+        Si sumamos esa esquina a la figura física, <strong>debemos sumarla también al lado derecho de la ecuación</strong> para mantener la balanza en equilibrio. El cuadrado grande resultante tiene ahora lado <code class="inline-code">(x + p/2)</code> y área total:
+      </p>
+      <div class="formal-math-block">
+        <code>(x + p/2)² = q + (p/2)²</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO SVG -->
+  <section class="lesson-section" id="laboratorio-interactivo">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Visual: Explorador Geométrico de Completación</h2>
+
+    <p>
+      Modifica los coeficientes de la ecuación cuadrática para ver en directo cómo se ensamblan las piezas geométricas, cómo se calcula la esquina complementaria y cómo responde el discriminante.
+    </p>
+
+    <!-- Contenedor del Laboratorio Dinámico -->
+    <div class="geo-lab-shell">
+      <div class="lab-glass-panel">
+        <div class="lab-header-bar">
+          <span class="lab-tag">LABORATORIO VECTORIAL</span>
+          <div class="mode-toggles">
+            <button type="button" class="tab-btn is-active" data-lab-mode="geometria">Geometría de Al-Juarismi</button>
+            <button type="button" class="tab-btn" data-lab-mode="parabola">Parábola y Vértice</button>
+          </div>
+        </div>
+
+        <!-- Sliders de Coeficientes a, b, c -->
+        <div class="controls-row">
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="coef-a">Coeficiente a (cuadrático):</label>
+              <span id="disp-a" class="slider-badge">a = 1</span>
+            </div>
+            <input type="range" id="coef-a" min="1" max="4" step="1" value="1" class="slider-accent" />
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="coef-b">Coeficiente b (lineal):</label>
+              <span id="disp-b" class="slider-badge">b = 6</span>
+            </div>
+            <input type="range" id="coef-b" min="2" max="12" step="2" value="6" class="slider-accent" />
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label for="coef-c">Término independiente c:</label>
+              <span id="disp-c" class="slider-badge">c = 5</span>
+            </div>
+            <input type="range" id="coef-c" min="-16" max="12" step="1" value="5" class="slider-accent" />
+          </div>
+        </div>
+
+        <!-- Lienzo Interactivo SVG con render inicial para SSR estático -->
+        <div class="geo-interactive-stage">
+          <div class="svg-stage-container">
+            <svg id="quad-svg" viewBox="0 0 440 440" class="geometric-canvas" aria-label="Visualización de la completación del cuadrado">
+              <!-- Renderizado Estático Inicial: a=1, b=6, c=5 ⟹ x² + 6x = -5 -->
+              <!-- Cotas exteriores -->
+              <g stroke="#38bdf8" stroke-width="1.5" opacity="0.9">
+                <line x1="50" y1="34" x2="270" y2="34" stroke-dasharray="3 3" />
+                <line x1="50" y1="28" x2="50" y2="40" />
+                <line x1="270" y1="28" x2="270" y2="40" />
+                <text x="160" y="26" fill="#38bdf8" font-size="12" font-weight="700" text-anchor="middle" font-family="monospace">x</text>
+              </g>
+              <g stroke="#fbbf24" stroke-width="1.5" opacity="0.9">
+                <line x1="270" y1="34" x2="380" y2="34" stroke-dasharray="3 3" />
+                <line x1="270" y1="28" x2="270" y2="40" />
+                <line x1="380" y1="28" x2="380" y2="40" />
+                <text x="325" y="26" fill="#fbbf24" font-size="12" font-weight="700" text-anchor="middle" font-family="monospace">b/(2a) = 3</text>
+              </g>
+              <g stroke="#38bdf8" stroke-width="1.5" opacity="0.9">
+                <line x1="34" y1="50" x2="34" y2="270" stroke-dasharray="3 3" />
+                <line x1="28" y1="50" x2="40" y2="50" />
+                <line x1="28" y1="270" x2="40" y2="270" />
+                <text x="24" y="165" fill="#38bdf8" font-size="12" font-weight="700" text-anchor="end" font-family="monospace">x</text>
+              </g>
+              <g stroke="#fbbf24" stroke-width="1.5" opacity="0.9">
+                <line x1="34" y1="270" x2="34" y2="380" stroke-dasharray="3 3" />
+                <line x1="28" y1="270" x2="40" y2="270" />
+                <line x1="28" y1="380" x2="40" y2="380" />
+                <text x="24" y="330" fill="#fbbf24" font-size="12" font-weight="700" text-anchor="end" font-family="monospace">b/(2a) = 3</text>
+              </g>
+
+              <!-- 1. Cuadrado principal x² -->
+              <rect x="50" y="50" width="220" height="220" rx="6" fill="rgba(56, 189, 248, 0.32)" stroke="#38bdf8" stroke-width="2" />
+              <text x="160" y="165" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">Cuadrado: x²</text>
+
+              <!-- 2. Franja lateral derecha: (b/2a) · x -->
+              <rect x="270" y="50" width="110" height="220" rx="6" fill="rgba(16, 185, 129, 0.32)" stroke="#10b981" stroke-width="2" />
+              <text x="325" y="165" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">Franja: 3x</text>
+
+              <!-- 3. Franja inferior: x · (b/2a) -->
+              <rect x="50" y="270" width="220" height="110" rx="6" fill="rgba(16, 185, 129, 0.32)" stroke="#10b981" stroke-width="2" />
+              <text x="160" y="330" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">Franja: 3x</text>
+
+              <!-- 4. Esquina complementaria completada: (b/2a)² -->
+              <rect x="270" y="270" width="110" height="110" rx="6" fill="rgba(251, 191, 36, 0.45)" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="4 2" />
+              <text x="325" y="325" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle" font-family="system-ui, sans-serif" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">+ 3² = 9</text>
+              <text x="325" y="345" fill="#fbbf24" font-size="10" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif">¡Completado!</text>
+            </svg>
+          </div>
+
+          <!-- Barra lateral analítica en tiempo real -->
+          <div class="geo-metrics-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-tag">ANATOMÍA DEL TRINOMIO</span>
+              <h4 id="eq-title">1x² + 6x + 5 = 0</h4>
+            </div>
+
+            <div class="metrics-card-stack">
+              <div class="metric-row">
+                <span class="metric-label">Término completador (b/2a)²:</span>
+                <span id="metric-k" class="metric-val" style="color: #fbbf24;">(6 / 2)² = 9</span>
+              </div>
+
+              <div class="metric-row">
+                <span class="metric-label">Binomio cuadrado resultante:</span>
+                <span id="metric-bin" class="metric-val" style="color: #38bdf8;">(x + 3)² = 4</span>
+              </div>
+
+              <div class="metric-row">
+                <span class="metric-label">Discriminante Δ = b² - 4ac:</span>
+                <span id="metric-disc" class="metric-val" style="color: #10b981;">36 - 20 = 16 (Δ &gt; 0)</span>
+              </div>
+
+              <div class="metric-row highlight-row">
+                <span class="metric-label">Soluciones exactas reales:</span>
+                <span id="metric-sols" class="metric-val-strong">x₁ = -1.00  |  x₂ = -5.00</span>
+              </div>
+            </div>
+
+            <div class="total-identity-eval">
+              <span class="eval-tag">PROCESO DE RESOLUCIÓN:</span>
+              <code id="eval-trace">x = (-6 ± √16) / 2 = (-6 ± 4) / 2</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LA DEDUCCIÓN FORMAL PASO A PASO -->
+  <section class="lesson-section" id="deduccion-formal">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Deducción Algebraica Rigurosa (Paso a Paso)</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA FUNDAMENTAL DE LA ECUACIÓN CUADRÁTICA</span>
+      <h3>«Toda ecuación cuadrática con coeficientes en los números reales y coeficiente principal no nulo admite una fórmula explícita universal para sus raíces»</h3>
+      <code class="theorem-symbolic">∀ a, b, c ∈ ℝ, a ≠ 0 : ax² + bx + c = 0 ⟺ x = (-b ± √(b² - 4ac)) / (2a)</code>
+    </div>
+
+    <p>
+      Desgranemos paso por paso la deducción axiomática aplicando las propiedades de los cuerpos de números reales (ℝ, +, ·):
+    </p>
+
+    <!-- Stepper de 6 Pasos Formales -->
+    <div class="algebraic-stepper">
+      <!-- Paso 1 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">01</div>
+        <div class="stepper-content">
+          <h4>Hipótesis inicial y transposición de la constante</h4>
+          <span class="step-rule-tag">Axioma de existencia de elemento opuesto aditivo</span>
+          <p>
+            Partimos de la forma general con la condición indispensable <code class="inline-code">a ≠ 0</code>. Sumamos el opuesto <code class="inline-code">-c</code> en ambos lados de la igualdad:
+          </p>
+          <div class="code-step-box">
+            <code>ax² + bx = -c</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 2 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">02</div>
+        <div class="stepper-content">
+          <h4>Normalización del coeficiente cuadrático</h4>
+          <span class="step-rule-tag">Elemento inverso multiplicativo (división por a ≠ 0)</span>
+          <p>
+            Como <code class="inline-code">a ≠ 0</code>, su inverso <code class="inline-code">1/a</code> existe. Multiplicamos toda la ecuación por <code class="inline-code">1/a</code> para conseguir que el monomio principal sea mónico (<code class="inline-code">1 · x²</code>):
+          </p>
+          <div class="code-step-box">
+            <code>x² + (b / a)x = -c / a</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 3 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">03</div>
+        <div class="stepper-content">
+          <h4>Identificación del doble producto notable</h4>
+          <span class="step-rule-tag">Reconocimiento del binomio (x + k)² = x² + 2kx + k²</span>
+          <p>
+            Para que el término lineal <code class="inline-code">(b/a)x</code> coincida con el doble producto <code class="inline-code">2 · x · k</code>, forzamos la igualdad:
+          </p>
+          <div class="code-step-box">
+            <code>2 · k = (b / a) ⟹ k = b / (2a)</code>
+          </div>
+          <p>
+            Por consiguiente, el término cuadrático que le falta a la izquierda para ser un trinomio cuadrado perfecto es <code class="inline-code">k² = (b / 2a)² = b² / (4a²)</code>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Paso 4 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">04</div>
+        <div class="stepper-content">
+          <h4>Completar el cuadrado sumando k² a ambos miembros</h4>
+          <span class="step-rule-tag">Axioma de adición de igualdades</span>
+          <p>
+            Sumamos <code class="inline-code">b² / (4a²)</code> a izquierda y derecha para no alterar la ecuación:
+          </p>
+          <div class="code-step-box">
+            <code>x² + (b / a)x + b² / (4a²) = -c / a + b² / (4a²)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 5 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">05</div>
+        <div class="stepper-content">
+          <h4>Factorización del binomio y denominador común</h4>
+          <span class="step-rule-tag">Primera Identidad Notable e igualación fraccionaria</span>
+          <p>
+            El miembro izquierdo se colapsa de forma exacta en el cuadrado del binomio <code class="inline-code">(x + b/(2a))²</code>. A la derecha, reducimos a común denominador multiplicando numerador y denominador de <code class="inline-code">-c/a</code> por <code class="inline-code">4a</code>:
+          </p>
+          <div class="code-step-box">
+            <code>(x + b / (2a))² = (-4ac + b²) / (4a²) = (b² - 4ac) / (4a²)</code>
+          </div>
+          <p class="callout-note-inline">
+            ¡Aquí nace de manera natural y espontánea la expresión milagrosa <code class="inline-code">b² - 4ac</code>! No es una ocurrencia arbitraria: es el numerador inevitable tras igualar denominadores.
+          </p>
+        </div>
+      </div>
+
+      <!-- Paso 6 -->
+      <div class="stepper-card">
+        <div class="stepper-step-badge">06</div>
+        <div class="stepper-content">
+          <h4>Extracción de la raíz cuadrada y justificación estricta del doble signo (±)</h4>
+          <span class="step-rule-tag">Propiedad de valor absoluto y radicación en cocientes</span>
+          <p>
+            Tomamos raíz cuadrada en ambos miembros: <code class="inline-code">√(u²) = |u|</code>:
+          </p>
+          <div class="code-step-box">
+            <code>|x + b / (2a)| = √(b² - 4ac) / √(4a²) = √(b² - 4ac) / (2|a|)</code>
+          </div>
+          <p>
+            Al eliminar el valor absoluto, surge el signo dual <code class="inline-code">±</code>. Dado que <code class="inline-code">± / |a|</code> genera exactamente los mismos dos valores que <code class="inline-code">± / a</code>, el valor absoluto en el denominador queda absorbido:
+          </p>
+          <div class="code-step-box highlight-step">
+            <code>x + b / (2a) = ± √(b² - 4ac) / (2a) ⟹ x = (-b ± √(b² - 4ac)) / (2a)  ∎</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: ANATOMÍA DEL DISCRIMINANTE -->
+  <section class="lesson-section" id="discriminante">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Anatomía del Discriminante: ¿Qué nos dice Δ = b² - 4ac?</h2>
+
+    <p>
+      El término subradical <code class="inline-code">Δ = b² - 4ac</code> se llama <strong>discriminante</strong> porque literalmente <em>discrimina</em> o clasifica el número y la naturaleza de las soluciones de la ecuación sin necesidad de calcularlas:
+    </p>
+
+    <div class="disc-cases-grid">
+      <!-- Caso 1 -->
+      <div class="disc-case-card is-positive">
+        <div class="disc-case-header">
+          <span class="disc-indicator">Δ &gt; 0</span>
+          <span class="disc-badge">DOS RAÍCES REALES DISTINTAS</span>
+        </div>
+        <p>
+          La raíz cuadrada <code class="inline-code">√Δ</code> es un número real estrictamente positivo. Sumar y restar <code class="inline-code">√Δ</code> genera dos valores distintos:
+        </p>
+        <div class="disc-formula">
+          <code>x₁ = (-b + √Δ) / 2a ≠ x₂ = (-b - √Δ) / 2a</code>
+        </div>
+        <p class="disc-geom-note">
+          <strong>Interpretación gráfica:</strong> La parábola <code class="inline-code">y = ax² + bx + c</code> corta al eje X en dos puntos reales independientes.
+        </p>
+      </div>
+
+      <!-- Caso 2 -->
+      <div class="disc-case-card is-zero">
+        <div class="disc-case-header">
+          <span class="disc-indicator">Δ = 0</span>
+          <span class="disc-badge">UNA RAÍZ REAL DOBLE</span>
+        </div>
+        <p>
+          La raíz cuadrada es nula: <code class="inline-code">√0 = 0</code>. Sumar o restar cero no altera la fracción:
+        </p>
+        <div class="disc-formula">
+          <code>x₁ = x₂ = -b / (2a)</code>
+        </div>
+        <p class="disc-geom-note">
+          <strong>Interpretación gráfica:</strong> La parábola es tangente al eje X; su vértice toca exactamente el eje en un único punto.
+        </p>
+      </div>
+
+      <!-- Caso 3 -->
+      <div class="disc-case-card is-negative">
+        <div class="disc-case-header">
+          <span class="disc-indicator">Δ &lt; 0</span>
+          <span class="disc-badge">SIN SOLUCIÓN REAL (2 COMPLEJAS CONJUGADAS)</span>
+        </div>
+        <p>
+          En el cuerpo de los números reales <code class="inline-code">ℝ</code>, no existe la raíz de un número negativo. Las soluciones viven en el cuerpo complejo <code class="inline-code">ℂ</code>:
+        </p>
+        <div class="disc-formula">
+          <code>x = (-b ± i√|Δ|) / (2a) ∈ ℂ</code>
+        </div>
+        <p class="disc-geom-note">
+          <strong>Interpretación gráfica:</strong> La parábola flota por encima o por debajo del eje X sin llegar a tocarlo jamás.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RELACIONES DE CARDANO-VIETA -->
+  <section class="lesson-section" id="cardano-vieta">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Las Fórmulas de Cardano-Vieta y Factorización Inmediata</h2>
+
+    <p>
+      Las raíces <code class="inline-code">x₁</code> y <code class="inline-code">x₂</code> guardan una relación simétrica directa con los coeficientes <code class="inline-code">a, b, c</code>. Esta propiedad permite calcular soluciones mentalmente y comprobar cualquier resultado en 3 segundos:
+    </p>
+
+    <div class="vieta-duo-container">
+      <div class="vieta-box">
+        <h4>1. Suma de Raíces</h4>
+        <div class="vieta-derivation">
+          <code>x₁ + x₂ = [(-b + √Δ) / 2a] + [(-b - √Δ) / 2a] = -2b / 2a = -b / a</code>
+        </div>
+        <p>La suma de las soluciones es siempre igual al coeficiente lineal con signo cambiado dividido por el coeficiente cuadrático.</p>
+      </div>
+
+      <div class="vieta-box">
+        <h4>2. Producto de Raíces</h4>
+        <div class="vieta-derivation">
+          <code>x₁ · x₂ = [(-b + √Δ)(-b - √Δ)] / (4a²) = [b² - Δ] / (4a²) = 4ac / (4a²) = c / a</code>
+        </div>
+        <p>El producto de las soluciones es igual al término independiente dividido por el coeficiente cuadrático.</p>
+      </div>
+    </div>
+
+    <div class="factorization-banner">
+      <span class="factor-tag">TEOREMA DE FACTORIZACIÓN</span>
+      <h3>ax² + bx + c = a · (x - x₁) · (x - x₂)</h3>
+      <p>
+        Nunca olvides el factor principal <code class="inline-code">a</code> al descomponer en factores: si <code class="inline-code">a ≠ 1</code> y omites ese coeficiente, el polinomio factorizado no coincidirá con el original.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: RÚBRICA DE LOS 4 ERRORES FATALES EN EXÁMENES -->
+  <section class="lesson-section" id="errores-fatales">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica de los 4 Errores Fatales en Exámenes y PAU</h2>
+
+    <p>
+      Incluso estudiantes con buenas notas en Bachillerato pierden décimas cruciales por descuidos tipográficos o mecánicos al aplicar la fórmula. Evítalos sistemáticamente con esta guía de detección:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 01</span>
+          <span class="sin-title">La Barra de Fracción Incompleta</span>
+        </div>
+        <p>Escribir el <code class="inline-code">2a</code> dividiendo únicamente a la raíz cuadrada y dejando el <code class="inline-code">-b</code> fuera:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>x = -b ± (√(b²-4ac) / 2a)</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>x = (-b ± √(b²-4ac)) / (2a)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 02</span>
+          <span class="sin-title">El Signo de -b cuando b ya es Negativo</span>
+        </div>
+        <p>Si la ecuación es <code class="inline-code">x² - 6x + 5 = 0</code>, tenemos <code class="inline-code">b = -6</code>. El primer término es <code class="inline-code">-b = -(-6) = +6</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>x = -6 ± √(...)</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>x = +6 ± √(...)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 03</span>
+          <span class="sin-title">Confundir (-b)² con -b² dentro de la Raíz</span>
+        </div>
+        <p>Al elevar un número negativo al cuadrado, el resultado es siempre estrictamente positivo: <code class="inline-code">(-3)² = +9</code>, jamás <code class="inline-code">-9</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>√(-3² - 4ac) = √(-9 - 4ac)</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>√((-3)² - 4ac) = √(9 - 4ac)</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 04</span>
+          <span class="sin-title">Olvidar el Coeficiente 'a' en la Factorización</span>
+        </div>
+        <p>Para la ecuación <code class="inline-code">2x² - 5x + 2 = 0</code>, las raíces son <code class="inline-code">x = 2</code> y <code class="inline-code">x = 1/2</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <code>P(x) = (x - 2)(x - 1/2)  [Da x²...]</code>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <code>P(x) = 2(x - 2)(x - 1/2) = (x - 2)(2x - 1)</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Dominio</h2>
+
+    <p>
+      Responde a estas tres preguntas deductivas para comprobar si has asimilado la lógica que sustenta la fórmula cuadrática:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-item="1">
+        <div class="quiz-question-header">
+          <span class="quiz-num">1</span>
+          <p class="quiz-question-text">
+            ¿Por qué sumamos exactamente <code class="inline-code">b² / (4a²)</code> a ambos lados tras dividir por <code class="inline-code">a</code>?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A">
+            A) Porque es el cuadrado del coeficiente independiente <code class="inline-code">c</code>.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B" data-correct="true">
+            B) Porque <code class="inline-code">(b / a)x</code> es el doble producto <code class="inline-code">2 · x · k</code>, de modo que <code class="inline-code">k = b / (2a)</code> y su cuadrado cierra el trinomio perfecto.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C">
+            C) Porque así se anula el término lineal con la raíz cuadrada.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-item="2">
+        <div class="quiz-question-header">
+          <span class="quiz-num">2</span>
+          <p class="quiz-question-text">
+            Si una ecuación cuadrática tiene <code class="inline-code">b² - 4ac = 0</code>, ¿cuál es la interpretación geométrica de su solución?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A">
+            A) La parábola nunca llega a tocar el eje horizontal X.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B">
+            B) La ecuación tiene dos soluciones simétricas respecto al origen de coordenadas.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C" data-correct="true">
+            C) El vértice de la parábola está exactamente sobre el eje X, siendo tangente en el punto <code class="inline-code">x = -b / (2a)</code>.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-item="3">
+        <div class="quiz-question-header">
+          <span class="quiz-num">3</span>
+          <p class="quiz-question-text">
+            Dada la ecuación <code class="inline-code">x² - 7x + 12 = 0</code>, usando las relaciones de Cardano-Vieta sin usar la fórmula larga, ¿cuáles son sus raíces?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-opt="A" data-correct="true">
+            A) <code class="inline-code">x₁ = 3</code> y <code class="inline-code">x₂ = 4</code>, porque su suma es <code class="inline-code">3 + 4 = 7</code> y su producto es <code class="inline-code">3 · 4 = 12</code>.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="B">
+            B) <code class="inline-code">x₁ = -3</code> y <code class="inline-code">x₂ = -4</code>, porque los signos deben coincidir con la ecuación.
+          </button>
+          <button type="button" class="quiz-opt" data-opt="C">
+            C) <code class="inline-code">x₁ = 2</code> y <code class="inline-code">x₂ = 6</code>, porque <code class="inline-code">2 · 6 = 12</code>.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO VECTORIAL INTERACTIVO DE COMPLETAR EL CUADRADO
+    // =========================================================================
+    const svgEl = document.getElementById('quad-svg') as SVGSVGElement | null;
+    const sliderA = document.getElementById('coef-a') as HTMLInputElement | null;
+    const sliderB = document.getElementById('coef-b') as HTMLInputElement | null;
+    const sliderC = document.getElementById('coef-c') as HTMLInputElement | null;
+
+    const dispA = document.getElementById('disp-a');
+    const dispB = document.getElementById('disp-b');
+    const dispC = document.getElementById('disp-c');
+
+    const eqTitle = document.getElementById('eq-title');
+    const metricK = document.getElementById('metric-k');
+    const metricBin = document.getElementById('metric-bin');
+    const metricDisc = document.getElementById('metric-disc');
+    const metricSols = document.getElementById('metric-sols');
+    const evalTrace = document.getElementById('eval-trace');
+
+    const modeButtons = document.querySelectorAll<HTMLButtonElement>('.mode-toggles .tab-btn');
+    let currentMode: 'geometria' | 'parabola' = 'geometria';
+
+    const updateLab = () => {
+      if (!sliderA || !sliderB || !sliderC || !svgEl) return;
+
+      const a = parseInt(sliderA.value, 10);
+      const b = parseInt(sliderB.value, 10);
+      const c = parseInt(sliderC.value, 10);
+
+      if (dispA) dispA.textContent = `a = ${a}`;
+      if (dispB) dispB.textContent = `b = ${b}`;
+      if (dispC) dispC.textContent = `c = ${c >= 0 ? '+' + c : c}`;
+
+      // Formato título ecuación
+      const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+      const signC = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+      if (eqTitle) eqTitle.textContent = `${a === 1 ? '' : a}x² ${signB}x ${signC} = 0`;
+
+      // Cálculos analíticos
+      const disc = b * b - 4 * a * c;
+      const kVal = b / (2 * a);
+      const kValSq = (b * b) / (4 * a * a);
+      const binRhs = disc / (4 * a * a);
+
+      if (metricK) metricK.textContent = `(${b} / ${2 * a})² = ${kValSq.toFixed(2)}`;
+      if (metricBin) {
+        const signK = kVal >= 0 ? `+ ${kVal.toFixed(2)}` : `- ${Math.abs(kVal).toFixed(2)}`;
+        metricBin.textContent = `(x ${signK})² = ${binRhs.toFixed(2)}`;
+      }
+
+      if (metricDisc) {
+        if (disc > 0) {
+          metricDisc.textContent = `${b * b} - ${4 * a * c} = ${disc} (Δ > 0)`;
+          metricDisc.style.color = '#10b981';
+        } else if (disc === 0) {
+          metricDisc.textContent = `${b * b} - ${4 * a * c} = 0 (Δ = 0, doble)`;
+          metricDisc.style.color = '#fbbf24';
+        } else {
+          metricDisc.textContent = `${b * b} - ${4 * a * c} = ${disc} (Δ < 0, compleja)`;
+          metricDisc.style.color = '#ef4444';
+        }
+      }
+
+      if (metricSols) {
+        if (disc > 0) {
+          const root1 = (-b + Math.sqrt(disc)) / (2 * a);
+          const root2 = (-b - Math.sqrt(disc)) / (2 * a);
+          metricSols.textContent = `x₁ = ${root1.toFixed(2)}  |  x₂ = ${root2.toFixed(2)}`;
+          metricSols.style.color = '#38bdf8';
+        } else if (disc === 0) {
+          const root = -b / (2 * a);
+          metricSols.textContent = `x = ${root.toFixed(2)} (raíz doble)`;
+          metricSols.style.color = '#fbbf24';
+        } else {
+          const realPart = (-b / (2 * a)).toFixed(2);
+          const imagPart = (Math.sqrt(Math.abs(disc)) / (2 * a)).toFixed(2);
+          metricSols.textContent = `x = ${realPart} ± ${imagPart}i (en ℂ)`;
+          metricSols.style.color = '#f87171';
+        }
+      }
+
+      if (evalTrace) {
+        if (disc >= 0) {
+          evalTrace.textContent = `x = (${-b} ± √${disc}) / ${2 * a}`;
+        } else {
+          evalTrace.textContent = `x = (${-b} ± √${Math.abs(disc)}i) / ${2 * a}`;
+        }
+      }
+
+      // Renderizado SVG Dinámico
+      svgEl.innerHTML = '';
+
+      if (currentMode === 'geometria') {
+        renderGeometryMode(svgEl, a, b, c, kVal);
+      } else {
+        renderParabolaMode(svgEl, a, b, c, disc);
+      }
+    };
+
+    // Modo 1: Geometría de Al-Juarismi
+    const renderGeometryMode = (svg: SVGSVGElement, a: number, b: number, c: number, k: number) => {
+      const offset = 48;
+      const maxSize = 340;
+
+      // Escala para el cuadrado x y las dos franjas k
+      const effectiveX = 5;
+      const effectiveK = Math.max(1, Math.min(5, Math.abs(k)));
+      const totalUnits = effectiveX + effectiveK;
+      const scale = maxSize / totalUnits;
+
+      const pxX = effectiveX * scale;
+      const pxK = effectiveK * scale;
+
+      // 1. Cotas exteriores
+      createSvgDimension(offset, offset - 14, pxX, 'x', '#38bdf8');
+      createSvgDimension(offset + pxX, offset - 14, pxK, `b/(2a) = ${k.toFixed(1)}`, '#fbbf24');
+      createSvgDimension(offset - 14, offset, pxX, 'x', '#38bdf8', true);
+      createSvgDimension(offset - 14, offset + pxX, pxK, `b/(2a) = ${k.toFixed(1)}`, '#fbbf24', true);
+
+      // 2. Cuadrado principal x²
+      createSvgRect(offset, offset, pxX, pxX, 'rgba(56, 189, 248, 0.35)', '#38bdf8', 'Cuadrado: x²');
+
+      // 3. Franja lateral derecha
+      createSvgRect(offset + pxX, offset, pxK, pxX, 'rgba(16, 185, 129, 0.35)', '#10b981', `Franja: ${k.toFixed(1)}x`);
+
+      // 4. Franja inferior
+      createSvgRect(offset, offset + pxX, pxX, pxK, 'rgba(16, 185, 129, 0.35)', '#10b981', `Franja: ${k.toFixed(1)}x`);
+
+      // 5. Esquina complementaria completada
+      createSvgRect(offset + pxX, offset + pxX, pxK, pxK, 'rgba(251, 191, 36, 0.45)', '#fbbf24', `+ ${(k * k).toFixed(1)}`);
+    };
+
+    // Modo 2: Parábola Cartesiana y Vértice
+    const renderParabolaMode = (svg: SVGSVGElement, a: number, b: number, c: number, disc: number) => {
+      const cx = 220;
+      const cy = 220;
+      const scaleX = 22;
+      const scaleY = 10;
+
+      // Ejes coordenados
+      const gAxes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      gAxes.setAttribute('stroke', 'rgba(255, 255, 255, 0.22)');
+      gAxes.setAttribute('stroke-width', '1');
+
+      // Eje X y Eje Y
+      const lineX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineX.setAttribute('x1', '20');
+      lineX.setAttribute('y1', String(cy));
+      lineX.setAttribute('x2', '420');
+      lineX.setAttribute('y2', String(cy));
+      gAxes.appendChild(lineX);
+
+      const lineY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineY.setAttribute('x1', String(cx));
+      lineY.setAttribute('y1', '20');
+      lineY.setAttribute('x2', String(cx));
+      lineY.setAttribute('y2', '420');
+      gAxes.appendChild(lineY);
+      svg.appendChild(gAxes);
+
+      // Trazo de la parábola: y = a x² + b x + c
+      let dPath = '';
+      for (let px = -9; px <= 9; px += 0.2) {
+        const py = a * px * px + b * px + c;
+        const screenX = cx + px * scaleX;
+        const screenY = cy - py * scaleY;
+        if (px === -9) {
+          dPath += `M ${screenX.toFixed(1)} ${screenY.toFixed(1)}`;
+        } else {
+          dPath += ` L ${screenX.toFixed(1)} ${screenY.toFixed(1)}`;
+        }
+      }
+
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl.setAttribute('d', dPath);
+      pathEl.setAttribute('fill', 'none');
+      pathEl.setAttribute('stroke', '#38bdf8');
+      pathEl.setAttribute('stroke-width', '2.5');
+      svg.appendChild(pathEl);
+
+      // Vértice: xV = -b / (2a)
+      const xV = -b / (2 * a);
+      const yV = a * xV * xV + b * xV + c;
+      const screenXV = cx + xV * scaleX;
+      const screenYV = cy - yV * scaleY;
+
+      // Eje de simetría vertical punteado
+      const simAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      simAxis.setAttribute('x1', String(screenXV));
+      simAxis.setAttribute('y1', '30');
+      simAxis.setAttribute('x2', String(screenXV));
+      simAxis.setAttribute('y2', '410');
+      simAxis.setAttribute('stroke', 'rgba(251, 191, 36, 0.6)');
+      simAxis.setAttribute('stroke-width', '1.5');
+      simAxis.setAttribute('stroke-dasharray', '4 3');
+      svg.appendChild(simAxis);
+
+      // Punto del vértice
+      const circleV = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circleV.setAttribute('cx', String(screenXV));
+      circleV.setAttribute('cy', String(screenYV));
+      circleV.setAttribute('r', '5');
+      circleV.setAttribute('fill', '#fbbf24');
+      svg.appendChild(circleV);
+
+      // Puntos de corte con el eje X (si Δ >= 0)
+      if (disc >= 0) {
+        const root1 = (-b + Math.sqrt(disc)) / (2 * a);
+        const root2 = (-b - Math.sqrt(disc)) / (2 * a);
+
+        [root1, root2].forEach((root) => {
+          const rootScreenX = cx + root * scaleX;
+          const circleR = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circleR.setAttribute('cx', String(rootScreenX));
+          circleR.setAttribute('cy', String(cy));
+          circleR.setAttribute('r', '5');
+          circleR.setAttribute('fill', '#10b981');
+          svg.appendChild(circleR);
+        });
+      }
+    };
+
+    // Funciones auxiliares para SVG
+    const createSvgRect = (x: number, y: number, w: number, h: number, fill: string, stroke: string, label: string) => {
+      if (!svgEl) return;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', String(x));
+      rect.setAttribute('y', String(y));
+      rect.setAttribute('width', String(w));
+      rect.setAttribute('height', String(h));
+      rect.setAttribute('rx', '6');
+      rect.setAttribute('fill', fill);
+      rect.setAttribute('stroke', stroke);
+      rect.setAttribute('stroke-width', '2');
+      svgEl.appendChild(rect);
+
+      if (w > 30 && h > 20) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', String(x + w / 2));
+        text.setAttribute('y', String(y + h / 2 + 5));
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-size', '13');
+        text.setAttribute('font-weight', '600');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-family', 'system-ui, sans-serif');
+        text.setAttribute('style', 'filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));');
+        text.textContent = label;
+        svgEl.appendChild(text);
+      }
+    };
+
+    const createSvgDimension = (x: number, y: number, length: number, text: string, color: string, isVertical = false) => {
+      if (!svgEl) return;
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('stroke', color);
+      g.setAttribute('stroke-width', '1.5');
+      g.setAttribute('opacity', '0.9');
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const tick1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const tick2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('fill', color);
+      t.setAttribute('font-size', '11');
+      t.setAttribute('font-weight', '700');
+      t.setAttribute('font-family', 'monospace');
+
+      if (!isVertical) {
+        line.setAttribute('x1', String(x));
+        line.setAttribute('y1', String(y));
+        line.setAttribute('x2', String(x + length));
+        line.setAttribute('y2', String(y));
+        line.setAttribute('stroke-dasharray', '3 3');
+
+        tick1.setAttribute('x1', String(x));
+        tick1.setAttribute('y1', String(y - 5));
+        tick1.setAttribute('x2', String(x));
+        tick1.setAttribute('y2', String(y + 5));
+
+        tick2.setAttribute('x1', String(x + length));
+        tick2.setAttribute('y1', String(y - 5));
+        tick2.setAttribute('x2', String(x + length));
+        tick2.setAttribute('y2', String(y + 5));
+
+        t.setAttribute('x', String(x + length / 2));
+        t.setAttribute('y', String(y - 7));
+        t.setAttribute('text-anchor', 'middle');
+      } else {
+        line.setAttribute('x1', String(x));
+        line.setAttribute('y1', String(y));
+        line.setAttribute('x2', String(x));
+        line.setAttribute('y2', String(y + length));
+        line.setAttribute('stroke-dasharray', '3 3');
+
+        tick1.setAttribute('x1', String(x - 5));
+        tick1.setAttribute('y1', String(y));
+        tick1.setAttribute('x2', String(x + 5));
+        tick1.setAttribute('y2', String(y));
+
+        tick2.setAttribute('x1', String(x - 5));
+        tick2.setAttribute('y1', String(y + length));
+        tick2.setAttribute('x2', String(x + 5));
+        tick2.setAttribute('y2', String(y + length));
+
+        t.setAttribute('x', String(x - 8));
+        t.setAttribute('y', String(y + length / 2 + 4));
+        t.setAttribute('text-anchor', 'end');
+      }
+
+      t.textContent = text;
+      g.appendChild(line);
+      g.appendChild(tick1);
+      g.appendChild(tick2);
+      g.appendChild(t);
+      svgEl.appendChild(g);
+    };
+
+    sliderA?.addEventListener('input', updateLab);
+    sliderB?.addEventListener('input', updateLab);
+    sliderC?.addEventListener('input', updateLab);
+
+    modeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentMode = (btn.dataset.labMode as 'geometria' | 'parabola') || 'geometria';
+        updateLab();
+      });
+    });
+
+    // =========================================================================
+    // 2. AUTOEVALUACIÓN INTERACTIVA
+    // =========================================================================
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const options = card.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+      const feedback = card.querySelector<HTMLElement>('.quiz-feedback');
+
+      options.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const isCorrect = btn.dataset.correct === 'true';
+
+          options.forEach((b) => {
+            b.disabled = true;
+            if (b.dataset.correct === 'true') {
+              b.classList.add('is-correct');
+            } else if (b === btn && !isCorrect) {
+              b.classList.add('is-incorrect');
+            }
+          });
+
+          if (feedback) {
+            feedback.style.display = 'block';
+            if (isCorrect) {
+              feedback.className = 'quiz-feedback feedback-success';
+              feedback.innerHTML = '<strong>Respuesta Correcta:</strong> Has identificado con exactitud el principio matemático subyacente.';
+            } else {
+              feedback.className = 'quiz-feedback feedback-error';
+              feedback.innerHTML = '<strong>Incorrecto:</strong> Revisa la justificación formal del paso en la sección de deducción.';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* Variables y estilos base específicos para Bloque 02 Álgebra */
+  .lead-paragraph {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.92em;
+    padding: 0.15rem 0.45rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .inline-code {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.2);
+    color: #0284c7;
+  }
+
+  /* 1. Tarjeta de Alerta de Error / Trampa */
+  .algebra-trap-card {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.02) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.8rem 0;
+  }
+
+  :global([data-theme="light"]) .algebra-trap-card {
+    background: #fff5f5;
+    border-color: #fca5a5;
+  }
+
+  .trap-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #ef4444;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.8rem;
+  }
+
+  .bad-derivation-row {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .bad-derivation-row {
+    background: #fee2e2;
+  }
+
+  .bad-derivation-row code {
+    font-family: var(--mono);
+    color: #f87171;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .bad-derivation-row code {
+    color: #b91c1c;
+  }
+
+  .trap-explanation {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Callout de Perspicacia */
+  .insight-callout {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.09) 0%, rgba(56, 189, 248, 0.02) 100%);
+    border-left: 3px solid #38bdf8;
+    border-radius: 0 10px 10px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  :global([data-theme="light"]) .insight-callout {
+    background: #f0f9ff;
+    border-color: #0284c7;
+  }
+
+  .insight-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .insight-badge {
+    color: #0284c7;
+  }
+
+  .insight-callout p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  /* Tarjetas de paso de deducción */
+  .derivation-step-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin: 1.4rem 0;
+  }
+
+  .step-num-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .step-num-pill {
+    color: #0284c7;
+  }
+
+  .step-tag {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .formula-focus-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    margin: 1rem 0;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.08rem;
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .formula-focus-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .formal-math-block {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1.5px solid rgba(56, 189, 248, 0.4);
+    border-radius: 8px;
+    padding: 1rem 1.3rem;
+    margin: 1rem 0;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .formal-math-block {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  /* =========================================================================
+     LABORATORIO VECTORIAL INTERACTIVO
+     ========================================================================= */
+  .geo-lab-shell {
+    margin: 2.2rem 0;
+  }
+
+  .lab-glass-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 16px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    padding: clamp(1.4rem, 2.8vw, 2.4rem);
+  }
+
+  :global([data-theme="light"]) .lab-glass-panel {
+    background: #ffffff;
+    border: 1.5px solid rgba(2, 132, 199, 0.28);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+  }
+
+  .lab-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lab-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    color: #38bdf8;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  :global([data-theme="light"]) .lab-tag {
+    color: #0284c7;
+  }
+
+  .mode-toggles {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn.is-active {
+    background: #38bdf8;
+    color: #0c0e15;
+    font-weight: 700;
+    border-color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .tab-btn.is-active {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .controls-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.4rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    font-family: var(--mono);
+  }
+
+  .slider-badge {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .slider-badge {
+    color: #0284c7;
+  }
+
+  .slider-accent {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  :global([data-theme="light"]) .slider-accent {
+    accent-color: #0284c7;
+  }
+
+  /* Etapa de visualización SVG + Panel lateral */
+  .geo-interactive-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    gap: 1.6rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 900px) {
+    .geo-interactive-stage {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .svg-stage-container {
+    background: #080a10;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    min-height: 400px;
+  }
+
+  :global([data-theme="light"]) .svg-stage-container {
+    background: #f8fafc;
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  .geometric-canvas {
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .geo-metrics-sidebar {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+
+  .sidebar-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  #eq-title {
+    margin: 0.35rem 0 0;
+    font-family: var(--display);
+    font-size: 1.35rem;
+    color: var(--ink);
+  }
+
+  .metrics-card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .metric-row {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.75rem 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.86rem;
+  }
+
+  .metric-row.highlight-row {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  :global([data-theme="light"]) .metric-row.highlight-row {
+    background: #f0f9ff;
+    border-color: #0284c7;
+  }
+
+  .metric-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .metric-val {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  .metric-val-strong {
+    font-family: var(--mono);
+    font-weight: 800;
+    color: #38bdf8;
+    font-size: 0.95rem;
+  }
+
+  :global([data-theme="light"]) .metric-val-strong {
+    color: #0284c7;
+  }
+
+  .total-identity-eval {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+  }
+
+  .eval-tag {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  #eval-trace {
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 0.92rem;
+    font-weight: 600;
+    word-break: break-all;
+  }
+
+  :global([data-theme="light"]) #eval-trace {
+    color: #0284c7;
+  }
+
+  /* =========================================================================
+     BANNER DE TEOREMA FORMAL
+     ========================================================================= */
+  .formal-theorem-banner {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.09) 0%, rgba(56, 189, 248, 0.02) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.35);
+  }
+
+  .theorem-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    color: #38bdf8;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: #0284c7;
+  }
+
+  .formal-theorem-banner h3 {
+    margin: 0 0 1rem;
+    font-family: var(--display);
+    font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+    color: var(--ink);
+    line-height: 1.35;
+  }
+
+  .theorem-symbolic {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    color: #38bdf8;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+
+  /* Stepper Formal */
+  .algebraic-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    margin: 2rem 0;
+  }
+
+  .stepper-card {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 1.2rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+    align-items: start;
+  }
+
+  .stepper-step-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global([data-theme="light"]) .stepper-step-badge {
+    background: rgba(2, 132, 199, 0.1);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  .stepper-content h4 {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+    color: var(--ink);
+    font-family: var(--display);
+  }
+
+  .step-rule-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.8rem;
+  }
+
+  .code-step-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    margin: 0.8rem 0;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  :global([data-theme="light"]) .code-step-box {
+    background: #f8fafc;
+    color: #0284c7;
+  }
+
+  .code-step-box.highlight-step {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: #38bdf8;
+    font-weight: 800;
+  }
+
+  :global([data-theme="light"]) .code-step-box.highlight-step {
+    background: #e0f2fe;
+    border-color: #0284c7;
+  }
+
+  .callout-note-inline {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    border-left: 2px solid #38bdf8;
+    padding-left: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .callout-note-inline {
+    border-color: #0284c7;
+  }
+
+  /* Grid Discriminante */
+  .disc-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .disc-case-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .disc-case-card.is-positive {
+    border-top: 3px solid #10b981;
+  }
+
+  .disc-case-card.is-zero {
+    border-top: 3px solid #fbbf24;
+  }
+
+  .disc-case-card.is-negative {
+    border-top: 3px solid #ef4444;
+  }
+
+  .disc-case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .disc-indicator {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  .is-positive .disc-indicator {
+    color: #10b981;
+  }
+
+  .is-zero .disc-indicator {
+    color: #fbbf24;
+  }
+
+  .is-negative .disc-indicator {
+    color: #ef4444;
+  }
+
+  .disc-badge {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .disc-formula {
+    background: var(--bg-sunken);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    margin: 0.8rem 0;
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .disc-geom-note {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Cardano-Vieta */
+  .vieta-duo-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin: 1.8rem 0;
+  }
+
+  .vieta-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .vieta-box h4 {
+    margin: 0 0 0.8rem;
+    font-family: var(--display);
+    color: var(--ink);
+  }
+
+  .vieta-derivation {
+    background: var(--bg-sunken);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    font-family: var(--mono);
+    color: #38bdf8;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    overflow-x: auto;
+  }
+
+  :global([data-theme="light"]) .vieta-derivation {
+    color: #0284c7;
+    background: #f8fafc;
+  }
+
+  .factorization-banner {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.09) 0%, rgba(16, 185, 129, 0.02) 100%);
+    border: 1.5px solid rgba(16, 185, 129, 0.35);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.8rem 0;
+  }
+
+  :global([data-theme="light"]) .factorization-banner {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+
+  .factor-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .factorization-banner h3 {
+    margin: 0.4rem 0 0.6rem;
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    color: #10b981;
+  }
+
+  :global([data-theme="light"]) .factorization-banner h3 {
+    color: #059669;
+  }
+
+  /* Pecados Capitales */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .sin-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .sin-header {
+    margin-bottom: 0.8rem;
+  }
+
+  .sin-num {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #ef4444;
+    letter-spacing: 0.12em;
+  }
+
+  .sin-title {
+    font-family: var(--display);
+    font-size: 1.08rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .sin-contrast-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .sin-bad,
+  .sin-good {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.84rem;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
+
+  .sin-cross {
+    font-weight: 800;
+    color: #ef4444;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+  }
+
+  .sin-check {
+    font-weight: 800;
+    color: #10b981;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .quiz-question-header {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 1.2rem;
+  }
+
+  .quiz-num {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .quiz-num {
+    color: #0284c7;
+  }
+
+  .quiz-question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .quiz-opt.is-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+    font-weight: 600;
+  }
+
+  .quiz-opt.is-incorrect {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  .quiz-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .feedback-success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10b981;
+    color: #10b981;
+  }
+
+  .feedback-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+</style>

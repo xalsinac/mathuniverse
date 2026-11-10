@@ -11,6 +11,8 @@ export interface AcademyLesson {
   keyConcept: string;
   status: 'en_preparacion' | 'disponible';
   durationMinutes: number;
+  slug?: string;
+  href?: string;
 }
 
 export interface AcademyBlock {
@@ -22,6 +24,7 @@ export interface AcademyBlock {
   glyphLabel: string;
   description: string;
   color: string;
+  colorLight?: string;
   levelRange: string;
   estimatedLessons: number;
 }
@@ -36,6 +39,7 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     glyphLabel: 'Deducción lógica',
     description: 'Lógica proposicional, cuantificadores, implicación vs doble implicación, reducción al absurdo, inducción y el poder del contraejemplo.',
     color: '#ffc14d',
+    colorLight: '#d97706',
     levelRange: 'ESO & Bachillerato',
     estimatedLessons: 6,
   },
@@ -48,6 +52,7 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     glyphLabel: 'Estructuras y álgebra matricial',
     description: 'Deducción geométrica de identidades notables, la fórmula cuadrática completando cuadrados, Ruffini y el Teorema del Resto, y el Teorema de Rouché-Frobenius.',
     color: '#38bdf8',
+    colorLight: '#0284c7',
     levelRange: '3º ESO a 2º Bachillerato',
     estimatedLessons: 8,
   },
@@ -60,6 +65,7 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     glyphLabel: 'Cálculo diferencial e integral',
     description: 'Definición estricta de límite, continuidad real, Teorema de Bolzano con contraejemplos, derivada por cociente incremental, Teorema del Valor Medio y el Teorema Fundamental del Cálculo.',
     color: '#10b981',
+    colorLight: '#059669',
     levelRange: '1º y 2º Bachillerato',
     estimatedLessons: 10,
   },
@@ -114,8 +120,10 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     summary: 'Aprende a diferenciar qué datos asumimos como ciertos (hipótesis) y qué queremos demostrar (tesis). Descubre por qué un ejemplo particular no demuestra una regla general.',
     prerequisites: ['Comprensión lectora', 'Aritmética básica'],
     keyConcept: 'Hipótesis ⟹ Tesis',
-    status: 'en_preparacion',
+    status: 'disponible',
     durationMinutes: 20,
+    slug: 'anatomia-demostracion',
+    href: '/academy/fundamentos/anatomia-demostracion',
   },
   {
     id: 'f-02',
@@ -125,11 +133,13 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     level: 'Transversal',
     badge: 'Técnica Clásica',
     difficulty: 'Fundamental',
-    summary: 'Suponemos que lo contrario a lo que buscamos es cierto y caminamos lógicamente hasta chocar con una contradicción irresoluble.',
-    prerequisites: ['Operaciones básicas'],
-    keyConcept: '¬P ⟹ Falso ∴ P es verdadero',
-    status: 'en_preparacion',
+    summary: 'Suponemos formalmente lo contrario de lo que buscamos probar y deducimos rigurosamente hasta chocar contra una contradicción insalvable.',
+    prerequisites: ['Operaciones básicas', 'Anatomía de una demostración'],
+    keyConcept: '¬P ⟹ ⊥ ∴ P es verdadero',
+    status: 'disponible',
     durationMinutes: 25,
+    slug: 'reduccion-absurdo',
+    href: '/academy/fundamentos/reduccion-absurdo',
   },
   {
     id: 'f-03',
@@ -170,10 +180,12 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     badge: 'Deducción Visual',
     difficulty: 'Fundamental',
     summary: 'Desmonta el error clásico de escribir (a+b)² = a² + b² con la prueba geométrica del cuadrado de áreas y la propiedad distributiva general.',
-    prerequisites: ['Monomios y polinomios'],
-    keyConcept: 'Área = a² + ab + ab + b²',
-    status: 'en_preparacion',
-    durationMinutes: 15,
+    prerequisites: ['Monomios y polinomios', 'Área de figuras planas'],
+    keyConcept: '(a ± b)² = a² ± 2ab + b²  |  (a+b)(a-b) = a² - b²',
+    status: 'disponible',
+    durationMinutes: 20,
+    slug: 'identidades-notables',
+    href: '/academy/algebra/identidades-notables',
   },
   {
     id: 'alg-02',
@@ -186,8 +198,10 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     summary: 'Sigue paso a paso la manipulación algebraica milenaria que transforma un trinomio general en un cuadrado perfecto hasta despejar la x con precisión.',
     prerequisites: ['Identidades notables', 'Despejes'],
     keyConcept: '(x + b/(2a))² = (b² - 4ac)/(4a²)',
-    status: 'en_preparacion',
+    status: 'disponible',
     durationMinutes: 25,
+    slug: 'formula-cuadratica',
+    href: '/academy/algebra/formula-cuadratica',
   },
   {
     id: 'alg-03',
@@ -200,8 +214,10 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     summary: 'A partir de la identidad D(x) = d(x)·c(x) + r, sustituimos x = a y observamos cómo el cociente se anula dejando al descubierto el resto numérico.',
     prerequisites: ['División de polinomios'],
     keyConcept: 'P(a) = (a - a)·C(a) + R = R',
-    status: 'en_preparacion',
+    status: 'disponible',
     durationMinutes: 20,
+    slug: 'teorema-resto-ruffini',
+    href: '/academy/algebra/teorema-resto-ruffini',
   },
   {
     id: 'alg-04',
@@ -214,8 +230,10 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     summary: 'Comprende el significado geométrico y algebraico del rango: vectores independientes en la matriz de coeficientes frente a la matriz ampliada.',
     prerequisites: ['Matrices', 'Determinantes', 'Rango'],
     keyConcept: 'rg(A) = rg(A|B) = n (SCD) vs rg(A) < rg(A|B) (SI)',
-    status: 'en_preparacion',
+    status: 'disponible',
     durationMinutes: 35,
+    slug: 'rouche-frobenius',
+    href: '/academy/algebra/rouche-frobenius',
   },
 
   // BLOQUE 3: CÁLCULO Y ANÁLISIS
@@ -229,9 +247,11 @@ export const ACADEMY_LESSONS: AcademyLesson[] = [
     difficulty: 'Intermedio',
     summary: 'Desmitifica la idea de "sustituir el número" y comprende cómo se comportan las funciones en las proximidades de discontinuidades e indeterminaciones.',
     prerequisites: ['Funciones elementales'],
-    keyConcept: 'Límite lateral izquierdo = Límite lateral derecho',
-    status: 'en_preparacion',
+    keyConcept: 'lim_(x→a⁻) f(x) = lim_(x→a⁺) f(x) = L ⟺ lim_(x→a) f(x) = L',
+    status: 'disponible',
     durationMinutes: 25,
+    slug: 'concepto-limite',
+    href: '/academy/calculo/concepto-limite',
   },
   {
     id: 'cal-02',

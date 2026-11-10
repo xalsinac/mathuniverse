@@ -1,0 +1,2392 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-04')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-01');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL PROBLEMA FUNDAMENTAL -->
+  <section class="lesson-section" id="problema-fundamental">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Problema Fundamental: Existencia y Unicidad de Soluciones</h2>
+
+    <p class="lead-paragraph">
+      Cualquier sistema de <code class="inline-code">m</code> ecuaciones lineales con <code class="inline-code">n</code> incógnitas puede condensarse en una única ecuación matricial compacta: <code class="inline-code">A · X = B</code>. Ante cualquier sistema lineal, las matemáticas exigen responder a dos preguntas esenciales antes de intentar resolverlo:
+    </p>
+
+    <!-- Dos preguntas cardinales -->
+    <div class="dual-questions-grid">
+      <div class="question-card">
+        <div class="q-tag">PREGUNTA 1: EXISTENCIA</div>
+        <h4>¿Tiene solución el sistema?</h4>
+        <p>
+          ¿Existe al menos una tupla de números reales <code class="inline-code">(x₁, x₂, ..., xₙ)</code> que satisfaga simultáneamente todas y cada una de las <code class="inline-code">m</code> ecuaciones? Si existe, el sistema se cataloga como <strong>Compatible</strong>; si es imposible, como <strong>Incompatible (SI)</strong>.
+        </p>
+      </div>
+
+      <div class="question-card">
+        <div class="q-tag">PREGUNTA 2: UNICIDAD</div>
+        <h4>Si existe solución, ¿es única o múltiple?</h4>
+        <p>
+          ¿Hay un único punto de corte en el espacio o existe un conjunto infinito de soluciones que forman una recta, un plano o un hiperplano? Si la solución es única, es <strong>Compatible Determinado (SCD)</strong>; si hay infinitas, es <strong>Compatible Indeterminado (SCI)</strong>.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      El <strong>Teorema de Rouché-Frobenius</strong> es la herramienta definitiva del álgebra lineal para responder con total certeza a ambas preguntas analizando exclusivamente un invariante algebraico: el <strong>rango</strong> de dos matrices.
+    </p>
+
+    <!-- Definición matricial canónica -->
+    <div class="matrix-definition-block">
+      <div class="matrix-block-header">
+        <span class="mat-label">DEFINICIÓN MATRICIAL CANÓNICA</span>
+        <span class="mat-sub">Sistema de m ecuaciones con n incógnitas</span>
+      </div>
+
+      <div class="matrix-layout-flex">
+        <div class="mat-box mat-a">
+          <div class="mat-box-title">Matriz de Coeficientes (A)</div>
+          <div class="mat-grid-repr">
+            <span class="bracket bracket-l">[</span>
+            <div class="mat-cells">
+              <span>a₁₁</span><span>a₁₂</span><span>···</span><span>a₁ₙ</span>
+              <span>a₂₁</span><span>a₂₂</span><span>···</span><span>a₂ₙ</span>
+              <span>⋮</span><span>⋮</span><span>⋱</span><span>⋮</span>
+              <span>aₘ₁</span><span>aₘ₂</span><span>···</span><span>aₘₙ</span>
+            </div>
+            <span class="bracket bracket-r">]</span>
+          </div>
+          <span class="mat-dim">Dimensión: m × n</span>
+        </div>
+
+        <div class="mat-op-sym">·</div>
+
+        <div class="mat-box mat-x">
+          <div class="mat-box-title">Incógnitas (X)</div>
+          <div class="mat-grid-repr">
+            <span class="bracket bracket-l">[</span>
+            <div class="mat-cells col-only">
+              <span>x₁</span>
+              <span>x₂</span>
+              <span>⋮</span>
+              <span>xₙ</span>
+            </div>
+            <span class="bracket bracket-r">]</span>
+          </div>
+          <span class="mat-dim">Dimensión: n × 1</span>
+        </div>
+
+        <div class="mat-op-sym">=</div>
+
+        <div class="mat-box mat-b">
+          <div class="mat-box-title">Términos Indep. (B)</div>
+          <div class="mat-grid-repr">
+            <span class="bracket bracket-l">[</span>
+            <div class="mat-cells col-only">
+              <span>b₁</span>
+              <span>b₂</span>
+              <span>⋮</span>
+              <span>bₘ</span>
+            </div>
+            <span class="bracket bracket-r">]</span>
+          </div>
+          <span class="mat-dim">Dimensión: m × 1</span>
+        </div>
+      </div>
+
+      <div class="augmented-matrix-banner">
+        <span class="aug-label">MATRIZ AMPLIADA (A|B o A*):</span>
+        <p>
+          Se forma agregando la columna de términos independientes <code class="inline-code">B</code> a la derecha de <code class="inline-code">A</code>. Su dimensión es <code class="inline-code">m × (n + 1)</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: EL SIGNIFICADO VECTORIAL DEL RANGO -->
+  <section class="lesson-section" id="significado-vectorial">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. El Significado Vectorial del Rango: ¿Por qué funciona el Teorema?</h2>
+
+    <p class="lead-paragraph">
+      En Bachillerato se suele memorizar la regla de rangos mecánicamente. Sin embargo, su justificación es de una belleza geométrica y lógica deslumbrante cuando observamos el sistema como una <strong>combinación lineal de vectores columna</strong>:
+    </p>
+
+    <!-- Desglose de combinación lineal -->
+    <div class="vector-expansion-card">
+      <div class="expansion-header">
+        <span class="exp-badge">EQUIVALENCIA VECTORIAL</span>
+        <h4>El sistema A·X = B reescrito columna a columna</h4>
+      </div>
+      <div class="expansion-formula">
+        <code>x₁ · c₁ + x₂ · c₂ + ··· + xₙ · cₙ = b</code>
+      </div>
+      <p class="expansion-caption">
+        Donde cada vector columna <code class="inline-code">cⱼ</code> es la columna <code class="inline-code">j</code>-ésima de la matriz <code class="inline-code">A</code>. Resolver el sistema consiste exactamente en encontrar qué escalares <code class="inline-code">x₁, x₂, ..., xₙ</code> ponderan las columnas de <code class="inline-code">A</code> para obtener exactamente el vector objetivo <code class="inline-code">b</code>.
+      </p>
+    </div>
+
+    <!-- Las dos deducciones conceptuales -->
+    <div class="deduction-columns">
+      <div class="deduction-card">
+        <div class="ded-badge">DEDUCCIÓN 1: COMPATIBILIDAD</div>
+        <h3>¿Cuándo existe solución?</h3>
+        <p>
+          Para que existan números <code class="inline-code">x₁, ..., xₙ</code> que verifiquen la igualdad, el vector columna <code class="inline-code">b</code> <strong>debe pertenecer obligatoriamente</strong> al subespacio vectorial generado por las columnas de <code class="inline-code">A</code> (el espacio columna <code class="inline-code">Col(A)</code>):
+        </p>
+        <ul class="ded-list">
+          <li>
+            <strong>Si b ∈ Col(A):</strong> Agregar el vector <code class="inline-code">b</code> a las columnas de <code class="inline-code">A</code> no añade ninguna dimensión nueva. El número de vectores linealmente independientes es el mismo:
+            <div class="inline-math-highlight">rg(A | B) = rg(A) ⟹ SISTEMA COMPATIBLE</div>
+          </li>
+          <li>
+            <strong>Si b ∉ Col(A):</strong> El vector <code class="inline-code">b</code> apunta en una dirección no alcanzable por las columnas de <code class="inline-code">A</code>. Al agregarlo a la matriz, añade una dimensión extra:
+            <div class="inline-math-highlight error-highlight">rg(A | B) = rg(A) + 1 ⟹ SISTEMA INCOMPATIBLE</div>
+            Es imposible alcanzar <code class="inline-code">b</code> sumando columnas de <code class="inline-code">A</code>.
+          </li>
+        </ul>
+      </div>
+
+      <div class="deduction-card">
+        <div class="ded-badge">DEDUCCIÓN 2: UNICIDAD Y GRADOS DE LIBERTAD</div>
+        <h3>¿Cuándo la solución es única?</h3>
+        <p>
+          Si el sistema es compatible (<code class="inline-code">rg(A) = rg(A|B) = r</code>), ¿cuántas combinaciones lineales distintas pueden formar el vector objetivo <code class="inline-code">b</code>?
+        </p>
+        <ul class="ded-list">
+          <li>
+            <strong>Si r = n (número de incógnitas):</strong> Todas las <code class="inline-code">n</code> columnas de <code class="inline-code">A</code> son linealmente independientes entre sí. Por el teorema de la base, las coordenadas de un vector respecto a una base son <strong>únicas e irrepetibles</strong>:
+            <div class="inline-math-highlight">rg(A) = rg(A|B) = n ⟹ SISTEMA COMPATIBLE DETERMINADO (SCD)</div>
+          </li>
+          <li>
+            <strong>Si r &lt; n:</strong> Existen <code class="inline-code">n - r</code> columnas linealmente dependientes (redundantes). Esas columnas sobrantes pueden asumir cualquier valor arbitrario (parámetros libres <code class="inline-code">λ, μ, ...</code>):
+            <div class="inline-math-highlight warn-highlight">rg(A) = rg(A|B) = r &lt; n ⟹ SISTEMA COMPATIBLE INDETERMINADO (SCI)</div>
+            Número de parámetros libres = <strong>n - r</strong> (grados de libertad).
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: EL TEOREMA FORMAL Y LA TABLA CANÓNICA -->
+  <section class="lesson-section" id="teorema-tabla">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. El Teorema Formal y la Tabla Canónica de Clasificación</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">TEOREMA DE ROUCHÉ-FROBENIUS (1875 - 1905)</span>
+      <h3>«Un sistema de ecuaciones lineales es compatible si y solo si el rango de la matriz de coeficientes es igual al rango de la matriz ampliada»</h3>
+      <code class="theorem-symbolic">A·X = B es compatible ⟺ rg(A) = rg(A | B)</code>
+    </div>
+
+    <p>
+      Al clasificar un sistema con <code class="inline-code">n</code> incógnitas, se evalúan exclusivamente los valores de <code class="inline-code">rg(A)</code>, <code class="inline-code">rg(A|B)</code> y su comparación con <code class="inline-code">n</code>:
+    </p>
+
+    <!-- Tabla canónica estilizada -->
+    <div class="canonical-table-wrapper">
+      <table class="canonical-table">
+        <thead>
+          <tr>
+            <th>Condición de Rangos</th>
+            <th>Clasificación Oficial</th>
+            <th>Número de Soluciones</th>
+            <th>Estructura Geométrica (en ℝ³)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-incompatible">
+            <td class="cond-cell">
+              <span class="rank-pill pill-red">rg(A) &lt; rg(A|B)</span>
+            </td>
+            <td>
+              <strong class="type-name">Sistema Incompatible (SI)</strong>
+              <span class="type-sub">Sin solución posible</span>
+            </td>
+            <td class="sol-cell">0 soluciones (conjunto vacío ∅)</td>
+            <td class="geom-cell">Planos que no comparten ningún punto simultáneo (planos paralelos o prisma triangular).</td>
+          </tr>
+          <tr class="row-scd">
+            <td class="cond-cell">
+              <span class="rank-pill pill-green">rg(A) = rg(A|B) = n</span>
+            </td>
+            <td>
+              <strong class="type-name">Compatible Determinado (SCD)</strong>
+              <span class="type-sub">Solución única</span>
+            </td>
+            <td class="sol-cell">Exactamente 1 solución única <code class="inline-code">(x₀, y₀, z₀)</code></td>
+            <td class="geom-cell">Los planos se cortan en un <strong>único punto</strong> en el espacio.</td>
+          </tr>
+          <tr class="row-sci">
+            <td class="cond-cell">
+              <span class="rank-pill pill-amber">rg(A) = rg(A|B) = r &lt; n</span>
+            </td>
+            <td>
+              <strong class="type-name">Compatible Indeterminado (SCI)</strong>
+              <span class="type-sub">Infinitas soluciones</span>
+            </td>
+            <td class="sol-cell">
+              ∞ soluciones dependientes de <code class="inline-code">n - r</code> parámetros
+            </td>
+            <td class="geom-cell">
+              Si <code class="inline-code">n - r = 1</code>: los planos se cortan en una <strong>recta común</strong>.<br />
+              Si <code class="inline-code">n - r = 2</code>: los tres planos son <strong>coincidentes</strong>.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Caso Especial: Sistemas Homogéneos -->
+    <div class="homogeneous-callout">
+      <div class="homo-header">
+        <span class="homo-badge">CASO ESPECIAL: SISTEMAS HOMOGÉNEOS (B = 0)</span>
+        <h4>¿Por qué un sistema homogéneo NUNCA puede ser Incompatible?</h4>
+      </div>
+      <p>
+        En un sistema homogéneo <code class="inline-code">A · X = 0</code>, la columna de términos independientes es el vector cero <code class="inline-code">(0, 0, ..., 0)</code>. Como el vector nulo siempre se obtiene multiplicando cualquier columna por 0 (<code class="inline-code">0·c₁ + 0·c₂ + ... = 0</code>):
+      </p>
+      <div class="homo-rules-grid">
+        <div class="homo-rule-box">
+          <span class="h-rule-num">A</span>
+          <div>
+            <strong>rg(A) = rg(A|0) siempre:</strong> Añadir una columna de ceros a cualquier matriz jamás incrementa su rango. Por tanto, <strong>todo sistema homogéneo es siempre compatible</strong>.
+          </div>
+        </div>
+        <div class="homo-rule-box">
+          <span class="h-rule-num">B</span>
+          <div>
+            <strong>Solución Trivial obligatoria:</strong> La tupla <code class="inline-code">(0, 0, ..., 0)</code> siempre es solución. Si <code class="inline-code">rg(A) = n</code> (SCD), es la <em>única</em> solución.
+          </div>
+        </div>
+        <div class="homo-rule-box">
+          <span class="h-rule-num">C</span>
+          <div>
+            <strong>Soluciones No Triviales:</strong> Si <code class="inline-code">rg(A) &lt; n</code> (SCI), existen infinitas soluciones distintas de la solución nula formando un subespacio vectorial propio.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: INTERPRETACIÓN GEOMÉTRICA EN ℝ³ -->
+  <section class="lesson-section" id="interpretacion-geometrica">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Interpretación Geométrica en el Espacio Tridimensional (ℝ³)</h2>
+
+    <p class="lead-paragraph">
+      Para un sistema de 3 ecuaciones con 3 incógnitas (<code class="inline-code">m = 3, n = 3</code>), cada ecuación lineal de la forma <code class="inline-code">aᵢx + bᵢy + cᵢz = dᵢ</code> representa un <strong>plano en el espacio</strong>. Los rangos de <code class="inline-code">A</code> y <code class="inline-code">(A|B)</code> describen la posición relativa exacta de los tres planos:
+    </p>
+
+    <!-- Grid de figuras geométricas -->
+    <div class="planes-geometry-grid">
+      <!-- 1. SCD: Punto Único -->
+      <div class="plane-card">
+        <div class="plane-card-header">
+          <span class="plane-type-pill pill-green">SCD</span>
+          <span class="plane-ranks">rg(A)=3, rg(A|B)=3</span>
+        </div>
+        <div class="plane-sketch-box">
+          <div class="sketch-diagram diagram-scd">
+            <div class="diag-plane plane-1"></div>
+            <div class="diag-plane plane-2"></div>
+            <div class="diag-plane plane-3"></div>
+            <div class="diag-intersection-point" title="Punto común (x₀, y₀, z₀)"></div>
+          </div>
+        </div>
+        <h4>Secantes en un Único Punto</h4>
+        <p>
+          Los tres vectores normales no son coplanarios. Los tres planos se cortan en un único punto <code class="inline-code">P(x₀, y₀, z₀)</code>. Hay una única solución.
+        </p>
+      </div>
+
+      <!-- 2. SCI: Recta Común -->
+      <div class="plane-card">
+        <div class="plane-card-header">
+          <span class="plane-type-pill pill-amber">SCI (1 parámetro)</span>
+          <span class="plane-ranks">rg(A)=2, rg(A|B)=2</span>
+        </div>
+        <div class="plane-sketch-box">
+          <div class="sketch-diagram diagram-sci-line">
+            <div class="diag-plane plane-rot-1"></div>
+            <div class="diag-plane plane-rot-2"></div>
+            <div class="diag-plane plane-rot-3"></div>
+            <div class="diag-intersection-line" title="Recta común r"></div>
+          </div>
+        </div>
+        <h4>Haz de Planos en una Recta Común</h4>
+        <p>
+          Los tres planos comparten una recta común <code class="inline-code">r</code>. Las soluciones del sistema son todos los infinitos puntos que pertenecen a dicha recta (<code class="inline-code">3 - 2 = 1</code> parámetro <code class="inline-code">λ</code>).
+        </p>
+      </div>
+
+      <!-- 3. SI: Prisma Triangular -->
+      <div class="plane-card">
+        <div class="plane-card-header">
+          <span class="plane-type-pill pill-red">SI (Prisma)</span>
+          <span class="plane-ranks">rg(A)=2, rg(A|B)=3</span>
+        </div>
+        <div class="plane-sketch-box">
+          <div class="sketch-diagram diagram-prism">
+            <div class="diag-prism-face face-1"></div>
+            <div class="diag-prism-face face-2"></div>
+            <div class="diag-prism-face face-3"></div>
+          </div>
+        </div>
+        <h4>Superficie Prismática (Corte 2 a 2)</h4>
+        <p>
+          Los planos se cortan dos a dos en tres rectas paralelas distintas. No existe ningún punto que pertenezca a los tres planos a la vez. El sistema es incompatible.
+        </p>
+      </div>
+
+      <!-- 4. SI: Planos Paralelos -->
+      <div class="plane-card">
+        <div class="plane-card-header">
+          <span class="plane-type-pill pill-red">SI (Paralelos)</span>
+          <span class="plane-ranks">rg(A)=1, rg(A|B)=2</span>
+        </div>
+        <div class="plane-sketch-box">
+          <div class="sketch-diagram diagram-parallel">
+            <div class="diag-plane-par par-1"></div>
+            <div class="diag-plane-par par-2"></div>
+            <div class="diag-plane-par par-3"></div>
+          </div>
+        </div>
+        <h4>Planos Paralelos Estrictos</h4>
+        <p>
+          Los tres planos tienen vectores normales proporcionales pero términos independientes distintos. Son paralelos no coincidentes; intersección vacía.
+        </p>
+      </div>
+
+      <!-- 5. SCI: Planos Coincidentes -->
+      <div class="plane-card">
+        <div class="plane-card-header">
+          <span class="plane-type-pill pill-amber">SCI (2 parámetros)</span>
+          <span class="plane-ranks">rg(A)=1, rg(A|B)=1</span>
+        </div>
+        <div class="plane-sketch-box">
+          <div class="sketch-diagram diagram-coincident">
+            <div class="diag-plane-single"></div>
+          </div>
+        </div>
+        <h4>Tres Planos Coincidentes</h4>
+        <p>
+          Las tres ecuaciones son equivalentes (proporcionales). Representan el mismo plano en el espacio. Las soluciones dependen de <code class="inline-code">3 - 1 = 2</code> parámetros libres (<code class="inline-code">λ, μ</code>).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO DE ROUCHÉ-FROBENIUS -->
+  <section class="lesson-section" id="laboratorio-rouche">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: Clasificador y Analizador de Sistemas</h2>
+
+    <p class="lead-paragraph">
+      Experimenta en tiempo real con sistemas estándar de Selectividad. Observa cómo al variar los coeficientes o el parámetro <code class="inline-code">k</code>, el determinante principal colapsa a cero, los rangos cambian y la compatibilidad del sistema se transforma:
+    </p>
+
+    <!-- Card del Laboratorio -->
+    <div class="rouche-lab-card" id="rouche-lab-app">
+      <div class="lab-toolbar">
+        <span class="lab-title-tag">SIMULADOR EN TIEMPO REAL · MATRICES Y RANGOS</span>
+        
+        <!-- Selector de Presets -->
+        <div class="lab-preset-buttons">
+          <span class="presets-label">CASOS DE EXAMEN:</span>
+          <button type="button" class="preset-btn is-active" data-preset="param_k">
+            Sistema con Parámetro k (PAU)
+          </button>
+          <button type="button" class="preset-btn" data-preset="scd_clean">
+            SCD (Corte en Punto)
+          </button>
+          <button type="button" class="preset-btn" data-preset="sci_line">
+            SCI (Haz de Planos)
+          </button>
+          <button type="button" class="preset-btn" data-preset="si_prism">
+            SI (Prisma Triangular)
+          </button>
+          <button type="button" class="preset-btn" data-preset="homogeneous">
+            Homogéneo (SCI)
+          </button>
+        </div>
+      </div>
+
+      <!-- Control de parámetro k (Visible cuando preset = param_k) -->
+      <div class="param-slider-wrapper" id="param-control-container">
+        <div class="param-slider-header">
+          <label for="param-k-input" class="param-label">
+            Valor del parámetro <strong>k</strong>:
+            <span class="param-badge" id="param-k-value-display">k = 1</span>
+          </label>
+          <div class="param-quick-tags">
+            <span class="quick-title">Valores singulares:</span>
+            <button type="button" class="quick-val-btn" data-set-k="1">k = 1 (Singular)</button>
+            <button type="button" class="quick-val-btn" data-set-k="-2">k = -2 (Singular)</button>
+            <button type="button" class="quick-val-btn" data-set-k="0">k = 0 (General SCD)</button>
+            <button type="button" class="quick-val-btn" data-set-k="2">k = 2 (General SCD)</button>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="param-k-input"
+          class="param-range-slider"
+          min="-3"
+          max="3"
+          step="0.5"
+          value="1"
+        />
+        <div class="range-labels">
+          <span>-3</span>
+          <span>-2</span>
+          <span>-1</span>
+          <span>0</span>
+          <span>1</span>
+          <span>2</span>
+          <span>3</span>
+        </div>
+      </div>
+
+      <!-- Visualizador del Sistema Lineal Actual -->
+      <div class="system-equations-display">
+        <span class="sys-display-label">SISTEMA LINEAL EVALUADO:</span>
+        <div class="equations-curly-bracket">
+          <span class="curly-brace">&#123;</span>
+          <div class="equation-lines" id="sys-eq-lines">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Matrices y Diagnóstico de Rouché-Frobenius -->
+      <div class="lab-results-grid">
+        <!-- Matriz de Coeficientes A -->
+        <div class="res-matrix-card">
+          <div class="mat-card-header">
+            <h4>Matriz A (Coeficientes)</h4>
+            <span class="rank-indicator" id="rank-a-badge">rg(A) = 1</span>
+          </div>
+          <div class="matrix-preview" id="matrix-a-preview">
+            <!-- Rellenado por JS -->
+          </div>
+          <div class="matrix-det-info">
+            <span class="det-title">Determinante |A|:</span>
+            <code class="det-value" id="det-a-value">0</code>
+          </div>
+        </div>
+
+        <!-- Matriz Ampliada (A|B) -->
+        <div class="res-matrix-card">
+          <div class="mat-card-header">
+            <h4>Matriz Ampliada (A | B)</h4>
+            <span class="rank-indicator" id="rank-ab-badge">rg(A|B) = 1</span>
+          </div>
+          <div class="matrix-preview matrix-augmented-preview" id="matrix-ab-preview">
+            <!-- Rellenado por JS -->
+          </div>
+          <div class="matrix-det-info">
+            <span class="det-title">Menores de orden superior:</span>
+            <code class="det-value" id="menores-ab-info">Rango acotado por número de filas</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Veredicto Oficial de Rouché-Frobenius -->
+      <div class="verdict-banner" id="verdict-banner-box">
+        <div class="verdict-header">
+          <span class="verdict-tag" id="verdict-category">SISTEMA COMPATIBLE INDETERMINADO (SCI)</span>
+          <h3 id="verdict-title">rg(A) = 1 = rg(A|B) &lt; 3 incógnitas</h3>
+        </div>
+        <p class="verdict-explanation" id="verdict-explanation-text">
+          El sistema tiene infinitas soluciones que dependen de 3 - 1 = 2 parámetros libres (λ, μ). En ℝ³ representa tres planos completamente coincidentes.
+        </p>
+        <div class="verdict-solution-box" id="verdict-solution-preview">
+          <!-- Detalles algebraicos de la solución -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: PROTOCOLO PARA PROBLEMAS CON PARÁMETRO EN PAU -->
+  <section class="lesson-section" id="protocolo-pau">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. El Protocolo Oficial para Problemas con Parámetro (PAU / EBAU)</h2>
+
+    <p class="lead-paragraph">
+      El ejercicio de discusión de sistemas en función de un parámetro (<code class="inline-code">k</code>, <code class="inline-code">m</code> o <code class="inline-code">a</code>) aparece en el 100% de las convocatorias de Selectividad. Este es el esquema deductivo riguroso que evalúan los tribunales:
+    </p>
+
+    <!-- Pasos del protocolo -->
+    <div class="protocol-steps-list">
+      <div class="protocol-step">
+        <div class="proto-num">Paso 1</div>
+        <div class="proto-content">
+          <h4>Escribir las matrices del sistema</h4>
+          <p>
+            Identifica con pulcritud la matriz de coeficientes <code class="inline-code">A</code> y la matriz ampliada <code class="inline-code">A* = (A | B)</code> indicando sus dimensiones explícitas (<code class="inline-code">3 × 3</code> y <code class="inline-code">3 × 4</code>).
+          </p>
+        </div>
+      </div>
+
+      <div class="protocol-step">
+        <div class="proto-num">Paso 2</div>
+        <div class="proto-content">
+          <h4>Calcular el determinante |A| en función del parámetro</h4>
+          <p>
+            Aplica la regla de Sarrus o propiedades de los determinantes para obtener el polinomio característico <code class="inline-code">|A| = P(k)</code> y halla las raíces igualando a cero: <code class="inline-code">|A| = 0 ⟹ k = k₁, k₂</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="protocol-step">
+        <div class="proto-num">Paso 3</div>
+        <div class="proto-content">
+          <h4>Discutir el Caso General (k ≠ k₁, k₂)</h4>
+          <p>
+            Si <code class="inline-code">k ≠ k₁</code> y <code class="inline-code">k ≠ k₂</code>, entonces <code class="inline-code">|A| ≠ 0</code>. Por definición, <code class="inline-code">rg(A) = 3</code>. Puesto que la matriz ampliada tiene como máximo 3 filas, <code class="inline-code">rg(A|B)</code> no puede ser mayor que 3:
+          </p>
+          <div class="proto-math">
+            <code>rg(A) = rg(A|B) = 3 = n (nº incógnitas) ⟹ Sistema Compatible Determinado (SCD) con solución única</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="protocol-step">
+        <div class="proto-num">Paso 4</div>
+        <div class="proto-content">
+          <h4>Discutir individualmente cada Caso Singular (k = kᵢ)</h4>
+          <p>
+            Sustituye el valor numérico concreto de <code class="inline-code">k</code> en las matrices <code class="inline-code">A</code> y <code class="inline-code">(A|B)</code>. Aplica el método del orlado de menores o eliminación de Gauss para determinar exactamente el rango numérico de ambas matrices.
+          </p>
+        </div>
+      </div>
+
+      <div class="protocol-step">
+        <div class="proto-num">Paso 5</div>
+        <div class="proto-content">
+          <h4>Conclusión explícita citando a Rouché-Frobenius</h4>
+          <p>
+            Resume en un cuadro sinóptico la clasificación para cada intervalo y valor de <code class="inline-code">k</code> citando textualmente el <em>Teorema de Rouché-Frobenius</em>. Si el enunciado pide resolver para algún caso particular (ej. <code class="inline-code">k = 0</code> o el caso indeterminado), resuélvelo usando la <strong>Regla de Cramer</strong> o Gauss.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS HABITUALES EN EXÁMENES -->
+  <section class="lesson-section" id="trampas-examen">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Trampas Habituales en Exámenes y PAU</h2>
+
+    <div class="traps-grid">
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 1</span>
+          <h4>Confundir |A| = 0 con Incompatible</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> «Como |A| = 0, el sistema no tiene solución (SI)».
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> Que <code class="inline-code">|A| = 0</code> solo indica que <code class="inline-code">rg(A) &lt; n</code>. El sistema puede ser <strong>Compatible Indeterminado (SCI)</strong> si <code class="inline-code">rg(A|B)</code> también disminuye al mismo valor. Siempre hay que orlar la columna ampliada <code class="inline-code">B</code>.
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 2</span>
+          <h4>Número de parámetros: ¿m - r o n - r?</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> «Hay m - rg(A) parámetros libres».
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> Los grados de libertad dependen del número de <strong>incógnitas</strong> <code class="inline-code">n</code>, no del número de ecuaciones <code class="inline-code">m</code>. La fórmula es <code class="inline-code">nº parámetros = n - rg(A)</code>.
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 3</span>
+          <h4>Dividir entre (k - a) sin justificar</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> En la eliminación de Gauss, dividir una fila entre <code class="inline-code">(k - 1)</code> de entrada.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> Si <code class="inline-code">k = 1</code>, se estaría dividiendo por cero, invalidando el procedimiento. Toda operación elemental que divida entre un factor con parámetro exige aislar previamente dicho valor singular.
+        </p>
+      </div>
+
+      <div class="trap-card">
+        <div class="trap-header">
+          <span class="trap-tag">TRAMPA 4</span>
+          <h4>Olvidar el Teorema en Sistemas Homogéneos</h4>
+        </div>
+        <p class="trap-wrong">
+          <strong>Error fatal:</strong> Clasificar un sistema homogéneo como Incompatible para algún valor de parámetro.
+        </p>
+        <p class="trap-right">
+          <strong>Corrección rigurosa:</strong> La tupla de ceros <code class="inline-code">(0, 0, ..., 0)</code> siempre es solución. Un sistema homogéneo <strong>jamás es Incompatible</strong>: solo puede ser SCD (solución trivial única) o SCI (infinitas soluciones).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Interactiva</h2>
+
+    <p class="lead-paragraph">
+      Pon a prueba tu comprensión conceptual de rangos, compatibilidad e interpretación geométrica con estas 3 cuestiones de nivel PAU:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-question="1">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q1</span>
+          <p class="quiz-question-text">
+            Un sistema de 4 ecuaciones lineales con 3 incógnitas tiene rg(A) = 3 y rg(A|B) = 3. Según el Teorema de Rouché-Frobenius, ¿cuál es su clasificación y dimensión de soluciones?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            A) Es Incompatible (SI) porque tiene más ecuaciones que incógnitas (4 > 3).
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            B) Es Compatible Determinado (SCD) con una única solución, ya que rg(A) = rg(A|B) = 3 = n. Una ecuación es redundante.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            C) Es Compatible Indeterminado (SCI) con 4 - 3 = 1 parámetro libre.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) No se puede clasificar sin calcular el determinante de orden 4.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-question="2">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q2</span>
+          <p class="quiz-question-text">
+            Un sistema lineal homogéneo consta de 3 ecuaciones y 4 incógnitas. ¿Puede ser Compatible Determinado (SCD)?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="false">
+            A) Sí, siempre que la matriz de coeficientes tenga determinante no nulo.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="true">
+            B) No, es imposible. Como tiene 3 ecuaciones, el rango máximo es 3, que siempre es menor que las 4 incógnitas (r ≤ 3 &lt; 4). Obligatoriamente es SCI con al menos 1 parámetro libre.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            C) Sí, porque la solución trivial (0, 0, 0, 0) es siempre única.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) Depende de si los términos independientes son proporcionales.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-question="3">
+        <div class="quiz-question-header">
+          <span class="quiz-num">Q3</span>
+          <p class="quiz-question-text">
+            En un sistema 3 × 3 con parámetro k, para k = 2 se obtiene rg(A) = 2 y existe un menor de orden 3 en la matriz ampliada (A|B) con determinante distinto de cero. ¿Qué concluye Rouché-Frobenius y qué ocurre geométricamente?
+          </p>
+        </div>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-correct="true">
+            A) Como el menor en (A|B) es no nulo, rg(A|B) = 3. Dado que rg(A) = 2 &lt; rg(A|B) = 3, el sistema es Incompatible (SI). Geométricamente forman un prisma o planos secantes 2 a 2 sin recta común.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            B) El sistema es Compatible Indeterminado (SCI) porque rg(A) = 2 es menor que 3.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            C) El sistema es Compatible Determinado con solución k = 2.
+          </button>
+          <button type="button" class="quiz-opt" data-correct="false">
+            D) Los tres planos se cortan en una recta común.
+          </button>
+        </div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<!-- SCRIPT DEL LABORATORIO Y QUIZ -->
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // ------------------------------------------------------------------------
+    // LABORATORIO DE ROUCHÉ-FROBENIUS
+    // ------------------------------------------------------------------------
+    const paramControlContainer = document.getElementById('param-control-container');
+    const paramSlider = document.getElementById('param-k-input');
+    const paramValueDisplay = document.getElementById('param-k-value-display');
+    const presetButtons = document.querySelectorAll('.preset-btn');
+    const quickValButtons = document.querySelectorAll('.quick-val-btn');
+
+    const sysEqLines = document.getElementById('sys-eq-lines');
+    const matrixAPreview = document.getElementById('matrix-a-preview');
+    const matrixABPreview = document.getElementById('matrix-ab-preview');
+    const detAValue = document.getElementById('det-a-value');
+    const menoresABInfo = document.getElementById('menores-ab-info');
+    const rankABadge = document.getElementById('rank-a-badge');
+    const rankABBadge = document.getElementById('rank-ab-badge');
+
+    const verdictBanner = document.getElementById('verdict-banner-box');
+    const verdictCategory = document.getElementById('verdict-category');
+    const verdictTitle = document.getElementById('verdict-title');
+    const verdictExplanation = document.getElementById('verdict-explanation-text');
+    const verdictSolution = document.getElementById('verdict-solution-preview');
+
+    let currentPreset = 'param_k';
+    let currentK = 1;
+
+    // Presets estáticos y dinámicos
+    const PRESET_SYSTEMS = {
+      param_k: {
+        getSystem: (k) => ({
+          eqs: [
+            `x + y + ${k === 1 ? '' : k === -1 ? '-' : k}z = 1`,
+            `x + ${k === 1 ? '' : k === -1 ? '-' : k}y + z = 1`,
+            `${k === 1 ? '' : k === -1 ? '-' : k}x + y + z = 1`,
+          ],
+          A: [
+            [1, 1, k],
+            [1, k, 1],
+            [k, 1, 1],
+          ],
+          B: [1, 1, 1],
+        }),
+      },
+      scd_clean: {
+        system: {
+          eqs: [
+            '2x - y + z = 3',
+            'x + 2y - z = 2',
+            'x + y + 2z = 5',
+          ],
+          A: [
+            [2, -1, 1],
+            [1, 2, -1],
+            [1, 1, 2],
+          ],
+          B: [3, 2, 5],
+        },
+      },
+      sci_line: {
+        system: {
+          eqs: [
+            'x + y - z = 2',
+            '2x + 2y - 2z = 4',
+            'x - y + z = 0',
+          ],
+          A: [
+            [1, 1, -1],
+            [2, 2, -2],
+            [1, -1, 1],
+          ],
+          B: [2, 4, 0],
+        },
+      },
+      si_prism: {
+        system: {
+          eqs: [
+            'x + y + z = 2',
+            '2x + 2y + 2z = 5',
+            'x - y + 2z = 1',
+          ],
+          A: [
+            [1, 1, 1],
+            [2, 2, 2],
+            [1, -1, 2],
+          ],
+          B: [2, 5, 1],
+        },
+      },
+      homogeneous: {
+        system: {
+          eqs: [
+            'x + 2y - z = 0',
+            '2x - y + 3z = 0',
+            '3x + y + 2z = 0',
+          ],
+          A: [
+            [1, 2, -1],
+            [2, -1, 3],
+            [3, 1, 2],
+          ],
+          B: [0, 0, 0],
+        },
+      },
+    };
+
+    function computeDet3x3(m) {
+      return (
+        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+        m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
+        m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+      );
+    }
+
+    function computeRank(matrix) {
+      // Para matrices hasta 3x4
+      const rows = matrix.length;
+      const cols = matrix[0].length;
+      
+      // Buscar menores de 3x3 si cols >= 3
+      if (rows === 3 && cols >= 3) {
+        for (let j1 = 0; j1 < cols - 2; j1++) {
+          for (let j2 = j1 + 1; j2 < cols - 1; j2++) {
+            for (let j3 = j2 + 1; j3 < cols; j3++) {
+              const sub = [
+                [matrix[0][j1], matrix[0][j2], matrix[0][j3]],
+                [matrix[1][j1], matrix[1][j2], matrix[1][j3]],
+                [matrix[2][j1], matrix[2][j2], matrix[2][j3]],
+              ];
+              const d = computeDet3x3(sub);
+              if (Math.abs(d) > 1e-6) return 3;
+            }
+          }
+        }
+      }
+
+      // Buscar menores de 2x2
+      for (let i1 = 0; i1 < rows - 1; i1++) {
+        for (let i2 = i1 + 1; i2 < rows; i2++) {
+          for (let j1 = 0; j1 < cols - 1; j1++) {
+            for (let j2 = j1 + 1; j2 < cols; j2++) {
+              const d2 = matrix[i1][j1] * matrix[i2][j2] - matrix[i1][j2] * matrix[i2][j1];
+              if (Math.abs(d2) > 1e-6) return 2;
+            }
+          }
+        }
+      }
+
+      // Comprobar si hay algún elemento no nulo
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (Math.abs(matrix[r][c]) > 1e-6) return 1;
+        }
+      }
+
+      return 0;
+    }
+
+    function renderSystem() {
+      let sys;
+      if (currentPreset === 'param_k') {
+        paramControlContainer.style.display = 'block';
+        sys = PRESET_SYSTEMS.param_k.getSystem(currentK);
+      } else {
+        paramControlContainer.style.display = 'none';
+        sys = PRESET_SYSTEMS[currentPreset].system;
+      }
+
+      // Render ecuaciones
+      sysEqLines.innerHTML = sys.eqs
+        .map((eq) => `<div class="eq-line-item">${eq}</div>`)
+        .join('');
+
+      // Construir matriz A y A|B
+      const A = sys.A;
+      const B = sys.B;
+      const AB = A.map((row, i) => [...row, B[i]]);
+
+      // Render Matriz A
+      matrixAPreview.innerHTML = `
+        <span class="bracket-large">[</span>
+        <div class="matrix-cells-grid cols-3">
+          ${A.map(row => row.map(v => `<span class="mat-c">${Number.isInteger(v) ? v : v.toFixed(1)}</span>`).join('')).join('')}
+        </div>
+        <span class="bracket-large">]</span>
+      `;
+
+      // Render Matriz A|B
+      matrixABPreview.innerHTML = `
+        <span class="bracket-large">[</span>
+        <div class="matrix-cells-grid cols-4">
+          ${AB.map(row => {
+            return `
+              <span class="mat-c">${Number.isInteger(row[0]) ? row[0] : row[0].toFixed(1)}</span>
+              <span class="mat-c">${Number.isInteger(row[1]) ? row[1] : row[1].toFixed(1)}</span>
+              <span class="mat-c">${Number.isInteger(row[2]) ? row[2] : row[2].toFixed(1)}</span>
+              <span class="mat-c col-aug">${Number.isInteger(row[3]) ? row[3] : row[3].toFixed(1)}</span>
+            `;
+          }).join('')}
+        </div>
+        <span class="bracket-large">]</span>
+      `;
+
+      // Cálculos de determinante y rangos
+      const detA = computeDet3x3(A);
+      const rgA = computeRank(A);
+      const rgAB = computeRank(AB);
+
+      detAValue.textContent = Math.abs(detA) < 1e-6 ? '0 (Matriz singular)' : Number.isInteger(detA) ? detA : detA.toFixed(2);
+      rankABadge.textContent = `rg(A) = ${rgA}`;
+      rankABBadge.textContent = `rg(A|B) = ${rgAB}`;
+
+      // Resetear clases de píldoras
+      rankABadge.className = 'rank-indicator ' + (rgA === 3 ? 'badge-green' : rgA === 2 ? 'badge-amber' : 'badge-red');
+      rankABBadge.className = 'rank-indicator ' + (rgAB === 3 ? 'badge-green' : rgAB === 2 ? 'badge-amber' : 'badge-red');
+
+      // Veredicto
+      verdictBanner.className = 'verdict-banner';
+      if (rgA < rgAB) {
+        // Incompatible
+        verdictBanner.classList.add('verdict-si');
+        verdictCategory.textContent = 'SISTEMA INCOMPATIBLE (SI)';
+        verdictTitle.textContent = `rg(A) = ${rgA}  <  rg(A|B) = ${rgAB}`;
+        verdictExplanation.textContent = 'El vector de términos independientes no pertenece al espacio generado por las columnas de coeficientes. No existe ninguna combinación lineal posible: el sistema carece de soluciones.';
+        verdictSolution.innerHTML = `
+          <strong>Geometría en ℝ³:</strong> Los tres planos no comparten ningún punto simultáneo (superficie prismática o planos paralelos).<br/>
+          <strong>Conjunto solución:</strong> S = ∅
+        `;
+      } else if (rgA === rgAB && rgA === 3) {
+        // SCD
+        verdictBanner.classList.add('verdict-scd');
+        verdictCategory.textContent = 'SISTEMA COMPATIBLE DETERMINADO (SCD)';
+        verdictTitle.textContent = `rg(A) = 3 = rg(A|B) = nº incógnitas (n = 3)`;
+        verdictExplanation.textContent = 'Las 3 columnas de A son linealmente independientes y forman una base de ℝ³. El vector B se descompone de forma única según dicha base.';
+        
+        let solText = '';
+        if (currentPreset === 'param_k') {
+          // Solución simétrica para el sistema paramétrico: x = y = z = 1/(k + 2)
+          const solVal = (1 / (currentK + 2)).toFixed(2);
+          solText = `x = y = z = 1/(k + 2) = 1/(${currentK} + 2) = ${solVal}`;
+        } else if (currentPreset === 'scd_clean') {
+          solText = 'x = 1, y = 2, z = 1';
+        } else {
+          solText = 'Solución única resoluble mediante la Regla de Cramer: x = |A_x|/|A|, y = |A_y|/|A|, z = |A_z|/|A|';
+        }
+
+        verdictSolution.innerHTML = `
+          <strong>Geometría en ℝ³:</strong> Tres planos secantes en un <strong>único punto</strong>.<br/>
+          <strong>Punto solución:</strong> ${solText}
+        `;
+      } else {
+        // SCI
+        const params = 3 - rgA;
+        verdictBanner.classList.add('verdict-sci');
+        verdictCategory.textContent = 'SISTEMA COMPATIBLE INDETERMINADO (SCI)';
+        verdictTitle.textContent = `rg(A) = ${rgA} = rg(A|B) < nº incógnitas (n = 3)`;
+        verdictExplanation.textContent = `El sistema tiene infinitas soluciones continuas dependientes de ${params} parámetro(s) libre(s) (${params === 1 ? 'λ' : 'λ, μ'}).`;
+
+        verdictSolution.innerHTML = `
+          <strong>Geometría en ℝ³:</strong> ${params === 1 ? 'Los planos comparten una <strong>recta común</strong> (haz de planos).' : 'Los tres planos son <strong>completamente coincidentes</strong>.'}<br/>
+          <strong>Grados de libertad:</strong> Dimensión de las soluciones = ${params} (recta si dim=1, plano si dim=2).
+        `;
+      }
+    }
+
+    // Eventos de presets
+    presetButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        presetButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentPreset = btn.getAttribute('data-preset');
+        renderSystem();
+      });
+    });
+
+    // Slider de parámetro k
+    paramSlider.addEventListener('input', (e) => {
+      currentK = parseFloat(e.target.value);
+      paramValueDisplay.textContent = `k = ${currentK}`;
+      renderSystem();
+    });
+
+    // Botones de acceso rápido a k
+    quickValButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = parseFloat(btn.getAttribute('data-set-k'));
+        currentK = val;
+        paramSlider.value = val;
+        paramValueDisplay.textContent = `k = ${val}`;
+        renderSystem();
+      });
+    });
+
+    // Inicializar simulador
+    renderSystem();
+
+    // ------------------------------------------------------------------------
+    // AUTOEVALUACIÓN INTERACTIVA (QUIZ)
+    // ------------------------------------------------------------------------
+    const quizCards = document.querySelectorAll('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const options = card.querySelectorAll('.quiz-opt');
+      const feedback = card.querySelector('.quiz-feedback');
+
+      options.forEach((opt) => {
+        opt.addEventListener('click', () => {
+          const isCorrect = opt.getAttribute('data-correct') === 'true';
+
+          options.forEach((o) => {
+            o.disabled = true;
+            if (o.getAttribute('data-correct') === 'true') {
+              o.classList.add('is-correct');
+            } else if (o === opt) {
+              o.classList.add('is-incorrect');
+            }
+          });
+
+          feedback.style.display = 'block';
+          if (isCorrect) {
+            feedback.className = 'quiz-feedback feedback-success';
+            feedback.textContent = '¡Correcto! Has aplicado con total exactitud las condiciones del Teorema de Rouché-Frobenius.';
+          } else {
+            feedback.className = 'quiz-feedback feedback-error';
+            feedback.textContent = 'Incorrecto. Revisa las condiciones de comparación entre rg(A), rg(A|B) y el número de incógnitas n.';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  /* ------------------------------------------------------------------------ */
+  /* ESTILOS ESPECÍFICOS DE ROUCHÉ-FROBENIUS (COHERENCIA CON MATH UNIVERSE)    */
+  /* ------------------------------------------------------------------------ */
+
+  .lesson-section {
+    position: relative;
+    margin-bottom: 4.5rem;
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .marker-num {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--block-accent, #38bdf8);
+    letter-spacing: 0.08em;
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  h2 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .lead-paragraph {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 1.8rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    background: var(--bg-sunken);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 0.9em;
+  }
+
+  /* Tarjetas de preguntas cardinales */
+  .dual-questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .question-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .q-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .q-tag {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.1);
+  }
+
+  .question-card h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 0.7rem 0;
+  }
+
+  .question-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* Bloque de Definición Matricial */
+  .matrix-definition-block {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 2.2rem 0;
+  }
+
+  .matrix-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.4rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mat-label {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+  }
+
+  .mat-sub {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .matrix-layout-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .mat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+  }
+
+  .mat-box-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .mat-grid-repr {
+    display: flex;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+
+  .bracket {
+    font-size: 2.2rem;
+    font-weight: 200;
+    line-height: 1;
+    color: var(--ink-muted);
+  }
+
+  .mat-cells {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 0.4rem 0.9rem;
+    padding: 0 0.5rem;
+    text-align: center;
+  }
+
+  .mat-cells.col-only {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .mat-op-sym {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .mat-dim {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    margin-top: 0.6rem;
+  }
+
+  .augmented-matrix-banner {
+    margin-top: 1.2rem;
+    padding: 0.9rem 1.2rem;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 8px;
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+
+  .aug-label {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #38bdf8;
+    white-space: nowrap;
+  }
+
+  :global([data-theme="light"]) .augmented-matrix-banner {
+    background: rgba(2, 132, 199, 0.06);
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  :global([data-theme="light"]) .aug-label {
+    color: #0284c7;
+  }
+
+  /* Combinación lineal vectorial */
+  .vector-expansion-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin-bottom: 2rem;
+  }
+
+  .exp-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .expansion-header h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .expansion-formula {
+    background: var(--bg-sunken);
+    padding: 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    color: #38bdf8;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .expansion-formula {
+    color: #0284c7;
+  }
+
+  .expansion-caption {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  .deduction-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .deduction-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+  }
+
+  .ded-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .deduction-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 0.8rem 0;
+  }
+
+  .deduction-card p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .ded-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .ded-list li {
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .inline-math-highlight {
+    margin-top: 0.4rem;
+    background: rgba(56, 189, 248, 0.08);
+    border-left: 3px solid #38bdf8;
+    padding: 0.4rem 0.8rem;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: var(--ink);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .inline-math-highlight.error-highlight {
+    background: rgba(239, 68, 68, 0.08);
+    border-left-color: #ef4444;
+  }
+
+  .inline-math-highlight.warn-highlight {
+    background: rgba(245, 158, 11, 0.08);
+    border-left-color: #f59e0b;
+  }
+
+  /* Banner Teorema Formal */
+  .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0.03) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(2, 132, 199, 0.02) 100%);
+    border-color: rgba(2, 132, 199, 0.3);
+  }
+
+  .theorem-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 0.9rem;
+  }
+
+  :global([data-theme="light"]) .theorem-badge {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.12);
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 1.2rem 0;
+    line-height: 1.45;
+  }
+
+  .theorem-symbolic {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #38bdf8;
+    background: var(--bg-sunken);
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    color: #0284c7;
+  }
+
+  /* Tabla Canónica */
+  .canonical-table-wrapper {
+    overflow-x: auto;
+    margin: 2.2rem 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg-raised);
+  }
+
+  .canonical-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.92rem;
+  }
+
+  .canonical-table th {
+    background: var(--bg-sunken);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .canonical-table td {
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .canonical-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .cond-cell {
+    white-space: nowrap;
+  }
+
+  .rank-pill {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .pill-red {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .pill-green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .pill-amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .type-name {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .type-sub {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+
+  /* Sistemas Homogéneos Callout */
+  .homogeneous-callout {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.6rem;
+    margin-top: 2rem;
+  }
+
+  .homo-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+  }
+
+  .homo-header h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.25rem;
+    color: var(--ink);
+  }
+
+  .homo-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.4rem;
+  }
+
+  .homo-rule-box {
+    display: flex;
+    gap: 0.9rem;
+    background: var(--bg-sunken);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .h-rule-num {
+    font-family: var(--mono);
+    font-weight: 800;
+    color: #a855f7;
+    font-size: 1.1rem;
+  }
+
+  /* Planos Geométrica en R3 */
+  .planes-geometry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .plane-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .plane-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .plane-type-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .plane-ranks {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+  }
+
+  .plane-sketch-box {
+    height: 140px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .plane-card h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 0.6rem 0;
+  }
+
+  .plane-card p {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* Diagramas esquemáticos CSS de planos */
+  .sketch-diagram {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+
+  .diag-plane {
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    border: 1px solid rgba(56, 189, 248, 0.6);
+    background: rgba(56, 189, 248, 0.1);
+    transform-origin: center;
+  }
+
+  .plane-1 { transform: rotate(-15deg) skewX(-20deg); top: 15px; left: 10px; }
+  .plane-2 { transform: rotate(45deg) skewX(20deg); top: 25px; left: 10px; border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.1); }
+  .plane-3 { transform: rotate(85deg) skewX(-15deg); top: 30px; left: 10px; border-color: rgba(168, 85, 247, 0.6); background: rgba(168, 85, 247, 0.1); }
+
+  .diag-intersection-point {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    top: 45px;
+    left: 45px;
+    z-index: 5;
+  }
+
+  .diag-intersection-line {
+    position: absolute;
+    width: 90px;
+    height: 3px;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    top: 48px;
+    left: 5px;
+    transform: rotate(20deg);
+    z-index: 5;
+  }
+
+  .diag-plane-par {
+    position: absolute;
+    width: 80px;
+    height: 30px;
+    border: 1px solid #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    transform: skewX(-30deg);
+  }
+  .par-1 { top: 15px; left: 10px; }
+  .par-2 { top: 45px; left: 10px; }
+  .par-3 { top: 75px; left: 10px; }
+
+  /* Diagrama Prisma Triangular */
+  .diagram-prism {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+
+  .diag-prism-face {
+    position: absolute;
+    width: 75px;
+    height: 35px;
+    border: 1px solid rgba(239, 68, 68, 0.85);
+    background: rgba(239, 68, 68, 0.15);
+  }
+
+  .face-1 { transform: rotate(-25deg) skewX(-20deg); top: 18px; left: 12px; }
+  .face-2 { transform: rotate(35deg) skewX(20deg); top: 38px; left: 16px; border-color: rgba(239, 68, 68, 0.7); }
+  .face-3 { transform: rotate(90deg) skewX(-15deg); top: 28px; left: 12px; border-color: rgba(239, 68, 68, 0.6); }
+
+  .diag-plane-single {
+    width: 90px;
+    height: 60px;
+    border: 2px dashed #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    transform: skewX(-25deg);
+    margin: 20px auto;
+  }
+
+  /* Laboratorio Interactivo */
+  .rouche-lab-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .lab-toolbar {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lab-title-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  :global([data-theme="light"]) .lab-title-tag {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.1);
+  }
+
+  .lab-preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .presets-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    margin-right: 0.4rem;
+  }
+
+  .preset-btn {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    font-family: var(--sans);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .preset-btn:hover {
+    border-color: #38bdf8;
+    color: var(--ink);
+  }
+
+  .preset-btn.is-active {
+    background: #38bdf8;
+    border-color: #38bdf8;
+    color: #0b0f19;
+    font-weight: 700;
+  }
+
+  /* Control deslizante de k */
+  .param-slider-wrapper {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .param-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .param-label {
+    font-size: 0.95rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .param-badge {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 0.2rem 0.7rem;
+    border-radius: 6px;
+  }
+
+  :global([data-theme="light"]) .param-badge {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.12);
+  }
+
+  .param-quick-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .quick-title {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+  }
+
+  .quick-val-btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.2rem 0.55rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+
+  .quick-val-btn:hover {
+    border-color: #38bdf8;
+    color: var(--ink);
+  }
+
+  .param-range-slider {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+    margin-bottom: 0.4rem;
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+  }
+
+  /* Visualizador de ecuaciones */
+  .system-equations-display {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .sys-display-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+
+  .equations-curly-bracket {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .curly-brace {
+    font-size: 4rem;
+    font-weight: 100;
+    line-height: 1;
+    color: #38bdf8;
+    font-family: sans-serif;
+  }
+
+  :global([data-theme="light"]) .curly-brace {
+    color: #0284c7;
+  }
+
+  .equation-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+
+  /* Grid de resultados de matrices */
+  .lab-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.4rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .res-matrix-card {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .mat-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .rank-indicator {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .badge-green { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+  .badge-amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+  .matrix-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+  }
+
+  :global(.bracket-large) {
+    font-size: 3.2rem;
+    font-weight: 200;
+    line-height: 1;
+    color: var(--ink-muted);
+  }
+
+  :global(.matrix-cells-grid) {
+    display: grid !important;
+    gap: 0.6rem 1.1rem;
+    padding: 0 0.8rem;
+    text-align: right;
+  }
+
+  :global(.matrix-cells-grid.cols-3) {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  :global(.matrix-cells-grid.cols-4) {
+    grid-template-columns: repeat(3, 1fr) 1.2fr !important;
+  }
+
+  :global(.mat-c) {
+    display: inline-block;
+    color: var(--ink);
+    min-width: 1.8rem;
+    text-align: right;
+  }
+
+  :global(.col-aug) {
+    color: #38bdf8 !important;
+    border-left: 2px dashed rgba(56, 189, 248, 0.4);
+    padding-left: 0.8rem;
+  }
+
+  :global([data-theme="light"] .col-aug) {
+    color: #0284c7 !important;
+    border-left-color: rgba(2, 132, 199, 0.4);
+  }
+
+  :global(.eq-line-item) {
+    margin: 0.25rem 0;
+  }
+  }
+
+  .matrix-det-info {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .det-title {
+    color: var(--ink-soft);
+  }
+
+  .det-value {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* Veredicto */
+  .verdict-banner {
+    border-radius: 12px;
+    padding: 1.8rem;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    transition: all 0.3s ease;
+  }
+
+  .verdict-banner.verdict-scd {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .verdict-banner.verdict-sci {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .verdict-banner.verdict-si {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .verdict-tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+  }
+
+  .verdict-scd .verdict-tag { background: #10b981; color: #0b0f19; }
+  .verdict-sci .verdict-tag { background: #f59e0b; color: #0b0f19; }
+  .verdict-si .verdict-tag { background: #ef4444; color: #ffffff; }
+
+  .verdict-header h3 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .verdict-explanation {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 1rem 0;
+  }
+
+  .verdict-solution-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  /* Protocolo de Examen */
+  .protocol-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  .protocol-step {
+    display: flex;
+    gap: 1.4rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .proto-num {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    height: fit-content;
+    white-space: nowrap;
+  }
+
+  :global([data-theme="light"]) .proto-num {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.08);
+  }
+
+  .proto-content h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .proto-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .proto-math {
+    margin-top: 0.8rem;
+    background: var(--bg-sunken);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .proto-math {
+    color: #0284c7;
+  }
+
+  /* Trampas de examen */
+  .traps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.4rem;
+    margin: 2rem 0;
+  }
+
+  .trap-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .trap-header {
+    margin-bottom: 0.9rem;
+  }
+
+  .trap-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .trap-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .trap-wrong {
+    background: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #ef4444;
+    margin: 0 0 0.8rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .trap-right {
+    background: rgba(16, 185, 129, 0.08);
+    border-left: 3px solid #10b981;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .trap-right strong {
+    color: #10b981;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .quiz-question-header {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 1.2rem;
+  }
+
+  .quiz-num {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .quiz-num {
+    color: #0284c7;
+  }
+
+  .quiz-question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .quiz-opt {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quiz-opt:hover:not(:disabled) {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .quiz-opt.is-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+    font-weight: 600;
+  }
+
+  .quiz-opt.is-incorrect {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  .quiz-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .feedback-success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10b981;
+    color: #10b981;
+  }
+
+  .feedback-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+</style>
