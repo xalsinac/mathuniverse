@@ -19,26 +19,24 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   title={`Math Academy — ${site.name}`}
   description="El tratado riguroso y conceptual de matemáticas para ESO y Bachillerato. Donde cada fórmula tiene su deducción, cada teorema sus hipótesis y contraejemplos."
 >
-  <!-- Barra superior técnica unificada -->
+  <!-- Barra superior técnica unificada (Limpia: sin saturación, sin emojis, sin Grandes Teoremas repetido) -->
   <SiteHeader activePage="academy" statusText="07 · Math Academy" ctaHref="/#recursos" ctaLabel="Todas las Apps">
     <div slot="right-extra" class="topbar-cell academy-top-actions">
       <button
         type="button"
         class="academy-top-btn"
         data-toggle-floating-calc
-        title="Abrir calculadora científica flotante"
+        title="Invocar calculadora científica en ventana flotante (Picture-in-Picture)"
       >
-        <span class="btn-icon">🧮</span>
+        <svg class="btn-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect width="16" height="20" x="4" y="2" rx="2"></rect>
+          <line x1="8" x2="16" y1="6" y2="6"></line>
+          <line x1="16" x2="16" y1="14" y2="14"></line>
+          <path d="M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"></path>
+        </svg>
         <span class="btn-text">Calculadora</span>
+        <span class="btn-pip-tag" aria-hidden="true">PiP</span>
       </button>
-      <a
-        href="#teoremas"
-        class="academy-top-btn is-accent"
-        title="Ver el Salón de los Grandes Teoremas"
-      >
-        <span class="btn-icon">👑</span>
-        <span class="btn-text">Grandes Teoremas</span>
-      </a>
     </div>
   </SiteHeader>
 
@@ -48,173 +46,289 @@ const totalBlocks = ACADEMY_BLOCKS.length;
       <AcademyHeroWave />
     </section>
 
-    <!-- 2. CATÁLOGO DEL TRATADO: FILTROS Y BUSCADOR -->
-    <section class="academy-catalog-band section-band is-drawn" id="bloques">
+    <!-- 2. CATÁLOGO DEL TRATADO: PLACAS DE ENTRADA, FILTROS Y BUSCADOR VISIBLE -->
+    <section class="academy-catalog-band section-band is-drawn" id="catalogo">
       <span class="section-rule" aria-hidden="true"></span>
       <div class="section-frame">
         <span class="tick tick-half tick-left" aria-hidden="true"></span>
         <span class="tick tick-half tick-right" aria-hidden="true"></span>
 
+        <!-- Eyebrow Técnico -->
         <div class="section-eyebrow">
           <span>
             <span class="eyebrow-num">07</span>
             <span class="eyebrow-sep" aria-hidden="true">/</span>
-            Math Academy · Índice Temático del Tratado
+            Math Academy · Tratado y Mapa del Conocimiento
           </span>
-          <span class="eyebrow-right" data-academy-counter>Mostrando {totalLessons} lecciones en {totalBlocks} bloques</span>
+          <span class="eyebrow-right" id="academy-global-counter">{totalBlocks} Bloques Temáticos · {totalLessons} Lecciones</span>
         </div>
 
-        <!-- Barra de Control: Buscador y Filtros por Nivel -->
-        <div class="academy-controls-bar section-body">
-          <div class="filter-controls-row">
-            <!-- Selector de Nivel Académico -->
-            <div class="level-tabs-group" role="group" aria-label="Filtrar por nivel educativo">
-              <span class="control-label">NIVEL:</span>
-              <button type="button" class="level-chip is-active" data-level-filter="all">
-                <span>Todos</span>
-                <span class="chip-count">{totalLessons}</span>
-              </button>
-              <button type="button" class="level-chip" data-level-filter="ESO">
-                <span>ESO</span>
-                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'ESO').length}</span>
-              </button>
-              <button type="button" class="level-chip" data-level-filter="1º Bachillerato">
-                <span>1º Bachillerato</span>
-                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '1º Bachillerato').length}</span>
-              </button>
-              <button type="button" class="level-chip" data-level-filter="2º Bachillerato">
-                <span>2º Bachillerato</span>
-                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '2º Bachillerato').length}</span>
-              </button>
-              <button type="button" class="level-chip" data-level-filter="Transversal">
-                <span>Transversal</span>
-                <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'Transversal').length}</span>
-              </button>
-            </div>
-
-            <!-- Buscador en tiempo real de lecciones -->
-            <div class="search-input-wrapper">
-              <span class="search-icon" aria-hidden="true">🔍</span>
+        <!-- CONTENEDOR PRINCIPAL DEL CATÁLOGO (UNIFICADO EN UN SOLO BODY SIN ESPACIOS MUERTOS) -->
+        <div class="academy-catalog-main section-body">
+          
+          <!-- BARRA DE BÚSQUEDA PROMINENTE (ALTA VISIBILIDAD SUPERIOR) -->
+          <div class="academy-search-hero-box">
+            <div class="search-prominent-bar">
+              <svg class="search-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <input
                 type="search"
                 id="academy-search-input"
                 class="academy-search-input"
-                placeholder="Buscar teorema, concepto (ej: Bolzano, absurd, Ruffini)..."
-                aria-label="Buscar lección o demostración"
+                placeholder="Buscar teorema, concepto o demostración (ej: Bolzano, absurdo, Ruffini, inducción, Bayes...)"
+                aria-label="Buscar en todas las lecciones del tratado"
+                autocomplete="off"
               />
-              <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display:none;">✕</button>
+              <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display:none;">
+                Limpiar
+              </button>
+              <kbd class="search-kbd-hint" aria-hidden="true">⌘K</kbd>
+            </div>
+
+            <!-- FILA COMPACTA DE FILTROS POR NIVEL (SIN ESPACIO MUERTO) -->
+            <div class="filter-controls-row">
+              <div class="level-tabs-group" role="group" aria-label="Filtrar por nivel educativo">
+                <span class="control-label">NIVEL:</span>
+                <button type="button" class="level-chip is-active" data-level-filter="all">
+                  <span>Todos</span>
+                  <span class="chip-count">{totalLessons}</span>
+                </button>
+                <button type="button" class="level-chip" data-level-filter="ESO">
+                  <span>ESO</span>
+                  <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'ESO').length}</span>
+                </button>
+                <button type="button" class="level-chip" data-level-filter="1º Bachillerato">
+                  <span>1º Bachillerato</span>
+                  <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '1º Bachillerato').length}</span>
+                </button>
+                <button type="button" class="level-chip" data-level-filter="2º Bachillerato">
+                  <span>2º Bachillerato</span>
+                  <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === '2º Bachillerato').length}</span>
+                </button>
+                <button type="button" class="level-chip" data-level-filter="Transversal">
+                  <span>Transversal</span>
+                  <span class="chip-count">{ACADEMY_LESSONS.filter(l => l.level === 'Transversal').length}</span>
+                </button>
+              </div>
+
+              <button type="button" class="back-to-blocks-btn" id="btn-return-overview" style="display: none;">
+                <span class="btn-arrow" aria-hidden="true">←</span>
+                <span>Volver a los 6 Bloques</span>
+              </button>
             </div>
           </div>
 
-          <!-- Selector Rápido de Bloques con Efecto Cristal -->
-          <div class="blocks-jump-nav" aria-label="Acceso directo a bloques">
+          <!-- ================================================================= -->
+          <!-- VISTA A: DASHBOARD DE LAS 6 PLACAS DE ENTRADA (ESTILO MATH LAB)   -->
+          <!-- ================================================================= -->
+          <div class="academy-dashboard-view" id="view-dashboard">
+            <div class="dashboard-intro-bar">
+              <p class="dashboard-kicker">SECCIONES ESTRUCTURADAS</p>
+              <h2 class="dashboard-heading">Explora el tratado por <em>bloques fundamentales</em></h2>
+              <p class="dashboard-sub">
+                Cada placa da acceso a un espacio especializado con sus deducciones formales, contraejemplos interactivos y rigor de examen.
+              </p>
+            </div>
+
+            <div class="blocks-placas-grid">
+              {
+                ACADEMY_BLOCKS.map((block) => {
+                  const blockLessons = ACADEMY_LESSONS.filter((l) => l.blockId === block.id);
+                  return (
+                    <article
+                      class="academy-block-placa"
+                      data-block-target={block.id}
+                      style={`--block-accent: ${block.color};`}
+                    >
+                      <div class="placa-glow" aria-hidden="true"></div>
+
+                      <div class="placa-header">
+                        <div class="placa-badge-group">
+                          <span class="placa-num">{block.number}</span>
+                          <span class="placa-glyph" title={block.glyphLabel}>{block.glyph}</span>
+                        </div>
+                        <span class="placa-level-tag">{block.levelRange}</span>
+                      </div>
+
+                      <h3 class="placa-title">{block.name}</h3>
+                      <p class="placa-tagline">{block.tagline}</p>
+                      <p class="placa-description">{block.description}</p>
+
+                      <div class="placa-footer">
+                        <div class="placa-count-badge">
+                          <span class="count-num">{blockLessons.length}</span>
+                          <span>lecciones</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="placa-enter-action"
+                          data-open-block={block.id}
+                          aria-label={`Entrar al bloque ${block.number}: ${block.name}`}
+                        >
+                          <span>Entrar a la sección</span>
+                          <span class="action-arrow" aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
+              }
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VISTA B: ESPACIO DE BLOQUE ESPECIALIZADO (PÁGINA DEDICADA DEL BLOQUE) -->
+          <!-- ================================================================= -->
+          <div class="academy-block-focused-view" id="view-block-detail" style="display: none;">
+            <!-- Barra de navegación contextual entre bloques -->
+            <div class="block-context-nav">
+              <button type="button" class="nav-back-chip" id="btn-back-from-block">
+                <span class="btn-arrow" aria-hidden="true">←</span>
+                <span>Todos los Bloques</span>
+              </button>
+
+              <div class="block-switch-pills" role="tablist" aria-label="Cambiar de bloque temático">
+                {
+                  ACADEMY_BLOCKS.map((b) => (
+                    <button
+                      type="button"
+                      class="block-switch-tab"
+                      data-switch-block={b.id}
+                      style={`--tab-color: ${b.color};`}
+                      title={`Bloque ${b.number}: ${b.name}`}
+                    >
+                      <span class="tab-glyph">{b.glyph}</span>
+                      <span class="tab-text">{b.number}. {b.name}</span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+
+            <!-- Banner de Bienvenida del Bloque Activo -->
             {
-              ACADEMY_BLOCKS.map((b) => (
-                <a href={`#bloque-${b.id}`} class="block-jump-chip" style={`--chip-color: ${b.color};`}>
-                  <span class="jump-icon">{b.icon}</span>
-                  <span class="jump-name">{b.number}. {b.name}</span>
-                </a>
-              ))
+              ACADEMY_BLOCKS.map((block) => {
+                const blockLessons = ACADEMY_LESSONS.filter((l) => l.blockId === block.id);
+                return (
+                  <div class="block-detail-content" id={`block-content-${block.id}`} style={`--block-accent: ${block.color}; display: none;`}>
+                    <header class="block-welcome-card">
+                      <div class="welcome-top">
+                        <div class="welcome-badges">
+                          <span class="welcome-num">BLOQUE {block.number}</span>
+                          <span class="welcome-glyph">{block.glyph}</span>
+                          <span class="welcome-scope">{block.levelRange}</span>
+                        </div>
+                        <div class="welcome-stat">
+                          <strong>{blockLessons.length}</strong>
+                          <span>Lecciones en este bloque</span>
+                        </div>
+                      </div>
+
+                      <h2 class="welcome-title">{block.name}</h2>
+                      <p class="welcome-tagline">{block.tagline}</p>
+                      <p class="welcome-desc">{block.description}</p>
+                    </header>
+
+                    <!-- Rejilla de Lecciones de este bloque -->
+                    <div class="block-lessons-grid">
+                      {
+                        blockLessons.map((lesson) => (
+                          <article
+                            class="academy-glass-card"
+                            data-lesson-id={lesson.id}
+                            data-block={block.id}
+                            data-level={lesson.level}
+                            data-search-terms={`${lesson.title} ${lesson.subtitle} ${lesson.summary} ${lesson.keyConcept} ${block.name}`.toLowerCase()}
+                            style={`--card-accent: ${block.color};`}
+                          >
+                            <div class="card-glow" aria-hidden="true"></div>
+
+                            <div class="card-top">
+                              <span class={`level-badge is-${lesson.level.toLowerCase().replace(/[\sº]/g, '')}`}>
+                                {lesson.level}
+                              </span>
+                              <span class="type-badge">{lesson.badge}</span>
+                              <span class="difficulty-indicator" title={`Dificultad: ${lesson.difficulty}`}>
+                                {lesson.difficulty}
+                              </span>
+                            </div>
+
+                            <h3 class="lesson-title">{lesson.title}</h3>
+                            <p class="lesson-subtitle">{lesson.subtitle}</p>
+
+                            <!-- Caja de Fórmula o Concepto Clave -->
+                            <div class="concept-key-box">
+                              <span class="concept-label">EJE RIGUROSO:</span>
+                              <code class="concept-formula">{lesson.keyConcept}</code>
+                            </div>
+
+                            <p class="lesson-summary">{lesson.summary}</p>
+
+                            <!-- Prerrequisitos -->
+                            <div class="lesson-prereqs">
+                              <span class="prereqs-label">Requiere:</span>
+                              <div class="prereqs-tags">
+                                {lesson.prerequisites.map((req) => (
+                                  <span class="prereq-tag">{req}</span>
+                                ))}
+                              </div>
+                            </div>
+
+                            <!-- Pie de Tarjeta -->
+                            <div class="card-bottom">
+                              <div class="duration-estimate">
+                                <svg class="duration-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                  <circle cx="12" cy="12" r="10"></circle>
+                                  <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>~{lesson.durationMinutes} min de lectura</span>
+                              </div>
+
+                              <div class="status-pill is-prep" title="Contenido en fase de redacción formal">
+                                <span class="status-dot"></span>
+                                <span>Próximamente</span>
+                              </div>
+                            </div>
+                          </article>
+                        ))
+                      }
+                    </div>
+                  </div>
+                );
+              })
             }
           </div>
+
+          <!-- ================================================================= -->
+          <!-- VISTA C: RESULTADOS DE BÚSQUEDA / FILTRADO GLOBAL                 -->
+          <!-- ================================================================= -->
+          <div class="academy-search-results-view" id="view-search-results" style="display: none;">
+            <div class="search-results-header">
+              <div>
+                <p class="results-kicker">RESULTADOS EN TIEMPO REAL</p>
+                <h2 class="results-title" id="search-results-heading">Lecciones encontradas</h2>
+              </div>
+              <button type="button" class="back-to-blocks-btn" id="btn-exit-search">
+                <span class="btn-arrow" aria-hidden="true">←</span>
+                <span>Volver a los 6 Bloques</span>
+              </button>
+            </div>
+
+            <div class="search-lessons-grid" id="search-cards-container">
+              <!-- Las tarjetas filtradas se manejan dinámicamente -->
+            </div>
+          </div>
+
         </div>
 
-        <!-- 3. BLOQUES TEMÁTICOS Y LECCIONES -->
-        <div class="academy-blocks-container section-body">
-          {
-            ACADEMY_BLOCKS.map((block) => {
-              const blockLessons = ACADEMY_LESSONS.filter((l) => l.blockId === block.id);
-              return (
-                <section class="academy-block-group" id={`bloque-${block.id}`}>
-                  <!-- Cabecera del Bloque -->
-                  <div class="block-group-header" style={`--block-accent: ${block.color};`}>
-                    <div class="block-meta">
-                      <span class="block-num-badge">{block.number}</span>
-                      <span class="block-icon">{block.icon}</span>
-                      <div class="block-title-box">
-                        <h2>{block.name}</h2>
-                        <p class="block-tagline">{block.tagline}</p>
-                      </div>
-                    </div>
-                    <div class="block-info-pill">
-                      <span class="pill-scope">{block.levelRange}</span>
-                      <span class="pill-dot">•</span>
-                      <span class="pill-count">{blockLessons.length} Lecciones planificadas</span>
-                    </div>
-                  </div>
-
-                  <p class="block-description">{block.description}</p>
-
-                  <!-- Rejilla de Tarjetas de Lección con Efecto Cristal -->
-                  <div class="lessons-grid">
-                    {
-                      blockLessons.map((lesson) => (
-                        <article
-                          class="academy-glass-card"
-                          data-lesson-id={lesson.id}
-                          data-level={lesson.level}
-                          data-search-terms={`${lesson.title} ${lesson.subtitle} ${lesson.summary} ${lesson.keyConcept}`.toLowerCase()}
-                          style={`--card-accent: ${block.color};`}
-                        >
-                          <div class="card-glow" aria-hidden="true"></div>
-
-                          <div class="card-top">
-                            <span class={`level-badge is-${lesson.level.toLowerCase().replace(/[\sº]/g, '')}`}>
-                              {lesson.level}
-                            </span>
-                            <span class="type-badge">{lesson.badge}</span>
-                            <span class="difficulty-indicator" title={`Dificultad: ${lesson.difficulty}`}>
-                              {lesson.difficulty}
-                            </span>
-                          </div>
-
-                          <h3 class="lesson-title">{lesson.title}</h3>
-                          <p class="lesson-subtitle">{lesson.subtitle}</p>
-
-                          <!-- Caja de Fórmula o Concepto Clave -->
-                          <div class="concept-key-box">
-                            <span class="concept-label">EJE RIGUROSO:</span>
-                            <code class="concept-formula">{lesson.keyConcept}</code>
-                          </div>
-
-                          <p class="lesson-summary">{lesson.summary}</p>
-
-                          <!-- Prerrequisitos -->
-                          <div class="lesson-prereqs">
-                            <span class="prereqs-label">Requiere:</span>
-                            <div class="prereqs-tags">
-                              {lesson.prerequisites.map((req) => (
-                                <span class="prereq-tag">{req}</span>
-                              ))}
-                            </div>
-                          </div>
-
-                          <!-- Pie de Tarjeta -->
-                          <div class="card-bottom">
-                            <div class="duration-estimate">
-                              <span class="clock-icon">⏱</span>
-                              <span>~{lesson.durationMinutes} min de lectura</span>
-                            </div>
-
-                            <div class="status-pill is-prep" title="Contenido en fase de redacción formal">
-                              <span class="status-dot"></span>
-                              <span>Próximamente</span>
-                            </div>
-                          </div>
-                        </article>
-                      ))
-                    }
-                  </div>
-                </section>
-              );
-            })
-          }
-        </div>
-
-        <!-- 4. SALÓN DE LOS GRANDES TEOREMAS (DESTACADO HISTÓRICO) -->
+        <!-- ================================================================= -->
+        <!-- 4. SALÓN DE LOS GRANDES TEOREMAS (DESTACADO HISTÓRICO)             -->
+        <!-- ================================================================= -->
         <section class="grand-theorems-spotlight section-body" id="teoremas">
           <div class="spotlight-header">
-            <span class="spotlight-crown">👑</span>
+            <span class="spotlight-glyph" aria-hidden="true">∎</span>
             <div class="spotlight-text">
               <h2>El Salón de los Grandes Teoremas</h2>
               <p>
@@ -278,11 +392,13 @@ const totalBlocks = ACADEMY_BLOCKS.length;
           </div>
         </section>
 
-        <!-- 5. MANIFIESTO DE RIGOR DE MATH ACADEMY -->
+        <!-- ================================================================= -->
+        <!-- 5. MANIFIESTO DE RIGOR DE MATH ACADEMY                             -->
+        <!-- ================================================================= -->
         <section class="academy-manifesto-band section-body" id="metodologia">
           <div class="manifesto-card">
             <div class="manifesto-head">
-              <span class="manifesto-icon">📜</span>
+              <span class="manifesto-axiom" aria-hidden="true">§</span>
               <div class="manifesto-title">
                 <h2>El Manifiesto de Rigor de Math Academy</h2>
                 <p>Las 4 reglas de oro con las que construimos cada explicación</p>
@@ -333,87 +449,269 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     </section>
   </main>
 
-  <!-- Calculadora Científica Flotante Integrada -->
-  <ScientificCalculator />
+  <!-- Calculadora Científica Flotante Integrada (Host invisible listo para PiP) -->
+  <div class="academy-calc-dock" style="position: fixed; bottom: -9999px; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+    <ScientificCalculator compact={true} />
+  </div>
 </BaseLayout>
 
 <script>
   // =========================================================================
-  // SISTEMA DE FILTRADO Y BÚSQUEDA INTERACTIVA EN TIEMPO REAL
+  // CONTROLADOR DINÁMICO DE NAVEGACIÓN POR PLACAS Y BÚSQUEDA (ESTILO MATH LAB)
   // =========================================================================
   (() => {
+    // 1. INVOCACIÓN DE CALCULADORA EN PICTURE-IN-PICTURE
+    const calcTopBtn = document.querySelector<HTMLButtonElement>('[data-toggle-floating-calc]');
+    if (calcTopBtn) {
+      calcTopBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('request-calc-pip'));
+      });
+    }
+
+    // 2. BUSCADOR Y FILTROS DEL CATÁLOGO
     const searchInput = document.getElementById('academy-search-input') as HTMLInputElement | null;
     const clearBtn = document.getElementById('search-clear-btn');
     const levelChips = document.querySelectorAll<HTMLButtonElement>('[data-level-filter]');
-    const lessonCards = document.querySelectorAll<HTMLElement>('.academy-glass-card');
-    const counterEl = document.querySelector('[data-academy-counter]');
+    const returnOverviewBtns = [
+      document.getElementById('btn-return-overview'),
+      document.getElementById('btn-back-from-block'),
+      document.getElementById('btn-exit-search')
+    ];
 
-    let currentLevel = 'all';
-    let currentSearch = '';
+    const viewDashboard = document.getElementById('view-dashboard');
+    const viewBlockDetail = document.getElementById('view-block-detail');
+    const viewSearchResults = document.getElementById('view-search-results');
+    const searchCardsContainer = document.getElementById('search-cards-container');
+    const searchResultsHeading = document.getElementById('search-results-heading');
+    const globalCounter = document.getElementById('academy-global-counter');
 
-    const applyFilters = () => {
-      let visibleCount = 0;
+    const openBlockButtons = document.querySelectorAll<HTMLElement>('[data-open-block], [data-block-target]');
+    const switchBlockButtons = document.querySelectorAll<HTMLButtonElement>('[data-switch-block]');
+    const blockContents = document.querySelectorAll<HTMLElement>('.block-detail-content');
 
-      lessonCards.forEach((card) => {
-        const cardLevel = card.dataset.level || '';
-        const searchTerms = card.dataset.searchTerms || '';
+    // Clonamos las lecciones de los bloques para poder filtrarlas en modo búsqueda global
+    const allLessonCards = Array.from(document.querySelectorAll<HTMLElement>('.block-lessons-grid .academy-glass-card'));
 
-        const matchesLevel = currentLevel === 'all' || cardLevel === currentLevel;
-        const matchesSearch = !currentSearch || searchTerms.includes(currentSearch);
+    let currentMode: 'dashboard' | 'block' | 'search' = 'dashboard';
+    let currentBlockId: string | null = null;
+    let currentLevelFilter = 'all';
+    let currentSearchQuery = '';
 
-        if (matchesLevel && matchesSearch) {
-          card.style.display = '';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
+    const updateView = () => {
+      // 1. Si hay texto de búsqueda o si se ha filtrado por nivel desde el dashboard principal:
+      if (currentSearchQuery.length > 0 || (currentLevelFilter !== 'all' && currentMode === 'search')) {
+        currentMode = 'search';
+        if (viewDashboard) viewDashboard.style.display = 'none';
+        if (viewBlockDetail) viewBlockDetail.style.display = 'none';
+        if (viewSearchResults) viewSearchResults.style.display = 'block';
+        returnOverviewBtns.forEach(btn => { if (btn) btn.style.display = 'inline-flex'; });
+
+        renderSearchResults();
+        return;
+      }
+
+      // 2. Si estamos en modo bloque individual:
+      if (currentMode === 'block' && currentBlockId) {
+        if (viewDashboard) viewDashboard.style.display = 'none';
+        if (viewSearchResults) viewSearchResults.style.display = 'none';
+        if (viewBlockDetail) viewBlockDetail.style.display = 'block';
+        returnOverviewBtns.forEach(btn => { if (btn) btn.style.display = 'inline-flex'; });
+
+        blockContents.forEach(bc => {
+          bc.style.display = bc.id === `block-content-${currentBlockId}` ? 'block' : 'none';
+        });
+
+        switchBlockButtons.forEach(btn => {
+          btn.classList.toggle('is-active', btn.dataset.switchBlock === currentBlockId);
+        });
+
+        // Filtrar lecciones dentro del bloque por el nivel seleccionado
+        const activeBlockContent = document.getElementById(`block-content-${currentBlockId}`);
+        if (activeBlockContent) {
+          const cardsInBlock = activeBlockContent.querySelectorAll<HTMLElement>('.academy-glass-card');
+          cardsInBlock.forEach(card => {
+            const cardLevel = card.dataset.level || '';
+            const matchesLevel = currentLevelFilter === 'all' || cardLevel === currentLevelFilter;
+            card.style.display = matchesLevel ? '' : 'none';
+          });
+        }
+        return;
+      }
+
+      // 3. Modo Dashboard de 6 Placas (Vista principal por defecto)
+      currentMode = 'dashboard';
+      if (viewDashboard) viewDashboard.style.display = 'block';
+      if (viewBlockDetail) viewBlockDetail.style.display = 'none';
+      if (viewSearchResults) viewSearchResults.style.display = 'none';
+      returnOverviewBtns.forEach(btn => { if (btn) btn.style.display = 'none'; });
+    };
+
+    const renderSearchResults = () => {
+      if (!searchCardsContainer) return;
+      searchCardsContainer.innerHTML = '';
+
+      let matchCount = 0;
+      allLessonCards.forEach(origCard => {
+        const cardLevel = origCard.dataset.level || '';
+        const searchTerms = origCard.dataset.searchTerms || '';
+
+        const matchesLevel = currentLevelFilter === 'all' || cardLevel === currentLevelFilter;
+        const matchesQuery = !currentSearchQuery || searchTerms.includes(currentSearchQuery);
+
+        if (matchesLevel && matchesQuery) {
+          matchCount++;
+          const clone = origCard.cloneNode(true) as HTMLElement;
+          clone.style.display = '';
+          searchCardsContainer.appendChild(clone);
         }
       });
 
-      // Ocultar cabeceras de bloque si no tienen lecciones visibles
-      document.querySelectorAll<HTMLElement>('.academy-block-group').forEach((group) => {
-        const visibleLessonsInGroup = group.querySelectorAll('.academy-glass-card:not([style*="display: none"])');
-        if (visibleLessonsInGroup.length === 0) {
-          group.style.display = 'none';
+      if (searchResultsHeading) {
+        if (currentSearchQuery) {
+          searchResultsHeading.innerHTML = `Mostrando ${matchCount} lección(es) para «<em>${escapeHtml(currentSearchQuery)}</em>»`;
         } else {
-          group.style.display = '';
+          searchResultsHeading.textContent = `Mostrando ${matchCount} lecciones de ${currentLevelFilter}`;
         }
-      });
+      }
 
-      // Actualizar contador superior
-      if (counterEl) {
-        counterEl.textContent = `Mostrando ${visibleCount} lecciones ${currentLevel !== 'all' ? `de ${currentLevel}` : ''}`;
+      if (globalCounter) {
+        globalCounter.textContent = `${matchCount} resultado(s) encontrado(s)`;
       }
     };
 
-    // Filtros por nivel
-    levelChips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        levelChips.forEach((c) => c.classList.remove('is-active'));
-        chip.classList.add('is-active');
-        currentLevel = chip.dataset.levelFilter || 'all';
-        applyFilters();
+    const escapeHtml = (str: string) => {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    };
+
+    const selectBlock = (blockId: string, smoothScroll = false) => {
+      currentBlockId = blockId;
+      currentMode = 'block';
+      window.location.hash = `bloque-${blockId}`;
+      updateView();
+
+      if (smoothScroll) {
+        const catalogBand = document.getElementById('catalogo');
+        if (catalogBand) {
+          catalogBand.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    };
+
+    const returnToDashboard = () => {
+      currentMode = 'dashboard';
+      currentSearchQuery = '';
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (window.location.hash.startsWith('#bloque-')) {
+        history.pushState(null, '', window.location.pathname);
+      }
+      updateView();
+      const catalogBand = document.getElementById('catalogo');
+      if (catalogBand) {
+        catalogBand.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    // Event Listeners en Placas
+    openBlockButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = (btn as HTMLElement).dataset.openBlock || (btn as HTMLElement).dataset.blockTarget;
+        if (target) {
+          e.preventDefault();
+          selectBlock(target, true);
+        }
       });
     });
 
-    // Búsqueda en tiempo real
+    // Pestañas de cambio rápido dentro del bloque
+    switchBlockButtons.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.switchBlock;
+        if (target) {
+          selectBlock(target, false);
+        }
+      });
+    });
+
+    // Botones de retorno al dashboard general
+    returnOverviewBtns.forEach(btn => {
+      if (btn) btn.addEventListener('click', returnToDashboard);
+    });
+
+    // Filtros por Nivel
+    levelChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        levelChips.forEach(c => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        currentLevelFilter = chip.dataset.levelFilter || 'all';
+
+        // Si estamos en dashboard y el usuario elige un nivel concreto, mostramos los resultados
+        if (currentMode === 'dashboard' && currentLevelFilter !== 'all') {
+          currentMode = 'search';
+        }
+        updateView();
+      });
+    });
+
+    // Buscador en tiempo real
     if (searchInput) {
       searchInput.addEventListener('input', () => {
-        currentSearch = searchInput.value.trim().toLowerCase();
+        currentSearchQuery = searchInput.value.trim().toLowerCase();
         if (clearBtn) {
-          clearBtn.style.display = currentSearch ? 'block' : 'none';
+          clearBtn.style.display = currentSearchQuery ? 'block' : 'none';
         }
-        applyFilters();
+        if (currentSearchQuery.length > 0) {
+          currentMode = 'search';
+        } else if (currentLevelFilter === 'all' && currentBlockId === null) {
+          currentMode = 'dashboard';
+        }
+        updateView();
       });
 
       if (clearBtn) {
         clearBtn.addEventListener('click', () => {
           searchInput.value = '';
-          currentSearch = '';
+          currentSearchQuery = '';
           clearBtn.style.display = 'none';
           searchInput.focus();
-          applyFilters();
+          if (currentBlockId) {
+            currentMode = 'block';
+          } else {
+            currentMode = 'dashboard';
+          }
+          updateView();
         });
       }
+
+      // Atajo de teclado ⌘K / Ctrl+K
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.blur();
+          if (searchInput.value) {
+            searchInput.value = '';
+            currentSearchQuery = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            updateView();
+          }
+        }
+      });
+    }
+
+    // Inicialización según Hash URL (ej. #bloque-algebra)
+    const initHash = window.location.hash.replace('#bloque-', '');
+    const validBlock = Array.from(blockContents).some(b => b.id === `block-content-${initHash}`);
+    if (initHash && validBlock) {
+      selectBlock(initHash, false);
+    } else {
+      updateView();
     }
   })();
 </script>
@@ -433,41 +731,67 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .academy-top-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     padding: 0.4rem 0.85rem;
     border-radius: 8px;
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--ink, #f3f2ec);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 193, 77, 0.25);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 193, 77, 0.35);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .academy-top-btn:hover {
-    background: rgba(255, 193, 77, 0.12);
-    border-color: rgba(255, 193, 77, 0.5);
-  }
-
-  .academy-top-btn.is-accent {
-    background: rgba(255, 193, 77, 0.12);
-    border-color: rgba(255, 193, 77, 0.4);
+  .academy-top-btn .btn-svg {
+    opacity: 0.9;
     color: #ffc14d;
   }
 
-  :global([data-theme="light"]) .academy-top-btn {
-    background: #ffffff;
-    border-color: rgba(217, 119, 6, 0.25);
-    color: #0f172a;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  :global([data-theme="light"]) .academy-top-btn .btn-svg {
+    color: #d97706;
   }
 
-  :global([data-theme="light"]) .academy-top-btn.is-accent {
-    background: rgba(217, 119, 6, 0.08);
-    border-color: #d97706;
+  .btn-pip-tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ffc14d;
+    background: rgba(255, 193, 77, 0.15);
+    border: 1px solid rgba(255, 193, 77, 0.4);
+    padding: 0.05rem 0.35rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  :global([data-theme="light"]) .btn-pip-tag {
     color: #b45309;
+    background: rgba(217, 119, 6, 0.12);
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+
+  .academy-top-btn:hover {
+    background: linear-gradient(180deg, rgba(255, 193, 77, 0.2) 0%, rgba(255, 193, 77, 0.08) 100%);
+    border-color: #ffc14d;
+    box-shadow: 0 0 12px rgba(255, 193, 77, 0.35);
+    color: #ffc14d;
+    transform: translateY(-1px);
+  }
+
+  :global([data-theme="light"]) .academy-top-btn {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(217, 119, 6, 0.35);
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff;
+  }
+
+  :global([data-theme="light"]) .academy-top-btn:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #ffedd5 100%);
+    color: #9a3412;
+    border-color: #d97706;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2);
   }
 
   /* Sección Hero */
@@ -477,26 +801,136 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   }
 
-  /* Barra de Controles y Filtros */
-  .academy-controls-bar {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    margin-bottom: 2.5rem;
+  /* =========================================================================
+     CONTENEDOR UNIFICADO DEL CATÁLOGO (ELIMINACIÓN RADICAL DE ESPACIOS MUERTOS)
+     ========================================================================= */
+  .academy-catalog-main {
+    padding-top: 1.6rem !important;
+    padding-bottom: 3.5rem !important;
   }
 
+  .academy-search-hero-box {
+    margin-bottom: 1.4rem;
+  }
+
+  .search-prominent-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1.5px solid rgba(255, 193, 77, 0.4);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.22);
+  }
+
+  .search-prominent-bar:focus-within {
+    border-color: #ffc14d;
+    box-shadow: 0 0 0 4px rgba(255, 193, 77, 0.22), 0 12px 34px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 100%);
+  }
+
+  :global([data-theme="light"]) .search-prominent-bar {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%);
+    border: 1.5px solid rgba(217, 119, 6, 0.38);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08), inset 0 1px 2px #ffffff;
+  }
+
+  :global([data-theme="light"]) .search-prominent-bar:focus-within {
+    border-color: #d97706;
+    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.16), 0 10px 28px rgba(217, 119, 6, 0.14);
+  }
+
+  .search-svg {
+    position: absolute;
+    left: 1.15rem;
+    color: #ffc14d;
+    pointer-events: none;
+    opacity: 0.95;
+  }
+
+  :global([data-theme="light"]) .search-svg {
+    color: #d97706;
+  }
+
+  .academy-search-input {
+    width: 100%;
+    padding: 0.95rem 4.5rem 0.95rem 3.2rem;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.98rem;
+    font-family: inherit;
+    color: var(--ink, #f3f2ec);
+    font-weight: 500;
+  }
+
+  .academy-search-input::placeholder {
+    color: var(--muted, #94a3b8);
+    opacity: 0.8;
+  }
+
+  :global([data-theme="light"]) .academy-search-input {
+    color: #0f172a;
+  }
+
+  .search-kbd-hint {
+    position: absolute;
+    right: 1.1rem;
+    padding: 0.2rem 0.45rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+
+  :global([data-theme="light"]) .search-kbd-hint {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+  }
+
+  .search-clear-btn {
+    position: absolute;
+    right: 3.5rem;
+    background: rgba(255, 193, 77, 0.18);
+    border: 1px solid rgba(255, 193, 77, 0.4);
+    color: #ffc14d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .search-clear-btn {
+    background: rgba(217, 119, 6, 0.12);
+    color: #9a3412;
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+
+  /* Fila Compacta de Filtros con Resalte Espejo */
   .filter-controls-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
   }
 
   .control-label {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 800;
     letter-spacing: 0.08em;
     color: var(--muted, #94a3b8);
   }
@@ -511,273 +945,621 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .level-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.85rem;
+    gap: 0.42rem;
+    padding: 0.42rem 0.85rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--muted, #94a3b8);
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.2s ease;
   }
 
   .level-chip:hover {
     color: var(--ink, #f3f2ec);
-    border-color: rgba(255, 193, 77, 0.4);
-    background: rgba(255, 193, 77, 0.06);
+    border-color: rgba(255, 193, 77, 0.5);
+    background: linear-gradient(180deg, rgba(255, 193, 77, 0.18) 0%, rgba(255, 193, 77, 0.08) 100%);
+    transform: translateY(-1px);
   }
 
   .level-chip.is-active {
-    background: rgba(255, 193, 77, 0.15);
+    background: linear-gradient(180deg, rgba(255, 193, 77, 0.28) 0%, rgba(255, 193, 77, 0.14) 100%);
     border-color: #ffc14d;
     color: #ffc14d;
+    font-weight: 700;
+    box-shadow: 0 0 14px rgba(255, 193, 77, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
   }
 
   :global([data-theme="light"]) .level-chip {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    color: #475569;
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    color: #334155;
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff;
+  }
+
+  :global([data-theme="light"]) .level-chip:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #fed7aa 100%);
+    border-color: #d97706;
+    color: #9a3412;
   }
 
   :global([data-theme="light"]) .level-chip.is-active {
-    background: rgba(217, 119, 6, 0.1);
+    background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
     border-color: #d97706;
-    color: #b45309;
+    color: #9a3412;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.22), inset 0 1px 1px #ffffff;
   }
 
   .chip-count {
     font-size: 0.72rem;
-    opacity: 0.75;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 0.1rem 0.35rem;
+    font-weight: 700;
+    opacity: 0.9;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.08rem 0.4rem;
     border-radius: 999px;
   }
 
-  /* Buscador de lecciones */
-  .search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    min-width: 280px;
-    flex-grow: 1;
-    max-width: 420px;
+  :global([data-theme="light"]) .chip-count {
+    background: rgba(0, 0, 0, 0.07);
   }
 
-  .search-icon {
-    position: absolute;
-    left: 0.85rem;
-    font-size: 0.85rem;
-    pointer-events: none;
-    opacity: 0.6;
-  }
-
-  .academy-search-input {
-    width: 100%;
-    padding: 0.55rem 2.2rem 0.55rem 2.3rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
-    color: var(--ink, #f3f2ec);
-    font-size: 0.88rem;
-    outline: none;
-    transition: all 0.2s ease;
-  }
-
-  .academy-search-input:focus {
-    border-color: #ffc14d;
-    background: rgba(255, 193, 77, 0.04);
-    box-shadow: 0 0 0 3px rgba(255, 193, 77, 0.15);
-  }
-
-  :global([data-theme="light"]) .academy-search-input {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.12);
-    color: #0f172a;
-  }
-
-  :global([data-theme="light"]) .academy-search-input:focus {
-    border-color: #d97706;
-    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.12);
-  }
-
-  .search-clear-btn {
-    position: absolute;
-    right: 0.6rem;
-    background: none;
-    border: none;
-    color: var(--muted, #94a3b8);
-    font-size: 0.8rem;
-    cursor: pointer;
-    padding: 0.2rem 0.4rem;
-  }
-
-  /* Navegación rápida entre bloques con efecto cristal */
-  .blocks-jump-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding-top: 0.6rem;
-    border-top: 1px dashed var(--border-color, rgba(255, 255, 255, 0.08));
-  }
-
-  .block-jump-chip {
+  .back-to-blocks-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
+    gap: 0.45rem;
+    padding: 0.42rem 0.95rem;
     border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: var(--muted, #94a3b8);
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(8px);
+    font-size: 0.82rem;
+    font-weight: 700;
+    background: linear-gradient(180deg, rgba(255, 193, 77, 0.2) 0%, rgba(255, 193, 77, 0.1) 100%);
+    border: 1.5px solid #ffc14d;
+    color: #ffc14d;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 193, 77, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.2s ease;
   }
 
-  .block-jump-chip:hover {
-    color: var(--ink, #f3f2ec);
-    border-color: var(--chip-color, #ffc14d);
-    background: rgba(255, 193, 77, 0.06);
+  .back-to-blocks-btn:hover {
+    background: #ffc14d;
+    color: #0b0f19;
+    box-shadow: 0 4px 14px rgba(255, 193, 77, 0.4);
     transform: translateY(-1px);
   }
 
-  :global([data-theme="light"]) .block-jump-chip {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.08);
+  :global([data-theme="light"]) .back-to-blocks-btn {
+    background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: #d97706;
+    color: #9a3412;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff;
+  }
+
+  :global([data-theme="light"]) .back-to-blocks-btn:hover {
+    background: #d97706;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  }
+
+  /* =========================================================================
+     VISTA A: PLACAS DE ENTRADA CON ACABADO ESPEJO Y CONTRASTE REFORZADO
+     ========================================================================= */
+  .dashboard-intro-bar {
+    margin-bottom: 1.35rem;
+  }
+
+  .dashboard-kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #ffc14d;
+    margin: 0 0 0.25rem;
+  }
+
+  :global([data-theme="light"]) .dashboard-kicker {
+    color: #d97706;
+  }
+
+  .dashboard-heading {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .dashboard-heading em {
+    font-style: italic;
+    color: #ffc14d;
+  }
+
+  :global([data-theme="light"]) .dashboard-heading em {
+    color: #d97706;
+  }
+
+  .dashboard-sub {
+    font-size: 0.94rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+    max-width: 720px;
+    line-height: 1.48;
+  }
+
+  .blocks-placas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .academy-block-placa {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.85rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 3px solid var(--block-accent, #ffc14d);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 0 25px -8px var(--block-accent);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .academy-block-placa:hover {
+    transform: translateY(-5px);
+    border-color: var(--block-accent, #ffc14d);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35), 0 0 35px var(--block-accent);
+  }
+
+  :global([data-theme="light"]) .academy-block-placa {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 3.5px solid var(--block-accent, #d97706);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.09), 0 2px 6px rgba(15, 23, 42, 0.04), inset 0 1px 2px #ffffff, 0 0 22px -5px var(--block-accent);
+  }
+
+  :global([data-theme="light"]) .academy-block-placa:hover {
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16), inset 0 1px 2px #ffffff, 0 0 32px var(--block-accent);
+  }
+
+  .placa-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, var(--block-accent, #ffc14d) 0%, transparent 70%);
+    opacity: 0.22;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .academy-block-placa:hover .placa-glow {
+    opacity: 0.38;
+  }
+
+  :global([data-theme="light"]) .placa-glow {
+    opacity: 0.28;
+  }
+
+  :global([data-theme="light"]) .academy-block-placa:hover .placa-glow {
+    opacity: 0.45;
+  }
+
+  .placa-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.15rem;
+  }
+
+  .placa-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .placa-num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid var(--block-accent, #ffc14d);
+    padding: 0.22rem 0.55rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  :global([data-theme="light"]) .placa-num {
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  .placa-glyph {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink, #f3f2ec);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    padding: 0.2rem 0.65rem;
+    border-radius: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  :global([data-theme="light"]) .placa-glyph {
+    color: var(--block-accent, #0f172a);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06), inset 0 1px 1px #ffffff;
+  }
+
+  .placa-level-tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :global([data-theme="light"]) .placa-level-tag {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
     color: #475569;
   }
 
-  /* Grupos de Bloques */
-  .academy-blocks-container {
+  .placa-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
+    color: var(--ink, #f3f2ec);
+    line-height: 1.3;
+  }
+
+  .placa-tagline {
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--block-accent, #ffc14d);
+    margin: 0 0 0.85rem;
+    font-weight: 600;
+  }
+
+  .placa-description {
+    font-size: 0.88rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.55;
+    margin: 0 0 1.4rem;
+    flex-grow: 1;
+  }
+
+  .placa-footer {
     display: flex;
-    flex-direction: column;
-    gap: 3.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    gap: 0.8rem;
   }
 
-  .academy-block-group {
-    scroll-margin-top: 80px;
+  .placa-count-badge {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 
-  .block-group-header {
+  .placa-count-badge .count-num {
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+  }
+
+  :global([data-theme="light"]) .placa-count-badge .count-num {
+    color: #0f172a;
+  }
+
+  .placa-enter-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    color: var(--block-accent, #ffc14d);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .placa-enter-action:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(4px);
+  }
+
+  /* =========================================================================
+     VISTA B: ESPACIO DE BLOQUE ESPECIALIZADO
+     ========================================================================= */
+  .block-context-nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--block-accent, #ffc14d);
+    margin-bottom: 1.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   }
 
-  .block-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-
-  .block-num-badge {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.85rem;
-    font-weight: 800;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    background: var(--block-accent, #ffc14d);
-    color: #101116;
-  }
-
-  .block-icon {
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-
-  .block-title-box h2 {
-    font-size: 1.45rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--ink, #f3f2ec);
-  }
-
-  .block-tagline {
-    font-size: 0.86rem;
-    color: var(--muted, #94a3b8);
-    margin: 0.2rem 0 0;
-  }
-
-  .block-info-pill {
+  .nav-back-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
+    padding: 0.45rem 0.95rem;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255, 193, 77, 0.2) 0%, rgba(255, 193, 77, 0.1) 100%);
+    border: 1.5px solid #ffc14d;
+    color: #ffc14d;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 193, 77, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .nav-back-chip:hover {
+    background: #ffc14d;
+    color: #0b0f19;
+    box-shadow: 0 4px 14px rgba(255, 193, 77, 0.4);
+  }
+
+  :global([data-theme="light"]) .nav-back-chip {
+    background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: #d97706;
+    color: #9a3412;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff;
+  }
+
+  :global([data-theme="light"]) .nav-back-chip:hover {
+    background: #d97706;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  }
+
+  .block-switch-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .block-switch-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.75rem;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    color: var(--muted, #94a3b8);
     font-size: 0.78rem;
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--line);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .block-switch-tab .tab-glyph {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--tab-color, #ffc14d);
+  }
+
+  .block-switch-tab:hover {
+    color: var(--ink, #f3f2ec);
+    border-color: var(--tab-color, #ffc14d);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .block-switch-tab.is-active {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-color: var(--tab-color, #ffc14d);
+    color: var(--ink, #f3f2ec);
+    box-shadow: 0 0 14px rgba(255, 193, 77, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  :global([data-theme="light"]) .block-switch-tab {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  }
+
+  :global([data-theme="light"]) .block-switch-tab.is-active {
+    background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: var(--tab-color, #d97706);
+    color: #9a3412;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+  }
+
+  /* Tarjeta de Bienvenida del Bloque */
+  .block-welcome-card {
+    padding: 2.2rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1.5px solid var(--block-accent, #ffc14d);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  }
+
+  :global([data-theme="light"]) .block-welcome-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-color: var(--block-accent, #d97706);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), inset 0 1px 2px #ffffff;
+  }
+
+  .welcome-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+  }
+
+  .welcome-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .welcome-num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--block-accent, #ffc14d);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid var(--block-accent, #ffc14d);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .welcome-glyph {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ink, #f3f2ec);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    padding: 0.2rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  :global([data-theme="light"]) .welcome-glyph {
+    color: var(--block-accent, #0f172a);
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+
+  .welcome-scope {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  :global([data-theme="light"]) .welcome-scope {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+  }
+
+  .welcome-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .welcome-stat strong {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--block-accent, #ffc14d);
+    line-height: 1;
+  }
+
+  .welcome-stat span {
+    font-size: 0.75rem;
     color: var(--muted, #94a3b8);
   }
 
-  .block-description {
+  .welcome-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin: 0 0 0.4rem;
+    color: var(--ink, #f3f2ec);
+  }
+
+  .welcome-tagline {
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--block-accent, #ffc14d);
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+
+  .welcome-desc {
     font-size: 0.95rem;
     color: var(--muted, #94a3b8);
     line-height: 1.6;
-    max-width: 860px;
-    margin: 0 0 1.5rem;
+    margin: 0;
+    max-width: 820px;
+  }
+
+  .block-lessons-grid, .search-lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.4rem;
   }
 
   /* =========================================================================
-     TARJETAS DE LECCIÓN CON EFECTO CRISTAL (GLASSMORPHISM)
+     TARJETAS DE LECCIÓN RIGUROSAS (GLASSMORPHISM CON RESALTE)
      ========================================================================= */
-  .lessons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.3rem;
-  }
-
   .academy-glass-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 1.4rem;
+    padding: 1.6rem;
     border-radius: 16px;
-    background: rgba(22, 24, 34, 0.65);
-    border: 1px solid rgba(255, 193, 77, 0.18);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2.5px solid var(--card-accent, #ffc14d);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     overflow: hidden;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .academy-glass-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255, 193, 77, 0.45);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    border-color: var(--card-accent, #ffc14d);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45), 0 0 25px -5px var(--card-accent);
   }
 
   :global([data-theme="light"]) .academy-glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1.5px solid rgba(217, 119, 6, 0.15);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    background: linear-gradient(145deg, #ffffff 0%, #fbfbfa 100%);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 2.5px solid var(--card-accent, #d97706);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06), inset 0 1px 1px #ffffff;
   }
 
   :global([data-theme="light"]) .academy-glass-card:hover {
-    border-color: rgba(217, 119, 6, 0.4);
-    box-shadow: 0 12px 32px rgba(217, 119, 6, 0.08);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12), 0 0 22px -5px var(--card-accent);
   }
 
   .card-glow {
     position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+    top: -30px;
+    right: -30px;
+    width: 90px;
+    height: 90px;
     background: radial-gradient(circle, var(--card-accent, #ffc14d) 0%, transparent 70%);
-    opacity: 0.12;
+    opacity: 0.15;
     pointer-events: none;
   }
 
@@ -786,119 +1568,109 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     align-items: center;
     gap: 0.45rem;
     margin-bottom: 0.9rem;
-    font-size: 0.72rem;
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-weight: 700;
+    flex-wrap: wrap;
   }
 
   .level-badge {
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--ink, #f3f2ec);
-  }
-
-  .level-badge.is-eso {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-  }
-
-  .level-badge.is-1bachillerato {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-  }
-
-  .level-badge.is-2bachillerato {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
     background: rgba(255, 193, 77, 0.15);
     color: #ffc14d;
-    border: 1px solid rgba(255, 193, 77, 0.3);
+    border: 1px solid rgba(255, 193, 77, 0.35);
   }
 
-  .level-badge.is-transversal {
-    background: rgba(192, 132, 252, 0.15);
-    color: #c084fc;
-    border: 1px solid rgba(192, 132, 252, 0.3);
-  }
-
-  :global([data-theme="light"]) .level-badge.is-2bachillerato {
-    color: #b45309;
-    background: rgba(217, 119, 6, 0.1);
+  :global([data-theme="light"]) .level-badge {
+    background: rgba(217, 119, 6, 0.12);
+    color: #9a3412;
     border-color: rgba(217, 119, 6, 0.3);
   }
 
   .type-badge {
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.7rem;
+    font-weight: 600;
     color: var(--muted, #94a3b8);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  :global([data-theme="light"]) .type-badge {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
   }
 
   .difficulty-indicator {
     margin-left: auto;
+    font-size: 0.68rem;
+    font-family: ui-monospace, monospace;
+    font-weight: 600;
     color: var(--muted, #94a3b8);
-    font-size: 0.7rem;
-    opacity: 0.8;
   }
 
   .lesson-title {
     font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1.3;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
     color: var(--ink, #f3f2ec);
-    margin: 0 0 0.4rem;
+    line-height: 1.35;
   }
 
   .lesson-subtitle {
     font-size: 0.85rem;
-    color: var(--muted, #94a3b8);
-    line-height: 1.45;
+    font-style: italic;
+    color: var(--card-accent, #ffc14d);
     margin: 0 0 0.9rem;
+    line-height: 1.4;
+    font-weight: 600;
   }
 
-  /* Caja de Concepto / Fórmula Clave */
   .concept-key-box {
+    margin: 0.4rem 0 0.9rem;
     padding: 0.65rem 0.85rem;
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    margin-bottom: 0.9rem;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   :global([data-theme="light"]) .concept-key-box {
     background: #f8fafc;
-    border-color: rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
   }
 
   .concept-label {
-    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--card-accent, #ffc14d);
-  }
-
-  :global([data-theme="light"]) .concept-label {
-    color: #b45309;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--muted, #94a3b8);
   }
 
   .concept-formula {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--ink, #f3f2ec);
-    overflow-x: auto;
-    white-space: nowrap;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--card-accent, #ffc14d);
+    word-break: break-all;
+  }
+
+  :global([data-theme="light"]) .concept-formula {
+    color: #b45309;
   }
 
   .lesson-summary {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: var(--muted, #94a3b8);
-    line-height: 1.55;
+    line-height: 1.5;
     margin: 0 0 1rem;
     flex-grow: 1;
   }
@@ -906,14 +1678,16 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .lesson-prereqs {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
+    margin-bottom: 1.1rem;
     font-size: 0.75rem;
-    color: var(--muted, #94a3b8);
-    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
   }
 
   .prereqs-label {
+    color: var(--muted, #94a3b8);
     font-weight: 600;
+    font-family: ui-monospace, monospace;
   }
 
   .prereqs-tags {
@@ -923,15 +1697,18 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   }
 
   .prereq-tag {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--ink, #f3f2ec);
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
     font-size: 0.72rem;
   }
 
   :global([data-theme="light"]) .prereq-tag {
-    background: rgba(0, 0, 0, 0.04);
-    color: #475569;
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #334155;
   }
 
   .card-bottom {
@@ -950,26 +1727,26 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     color: var(--muted, #94a3b8);
   }
 
+  .duration-svg {
+    opacity: 0.75;
+  }
+
   .status-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.25rem 0.65rem;
+    gap: 0.4rem;
+    padding: 0.22rem 0.6rem;
     border-radius: 999px;
-    font-weight: 600;
     font-size: 0.72rem;
-    font-family: ui-monospace, monospace;
-  }
-
-  .status-pill.is-prep {
-    background: rgba(255, 193, 77, 0.1);
+    font-weight: 700;
+    background: rgba(255, 193, 77, 0.14);
     color: #ffc14d;
     border: 1px solid rgba(255, 193, 77, 0.3);
   }
 
-  :global([data-theme="light"]) .status-pill.is-prep {
-    background: rgba(217, 119, 6, 0.08);
-    color: #b45309;
+  :global([data-theme="light"]) .status-pill {
+    background: rgba(217, 119, 6, 0.1);
+    color: #9a3412;
     border-color: rgba(217, 119, 6, 0.25);
   }
 
@@ -977,60 +1754,100 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: currentColor;
-    animation: pulseDot 2s infinite ease-in-out;
+    background: #ffc14d;
+    box-shadow: 0 0 6px #ffc14d;
   }
 
-  @keyframes pulseDot {
-    0%, 100% { opacity: 0.5; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.2); }
+  :global([data-theme="light"]) .status-dot {
+    background: #d97706;
+    box-shadow: 0 0 6px #d97706;
   }
 
   /* =========================================================================
-     4. SALÓN DE LOS GRANDES TEOREMAS (PANORAMA DESTACADO)
+     VISTA C: RESULTADOS DE BÚSQUEDA
+     ========================================================================= */
+  .search-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  }
+
+  .results-kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #ffc14d;
+    margin: 0 0 0.25rem;
+  }
+
+  :global([data-theme="light"]) .results-kicker {
+    color: #d97706;
+  }
+
+  .results-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink, #f3f2ec);
+  }
+
+  /* =========================================================================
+     4. SALÓN DE LOS GRANDES TEOREMAS
      ========================================================================= */
   .grand-theorems-spotlight {
-    margin-top: 4.5rem;
-    padding: 2.2rem;
+    margin-top: 4rem;
+    padding: 2.4rem;
     border-radius: 20px;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 193, 77, 0.08) 0%, rgba(22, 24, 34, 0.8) 70%);
-    border: 1px solid rgba(255, 193, 77, 0.25);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(145deg, rgba(255, 193, 77, 0.04) 0%, rgba(255, 193, 77, 0.01) 100%);
+    border: 1.5px solid rgba(255, 193, 77, 0.25);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   }
 
   :global([data-theme="light"]) .grand-theorems-spotlight {
-    background: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.08) 0%, rgba(255, 255, 255, 0.95) 70%);
-    border-color: rgba(217, 119, 6, 0.22);
-    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
+    background: linear-gradient(145deg, rgba(217, 119, 6, 0.04) 0%, #ffffff 100%);
+    border-color: rgba(217, 119, 6, 0.25);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   }
 
   .spotlight-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
     margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 193, 77, 0.2);
-    padding-bottom: 1.2rem;
   }
 
-  .spotlight-crown {
-    font-size: 2.5rem;
-    line-height: 1;
+  .spotlight-glyph {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #ffc14d;
+    background: rgba(255, 193, 77, 0.12);
+    border: 1.5px solid rgba(255, 193, 77, 0.35);
+    padding: 0.2rem 0.8rem;
+    border-radius: 12px;
+  }
+
+  :global([data-theme="light"]) .spotlight-glyph {
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.3);
   }
 
   .spotlight-text h2 {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    margin: 0 0 0.3rem;
+    margin: 0 0 0.35rem;
     color: var(--ink, #f3f2ec);
   }
 
   .spotlight-text p {
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     color: var(--muted, #94a3b8);
     margin: 0;
-    max-width: 780px;
-    line-height: 1.5;
   }
 
   .theorems-spotlight-grid {
@@ -1042,35 +1859,35 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .spotlight-card {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 1.6rem;
     border-radius: 14px;
-    background: rgba(16, 17, 22, 0.6);
-    border: 1px solid rgba(255, 193, 77, 0.2);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 193, 77, 0.22);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
   }
 
   :global([data-theme="light"]) .spotlight-card {
     background: #ffffff;
-    border-color: rgba(217, 119, 6, 0.16);
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    border-color: rgba(217, 119, 6, 0.2);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
   }
 
   .spotlight-badge {
-    font-family: ui-monospace, monospace;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
     color: #ffc14d;
-    letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
   }
 
   :global([data-theme="light"]) .spotlight-badge {
-    color: #b45309;
+    color: #d97706;
   }
 
   .spotlight-card h3 {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     margin: 0 0 0.2rem;
     color: var(--ink, #f3f2ec);
   }
@@ -1078,27 +1895,26 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .spotlight-author {
     font-size: 0.8rem;
     color: var(--muted, #94a3b8);
-    font-style: italic;
     margin: 0 0 0.9rem;
+    font-style: italic;
   }
 
   .spotlight-formula {
-    padding: 0.6rem 0.8rem;
+    background: rgba(255, 193, 77, 0.1);
+    border: 1px solid rgba(255, 193, 77, 0.25);
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 193, 77, 0.15);
+    padding: 0.6rem 0.8rem;
     margin-bottom: 0.9rem;
-    text-align: center;
   }
 
   :global([data-theme="light"]) .spotlight-formula {
-    background: #f8fafc;
-    border-color: rgba(0, 0, 0, 0.08);
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.2);
   }
 
   .spotlight-formula code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 600;
     color: #ffc14d;
   }
@@ -1108,7 +1924,7 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   }
 
   .spotlight-body {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: var(--muted, #94a3b8);
     line-height: 1.55;
     margin: 0 0 1.2rem;
@@ -1126,14 +1942,14 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .spotlight-footer .tag {
     font-size: 0.72rem;
     font-family: ui-monospace, monospace;
-    background: rgba(255, 193, 77, 0.08);
+    background: rgba(255, 193, 77, 0.1);
     color: #ffc14d;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
   }
 
   :global([data-theme="light"]) .spotlight-footer .tag {
-    background: rgba(217, 119, 6, 0.08);
+    background: rgba(217, 119, 6, 0.1);
     color: #b45309;
   }
 
@@ -1147,27 +1963,35 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   .manifesto-card {
     padding: 2.2rem;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--line);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   }
 
   :global([data-theme="light"]) .manifesto-card {
     background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   }
 
   .manifesto-head {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.1rem;
     margin-bottom: 2rem;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
     padding-bottom: 1.2rem;
   }
 
-  .manifesto-icon {
+  .manifesto-axiom {
+    font-family: 'JetBrains Mono', serif;
     font-size: 2.2rem;
+    font-weight: 700;
+    color: #ffc14d;
+    line-height: 1;
+  }
+
+  :global([data-theme="light"]) .manifesto-axiom {
+    color: #d97706;
   }
 
   .manifesto-title h2 {
@@ -1220,15 +2044,31 @@ const totalBlocks = ACADEMY_BLOCKS.length;
   }
 
   @media (max-width: 768px) {
-    .grand-theorems-spotlight, .manifesto-card {
+    .grand-theorems-spotlight, .manifesto-card, .block-welcome-card {
       padding: 1.4rem;
     }
     .filter-controls-row {
       flex-direction: column;
       align-items: stretch;
     }
-    .search-input-wrapper {
-      max-width: 100%;
+    .search-prominent-bar {
+      border-radius: 10px;
+    }
+    .welcome-top {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+    .welcome-stat {
+      align-items: flex-start;
+    }
+    .block-context-nav {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .block-switch-pills {
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
     }
   }
 </style>

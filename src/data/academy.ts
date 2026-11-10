@@ -18,7 +18,8 @@ export interface AcademyBlock {
   number: string;
   name: string;
   tagline: string;
-  icon: string;
+  glyph: string;
+  glyphLabel: string;
   description: string;
   color: string;
   levelRange: string;
@@ -31,7 +32,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '01',
     name: 'Fundamentos y Demostración',
     tagline: 'Aprender a pensar como un matemático',
-    icon: '⚖️',
+    glyph: '∴',
+    glyphLabel: 'Deducción lógica',
     description: 'Lógica proposicional, cuantificadores, implicación vs doble implicación, reducción al absurdo, inducción y el poder del contraejemplo.',
     color: '#ffc14d',
     levelRange: 'ESO & Bachillerato',
@@ -42,7 +44,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '02',
     name: 'Álgebra y Estructuras',
     tagline: 'De la receta mecánica a la deducción rigurosa',
-    icon: '🔣',
+    glyph: 'Ax=b',
+    glyphLabel: 'Estructuras y álgebra matricial',
     description: 'Deducción geométrica de identidades notables, la fórmula cuadrática completando cuadrados, Ruffini y el Teorema del Resto, y el Teorema de Rouché-Frobenius.',
     color: '#38bdf8',
     levelRange: '3º ESO a 2º Bachillerato',
@@ -53,7 +56,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '03',
     name: 'Análisis y Funciones',
     tagline: 'El rigor del infinito, límites y teoremas del continuo',
-    icon: '📈',
+    glyph: '∫ dx',
+    glyphLabel: 'Cálculo diferencial e integral',
     description: 'Definición estricta de límite, continuidad real, Teorema de Bolzano con contraejemplos, derivada por cociente incremental, Teorema del Valor Medio y el Teorema Fundamental del Cálculo.',
     color: '#10b981',
     levelRange: '1º y 2º Bachillerato',
@@ -64,7 +68,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '04',
     name: 'Geometría Analítica y Métrica',
     tagline: 'Vectores, espacio afín y posiciones relativas sin memorizar',
-    icon: '🧭',
+    glyph: 'ℝ³',
+    glyphLabel: 'Espacio afín y métrico',
     description: 'Bases y combinaciones lineales, producto escalar axiomático y ortogonalidad, ecuaciones de rectas y planos en ℝ³, y deducción de distancias y ángulos.',
     color: '#c084fc',
     levelRange: '4º ESO y Bachillerato',
@@ -75,7 +80,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '05',
     name: 'Probabilidad y Combinatoria',
     tagline: 'Fundamentos axiomáticos del azar y el recuento',
-    icon: '🎲',
+    glyph: 'P(A|B)',
+    glyphLabel: 'Probabilidad y azar condicionado',
     description: 'Técnicas combinatorias sistemáticas, axiomática de Kolmogorov, probabilidad condicionada, independencia de sucesos y Teorema de Bayes riguroso.',
     color: '#f43f5e',
     levelRange: '4º ESO a 2º Bachillerato',
@@ -86,7 +92,8 @@ export const ACADEMY_BLOCKS: AcademyBlock[] = [
     number: '06',
     name: 'El Salón de los Grandes Teoremas',
     tagline: 'Las demostraciones más bellas al alcance del estudiante',
-    icon: '👑',
+    glyph: '∎',
+    glyphLabel: 'Demostraciones completas',
     description: 'Demostraciones completas e ilustradas de joyas matemáticas: la irracionalidad de √2, la infinitud de los números primos de Euclides, y el Teorema de Pitágoras por disección.',
     color: '#fbbf24',
     levelRange: 'Todos los niveles',

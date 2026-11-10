@@ -32,12 +32,18 @@ const isHome = activePage === 'home';
         <a href={isHome ? '#recursos' : '/#recursos'}>
           <span>Recursos</span>
         </a>
-        <a href={isHome ? '#universo' : '/#universo'}>
-          <span>El proyecto</span>
-        </a>
-        <a href={isHome ? '#principios' : '/#principios'}>
-          <span>Principios</span>
-        </a>
+        {
+          isHome && (
+            <>
+              <a href="#universo">
+                <span>El proyecto</span>
+              </a>
+              <a href="#principios">
+                <span>Principios</span>
+              </a>
+            </>
+          )
+        }
       </nav>
     </div>
 

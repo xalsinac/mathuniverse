@@ -34,7 +34,7 @@
     <!-- Píldoras de métricas con efecto cristal -->
     <div class="hero-pills-row">
       <div class="glass-metric-pill">
-        <span class="metric-icon">📐</span>
+        <span class="metric-icon" aria-hidden="true">∑</span>
         <div class="metric-body">
           <strong>6 Bloques</strong>
           <span>ESO &amp; Bachillerato</span>
@@ -42,7 +42,7 @@
       </div>
 
       <div class="glass-metric-pill">
-        <span class="metric-icon">⚖️</span>
+        <span class="metric-icon" aria-hidden="true">∴</span>
         <div class="metric-body">
           <strong>Demostraciones</strong>
           <span>Deductivas y visuales</span>
@@ -50,7 +50,7 @@
       </div>
 
       <div class="glass-metric-pill">
-        <span class="metric-icon">🔍</span>
+        <span class="metric-icon" aria-hidden="true">≠</span>
         <div class="metric-body">
           <strong>Contraejemplos</strong>
           <span>Límites de los teoremas</span>
@@ -58,7 +58,7 @@
       </div>
 
       <div class="glass-metric-pill">
-        <span class="metric-icon">🎓</span>
+        <span class="metric-icon" aria-hidden="true">PAU</span>
         <div class="metric-body">
           <strong>Preparación PAU</strong>
           <span>Rigor de matrícula</span>
@@ -73,7 +73,7 @@
         <span class="btn-arrow" aria-hidden="true">↓</span>
       </a>
       <a href="#teoremas" class="hero-btn-glass">
-        <span class="btn-star" aria-hidden="true">👑</span>
+        <span class="btn-star" aria-hidden="true">∎</span>
         <span>Salón de Grandes Teoremas</span>
       </a>
       <a href="#metodologia" class="hero-btn-link">
@@ -114,24 +114,28 @@
       active: false,
     };
 
-    // Paletas de color reactivas al tema de Math Universe
+    // Paletas de color reactivas al tema de Math Universe (Líneas ondulantes más saturadas y visibles)
     const getColors = () => {
       const isLight = document.documentElement.dataset.theme === 'light';
       if (isLight) {
         return {
-          waveA: 'rgba(217, 119, 6, 0.08)',
-          waveB: 'rgba(180, 83, 9, 0.12)',
-          waveC: 'rgba(71, 85, 105, 0.07)',
+          waveA: 'rgba(217, 119, 6, 0.42)',
+          waveB: 'rgba(180, 83, 9, 0.50)',
+          waveC: 'rgba(245, 158, 11, 0.40)',
+          waveD: 'rgba(161, 98, 7, 0.46)',
+          waveGlow: 'rgba(217, 119, 6, 0.25)',
           boidMain: '#d97706',
           boidHighlight: '#f59e0b',
           boidSubtle: '#b45309',
-          boidGlow: 'rgba(217, 119, 6, 0.25)',
+          boidGlow: 'rgba(217, 119, 6, 0.35)',
         };
       }
       return {
-        waveA: 'rgba(255, 193, 77, 0.07)',
-        waveB: 'rgba(251, 191, 36, 0.12)',
-        waveC: 'rgba(254, 240, 138, 0.05)',
+        waveA: 'rgba(255, 193, 77, 0.45)',
+        waveB: 'rgba(251, 191, 36, 0.55)',
+        waveC: 'rgba(245, 158, 11, 0.40)',
+        waveD: 'rgba(254, 240, 138, 0.50)',
+        waveGlow: 'rgba(255, 193, 77, 0.40)',
         boidMain: '#ffc14d',
         boidHighlight: '#ffeaa7',
         boidSubtle: '#e69500',
@@ -251,32 +255,40 @@
     container.addEventListener('mouseleave', onPointerLeave, { passive: true });
     container.addEventListener('touchend', onPointerLeave, { passive: true });
 
-    // Dibuja las líneas de ondas matemáticas en capas
+    // Dibuja las líneas de ondas matemáticas en capas (4 ondas saturadas que se cruzan entre sí)
     const drawWaveRibbons = () => {
       const waveLayers = [
-        { yBase: height * 0.30, k: 0.0035, w: 0.7, amp: 45, color: colors.waveA, width: 1.5 },
-        { yBase: height * 0.48, k: 0.0048, w: -0.9, amp: 55, color: colors.waveB, width: 2.0 },
-        { yBase: height * 0.65, k: 0.0028, w: 0.5, amp: 40, color: colors.waveC, width: 1.5 },
-        { yBase: height * 0.82, k: 0.0055, w: -0.6, amp: 50, color: colors.waveA, width: 1.2 },
+        // Onda 1: Superior descendente hacia el centro (desplazamiento hacia la derecha)
+        { yBase: height * 0.40, k: 0.0032, w: 0.85, amp: 68, color: colors.waveA, width: 2.2 },
+        // Onda 2: Inferior ascendente en contrafase (se cruza repetidamente con la Onda 1)
+        { yBase: height * 0.60, k: 0.0042, w: -0.75, amp: 72, color: colors.waveB, width: 2.5 },
+        // Onda 3: Portadora central con doble armónico (teje entre las dos anteriores)
+        { yBase: height * 0.50, k: 0.0025, w: 0.60, amp: 46, color: colors.waveC, width: 2.0 },
+        // Onda 4: Frecuencia más alta y rápida (corta a las tres ondas en nodos rítmicos)
+        { yBase: height * 0.48, k: 0.0056, w: -1.10, amp: 56, color: colors.waveD, width: 1.8 },
       ];
+
+      ctx.save();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = colors.waveGlow;
 
       waveLayers.forEach((w) => {
         ctx.beginPath();
         ctx.strokeStyle = w.color;
         ctx.lineWidth = w.width;
 
-        const step = 14;
+        const step = 10;
         for (let x = 0; x <= width + step; x += step) {
-          let y = w.yBase + Math.sin(x * w.k + time * w.w) * w.amp + Math.cos(x * (w.k * 0.6) - time * 0.4) * (w.amp * 0.5);
+          let y = w.yBase + Math.sin(x * w.k + time * w.w) * w.amp + Math.cos(x * (w.k * 0.65) - time * (w.w * 0.5)) * (w.amp * 0.45);
 
-          // Si el puntero está cerca, la onda se deforma
+          // Si el puntero está cerca, la onda se deforma dinámicamente
           if (pointer.active) {
             const dx = x - pointer.x;
             const dy = y - pointer.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < pointer.radius) {
               const influence = (1 - dist / pointer.radius);
-              y += (dy / (dist || 1)) * influence * 24;
+              y += (dy / (dist || 1)) * influence * 30;
             }
           }
 
@@ -285,6 +297,8 @@
         }
         ctx.stroke();
       });
+
+      ctx.restore();
     };
 
     // Bucle de renderizado
