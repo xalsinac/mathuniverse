@@ -1,0 +1,3052 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-01');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-03');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN FÍSICA Y LA PARADOJA DE CRUZAR EL RÍO -->
+  <section class="lesson-section" id="intuicion-rio">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición Geométrica y la Paradoja de Cruzar el Río</h2>
+
+    <p class="lead-paragraph">
+      Imagina que caminas por un sendero continuo desde la orilla sur de un río (<code class="inline-code">y &lt; 0</code>) hasta la orilla norte (<code class="inline-code">y &gt; 0</code>). Si el camino es ininterrumpido —sin teletransportarte ni dar un salto cuántico sobre el agua—, <strong>es físicamente imposible llegar al otro lado sin haber pisado en algún instante la línea exacta de la orilla (<code class="inline-code">y = 0</code>)</strong>.
+    </p>
+
+    <!-- Visual Hero Analogy -->
+    <div class="river-analogy-card">
+      <div class="river-badge">PRINCIPIO TOPOLÓGICO CONTINUO</div>
+      <div class="river-svg-wrap">
+        <svg viewBox="0 0 760 180" class="river-svg" aria-label="Analogía visual del río: una curva continua que une una cota negativa con una positiva debe cortar la recta y = 0">
+          <defs>
+            <linearGradient id="riverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.25" />
+              <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.45" />
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.25" />
+            </linearGradient>
+            <pattern id="riverLines" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 0 10 Q 5 5, 10 10 T 20 10" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.3" />
+            </pattern>
+          </defs>
+
+          <!-- Zona Ribera Superior (y > 0) -->
+          <rect x="20" y="10" width="720" height="70" fill="rgba(16, 185, 129, 0.05)" rx="8" />
+          <text x="40" y="35" class="river-label green">REGIÓN POSITIVA: y &gt; 0 (Orilla Norte)</text>
+
+          <!-- Eje / Línea del Río (y = 0) -->
+          <line x1="20" y1="90" x2="740" y2="90" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,4" />
+          <text x="650" y="82" class="river-label cyan">Línea de Agua y = 0</text>
+
+          <!-- Zona Ribera Inferior (y < 0) -->
+          <rect x="20" y="100" width="720" height="70" fill="rgba(244, 63, 94, 0.05)" rx="8" />
+          <text x="40" y="155" class="river-label red">REGIÓN NEGATIVA: y &lt; 0 (Orilla Sur)</text>
+
+          <!-- Trayectoria Curva Continua -->
+          <path d="M 80 150 C 180 160, 260 20, 390 90 C 470 140, 560 30, 680 35" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- Puntos A, B y Raíces C -->
+          <circle cx="80" cy="150" r="6" fill="#f43f5e" stroke="#fff" stroke-width="2" />
+          <text x="75" y="172" class="river-point-tag red">A: (a, f(a) &lt; 0)</text>
+
+          <!-- Cruces con el río (y = 0) -->
+          <circle cx="318" cy="90" r="7" fill="#38bdf8" stroke="#0f172a" stroke-width="2.5" />
+          <text x="310" y="115" class="river-point-tag cyan">c₁: f(c₁) = 0</text>
+
+          <circle cx="390" cy="90" r="7" fill="#38bdf8" stroke="#0f172a" stroke-width="2.5" />
+          <text x="382" y="75" class="river-point-tag cyan">c₂: f(c₂) = 0</text>
+
+          <circle cx="522" cy="90" r="7" fill="#38bdf8" stroke="#0f172a" stroke-width="2.5" />
+          <text x="514" y="115" class="river-point-tag cyan">c₃: f(c₃) = 0</text>
+
+          <circle cx="680" cy="35" r="6" fill="#10b981" stroke="#fff" stroke-width="2" />
+          <text x="650" y="25" class="river-point-tag green">B: (b, f(b) &gt; 0)</text>
+        </svg>
+      </div>
+      <p class="river-caption">
+        Una función continua puede cortar la línea de cero una o múltiples veces (<code class="inline-code">c₁, c₂, c₃</code>), pero <strong>al menos un cruce está matemáticamente blindado</strong>.
+      </p>
+    </div>
+
+    <div class="history-context-box">
+      <div class="h-icon">📜</div>
+      <div class="h-body">
+        <h4>El Salto de la Evidencia Visual al Rigor Matemático (1817)</h4>
+        <p>
+          Durante dos milenios, desde Euclides hasta Newton, este principio se daba por evidente mediante intuición geométrica. Sin embargo, en el conjunto de los números racionales <code class="inline-code">ℚ</code> el teorema <strong>falla rotundamente</strong>: la función polinómica continua <code class="inline-code">f(x) = x² - 2</code> cambia de signo entre <code class="inline-code">1</code> (<code class="inline-code">f(1) = -1 &lt; 0</code>) y <code class="inline-code">2</code> (<code class="inline-code">f(2) = 2 &gt; 0</code>), pero <em>no existe ningún número racional</em> donde <code class="inline-code">f(c) = 0</code> ya que <code class="inline-code">√2 ∉ ℚ</code>.
+        </p>
+        <p>
+          Fue el matemático y sacerdote bohemio <strong>Bernard Bolzano</strong> quien en 1817 demostró que el teorema exige de forma imprescindible la <strong>completitud de los números reales (ℝ)</strong>, desterrando para siempre la vaga intuición del «movimiento continuo» y fundando las bases de la topología moderna.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: EL TEOREMA FORMAL Y LA DISECCIÓN QUIRÚRGICA -->
+  <section class="lesson-section" id="enunciado-formal">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. El Teorema Formal y Disección Quirúrgica de las Hipótesis</h2>
+
+    <p>
+      En cualquier examen oficial y en las pruebas de Selectividad (PAU), el enunciado exacto y la comprobación de cada una de sus hipótesis constituyen el núcleo de la puntuación:
+    </p>
+
+    <!-- Recuadro Enunciado Canónico -->
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE BOLZANO (1817)</div>
+      <h3>Enunciado Canónico y Formulación Lógica</h3>
+      <div class="thm-conditions">
+        <p>Sea una función real de variable real <code class="inline-code">f: [a, b] ⟶ ℝ</code> que satisface las siguientes dos condiciones:</p>
+        <ol class="thm-cond-list">
+          <li>
+            <span class="cond-pill">Hipótesis 1</span>
+            <strong>Continuidad global en el cerrado:</strong> <code class="inline-code">f</code> es continua en todos los puntos del intervalo cerrado <code class="inline-code">[a, b]</code>.
+          </li>
+          <li>
+            <span class="cond-pill">Hipótesis 2</span>
+            <strong>Cambio de signo en los extremos:</strong> <code class="inline-code">f(a)</code> y <code class="inline-code">f(b)</code> tienen signos opuestos, lo que formalmente se enuncia como:
+            <div class="thm-sign-eq">
+              f(a) · f(b) &lt; 0
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="thm-thesis">
+        <span class="thesis-pill">TESIS</span>
+        <p class="thesis-text">
+          Entonces, <strong>existe al menos un número real c perteneciente al intervalo abierto (a, b)</strong> tal que:
+        </p>
+        <div class="thesis-formula">
+          ∃ c ∈ (a, b) &emsp;tal que&emsp; f(c) = 0
+        </div>
+      </div>
+    </div>
+
+    <!-- Disección Quirúrgica de Términos -->
+    <div class="surgical-grid">
+      <div class="surgical-card">
+        <div class="surg-num">01</div>
+        <h4>¿Por qué cerrado [a, b] en hipótesis y abierto (a, b) en tesis?</h4>
+        <p>
+          La función debe estar bien definida y ser continua hasta el último milímetro de los bordes (<code class="inline-code">[a, b]</code>). Sin embargo, dado que <code class="inline-code">f(a) ≠ 0</code> y <code class="inline-code">f(b) ≠ 0</code> (su producto es estrictamente negativo), la raíz <code class="inline-code">c</code> <strong>nunca puede ser ni a ni b</strong>. Por tanto, reside forzosamente en el interior estricto <code class="inline-code">(a, b)</code>.
+        </p>
+      </div>
+
+      <div class="surgical-card">
+        <div class="surg-num">02</div>
+        <h4>«Existe al menos uno» (∃) no significa «Único» (∃!)</h4>
+        <p>
+          Bolzano es un teorema de <strong>existencia pura</strong>. Asegura que la curva cruza el eje <code class="inline-code">X</code> al menos una vez, pero no pone límite superior: puede cortarlo 1, 3, 17 o infinitas veces. Para demostrar que la solución es <em>única</em>, se requiere una herramienta de derivabilidad (monotonía o Teorema de Rolle).
+        </p>
+      </div>
+
+      <div class="surgical-card">
+        <div class="surg-num">03</div>
+        <h4>El producto f(a) · f(b) &lt; 0</h4>
+        <p>
+          En matemáticas puras se prefiere la formulación multiplicativa <code class="inline-code">f(a) · f(b) &lt; 0</code> en vez de «tienen signos distintos» porque resume simultáneamente dos condiciones algebraicas: que ninguno de los dos extremos es cero y que uno de ellos es positivo mientras el otro es negativo.
+        </p>
+      </div>
+
+      <div class="surgical-card">
+        <div class="surg-num">04</div>
+        <h4>Condición Suficiente, pero NO Necesaria</h4>
+        <p>
+          Si se cumplen las hipótesis, la raíz existe seguro. Pero si <em>no</em> se cumplen (por ejemplo, si <code class="inline-code">f(a) · f(b) &gt; 0</code>), <strong>no puedes afirmar que no haya raíces</strong>: una función puede bajar, cortar dos veces el eje y volver a subir, teniendo el mismo signo en ambos extremos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: GALERÍA DE CONTRAEJEMPLOS: POR QUÉ CADA HIPÓTESIS ES CRUCIAL -->
+  <section class="lesson-section" id="galeria-contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Galería de Contraejemplos: La Necesidad Crítica de Cada Hipótesis</h2>
+
+    <p>
+      Para dominar un teorema en profundidad hay que comprender con exactitud qué catástrofe analítica ocurre cuando se suprime o relaja una sola de sus hipótesis. Veamos los 4 contraejemplos paradigmáticos:
+    </p>
+
+    <div class="counterexamples-grid">
+      <!-- Caso 1: Falta Continuidad (Asíntota vertical) -->
+      <div class="counter-card is-failed">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS VIOLADA: CONTINUIDAD</span>
+          <span class="c-res">❌ FALLO TOTAL DE LA TESIS</span>
+        </div>
+        <h4>f(x) = 1/x en el intervalo [-1, 1]</h4>
+        <p class="c-desc">
+          Evaluamos los extremos: <code class="inline-code">f(-1) = -1 &lt; 0</code> y <code class="inline-code">f(1) = 1 &gt; 0</code>. ¡Hay cambio de signo estricto! Sin embargo:
+        </p>
+        <div class="c-formula">
+          f(x) = 0 ⟹ <span class="math-frac"><span class="num">1</span><span class="den">x</span></span> = 0 ⟹ Sin solución real en ningún punto
+        </div>
+        <p class="c-note">
+          <strong>Por qué falla:</strong> <code class="inline-code">f(x)</code> sufre una discontinuidad asintótica en <code class="inline-code">x = 0</code>. La función "salta" de <code class="inline-code">-∞</code> a <code class="inline-code">+∞</code> a través de la asíntota sin tocar jamás el eje horizontal.
+        </p>
+      </div>
+
+      <!-- Caso 2: Falta Continuidad (Salto finito en función a trozos) -->
+      <div class="counter-card is-failed">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS VIOLADA: CONTINUIDAD PUNTUAL</span>
+          <span class="c-res">❌ SALTO SOBRE EL EJE</span>
+        </div>
+        <h4>Función a trozos con salto finito</h4>
+        <p class="c-desc">
+          Definimos <code class="inline-code">f(x) = x - 1</code> si <code class="inline-code">x &lt; 1</code>, y <code class="inline-code">f(x) = x + 1</code> si <code class="inline-code">x ≥ 1</code> en el intervalo <code class="inline-code">[0, 2]</code>:
+        </p>
+        <div class="c-formula">
+          f(0) = -1 &lt; 0 &emsp;y&emsp; f(2) = 3 &gt; 0
+        </div>
+        <p class="c-note">
+          <strong>Por qué falla:</strong> En el punto <code class="inline-code">x = 1</code> la función tiene una discontinuidad de salto finito (pasa de <code class="inline-code">0⁻</code> a <code class="inline-code">2</code> sin alcanzar jamás el cero). Bastó que fallara la continuidad en <em>un único punto aislado</em> para invalidar el teorema.
+        </p>
+      </div>
+
+      <!-- Caso 3: Intervalo Abierto (Sin borde definido) -->
+      <div class="counter-card is-failed">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS VIOLADA: INTERVALO CERRADO</span>
+          <span class="c-res">❌ RAÍZ EXPULSADA AL EXTERIOR</span>
+        </div>
+        <h4>Intervalos sin compacidad topológica (a, b)</h4>
+        <p class="c-desc">
+          Si el intervalo no contiene sus extremos o la función diverge al acercarse a ellos, como <code class="inline-code">f(x) = 1/(x - 2)</code> en el intervalo abierto <code class="inline-code">(2, 4]</code>:
+        </p>
+        <div class="c-formula">
+          lim<sub>x→2⁺</sub> f(x) = +∞ &emsp;y&emsp; f(4) = 0.5 &gt; 0
+        </div>
+        <p class="c-note">
+          <strong>Por qué falla:</strong> El teorema de Bolzano se fundamenta en la compacidad topológica de <code class="inline-code">[a, b]</code>. Si el intervalo es abierto, la función puede "escaparse" asintóticamente hacia el infinito antes de alcanzar los límites.
+        </p>
+      </div>
+
+      <!-- Caso 4: Mismo signo en extremos pero con raíces -->
+      <div class="counter-card is-subtle">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS NO CUMPLIDA: f(a)·f(b) &gt; 0</span>
+          <span class="c-res">⚠️ BOLZANO MUDO (HAY RAÍCES)</span>
+        </div>
+        <h4>f(x) = x² - 1 en el intervalo [-2, 2]</h4>
+        <p class="c-desc">
+          Evaluamos los extremos de la parábola: <code class="inline-code">f(-2) = 3 &gt; 0</code> y <code class="inline-code">f(2) = 3 &gt; 0</code>. ¡Mismo signo! Sin embargo:
+        </p>
+        <div class="c-formula">
+          x² - 1 = 0 ⟹ x = -1 ∈ (-2, 2) &emsp;y&emsp; x = 1 ∈ (-2, 2)
+        </div>
+        <p class="c-note">
+          <strong>La lección:</strong> Que <code class="inline-code">f(a)·f(b) &gt; 0</code> <strong>NO</strong> significa que no haya raíces; simplemente significa que el Teorema de Bolzano no se pronuncia. Es un condicional directo (<code class="inline-code">P ⟹ Q</code>), no un bicondicional.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO: EL ALGORITMO DE BISECCIÓN -->
+  <section class="lesson-section" id="laboratorio-biseccion">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: El Algoritmo de Bisección Numérica</h2>
+
+    <p class="lead-paragraph">
+      El Teorema de Bolzano no es solo un teorema teórico: es el motor matemático de uno de los algoritmos de cálculo numérico más robustos de la informática: <strong>el Método de Bisección</strong>.
+    </p>
+    <p>
+      Si sabemos que hay una raíz en <code class="inline-code">[a, b]</code> porque <code class="inline-code">f(a)·f(b) &lt; 0</code>, calculamos el punto medio <code class="inline-code">m = (a + b) / 2</code>. Evaluamos <code class="inline-code">f(m)</code>:
+    </p>
+    <ul class="bullet-concept-list">
+      <li>Si <code class="inline-code">f(a) · f(m) &lt; 0</code>, la raíz está atrapada en la mitad izquierda: nuevo intervalo <code class="inline-code">[a, m]</code>.</li>
+      <li>Si <code class="inline-code">f(m) · f(b) &lt; 0</code>, la raíz está en la mitad derecha: nuevo intervalo <code class="inline-code">[m, b]</code>.</li>
+      <li>Si <code class="inline-code">f(m) = 0</code>, ¡hemos hallado la raíz exacta!</li>
+    </ul>
+
+    <!-- Simulador Visual Interactivo -->
+    <div class="bisection-lab-container">
+      <div class="lab-topbar">
+        <div class="lab-title-group">
+          <span class="lab-indicator-pulse"></span>
+          <span class="lab-header-text">SIMULADOR VECTORIAL DE BISECCIÓN</span>
+        </div>
+
+        <div class="lab-func-selector" role="group" aria-label="Seleccionar función para bisección">
+          <button type="button" class="b-tab-btn is-active" data-func="cubic">
+            f(x) = x³ - 3x - 1
+          </button>
+          <button type="button" class="b-tab-btn" data-func="cos">
+            f(x) = cos(x) - x
+          </button>
+          <button type="button" class="b-tab-btn" data-func="exp">
+            f(x) = eˣ - 3x
+          </button>
+          <button type="button" class="b-tab-btn" data-func="sqrt2">
+            f(x) = x² - 2
+          </button>
+        </div>
+      </div>
+
+      <div class="lab-workbench-grid">
+        <!-- Canvas/SVG Visualizer -->
+        <div class="lab-graph-card">
+          <div class="graph-legend">
+            <span class="leg-item"><span class="dot-swatch swatch-curve"></span> Curva f(x)</span>
+            <span class="leg-item"><span class="dot-swatch swatch-interval"></span> Intervalo [a, b]</span>
+            <span class="leg-item"><span class="dot-swatch swatch-mid"></span> Punto Medio m</span>
+            <span class="leg-item"><span class="dot-swatch swatch-root"></span> Raíz c</span>
+          </div>
+
+          <div class="svg-stage-container">
+            <svg id="bisection-svg" viewBox="-20 -20 640 380" class="bisection-svg" preserveAspectRatio="xMidYMid meet">
+              <!-- Rejilla y Ejes (Inyectados dinámicamente) -->
+              <g id="bg-grid"></g>
+              <g id="axes-layer"></g>
+              <!-- Zona de intervalo activa sombreada -->
+              <rect id="interval-rect" fill="rgba(56, 189, 248, 0.12)" stroke="none" />
+              <!-- Curva matemática -->
+              <path id="curve-path" fill="none" stroke="#38bdf8" stroke-width="2.8" stroke-linecap="round" />
+              <!-- Líneas verticales de los extremos a y b -->
+              <line id="line-a" stroke="#f43f5e" stroke-width="1.8" stroke-dasharray="4,3" />
+              <line id="line-b" stroke="#10b981" stroke-width="1.8" stroke-dasharray="4,3" />
+              <!-- Línea vertical del punto medio m -->
+              <line id="line-m" stroke="#fbbf24" stroke-width="2" stroke-dasharray="3,3" />
+              <!-- Puntos (a, f(a)), (b, f(b)) y (m, f(m)) -->
+              <g id="points-layer"></g>
+            </svg>
+          </div>
+
+          <div class="lab-controls-bar">
+            <button type="button" id="btn-bisect-step" class="lab-btn is-primary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+              <span>Iterar Paso (+1)</span>
+            </button>
+            <button type="button" id="btn-bisect-auto" class="lab-btn is-secondary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Auto-convergencia (6 pasos)</span>
+            </button>
+            <button type="button" id="btn-bisect-reset" class="lab-btn is-outline">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              <span>Reiniciar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Telemetría en Tiempo Real -->
+        <div class="lab-telemetry-card">
+          <div class="tel-head">
+            <span class="tel-title">TELEMETRÍA ANALÍTICA</span>
+            <span class="tel-iter-badge" id="disp-iter">Paso: n = 0</span>
+          </div>
+
+          <div class="tel-metrics-grid">
+            <div class="tel-metric">
+              <span class="m-label">Extremo Izquierdo a</span>
+              <span class="m-val" id="val-a">1.000000</span>
+              <span class="m-sub" id="sign-a">f(a) = -3.000000 (&lt; 0)</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Extremo Derecho b</span>
+              <span class="m-val" id="val-b">2.200000</span>
+              <span class="m-sub" id="sign-b">f(b) = +3.048000 (&gt; 0)</span>
+            </div>
+
+            <div class="tel-metric is-highlight">
+              <span class="m-label">Punto Medio Estimado m</span>
+              <span class="m-val highlight" id="val-m">1.600000</span>
+              <span class="m-sub" id="val-fm">f(m) = -1.704000</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Longitud de Intervalo Δn</span>
+              <span class="m-val" id="val-delta">1.200000</span>
+              <span class="m-sub">Reducción por paso: 50%</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Cota de Error Máxima ε</span>
+              <span class="m-val" id="val-error">± 0.600000</span>
+              <span class="m-sub">ε = (b - a) / 2</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Garantía Teórica de Bolzano</span>
+              <span class="m-val text-green" id="val-guarantee">f(a)·f(b) &lt; 0 ✓</span>
+              <span class="m-sub">Existencia de raíz asegurada</span>
+            </div>
+          </div>
+
+          <!-- Tabla histórica de iteraciones compacta -->
+          <div class="tel-history-wrap">
+            <span class="hist-title">Historial de Aproximación:</span>
+            <div class="hist-table-scroll">
+              <table class="hist-table" id="bisection-hist-table">
+                <thead>
+                  <tr>
+                    <th>n</th>
+                    <th>a<sub>n</sub></th>
+                    <th>b<sub>n</sub></th>
+                    <th>m<sub>n</sub></th>
+                    <th>f(m<sub>n</sub>)</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody id="hist-table-body">
+                  <!-- Llenado con JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: COROLARIOS MAYORES: DARBOUX E INTERSECCIÓN DE CURVAS -->
+  <section class="lesson-section" id="corolarios-darboux">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Corolarios Mayores: Teorema del Valor Intermedio (Darboux) e Intersección</h2>
+
+    <p>
+      El Teorema de Bolzano es la llave maestra para deducir dos de los resultados más potentes y aplicados de todo el cálculo diferencial:
+    </p>
+
+    <!-- Corolario 1: Darboux -->
+    <div class="corolario-card">
+      <div class="cor-badge">COROLARIO 1 · TEOREMA DE DARBOUX</div>
+      <h3>El Teorema de los Valores Intermedios</h3>
+      <p>
+        «Si una función <code class="inline-code">f</code> es continua en <code class="inline-code">[a, b]</code>, entonces <strong>toma todos y cada uno de los valores comprendidos entre f(a) y f(b)</strong>». Es decir, si <code class="inline-code">k</code> es un valor intermedio (<code class="inline-code">f(a) &lt; k &lt; f(b)</code> o viceversa), existe al menos un punto <code class="inline-code">c ∈ (a, b)</code> tal que <code class="inline-code">f(c) = k</code>.
+      </p>
+
+      <div class="proof-deduction-box">
+        <span class="p-tag">DEMOSTRACIÓN IMPECABLE EN 3 LÍNEAS (VÍA BOLZANO)</span>
+        <div class="p-steps">
+          <div class="p-step">
+            <span class="p-num">1</span>
+            <span>Definimos la función auxiliar <code class="inline-code">g(x) = f(x) - k</code>. Como <code class="inline-code">f</code> es continua en <code class="inline-code">[a, b]</code> y <code class="inline-code">k</code> es constante, <code class="inline-code">g</code> es estrictamente continua en <code class="inline-code">[a, b]</code>.</span>
+          </div>
+          <div class="p-step">
+            <span class="p-num">2</span>
+            <span>Evaluamos en los bordes: <code class="inline-code">g(a) = f(a) - k &lt; 0</code> (ya que <code class="inline-code">f(a) &lt; k</code>) y <code class="inline-code">g(b) = f(b) - k &gt; 0</code> (ya que <code class="inline-code">f(b) &gt; k</code>).</span>
+          </div>
+          <div class="p-step">
+            <span class="p-num">3</span>
+            <span>Por el Teorema de Bolzano aplicado a <code class="inline-code">g(x)</code>, existe <code class="inline-code">c ∈ (a, b)</code> tal que <code class="inline-code">g(c) = 0</code>. Por definición, <code class="inline-code">f(c) - k = 0 ⟹ f(c) = k</code>. <strong class="text-cyan">∎ Q.E.D.</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corolario 2: Intersección de Curvas -->
+    <div class="corolario-card">
+      <div class="cor-badge">COROLARIO 2 · INTERSECCIÓN DE FUNCIONES</div>
+      <h3>Punto de Encuentro entre dos Gráficas f(x) = g(x)</h3>
+      <p>
+        Uno de los ejercicios más frecuentes en exámenes consiste en probar que dos funciones distintas <code class="inline-code">f(x)</code> y <code class="inline-code">g(x)</code> se cortan en al menos un punto. El truco maestro consiste en transformar el problema de intersección en un problema de raíces:
+      </p>
+
+      <div class="intersection-demo-grid">
+        <div class="inter-box">
+          <span class="ib-title">Ecuación original de corte</span>
+          <div class="ib-formula">f(x) = g(x)</div>
+          <span class="ib-desc">¿En qué abscisa coinciden las alturas de ambas curvas?</span>
+        </div>
+        <div class="inter-arrow">⟺</div>
+        <div class="inter-box highlight">
+          <span class="ib-title">Función diferencia auxiliar</span>
+          <div class="ib-formula">h(x) = f(x) - g(x) = 0</div>
+          <span class="ib-desc">Raíz de la función distancia vertical mediante Bolzano.</span>
+        </div>
+      </div>
+
+      <div class="solved-example-card">
+        <div class="se-header">
+          <span class="se-badge">EJEMPLO CLÁSICO RESUELTO</span>
+          <h4>Demostrar que la curva exponencial e⁻ˣ y la parábola x² se cortan en el intervalo (0, 1)</h4>
+        </div>
+        <div class="se-body">
+          <p><strong>Paso 1: Construcción de la función auxiliar.</strong> Definimos <code class="inline-code">h(x) = e⁻ˣ - x²</code>.</p>
+          <p><strong>Paso 2: Justificación de continuidad.</strong> La función exponencial <code class="inline-code">e⁻ˣ</code> y la función polinómica <code class="inline-code">x²</code> son continuas en todo <code class="inline-code">ℝ</code>. Su resta <code class="inline-code">h(x)</code> es continua en <code class="inline-code">ℝ</code> y, en particular, en el intervalo cerrado <code class="inline-code">[0, 1]</code>.</p>
+          <p><strong>Paso 3: Evaluación de signos en los extremos.</strong></p>
+          <ul class="se-calc-list">
+            <li><code class="inline-code">h(0) = e⁰ - 0² = 1 - 0 = 1 &gt; 0</code></li>
+            <li><code class="inline-code">h(1) = e⁻¹ - 1² = <span class="math-frac"><span class="num">1</span><span class="den">e</span></span> - 1 ≈ 0.3679 - 1 = -0.6321 &lt; 0</code></li>
+          </ul>
+          <p><strong>Paso 4: Conclusión formal.</strong> Como <code class="inline-code">h(0) · h(1) &lt; 0</code>, por el <strong>Teorema de Bolzano</strong> existe al menos un punto <code class="inline-code">c ∈ (0, 1)</code> tal que <code class="inline-code">h(c) = 0 ⟹ e⁻ᶜ - c² = 0 ⟹ e⁻ᶜ = c²</code>. Ambas curvas se cortan con total certeza en dicho punto <code class="inline-code">c</code>. <strong class="text-cyan">∎</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Curiosidades Físicas Reales -->
+    <div class="realworld-grid">
+      <div class="rw-card">
+        <div class="rw-icon">🪑</div>
+        <h4>La Mesa Coja en Suelo Irregular</h4>
+        <p>
+          Si colocas una mesa cuadrada de cuatro patas idénticas en un suelo rugoso pero continuo y una pata queda en el aire, <strong>siempre es posible girar la mesa sobre su centro un ángulo menor de 90° hasta que las cuatro patas toquen el suelo simultáneamente</strong>. Este resultado fue demostrado formalmente aplicando el Teorema de Bolzano a la función de distancia vertical de la pata flotante.
+        </p>
+      </div>
+
+      <div class="rw-card">
+        <div class="rw-icon">🌍</div>
+        <h4>Puntos Antipodales de la Tierra</h4>
+        <p>
+          En cualquier círculo máximo de la Tierra (por ejemplo, el ecuador), existen en cualquier instante <strong>dos puntos exactamente opuestos (antípodas) que registran exactamente la misma temperatura</strong>. Se demuestra definiendo <code class="inline-code">h(θ) = T(θ) - T(θ + π)</code> y aplicando Bolzano en <code class="inline-code">[0, π]</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: EXISTENCIA FRENTE A UNICIDAD: BOLZANO + ROLLE -->
+  <section class="lesson-section" id="unicidad-rolle">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Existencia frente a Unicidad: El Protocolo Bolzano + Rolle</h2>
+
+    <p class="lead-paragraph">
+      Una de las trampas más sangrientas de los exámenes universitarios y de Selectividad es la pregunta: <em>«Demuestra que la ecuación tiene <strong>exactamente una</strong> solución real»</em>.
+    </p>
+    <p>
+      El Teorema de Bolzano demuestra que <strong>existe al menos una raíz</strong>, pero por sí solo es incapaz de garantizar que no existan más. Para resolver la unicidad se requiere una estrategia en dos fases independientes y complementarias:
+    </p>
+
+    <!-- Protocolo Dual -->
+    <div class="protocol-dual-card">
+      <div class="proto-col">
+        <div class="proto-tag">FASE 1 · EXISTENCIA (BOLZANO)</div>
+        <h4>Probar que el número de raíces es ≥ 1</h4>
+        <p>Se localiza un intervalo cerrado <code class="inline-code">[a, b]</code> donde la función sea continua y cambie de signo en los extremos:</p>
+        <div class="proto-box">
+          f continua en [a, b] &emsp;∧&emsp; f(a) · f(b) &lt; 0 ⟹ ∃ c ∈ (a, b) / f(c) = 0
+        </div>
+        <span class="proto-foot">Garantiza que la raíz existe, pero podría haber varias.</span>
+      </div>
+
+      <div class="proto-col is-unique">
+        <div class="proto-tag tag-rolle">FASE 2 · UNICIDAD (MONOTONÍA O ROLLE)</div>
+        <h4>Probar que el número de raíces es ≤ 1</h4>
+        <p>Se analiza la derivada <code class="inline-code">f'(x)</code> para impedir que la curva pueda volver a darse la vuelta y cruzar el eje:</p>
+        <div class="proto-box box-rolle">
+          f'(x) &gt; 0 &nbsp;∀x ⟹ f estrictamente creciente ⟹ Inyectiva ⟹ Raíz ÚNICA
+        </div>
+        <span class="proto-foot">Al ser monótona estricta, jamás puede volver a tocar y = 0.</span>
+      </div>
+    </div>
+
+    <!-- Ejemplo Demostrativo Completo de Examen -->
+    <div class="exam-protocol-walkthrough">
+      <div class="ep-header">
+        <span class="ep-badge">EJERCICIO TIPO SELECTIVIDAD CON CALIFICACIÓN MÁXIMA</span>
+        <h4>Demostrar que la ecuación x⁵ + 2x - 3 = 0 posee exactamente una raíz real</h4>
+      </div>
+
+      <div class="ep-body">
+        <!-- Paso 1 -->
+        <div class="ep-step">
+          <div class="ep-step-badge">PARTE 1</div>
+          <div class="ep-step-content">
+            <h5>Demostración de Existencia (Teorema de Bolzano)</h5>
+            <p>Sea <code class="inline-code">f(x) = x⁵ + 2x - 3</code>. Justificamos:</p>
+            <ol class="ep-sublist">
+              <li><code class="inline-code">f(x)</code> es una función polinómica, por lo que es continua en todo el conjunto de los números reales <code class="inline-code">ℝ</code>, y por tanto es continua en el intervalo cerrado <code class="inline-code">[0, 2]</code>.</li>
+              <li>Evaluamos en los extremos del intervalo elegido:
+                <div class="ep-math-eval">
+                  f(0) = 0⁵ + 2(0) - 3 = -3 &lt; 0
+                  <br />
+                  f(2) = 2⁵ + 2(2) - 3 = 32 + 4 - 3 = 33 &gt; 0
+                </div>
+              </li>
+              <li>Como <code class="inline-code">f(0) · f(2) &lt; 0</code>, por el <strong>Teorema de Bolzano</strong> existe al menos un valor <code class="inline-code">c ∈ (0, 2)</code> tal que <code class="inline-code">f(c) = 0</code>. La existencia de al menos una solución está probada.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="ep-step">
+          <div class="ep-step-badge">PARTE 2</div>
+          <div class="ep-step-content">
+            <h5>Demostración de Unicidad (Dos Métodos Rigurosos)</h5>
+            
+            <div class="method-subgrid">
+              <div class="method-card">
+                <span class="m-badge">MÉTODO A · MONOTONÍA ESTRICTA (RECOMENDADO)</span>
+                <p>Calculamos la función derivada primera:</p>
+                <div class="m-formula">
+                  f'(x) = 5x⁴ + 2
+                </div>
+                <p>
+                  Para cualquier <code class="inline-code">x ∈ ℝ</code>, el término cuártico <code class="inline-code">x⁴ ≥ 0</code>. Por consiguiente:
+                </p>
+                <div class="m-formula">
+                  f'(x) = 5x⁴ + 2 ≥ 2 &gt; 0 &emsp;∀x ∈ ℝ
+                </div>
+                <p>
+                  Dado que <code class="inline-code">f'(x)</code> es estrictamente positiva en todo su dominio, <code class="inline-code">f(x)</code> es una función <strong>estrictamente creciente e inyectiva</strong> en <code class="inline-code">ℝ</code>. Una función estrictamente monótona solo puede cortar al eje <code class="inline-code">X</code> en un único punto.
+                </p>
+              </div>
+
+              <div class="method-card">
+                <span class="m-badge">MÉTODO B · REDUCCIÓN AL ABSURDO CON TEOREMA DE ROLLE</span>
+                <p>
+                  Supongamos, por reducción al absurdo, que existieran dos raíces reales distintas <code class="inline-code">c₁ &lt; c₂</code> tales que <code class="inline-code">f(c₁) = f(c₂) = 0</code>.
+                </p>
+                <p>
+                  Como <code class="inline-code">f</code> es continua en <code class="inline-code">[c₁, c₂]</code> y derivable en <code class="inline-code">(c₁, c₂)</code>, por el <strong>Teorema de Rolle</strong> debería existir un punto intermedio <code class="inline-code">ξ ∈ (c₁, c₂)</code> tal que:
+                </p>
+                <div class="m-formula">
+                  f'(ξ) = 0 ⟹ 5ξ⁴ + 2 = 0 ⟹ ξ⁴ = -<span class="math-frac"><span class="num">2</span><span class="den">5</span></span> &lt; 0
+                </div>
+                <p>
+                  Esto es una contradicción geométrica y algebraica imposible en <code class="inline-code">ℝ</code>. Por tanto, es imposible que existan dos raíces. La raíz <code class="inline-code">c</code> es estrictamente <strong>única</strong>. <strong class="text-cyan">∎ Q.E.D.</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: RÚBRICA OFICIAL Y TRAMPAS EN EXÁMENES / PAU -->
+  <section class="lesson-section" id="trampas-pau">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica Oficial y las 4 Trampas Fatales en Selectividad</h2>
+
+    <p>
+      Los correctores de las pruebas de acceso a la universidad aplican criterios muy estrictos en las preguntas de análisis. Estos son los cuatro errores que cuestan hasta el 60% de la nota:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 01</span>
+          <span class="sin-title">Aplicar Bolzano sin Citar ni Demostrar la Continuidad</span>
+        </div>
+        <p>Evaluar directamente los signos <code class="inline-code">f(a)</code> y <code class="inline-code">f(b)</code> sin escribir una sola palabra sobre la continuidad de <code class="inline-code">f</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Como f(0) = -3 y f(2) = 33, por Bolzano hay una raíz.» [Penalización: 0.5 a 1 punto menos]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«f(x) es una función polinómica, por tanto continua en todo ℝ y en particular en el intervalo cerrado [0, 2]. Además, f(0)·f(2) &lt; 0. Por Bolzano...»</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 02</span>
+          <span class="sin-title">Afirmar Unicidad de la Solución basándose solo en Bolzano</span>
+        </div>
+        <p>Escribir que la ecuación tiene «una única solución por el Teorema de Bolzano»:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Por Bolzano existe una única solución en el intervalo.» [Falso conceptual de gravedad máxima]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Por Bolzano aseguramos la existencia de al menos una raíz. Para probar la unicidad calculamos f'(x) y demostramos monotonía estricta.»</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 03</span>
+          <span class="sin-title">Escribir Intervalo Cerrado [a, b] en la Tesis del Teorema</span>
+        </div>
+        <p>Confundir el dominio de las hipótesis con el intervalo donde se localiza la raíz:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Existe c ∈ [a, b] tal que f(c) = 0» [Impreciso: si f(a) ≠ 0 y f(b) ≠ 0, c no puede ser un extremo]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Existe c ∈ (a, b) tal que f(c) = 0» [Intervalo estrictamente abierto]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 04</span>
+          <span class="sin-title">No Definir la Función Auxiliar en Ecuaciones con Dos Miembros</span>
+        </div>
+        <p>Al resolver <code class="inline-code">f(x) = g(x)</code>, evaluar <code class="inline-code">f</code> y <code class="inline-code">g</code> por separado sin definir la función diferencia:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«En x=0, e⁰ = 1 y 0² = 0. En x=1, e⁻¹ = 0.36 y 1² = 1. Luego se cruzan por Bolzano.»</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Definimos la función auxiliar h(x) = f(x) - g(x). Comprobamos continuidad de h y evaluamos h(a) y h(b)...»</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p>
+      Resuelve estas 4 cuestiones analíticas para comprobar si eres capaz de detectar sutiles trampas conceptuales:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>Si una función f es continua en [-2, 3] y sabemos que f(-2) = 4 y f(3) = 1, ¿podemos asegurar mediante el Teorema de Bolzano que NO existe ninguna raíz real en (-2, 3)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, porque al ser ambos extremos positivos (f(a)·f(b) &gt; 0), el Teorema de Bolzano prohíbe que la función cruce el eje horizontal.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No. El Teorema de Bolzano es una condición suficiente pero no necesaria; la curva podría bajar a valores negativos y volver a subir, teniendo dos o más raíces.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Depende de si la función es derivable en (-2, 3) o no.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>Considera la función f(x) = tg(x) en el intervalo [0, π]. Observamos que f(0) = 0 y f(3π/4) = -1 &lt; 0. ¿Garantiza Bolzano la existencia de una raíz en (π/4, 3π/4) sabiendo que f(π/4) = 1 &gt; 0?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, porque f(π/4) = 1 &gt; 0 y f(3π/4) = -1 &lt; 0, luego hay cambio de signo en los extremos del intervalo.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, porque la tangente no es continua en dicho intervalo: presenta una asíntota vertical en x = π/2 ∈ (π/4, 3π/4), violando la hipótesis de continuidad.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Sí, y además el método de bisección convergerá con rapidez a dicha raíz inexistente.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>¿Cuál es la longitud máxima del intervalo de incertidumbre tras aplicar 5 pasos del algoritmo de bisección partiendo de un intervalo inicial [a, b] de longitud 32 unidades?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">32 / 5 = 6.4 unidades.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">32 / 2⁵ = 32 / 32 = 1 unidad (con un error absoluto máximo respecto al punto medio de ±0.5).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">32 / 2⁶ = 0.5 unidades.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-quiz-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>Sea f una función continua en [0, 1] tal que su imagen está contenida en [0, 1] (es decir, 0 ≤ f(x) ≤ 1 para todo x). ¿Tiene obligatoriamente al menos un punto fijo f(c) = c?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, siempre. Basta definir g(x) = f(x) - x; como g(0) = f(0) ≥ 0 y g(1) = f(1) - 1 ≤ 0, por Bolzano existe c ∈ [0, 1] con g(c) = 0.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, solo si f es estrictamente decreciente.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">No, solo si f es una función diferenciable dos veces.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // -------------------------------------------------------------
+    // 1. LABORATORIO VECTORIAL DE BISECCIÓN
+    // -------------------------------------------------------------
+    interface FuncDef {
+      name: string;
+      expr: string;
+      f: (x: number) => number;
+      initialA: number;
+      initialB: number;
+      domainMin: number;
+      domainMax: number;
+      rangeMin: number;
+      rangeMax: number;
+    }
+
+    const funcDefs: Record<string, FuncDef> = {
+      cubic: {
+        name: 'Polinómica Cúbica',
+        expr: 'f(x) = x³ - 3x - 1',
+        f: (x: number) => x * x * x - 3 * x - 1,
+        initialA: 1.0,
+        initialB: 2.2,
+        domainMin: 0.5,
+        domainMax: 2.5,
+        rangeMin: -4.0,
+        rangeMax: 4.0
+      },
+      cos: {
+        name: 'Trigonométrica Transcendental',
+        expr: 'f(x) = cos(x) - x',
+        f: (x: number) => Math.cos(x) - x,
+        initialA: 0.0,
+        initialB: 1.4,
+        domainMin: -0.2,
+        domainMax: 1.6,
+        rangeMin: -1.2,
+        rangeMax: 1.5
+      },
+      exp: {
+        name: 'Exponencial Natural',
+        expr: 'f(x) = eˣ - 3x',
+        f: (x: number) => Math.exp(x) - 3 * x,
+        initialA: 0.0,
+        initialB: 1.2,
+        domainMin: -0.2,
+        domainMax: 1.5,
+        rangeMin: -0.8,
+        rangeMax: 1.5
+      },
+      sqrt2: {
+        name: 'Cálculo de Raíz de Dos',
+        expr: 'f(x) = x² - 2',
+        f: (x: number) => x * x - 2,
+        initialA: 1.0,
+        initialB: 2.0,
+        domainMin: 0.5,
+        domainMax: 2.3,
+        rangeMin: -2.0,
+        rangeMax: 3.0
+      }
+    };
+
+    let currentFuncKey = 'cubic';
+    let iterCount = 0;
+    let curA = funcDefs.cubic.initialA;
+    let curB = funcDefs.cubic.initialB;
+    let autoInterval: number | null = null;
+
+    interface IterRow {
+      n: number;
+      a: number;
+      b: number;
+      m: number;
+      fm: number;
+      err: number;
+    }
+    const historyRows: IterRow[] = [];
+
+    // DOM Elements
+    const svgEl = document.getElementById('bisection-svg') as SVGSVGElement | null;
+    const bgGrid = document.getElementById('bg-grid');
+    const axesLayer = document.getElementById('axes-layer');
+    const intervalRect = document.getElementById('interval-rect');
+    const curvePath = document.getElementById('curve-path');
+    const lineA = document.getElementById('line-a');
+    const lineB = document.getElementById('line-b');
+    const lineM = document.getElementById('line-m');
+    const pointsLayer = document.getElementById('points-layer');
+
+    const dispIter = document.getElementById('disp-iter');
+    const valA = document.getElementById('val-a');
+    const signA = document.getElementById('sign-a');
+    const valB = document.getElementById('val-b');
+    const signB = document.getElementById('sign-b');
+    const valM = document.getElementById('val-m');
+    const valFm = document.getElementById('val-fm');
+    const valDelta = document.getElementById('val-delta');
+    const valError = document.getElementById('val-error');
+    const valGuarantee = document.getElementById('val-guarantee');
+    const histTbody = document.getElementById('hist-table-body');
+
+    const btnStep = document.getElementById('btn-bisect-step');
+    const btnAuto = document.getElementById('btn-bisect-auto');
+    const btnReset = document.getElementById('btn-bisect-reset');
+    const tabBtns = document.querySelectorAll<HTMLButtonElement>('.b-tab-btn');
+
+    // Dimensiones lógicas del SVG
+    const SVG_W = 600;
+    const SVG_H = 340;
+    const PAD = 35;
+
+    function getCoords(x: number, y: number, def: FuncDef) {
+      const sx = PAD + ((x - def.domainMin) / (def.domainMax - def.domainMin)) * (SVG_W - 2 * PAD);
+      const sy = (SVG_H - PAD) - ((y - def.rangeMin) / (def.rangeMax - def.rangeMin)) * (SVG_H - 2 * PAD);
+      return { x: sx, y: sy };
+    }
+
+    function renderLab() {
+      const def = funcDefs[currentFuncKey];
+      if (!def || !svgEl) return;
+
+      const fA = def.f(curA);
+      const fB = def.f(curB);
+      const curM = (curA + curB) / 2;
+      const fM = def.f(curM);
+      const delta = curB - curA;
+      const error = delta / 2;
+
+      // 1. Actualizar Telemetría
+      if (dispIter) dispIter.textContent = `Paso: n = ${iterCount}`;
+      if (valA) valA.textContent = curA.toFixed(6);
+      if (signA) signA.textContent = `f(a) = ${fA >= 0 ? '+' : ''}${fA.toFixed(6)} (${fA >= 0 ? '> 0' : '< 0'})`;
+      if (valB) valB.textContent = curB.toFixed(6);
+      if (signB) signB.textContent = `f(b) = ${fB >= 0 ? '+' : ''}${fB.toFixed(6)} (${fB >= 0 ? '> 0' : '< 0'})`;
+      if (valM) valM.textContent = curM.toFixed(6);
+      if (valFm) valFm.textContent = `f(m) = ${fM >= 0 ? '+' : ''}${fM.toFixed(6)}`;
+      if (valDelta) valDelta.textContent = delta.toFixed(6);
+      if (valError) valError.textContent = `± ${error.toFixed(6)}`;
+
+      if (valGuarantee) {
+        if (fA * fB < 0) {
+          valGuarantee.textContent = 'f(a)·f(b) < 0 ✓';
+          valGuarantee.className = 'm-val text-green';
+        } else {
+          valGuarantee.textContent = 'f(a)·f(b) ≥ 0 ⚠️';
+          valGuarantee.className = 'm-val text-amber';
+        }
+      }
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      // 2. Dibujar Ejes y Rejilla
+      if (axesLayer && bgGrid) {
+        axesLayer.innerHTML = '';
+        bgGrid.innerHTML = '';
+
+        // Eje X (y = 0)
+        const originLeft = getCoords(def.domainMin, 0, def);
+        const originRight = getCoords(def.domainMax, 0, def);
+        const axisX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        axisX.setAttribute('x1', originLeft.x.toString());
+        axisX.setAttribute('y1', originLeft.y.toString());
+        axisX.setAttribute('x2', originRight.x.toString());
+        axisX.setAttribute('y2', originRight.y.toString());
+        axisX.setAttribute('stroke', isLight ? '#94a3b8' : '#475569');
+        axisX.setAttribute('stroke-width', '2');
+        axesLayer.appendChild(axisX);
+
+        // Ticks en X
+        const stepX = (def.domainMax - def.domainMin) / 6;
+        for (let xVal = def.domainMin; xVal <= def.domainMax; xVal += stepX) {
+          const pt = getCoords(xVal, 0, def);
+          const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          tick.setAttribute('x1', pt.x.toString());
+          tick.setAttribute('y1', (pt.y - 4).toString());
+          tick.setAttribute('x2', pt.x.toString());
+          tick.setAttribute('y2', (pt.y + 4).toString());
+          tick.setAttribute('stroke', isLight ? '#cbd5e1' : '#64748b');
+          tick.setAttribute('stroke-width', '1.5');
+          axesLayer.appendChild(tick);
+
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', pt.x.toString());
+          txt.setAttribute('y', (pt.y + 16).toString());
+          txt.setAttribute('fill', isLight ? '#475569' : '#94a3b8');
+          txt.setAttribute('font-size', '10');
+          txt.setAttribute('text-anchor', 'middle');
+          txt.textContent = xVal.toFixed(1);
+          axesLayer.appendChild(txt);
+        }
+
+        // Etiqueta eje Y=0
+        const tagZero = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tagZero.setAttribute('x', (originRight.x - 20).toString());
+        tagZero.setAttribute('y', (originRight.y - 8).toString());
+        tagZero.setAttribute('fill', isLight ? '#0284c7' : '#38bdf8');
+        tagZero.setAttribute('font-size', '11');
+        tagZero.setAttribute('font-weight', 'bold');
+        tagZero.textContent = 'y = 0';
+        axesLayer.appendChild(tagZero);
+      }
+
+      // 3. Rectángulo de Intervalo Sombreado
+      if (intervalRect) {
+        const pA0 = getCoords(curA, def.rangeMax, def);
+        const pB0 = getCoords(curB, def.rangeMin, def);
+        intervalRect.setAttribute('x', pA0.x.toString());
+        intervalRect.setAttribute('y', PAD.toString());
+        intervalRect.setAttribute('width', Math.max(0, pB0.x - pA0.x).toString());
+        intervalRect.setAttribute('height', (SVG_H - 2 * PAD).toString());
+        intervalRect.setAttribute('fill', isLight ? 'rgba(2, 132, 199, 0.12)' : 'rgba(56, 189, 248, 0.12)');
+      }
+
+      // 4. Trazo de la Curva f(x)
+      if (curvePath) {
+        let dStr = '';
+        const samples = 120;
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const xVal = def.domainMin + t * (def.domainMax - def.domainMin);
+          const yVal = def.f(xVal);
+          const pt = getCoords(xVal, yVal, def);
+          dStr += (i === 0 ? 'M ' : ' L ') + pt.x.toFixed(2) + ' ' + pt.y.toFixed(2);
+        }
+        curvePath.setAttribute('d', dStr);
+        curvePath.setAttribute('stroke', isLight ? '#0284c7' : '#38bdf8');
+      }
+
+      // 5. Líneas Verticales de a, b, m
+      const ptA = getCoords(curA, fA, def);
+      const ptA_axis = getCoords(curA, 0, def);
+      if (lineA) {
+        lineA.setAttribute('x1', ptA.x.toString());
+        lineA.setAttribute('y1', ptA.y.toString());
+        lineA.setAttribute('x2', ptA_axis.x.toString());
+        lineA.setAttribute('y2', ptA_axis.y.toString());
+      }
+
+      const ptB = getCoords(curB, fB, def);
+      const ptB_axis = getCoords(curB, 0, def);
+      if (lineB) {
+        lineB.setAttribute('x1', ptB.x.toString());
+        lineB.setAttribute('y1', ptB.y.toString());
+        lineB.setAttribute('x2', ptB_axis.x.toString());
+        lineB.setAttribute('y2', ptB_axis.y.toString());
+      }
+
+      const ptM = getCoords(curM, fM, def);
+      const ptM_axis = getCoords(curM, 0, def);
+      if (lineM) {
+        lineM.setAttribute('x1', ptM.x.toString());
+        lineM.setAttribute('y1', ptM.y.toString());
+        lineM.setAttribute('x2', ptM_axis.x.toString());
+        lineM.setAttribute('y2', ptM_axis.y.toString());
+      }
+
+      // 6. Puntos en PointsLayer
+      if (pointsLayer) {
+        pointsLayer.innerHTML = '';
+
+        // Punto A
+        const cA = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        cA.setAttribute('cx', ptA.x.toString());
+        cA.setAttribute('cy', ptA.y.toString());
+        cA.setAttribute('r', '5.5');
+        cA.setAttribute('fill', '#f43f5e');
+        cA.setAttribute('stroke', '#fff');
+        cA.setAttribute('stroke-width', '1.5');
+        pointsLayer.appendChild(cA);
+
+        // Punto B
+        const cB = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        cB.setAttribute('cx', ptB.x.toString());
+        cB.setAttribute('cy', ptB.y.toString());
+        cB.setAttribute('r', '5.5');
+        cB.setAttribute('fill', '#10b981');
+        cB.setAttribute('stroke', '#fff');
+        cB.setAttribute('stroke-width', '1.5');
+        pointsLayer.appendChild(cB);
+
+        // Punto M
+        const cM = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        cM.setAttribute('cx', ptM.x.toString());
+        cM.setAttribute('cy', ptM.y.toString());
+        cM.setAttribute('r', '7');
+        cM.setAttribute('fill', '#fbbf24');
+        cM.setAttribute('stroke', isLight ? '#ffffff' : '#0f172a');
+        cM.setAttribute('stroke-width', '2');
+        pointsLayer.appendChild(cM);
+
+        // Halo en el eje si estamos cerca de la raíz
+        if (Math.abs(fM) < 0.05) {
+          const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          halo.setAttribute('cx', ptM_axis.x.toString());
+          halo.setAttribute('cy', ptM_axis.y.toString());
+          halo.setAttribute('r', '9');
+          halo.setAttribute('fill', 'none');
+          halo.setAttribute('stroke', '#22c55e');
+          halo.setAttribute('stroke-width', '2');
+          halo.setAttribute('stroke-dasharray', '2,2');
+          pointsLayer.appendChild(halo);
+        }
+      }
+
+      // 7. Render Tabla Histórica
+      if (histTbody) {
+        histTbody.innerHTML = '';
+        historyRows.forEach((row) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>#${row.n}</strong></td>
+            <td>${row.a.toFixed(5)}</td>
+            <td>${row.b.toFixed(5)}</td>
+            <td class="text-cyan font-bold">${row.m.toFixed(5)}</td>
+            <td class="${row.fm >= 0 ? 'text-green' : 'text-red'}">${row.fm >= 0 ? '+' : ''}${row.fm.toFixed(5)}</td>
+            <td>±${row.err.toFixed(5)}</td>
+          `;
+          histTbody.appendChild(tr);
+        });
+        // Auto scroll al final de la tabla
+        const scrollParent = histTbody.closest('.hist-table-scroll');
+        if (scrollParent) scrollParent.scrollTop = scrollParent.scrollHeight;
+      }
+    }
+
+    function stepBisection() {
+      const def = funcDefs[currentFuncKey];
+      if (!def) return;
+
+      const fA = def.f(curA);
+      const fB = def.f(curB);
+      const m = (curA + curB) / 2;
+      const fM = def.f(m);
+      const err = (curB - curA) / 2;
+
+      // Registrar historial de la iteración actual
+      historyRows.push({
+        n: iterCount,
+        a: curA,
+        b: curB,
+        m: m,
+        fm: fM,
+        err: err
+      });
+
+      // Si el punto medio es la raíz exacta o estamos extremadamente cerca
+      if (Math.abs(fM) < 1e-12) {
+        renderLab();
+        return;
+      }
+
+      // Actualizar extremos según el signo de Bolzano
+      if (fA * fM < 0) {
+        // La raíz está en [a, m]
+        curB = m;
+      } else {
+        // La raíz está en [m, b]
+        curA = m;
+      }
+
+      iterCount++;
+      renderLab();
+    }
+
+    function resetLab() {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+      const def = funcDefs[currentFuncKey];
+      iterCount = 0;
+      curA = def.initialA;
+      curB = def.initialB;
+      historyRows.length = 0;
+      renderLab();
+    }
+
+    // Eventos
+    btnStep?.addEventListener('click', () => {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+      stepBisection();
+    });
+
+    btnAuto?.addEventListener('click', () => {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        return;
+      }
+      let stepsRemaining = 6;
+      autoInterval = window.setInterval(() => {
+        if (stepsRemaining > 0 && Math.abs(curB - curA) > 1e-6) {
+          stepBisection();
+          stepsRemaining--;
+        } else {
+          if (autoInterval) clearInterval(autoInterval);
+          autoInterval = null;
+        }
+      }, 450);
+    });
+
+    btnReset?.addEventListener('click', resetLab);
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentFuncKey = btn.dataset.func || 'cubic';
+        resetLab();
+      });
+    });
+
+    // Inicializar laboratorio
+    renderLab();
+
+    // Observar cambio de tema (claro / oscuro) para actualizar gráficos SVG al vuelo
+    const themeObserver = new MutationObserver(() => {
+      renderLab();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // -------------------------------------------------------------
+    // 2. LÓGICA DE AUTOEVALUACIÓN INTERACTIVA
+    // -------------------------------------------------------------
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const optBtns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+      const feedback = card.querySelector<HTMLElement>('.q-feedback');
+
+      optBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          // Desactivar todos los botones de esta pregunta
+          optBtns.forEach((b) => {
+            b.disabled = true;
+            b.classList.remove('is-selected');
+          });
+          btn.classList.add('is-selected');
+
+          const isCorrect = btn.getAttribute('data-correct') === 'true';
+
+          if (isCorrect) {
+            btn.classList.add('is-correct');
+            if (feedback) {
+              feedback.innerHTML = `
+                <div class="fb-badge fb-success">✓ ¡RESPUESTA EXACTA!</div>
+                <p>Excelente rigor analítico. Has interpretado con precisión las hipótesis y tesis del teorema.</p>
+              `;
+              feedback.className = 'q-feedback show success';
+            }
+          } else {
+            btn.classList.add('is-wrong');
+            // Señalar la correcta
+            optBtns.forEach((b) => {
+              if (b.getAttribute('data-correct') === 'true') {
+                b.classList.add('is-correct');
+              }
+            });
+            if (feedback) {
+              feedback.innerHTML = `
+                <div class="fb-badge fb-error">✗ RESPUESTA INCORRECTA</div>
+                <p>Cuidado con la trampa conceptual. Lee detenidamente la opción marcada en verde para asimilar la justificación formal.</p>
+              `;
+              feedback.className = 'q-feedback show error';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* ==============================================================
+     ESTILOS ESPECÍFICOS DE LA LECCIÓN: TEOREMA DE BOLZANO
+     ============================================================== */
+
+  .lead-paragraph {
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--ink, #e2e8f0);
+    margin-bottom: 1.75rem;
+  }
+
+  .inline-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+    padding: 0.15rem 0.4rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 4px;
+    color: #38bdf8;
+  }
+
+  /* 1. ANALOGÍA DEL RÍO */
+  .river-analogy-card {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .river-badge {
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .river-svg-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 0.8rem;
+  }
+
+  .river-svg {
+    width: 100%;
+    min-width: 580px;
+    height: auto;
+    display: block;
+  }
+
+  .river-label {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .river-label.green { fill: #10b981; }
+  .river-label.cyan { fill: #38bdf8; }
+  .river-label.red { fill: #f43f5e; }
+
+  .river-point-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .river-point-tag.red { fill: #f43f5e; }
+  .river-point-tag.green { fill: #10b981; }
+  .river-point-tag.cyan { fill: #38bdf8; }
+
+  .river-caption {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Contexto Histórico */
+  .history-context-box {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .h-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .h-body h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .h-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0 0 0.6rem 0;
+  }
+  .h-body p:last-child { margin-bottom: 0; }
+
+  /* 2. RECUADRO DE ENUNCIADO CANÓNICO */
+  .theorem-box-highlight {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.7) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.08);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .thm-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .theorem-box-highlight h3 {
+    font-size: 1.45rem;
+    color: var(--ink, #f8fafc);
+    margin: 0 0 1.25rem 0;
+  }
+
+  .thm-cond-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .thm-cond-list li {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    line-height: 1.6;
+    color: var(--ink, #f1f5f9);
+  }
+
+  .cond-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.6rem;
+  }
+
+  .thm-sign-eq {
+    margin-top: 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .thm-thesis {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(56, 189, 248, 0.3);
+  }
+
+  .thesis-pill {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .thesis-text {
+    font-size: 1.1rem;
+    color: var(--ink, #f1f5f9);
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .thesis-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  /* Grid de Disección Quirúrgica */
+  .surgical-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .surgical-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.4rem;
+    position: relative;
+  }
+
+  .surg-num {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: rgba(56, 189, 248, 0.25);
+    margin-bottom: 0.4rem;
+    line-height: 1;
+  }
+
+  .surgical-card h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.05rem;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .surgical-card p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #94a3b8);
+    margin: 0;
+  }
+
+  /* 3. GALERÍA DE CONTRAEJEMPLOS */
+  .counterexamples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .counter-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .counter-card.is-failed {
+    background: rgba(244, 63, 94, 0.05);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+
+  .counter-card.is-subtle {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .c-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .c-viol { color: #f43f5e; }
+  .c-res { color: var(--ink-soft, #cbd5e1); }
+
+  .counter-card h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.15rem;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .c-desc {
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0 0 1rem 0;
+  }
+
+  .c-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    color: #fca5a5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .counter-card.is-subtle .c-formula {
+    border-color: rgba(245, 158, 11, 0.25);
+    color: #fbbf24;
+  }
+
+  .c-note {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+  }
+
+  /* 4. LABORATORIO INTERACTIVO */
+  .bisection-lab-container {
+    background: #090e17;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 2.5rem 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .lab-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .lab-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .lab-indicator-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseGlow 2s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .lab-header-text {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+  }
+
+  .lab-func-selector {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .b-tab-btn {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.78rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .b-tab-btn:hover {
+    color: #f1f5f9;
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  .b-tab-btn.is-active {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .lab-workbench-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 960px) {
+    .lab-workbench-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lab-graph-card {
+    background: #060a12;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .graph-legend {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .swatch-curve { background: #38bdf8; }
+  .swatch-interval { background: rgba(56, 189, 248, 0.35); border-radius: 2px; }
+  .swatch-mid { background: #fbbf24; }
+  .swatch-root { background: #10b981; }
+
+  .svg-stage-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #020617;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    overflow: hidden;
+  }
+
+  .bisection-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .lab-controls-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .lab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .lab-btn.is-primary {
+    background: #0284c7;
+    color: #fff;
+    border: 1px solid #38bdf8;
+  }
+  .lab-btn.is-primary:hover {
+    background: #0369a1;
+  }
+
+  .lab-btn.is-secondary {
+    background: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .lab-btn.is-secondary:hover {
+    background: rgba(56, 189, 248, 0.25);
+  }
+
+  .lab-btn.is-outline {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+  .lab-btn.is-outline:hover {
+    color: #f1f5f9;
+    border-color: #f1f5f9;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 0.6rem;
+  }
+
+  .tel-title {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .tel-iter-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .tel-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tel-metric {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tel-metric.is-highlight {
+    grid-column: span 2;
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  .m-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .m-val {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0.2rem 0;
+  }
+  .m-val.highlight {
+    font-size: 1.35rem;
+    color: #fbbf24;
+  }
+  .m-val.text-green { color: #10b981; }
+  .m-val.text-amber { color: #f59e0b; }
+
+  .m-sub {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* Tabla histórica */
+  .tel-history-wrap {
+    margin-top: auto;
+  }
+
+  .hist-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .hist-table-scroll {
+    max-height: 140px;
+    overflow-y: auto;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 6px;
+  }
+
+  .hist-table {
+    width: 100%;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .hist-table th {
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 0.35rem 0.5rem;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .hist-table td {
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    color: #cbd5e1;
+  }
+
+  .text-cyan { color: #38bdf8; }
+  .text-green { color: #10b981; }
+  .text-red { color: #f43f5e; }
+  .font-bold { font-weight: 700; }
+
+  /* 5. COROLARIOS MAYORES */
+  .corolario-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .cor-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .corolario-card h3 {
+    font-size: 1.35rem;
+    color: var(--ink, #f8fafc);
+    margin: 0 0 1rem 0;
+  }
+
+  .proof-deduction-box {
+    background: rgba(2, 6, 23, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+  }
+
+  .p-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .p-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .p-step {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+  }
+
+  .p-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Intersección */
+  .intersection-demo-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+    flex-wrap: wrap;
+  }
+
+  .inter-box {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .inter-box.highlight {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: #38bdf8;
+  }
+
+  .ib-title {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .ib-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin: 0.4rem 0;
+  }
+
+  .ib-desc {
+    font-size: 0.85rem;
+    color: var(--ink-soft, #cbd5e1);
+  }
+
+  .inter-arrow {
+    font-size: 1.8rem;
+    color: #38bdf8;
+    font-weight: bold;
+  }
+
+  /* Ejemplo resuelto */
+  .solved-example-card {
+    background: rgba(2, 6, 23, 0.85);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .se-header {
+    margin-bottom: 1rem;
+  }
+
+  .se-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  .se-header h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .se-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0.5rem 0;
+  }
+
+  .se-calc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.8rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  /* Curiosidades */
+  .realworld-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .rw-card {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+
+  .rw-icon {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .rw-card h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .rw-card p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #94a3b8);
+    margin: 0;
+  }
+
+  /* 6. PROTOCOLO BOLZANO + ROLLE */
+  .protocol-dual-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .protocol-dual-card {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .proto-col {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .proto-col.is-unique {
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .proto-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+  .proto-tag.tag-rolle { color: #10b981; }
+
+  .proto-col h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.15rem;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .proto-col p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0 0 1rem 0;
+  }
+
+  .proto-box {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.95rem;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 6px;
+    padding: 0.8rem;
+    color: #38bdf8;
+    margin-bottom: 0.8rem;
+    text-align: center;
+  }
+  .proto-box.box-rolle {
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  .proto-foot {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-top: auto;
+  }
+
+  /* Walkthrough Examen */
+  .exam-protocol-walkthrough {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .ep-header {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ep-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  .ep-header h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .ep-step {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .ep-step {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  .ep-step-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    background: #38bdf8;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    height: fit-content;
+    white-space: nowrap;
+  }
+
+  .ep-step-content {
+    flex: 1;
+  }
+
+  .ep-step-content h5 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .ep-sublist {
+    margin: 0.6rem 0;
+    padding-left: 1.25rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    font-size: 0.95rem;
+  }
+
+  .ep-math-eval {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.95rem;
+    background: rgba(2, 6, 23, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    margin: 0.6rem 0;
+    color: var(--ink, #f1f5f9);
+    line-height: 1.6;
+  }
+
+  .method-subgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.8rem;
+  }
+
+  @media (max-width: 750px) {
+    .method-subgrid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .method-card {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .m-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .method-card p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0.4rem 0;
+  }
+
+  .m-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    margin: 0.4rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* 7. PECADOS CAPITALES Y RÚBRICA */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .sin-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.4rem;
+  }
+
+  .sin-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sin-num {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .sin-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink, #f8fafc);
+  }
+
+  .sin-card p {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink-soft, #94a3b8);
+    margin: 0 0 0.8rem 0;
+  }
+
+  .sin-contrast-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sin-bad, .sin-good {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+  }
+
+  .sin-bad {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    color: #fca5a5;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #86efac;
+  }
+
+  .sin-cross {
+    color: #f43f5e;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .sin-check {
+    color: #10b981;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* 8. AUTOEVALUACIÓN INTERACTIVA */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .q-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .q-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .q-header h4 {
+    font-size: 1.1rem;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    color: var(--ink, #cbd5e1);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #f8fafc;
+  }
+
+  .opt-letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: #10b981 !important;
+    color: #86efac !important;
+  }
+  .q-opt-btn.is-correct .opt-letter {
+    background: #10b981;
+    color: #0f172a;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(244, 63, 94, 0.12) !important;
+    border-color: #f43f5e !important;
+    color: #fca5a5 !important;
+  }
+  .q-opt-btn.is-wrong .opt-letter {
+    background: #f43f5e;
+    color: #fff;
+  }
+
+  .q-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .q-feedback.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .q-feedback.success {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #86efac;
+  }
+
+  .q-feedback.error {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    color: #fca5a5;
+  }
+
+  .fb-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+  .fb-success { color: #10b981; }
+  .fb-error { color: #f43f5e; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==============================================================
+     ADAPTACIÓN AL TEMA CLARO ([data-theme="light"])
+     ============================================================== */
+
+  :global([data-theme="light"]) .lead-paragraph {
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .inline-code {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  /* 1. Analogía del Río en Modo Claro */
+  :global([data-theme="light"]) .river-analogy-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  }
+
+  :global([data-theme="light"]) .river-caption {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .history-context-box {
+    background: #fffbeb;
+    border-color: rgba(245, 158, 11, 0.35);
+    border-left: 4px solid #f59e0b;
+  }
+
+  :global([data-theme="light"]) .h-body h4 {
+    color: #92400e;
+  }
+
+  :global([data-theme="light"]) .h-body p {
+    color: #78350f;
+  }
+
+  /* 2. Recuadro de Teorema en Modo Claro */
+  :global([data-theme="light"]) .theorem-box-highlight {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.35);
+    box-shadow: 0 4px 24px rgba(2, 132, 199, 0.08);
+  }
+
+  :global([data-theme="light"]) .theorem-box-highlight h3 {
+    color: #0c4a6e;
+  }
+
+  :global([data-theme="light"]) .thm-cond-list li {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.15);
+    color: #1e293b;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .thm-sign-eq {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .thesis-text {
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .thesis-formula {
+    background: #ecfdf5;
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  /* Disección Quirúrgica */
+  :global([data-theme="light"]) .surgical-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .surgical-card h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .surgical-card p {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .surg-num {
+    color: rgba(2, 132, 199, 0.25);
+  }
+
+  /* 3. Contraejemplos en Modo Claro */
+  :global([data-theme="light"]) .counter-card.is-failed {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  :global([data-theme="light"]) .counter-card.is-subtle {
+    background: #fffbeb;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  :global([data-theme="light"]) .counter-card h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .c-desc {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .c-formula {
+    background: #ffffff;
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+  }
+
+  :global([data-theme="light"]) .counter-card.is-subtle .c-formula {
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #d97706;
+  }
+
+  :global([data-theme="light"]) .c-note {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .c-res {
+    color: #475569;
+  }
+
+  /* 4. Laboratorio Interactivo en Modo Claro */
+  :global([data-theme="light"]) .bisection-lab-container {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .lab-topbar {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .lab-header-text {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .b-tab-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .b-tab-btn:hover {
+    color: #0f172a;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .b-tab-btn.is-active {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .lab-graph-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .svg-stage-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .lab-btn.is-outline {
+    color: #475569;
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  :global([data-theme="light"]) .lab-btn.is-outline:hover {
+    color: #0f172a;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .lab-telemetry-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .tel-head {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .tel-title {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .tel-metric {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .tel-metric.is-highlight {
+    background: rgba(2, 132, 199, 0.06);
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  :global([data-theme="light"]) .m-label {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .m-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .m-val.highlight {
+    color: #d97706;
+  }
+
+  :global([data-theme="light"]) .hist-title {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .hist-table-scroll {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .hist-table th {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .hist-table td {
+    color: #1e293b;
+    border-color: rgba(0, 0, 0, 0.04);
+  }
+
+  /* 5. Corolarios en Modo Claro */
+  :global([data-theme="light"]) .corolario-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .corolario-card h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .corolario-card p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .proof-deduction-box {
+    background: #f8fafc;
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  :global([data-theme="light"]) .p-step {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .inter-box {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .inter-box.highlight {
+    background: #f0f9ff;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .ib-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .solved-example-card {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  :global([data-theme="light"]) .se-header h4 {
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .se-body p {
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .rw-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .rw-card h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .rw-card p {
+    color: #475569;
+  }
+
+  /* 6. Protocolo Dual en Modo Claro */
+  :global([data-theme="light"]) .proto-col {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .proto-col.is-unique {
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  :global([data-theme="light"]) .proto-col h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .proto-col p {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .proto-box {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .proto-box.box-rolle {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  :global([data-theme="light"]) .exam-protocol-walkthrough {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .ep-header {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .ep-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ep-step-content h5 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ep-sublist {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .ep-math-eval {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .method-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .method-card p {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .m-formula {
+    background: rgba(2, 132, 199, 0.08);
+    color: #0284c7;
+  }
+
+  /* 7. Pecados Capitales en Modo Claro */
+  :global([data-theme="light"]) .sin-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .sin-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .sin-card p {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  /* 8. Autoevaluación en Modo Claro */
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .q-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #64748b;
+  }
+</style>

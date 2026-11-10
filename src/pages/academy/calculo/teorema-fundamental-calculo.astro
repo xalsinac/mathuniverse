@@ -1,0 +1,2026 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-05')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-04');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-01') || ACADEMY_LESSONS.find((l) => l.blockId === 'geometria');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: LA GRAN RUPTURA HISTÓRICA -->
+  <section class="lesson-section" id="ruptura-historica">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. La Gran Ruptura Histórica: El Área frente a la Tangente</h2>
+
+    <p class="lead-paragraph">
+      Durante más de dos mil años, las matemáticas concibieron el <strong>problema de la cuadratura</strong> (calcular áreas bajo curvas) y el <strong>problema de la recta tangente</strong> (determinar pendientes y velocidades instantáneas) como dos disciplinas completamente inconexas y gobernadas por naturalezas distintas.
+    </p>
+
+    <p>
+      Mientras Arquímedes de Siracusa aproximaba áreas mediante agotamiento exhaustivo de polígonos infinitos, y Pierre de Fermat buscaba tangentes a parábolas mediante construcciones algebraicas estáticas, nadie sospechaba el puente oculto. Hacia 1670, <strong>Isaac Newton</strong> y <strong>Gottfried Leibniz</strong> descubrieron de forma independiente la revelación que dio origen al mundo moderno: <em>el área acumulada y la pendiente instantánea son operaciones inversas</em>.
+    </p>
+
+    <!-- Tarjeta Visual de Analogía Física: Velocímetro vs Cuentakilómetros -->
+    <div class="cinematic-hero-card">
+      <div class="hero-top-badge">ANALOGÍA CINEMÁTICA FUNDAMENTAL</div>
+      
+      <div class="analogy-dual-grid">
+        <div class="analogy-column">
+          <div class="analogy-icon-wrap velocity">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="analogy-svg">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <h4>El Velocímetro (Derivada)</h4>
+          <p class="analogy-desc">
+            Mide el cambio infinitesimal por unidad de tiempo: <code class="inline-code">v(t) = s'(t)</code>. Es una magnitud puramente <strong>local e instantánea</strong>.
+          </p>
+          <div class="analogy-formula">
+            <span>Diferenciación:</span>
+            <span class="code-pill">s(t) ⟶ s'(t) = v(t)</span>
+          </div>
+        </div>
+
+        <div class="analogy-bridge">
+          <div class="bridge-arrows">
+            <span class="bridge-arrow top">∫ dt (Acumular área) ⟶</span>
+            <span class="bridge-arrow btm">⟵ d/dt (Tasa de cambio)</span>
+          </div>
+        </div>
+
+        <div class="analogy-column">
+          <div class="analogy-icon-wrap odometer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="analogy-svg">
+              <rect x="2" y="6" width="20" height="12" rx="3"></rect>
+              <line x1="6" y1="6" x2="6" y2="18"></line>
+              <line x1="10" y1="6" x2="10" y2="18"></line>
+              <line x1="14" y1="6" x2="14" y2="18"></line>
+              <line x1="18" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          <h4>El Odómetro (Integral)</h4>
+          <p class="analogy-desc">
+            Acumula los kilómetros recorridos sumando cada pequeña velocidad multiplicada por cada instante: <code class="inline-code">s = ∫ v(t) dt</code>. Es una magnitud <strong>global y acumulativa</strong>.
+          </p>
+          <div class="analogy-formula">
+            <span>Integración:</span>
+            <span class="code-pill">v(t) ⟶ ∫ v(t) dt = s(t)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card-footer">
+        <p>
+          <strong>La Conclusión de Newton y Leibniz:</strong> Si conoces la función de posición, derivas para hallar la velocidad. Si sólo tienes el velocímetro registrando cada segundo, integras para reconstruir con precisión milimétrica la distancia recorrida.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA FUNCIÓN ÁREA ACUMULADA -->
+  <section class="lesson-section" id="funcion-area-acumulada">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Función Área Acumulada: F(x) = ∫<sub>a</sub><sup>x</sup> f(t) dt</h2>
+
+    <p class="lead-paragraph">
+      Para tender el puente entre ambos mundos, el análisis matemático define un objeto conceptual de enorme elegancia: <strong>la función integral</strong> o <strong>función de acumulación</strong>.
+    </p>
+
+    <div class="definition-box">
+      <span class="def-badge">DEFINICIÓN FORMAL</span>
+      <p>
+        Sea <code class="inline-code">f: [a, b] ⟶ ℝ</code> una función integrable. Definimos la <strong>función área acumulada</strong> <code class="inline-code">F: [a, b] ⟶ ℝ</code> como:
+      </p>
+      <div class="math-display-eq">
+        F(x) = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x</span><span class="int-lower">a</span></span></span> f(t) dt
+      </div>
+      <p class="def-note">
+        <strong>Distinción Crítica de Variables:</strong> La variable <code class="inline-code">x</code> es el límite superior (el punto hasta donde se acumula área). La variable <code class="inline-code">t</code> es una <em>variable muda</em> (dummy variable) que barre el intervalo desde <code class="inline-code">a</code> hasta <code class="inline-code">x</code>. Escribir <code class="inline-code">∫<sub>a</sub><sup>x</sup> f(x) dx</code> es un error de notación grave.
+      </p>
+    </div>
+
+    <h3>La Tira Infinitesimal: ¿Qué ocurre si movemos x un incremento h?</h3>
+    <p>
+      Si avanzamos el límite superior desde <code class="inline-code">x</code> hasta <code class="inline-code">x + h</code>, la nueva área acumulada es <code class="inline-code">F(x + h)</code>. El cambio neto en el área es:
+    </p>
+
+    <div class="math-display-eq">
+      ΔF = F(x + h) - F(x) = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x + h</span><span class="int-lower">x</span></span></span> f(t) dt
+    </div>
+
+    <p>
+      Cuando <code class="inline-code">h</code> es muy pequeño, la región comprendida entre <code class="inline-code">x</code> y <code class="inline-code">x + h</code> es prácticamente un <strong>rectángulo de anchura h y altura f(x)</strong>. Por tanto:
+    </p>
+
+    <div class="concept-banner">
+      <div class="banner-title">Área de la tira elemental:</div>
+      <div class="banner-formula">ΔF ≈ f(x) · h ⟹ <span class="math-frac"><span class="num">ΔF</span><span class="den">h</span></span> ≈ f(x)</div>
+      <p class="banner-desc">
+        Al hacer que <code class="inline-code">h ⟶ 0</code>, la aproximación se convierte en una identidad exacta: ¡el ritmo al que crece el área es exactamente la altura de la curva en ese punto!
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: PRIMER TEOREMA FUNDAMENTAL (TFC 1) -->
+  <section class="lesson-section" id="primer-teorema-fundamental">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Primer Teorema Fundamental del Cálculo: Demostración Rigurosa</h2>
+
+    <p class="lead-paragraph">
+      Formalizamos la intuición de la tira rectangular en un teorema matemático de máxima jerarquía.
+    </p>
+
+    <div class="canonical-theorem-card">
+      <div class="canon-badge">TEOREMA FUNDAMENTAL DEL CÁLCULO (PARTE 1)</div>
+      <div class="canon-statement">
+        <p>
+          Sea <code class="inline-code">f: [a, b] ⟶ ℝ</code> una función <strong>continua</strong> en el intervalo cerrado <code class="inline-code">[a, b]</code>. Entonces, la función área acumulada:
+        </p>
+        <div class="math-display-eq">
+          F(x) = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x</span><span class="int-lower">a</span></span></span> f(t) dt
+        </div>
+        <p>
+          es <strong>continua en [a, b]</strong>, <strong>derivable en (a, b)</strong>, y su derivada coincide exactamente con la función original evaluada en x:
+        </p>
+        <div class="canon-thesis">
+          F'(x) = <span class="math-frac"><span class="num">d</span><span class="den">dx</span></span> <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x</span><span class="int-lower">a</span></span></span> f(t) dt = f(x) &emsp; ∀ x ∈ (a, b)
+        </div>
+      </div>
+    </div>
+
+    <!-- Demostración Matemática Paso a Paso -->
+    <div class="formal-proof-wrapper">
+      <div class="proof-card-header">
+        <span class="proof-tag">DEMOSTRACIÓN COMPLETA</span>
+        <h4>Deducción analítica mediante el Teorema del Valor Medio Integral</h4>
+      </div>
+
+      <div class="math-derivation-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Planteamos la derivada de F(x) por definición formal de límite del cociente incremental:</span>
+            <div class="math-step-expr">
+              F'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">F(x + h) - F(x)</span><span class="den">h</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sustituimos la definición de F(x) y aplicamos la propiedad aditiva de intervalos en integrales:</span>
+            <div class="math-step-expr">
+              F(x + h) - F(x) = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x + h</span><span class="int-lower">a</span></span></span> f(t) dt - <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x</span><span class="int-lower">a</span></span></span> f(t) dt = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x + h</span><span class="int-lower">x</span></span></span> f(t) dt
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 3</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Aplicamos el <strong>Teorema del Valor Medio del Cálculo Integral</strong> a la función continua f en [x, x + h]:</span>
+            <div class="math-step-expr">
+              ∃ c_h ∈ [x, x + h] &emsp; tal que &emsp; <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x + h</span><span class="int-lower">x</span></span></span> f(t) dt = f(c_h) · h
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight">
+          <span class="math-step-tag">PASO 4</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Sustituimos en el cociente incremental y simplificamos h:</span>
+            <div class="math-step-expr">
+              <span class="math-frac"><span class="num">F(x + h) - F(x)</span><span class="den">h</span></span> = <span class="math-frac"><span class="num">f(c_h) · h</span><span class="den">h</span></span> = f(c_h)
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 5</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Tomamos el límite cuando h tiende a 0. Dado que x ≤ c_h ≤ x + h, por el Teorema del Emparedado c_h ⟶ x. Como f es continua:</span>
+            <div class="math-step-expr">
+              F'(x) = <span class="math-lim">lim<sub>h→0</sub></span> f(c_h) = f(<span class="math-lim">lim<sub>h→0</sub></span> c_h) = f(x) &emsp; <span class="math-qed">■ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regla de Leibniz para Límites Variables -->
+    <div class="extension-box">
+      <div class="ext-badge">GENERALIZACIÓN DE LEIBNIZ CON REGLA DE LA CADENA</div>
+      <p>
+        Si los límites de integración son funciones derivables <code class="inline-code">u(x)</code> y <code class="inline-code">v(x)</code>, la derivada se calcula aplicando la regla de la cadena:
+      </p>
+      <div class="math-display-eq">
+        <span class="math-frac"><span class="num">d</span><span class="den">dx</span></span> <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">v(x)</span><span class="int-lower">u(x)</span></span></span> f(t) dt = f(v(x)) · v'(x) - f(u(x)) · u'(x)
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: SEGUNDO TEOREMA Y LA REGLA DE BARROW -->
+  <section class="lesson-section" id="regla-de-barrow">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Segundo Teorema Fundamental: La Regla de Barrow</h2>
+
+    <p class="lead-paragraph">
+      El TFC 1 nos asegura que toda función continua tiene al menos una primitiva: su propia función área acumulada. La <strong>Regla de Barrow</strong> convierte este hecho teórico en la herramienta de cálculo más potente del análisis:
+    </p>
+
+    <div class="canonical-theorem-card barrow-card">
+      <div class="canon-badge barrow">REGLA DE BARROW (1670)</div>
+      <div class="canon-statement">
+        <p>
+          Sea <code class="inline-code">f: [a, b] ⟶ ℝ</code> continua en <code class="inline-code">[a, b]</code>, y sea <code class="inline-code">G(x)</code> <strong>cualquier primitiva</strong> de <code class="inline-code">f</code> en dicho intervalo (es decir, <code class="inline-code">G'(x) = f(x)</code>). Entonces el valor de la integral definida es la diferencia entre los valores de la primitiva en los extremos:
+        </p>
+        <div class="canon-thesis barrow-thesis">
+          <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">b</span><span class="int-lower">a</span></span></span> f(x) dx = <span class="math-eval-bar"><span class="eval-bracket">[</span>G(x)<span class="eval-bracket">]</span><span class="eval-limits"><span class="eval-upper">b</span><span class="eval-lower">a</span></span></span> = G(b) - G(a)
+        </div>
+      </div>
+    </div>
+
+    <!-- Demostración Canónica de Barrow -->
+    <div class="proof-card compact">
+      <h4>Demostración en Tres Líneas</h4>
+      <p>
+        1. Por el TFC 1, sabemos que <code class="inline-code">F(x) = ∫<sub>a</sub><sup>x</sup> f(t) dt</code> es una primitiva de <code class="inline-code">f(x)</code>.
+      </p>
+      <p>
+        2. Como <code class="inline-code">G(x)</code> es otra primitiva cualquiera de <code class="inline-code">f(x)</code>, ambas primitivas sólo pueden diferir en una constante aditiva <code class="inline-code">C</code> (consecuencia directa del Teorema del Valor Medio de Lagrange):
+      </p>
+      <div class="math-display-eq">
+        G(x) = F(x) + C &emsp; ∀ x ∈ [a, b]
+      </div>
+      <p>
+        3. Evaluamos en el extremo inicial <code class="inline-code">x = a</code>:
+      </p>
+      <div class="math-display-eq">
+        G(a) = F(a) + C = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">a</span><span class="int-lower">a</span></span></span> f(t) dt + C = 0 + C ⟹ C = G(a)
+      </div>
+      <p>
+        4. Evaluamos finalmente en el extremo final <code class="inline-code">x = b</code>:
+      </p>
+      <div class="math-display-eq">
+        G(b) = F(b) + G(a) ⟹ F(b) = <span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">b</span><span class="int-lower">a</span></span></span> f(t) dt = G(b) - G(a) &emsp; <span class="math-qed">■ Q.E.D.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-tfc">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: El Acumulador de Riemann y la Tangente de F(x)</h2>
+
+    <p class="lead-paragraph">
+      Comprueba en tiempo real la conexión dual: observa en el panel superior cómo se acumula el área bajo la curva <code class="inline-code">f(t)</code> hasta el punto <code class="inline-code">x</code>, y comprueba en el panel inferior cómo la pendiente de la recta tangente a la curva acumulada <code class="inline-code">F(x)</code> coincide exactamente con la altura instantánea <code class="inline-code">f(x)</code>.
+    </p>
+
+    <!-- Interactive Simulator Component -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR DEL TEOREMA FUNDAMENTAL DEL CÁLCULO</span>
+      </div>
+
+      <!-- Function Preset Selector -->
+      <div class="lab-preset-bar">
+        <button type="button" class="preset-btn is-active" data-func="parabola">Parábola: f(t) = -t² + 4</button>
+        <button type="button" class="preset-btn" data-func="seno">Trigonométrica: f(t) = sen(t) + 1.2</button>
+        <button type="button" class="preset-btn" data-func="polinomica">Cúbica: f(t) = 0.4t³ - 1.5t + 2</button>
+        <button type="button" class="preset-btn" data-func="exponencial">Exponencial: f(t) = 0.5·e^(0.6t)</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Dual SVG Graphs: Top = f(t) with shaded area, Bottom = F(x) with tangent -->
+        <div class="lab-visual-panels">
+          <!-- Gráfico 1: Función f(t) y Área Acumulada -->
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag blue">NIVEL 1: INTEGRAL DEFINIDA (ÁREA ACUMULADA)</span>
+              <span class="graph-metric" id="metric-area">Área F(x) = 0.000</span>
+            </div>
+            <div class="svg-stage-wrapper">
+              <svg id="svg-ft" viewBox="0 0 580 200" class="lab-svg" aria-label="Gráfico de f(t) con área sombreada">
+                <!-- Se inyecta dinámicamente con JS -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Gráfico 2: Función Primitiva F(x) y su Tangente -->
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag green">NIVEL 2: DERIVADA DE LA PRIMITIVA (PENDIENTE TANGENTE)</span>
+              <span class="graph-metric" id="metric-slope">Pendiente F'(x) = 0.000</span>
+            </div>
+            <div class="svg-stage-wrapper">
+              <svg id="svg-fx" viewBox="0 0 580 200" class="lab-svg" aria-label="Gráfico de F(x) con recta tangente en x">
+                <!-- Se inyecta dinámicamente con JS -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Sliders e Interacción -->
+          <div class="lab-controls-panel">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-x">Límite Superior de Integración (x):</label>
+                <span class="control-val-display" id="val-x">1.50</span>
+              </div>
+              <input type="range" id="slider-x" min="0.2" max="2.8" step="0.02" value="1.5" class="lab-range-input" />
+              <div class="range-bounds">
+                <span>Extremo a = 0.00</span>
+                <span>Extremo b = 3.00</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-h">Ancho de la Tira Incremental (h):</label>
+                <span class="control-val-display" id="val-h">0.25</span>
+              </div>
+              <input type="range" id="slider-h" min="0.02" max="0.6" step="0.01" value="0.25" class="lab-range-input" />
+              <div class="range-bounds">
+                <span>h ⟶ 0 (Límite instantáneo)</span>
+                <span>h = 0.60 (Tira gruesa)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetría Analítica Rigurosa -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>TELEMETRÍA ANALÍTICA</h5>
+            <span class="telemetry-badge" id="telemetry-status">COINCIDENCIA EXACTA</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">ALTURA INSTANTÁNEA f(x)</span>
+              <span class="t-val cyan" id="tele-fx">1.750</span>
+              <span class="t-sub">Valor de la función en x</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">PENDIENTE TANGENTE F'(x)</span>
+              <span class="t-val green" id="tele-fprime">1.750</span>
+              <span class="t-sub">Derivada calculada</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <span class="t-label">COCIENTE INCREMENTAL DE ÁREA</span>
+              <span class="t-val amber" id="tele-quotient">1.812</span>
+              <span class="t-sub">[F(x + h) - F(x)] / h</span>
+            </div>
+
+            <div class="t-cell full-width highlight-cell">
+              <div class="t-flex-row">
+                <span class="t-label">ERROR DE CONVERGENCIA |Cociente - f(x)|</span>
+                <span class="t-val small" id="tele-error">0.062</span>
+              </div>
+              <div class="convergence-meter">
+                <div class="meter-fill" id="meter-fill" style="width: 88%;"></div>
+              </div>
+              <span class="meter-caption" id="meter-caption">A medida que h ⟶ 0, la tira rectangular converge a la altura f(x).</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <span class="t-label">REGLA DE BARROW EN [a, x]</span>
+              <div class="barrow-eval-preview">
+                <span class="code-math">∫<sub>0</sub><sup>x</sup> f(t) dt = G(x) - G(0) = </span>
+                <span class="code-res" id="tele-barrow">2.875</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: DERIVACIÓN DE INTEGRALES EN EXÁMENES -->
+  <section class="lesson-section" id="derivacion-integrales">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Protocolo Oficial para Derivar Integrales en Selectividad/PAU</h2>
+
+    <p class="lead-paragraph">
+      Uno de los problemas más frecuentes en pruebas oficiales de acceso a la universidad consiste en estudiar la monotonía, extremos relativos o límites de funciones definidas mediante integrales. No intentes resolver la integral: aplica directamente el Teorema Fundamental.
+    </p>
+
+    <!-- Casos Canónicos Resueltos -->
+    <div class="cases-vertical-grid">
+      <div class="case-card">
+        <div class="case-header">
+          <span class="case-num">CASO 1</span>
+          <h4>Límite superior lineal x con integrando no integrable elementalmente</h4>
+        </div>
+        <p class="case-problem">
+          Calcula la derivada de la función <code class="inline-code">H(x) = ∫<sub>0</sub><sup>x</sup> √(1 + t⁴) dt</code> en <code class="inline-code">x = 2</code>.
+        </p>
+        <div class="case-solution">
+          <span class="sol-tag">MÉTODO OFICIAL:</span>
+          <p>
+            La función integrando <code class="inline-code">f(t) = √(1 + t⁴)</code> es continua en todo <code class="inline-code">ℝ</code>. Por el TFC 1:
+          </p>
+          <div class="math-display-eq">
+            H'(x) = f(x) = <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">1 + x⁴</span></span> ⟹ H'(2) = <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">1 + 2⁴</span></span> = <span class="math-sqrt"><span class="sqrt-rad">√</span><span class="sqrt-body">17</span></span>
+          </div>
+          <p class="sol-note">
+            <em>Observación:</em> Intentar hallar una primitiva elemental de <code class="inline-code">√(1 + t⁴)</code> es imposible (es una integral elíptica). El TFC resuelve el problema en una sola línea sin calcular primitivas.
+          </p>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-header">
+          <span class="case-num">CASO 2</span>
+          <h4>Límites variables con funciones compuestas (Regla de la Cadena)</h4>
+        </div>
+        <p class="case-problem">
+          Determina la ecuación de la recta tangente a la curva <code class="inline-code">F(x) = ∫<sub>1</sub><sup>x²</sup> (t³ - 1) dt</code> en el punto de abscisa <code class="inline-code">x = 1</code>.
+        </p>
+        <div class="case-solution">
+          <span class="sol-tag">MÉTODO OFICIAL:</span>
+          <p>
+            1. <strong>Punto de paso:</strong> <code class="inline-code">F(1) = ∫<sub>1</sub><sup>1</sup> (t³ - 1) dt = 0</code>. El punto es <code class="inline-code">(1, 0)</code>.
+          </p>
+          <p>
+            2. <strong>Pendiente por Leibniz:</strong> siendo <code class="inline-code">v(x) = x²</code>, tenemos <code class="inline-code">v'(x) = 2x</code>:
+          </p>
+          <div class="math-display-eq">
+            F'(x) = f(x²) · (x²)' = ((x²)³ - 1) · 2x = (x⁶ - 1) · 2x
+          </div>
+          <p>
+            3. <strong>Evaluamos en x = 1:</strong> <code class="inline-code">F'(1) = (1⁶ - 1) · 2 = 0</code>.
+          </p>
+          <p>
+            4. <strong>Ecuación de la recta tangente:</strong> <code class="inline-code">y - 0 = 0 · (x - 1) ⟹ y = 0</code> (tangente horizontal).
+          </p>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-header">
+          <span class="case-num">CASO 3</span>
+          <h4>Cálculo de Límites Indeterminados 0/0 mediante la Regla de L'Hôpital y TFC</h4>
+        </div>
+        <p class="case-problem">
+          Calcula el límite: <code class="inline-code">lim<sub>x→0</sub> [∫<sub>0</sub><sup>x</sup> sen(t²) dt] / x³</code>.
+        </p>
+        <div class="case-solution">
+          <span class="sol-tag">MÉTODO OFICIAL:</span>
+          <p>
+            Al sustituir <code class="inline-code">x = 0</code> obtenemos la indeterminación <code class="inline-code">0/0</code>. Como numerador y denominador son derivables, aplicamos L'Hôpital derivando el numerador con el TFC:
+          </p>
+          <div class="math-display-eq">
+            <span class="math-lim">lim<sub>x→0</sub></span> <span class="math-frac"><span class="num"><span class="math-integral"><span class="int-symbol">∫</span><span class="int-limits"><span class="int-upper">x</span><span class="int-lower">0</span></span></span> sen(t²) dt</span><span class="den">x³</span></span> = <span class="math-lim">lim<sub>x→0</sub></span> <span class="math-frac"><span class="num">sen(x²)</span><span class="den">3x²</span></span> = <span class="math-frac"><span class="num">1</span><span class="den">3</span></span> · <span class="math-lim">lim<sub>x→0</sub></span> <span class="math-frac"><span class="num">sen(x²)</span><span class="den">x²</span></span> = <span class="math-frac"><span class="num">1</span><span class="den">3</span></span> · 1 = <span class="math-frac"><span class="num">1</span><span class="den">3</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS HABITUALES EN EXÁMENES -->
+  <section class="lesson-section" id="trampas-pau">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica Oficial y las 4 Trampas Fatales en Exámenes</h2>
+
+    <p class="lead-paragraph">
+      Los correctores de Selectividad y profesores universitarios penalizan severamente aplicar fórmulas memorizadas sin verificar las hipótesis analíticas. Revisa estos 4 errores críticos:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Pecado 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 01</div>
+        <h4>Aplicar Barrow a una función con discontinuidad asintótica en el intervalo</h4>
+        <p>
+          Intentar calcular <code class="inline-code">∫<sub>-1</sub><sup>1</sup> (1 / x²) dx = [-1/x]<sub>-1</sub><sup>1</sup> = -1 - (1) = -2</code>.
+        </p>
+        <div class="sin-bad">
+          ✕ «El valor de la integral es -2» [Calificación: 0 puntos en el ejercicio]
+        </div>
+        <div class="sin-good">
+          ✓ «La función f(x) = 1/x² tiene una asíntota vertical en x = 0 ∈ [-1, 1]. Al no ser continua, la Regla de Barrow no es aplicable. Se trata de una integral impropia divergente a +∞. Además, una función estrictamente positiva no puede tener área negativa».
+        </div>
+      </div>
+
+      <!-- Pecado 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 02</div>
+        <h4>Olvidar derivar el límite superior al aplicar la Regla de Leibniz</h4>
+        <p>
+          Al derivar <code class="inline-code">F(x) = ∫<sub>0</sub><sup>sen(x)</sup> e<sup>t²</sup> dt</code>:
+        </p>
+        <div class="sin-bad">
+          ✕ «F'(x) = e^(sen² x)» [Incompleto: se omitió la regla de la cadena]
+        </div>
+        <div class="sin-good">
+          ✓ «F'(x) = e^(sen² x) · (sen x)' = e^(sen² x) · cos(x)».
+        </div>
+      </div>
+
+      <!-- Pecado 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 03</div>
+        <h4>Confundir Integral Definida con Área Geométrica entre Curvas</h4>
+        <p>
+          Calcular el área encerrada entre <code class="inline-code">f(x) = sen(x)</code> y el eje OX en <code class="inline-code">[0, 2π]</code>:
+        </p>
+        <div class="sin-bad">
+          ✕ «Área = ∫₀²ᵖ sen(x) dx = [-cos x]₀²ᵖ = -1 - (-1) = 0» [Falso físico y geométrico]
+        </div>
+        <div class="sin-good">
+          ✓ «La integral definida es 0 por compensación de signos. El área geométrica requiere descomponer en recintos positivos: Área = ∫₀ᵖ sen(x) dx + |∫ₚ²ᵖ sen(x) dx| = 2 + 2 = 4 u²».
+        </div>
+      </div>
+
+      <!-- Pecado 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 04</div>
+        <h4>Derivar una integral con límite superior constante como si fuera variable</h4>
+        <p>
+          Calcular la derivada respecto de x de <code class="inline-code">K(x) = ∫<sub>0</sub><sup>5</sup> (t² + 3) dt</code>:
+        </p>
+        <div class="sin-bad">
+          ✕ «K'(x) = x² + 3» [Disparate conceptual: los límites son números fijos]
+        </div>
+        <div class="sin-good">
+          ✓ «Una integral con límites numéricos constantes es un número real constante. Por tanto, su derivada respecto a cualquier variable x es idénticamente 0».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Resuelve estas 4 cuestiones analíticas para afianzar el dominio del Teorema Fundamental y la Regla de Barrow:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>Sea G(x) = ∫<sub>0</sub><sup>x²</sup> ln(1 + t) dt. ¿Cuánto vale G'(1)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">ln(2)</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">2 · ln(2)</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">1 / 2</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>¿Por qué no es válida la igualdad ∫<sub>-2</sub><sup>2</sup> (1/x) dx = [ln|x|]<sub>-2</sub><sup>2</sup> = ln(2) - ln(2) = 0?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque la primitiva de 1/x no es ln|x|, sino 1/x².</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque f(x) = 1/x no es continua en [-2, 2] (discontinuidad no evitable en x = 0), violando la hipótesis de Barrow.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque el logaritmo de números negativos no existe en ningún caso.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Sea F(x) = ∫<sub>0</sub><sup>x</sup> f(t) dt con f continua. Si f(x) &gt; 0 en un intervalo (a, b), ¿qué propiedad tiene F(x) en dicho intervalo?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">F(x) es estrictamente creciente en (a, b) porque F'(x) = f(x) &gt; 0.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">F(x) es estrictamente cóncava porque f(x) es positiva.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">F(x) alcanza obligatoriamente un máximo relativo en el punto medio.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>Si F(x) = ∫<sub>x</sub><sup>2</sup> t³ dt, ¿cuál es su derivada F'(x)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">x³</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">-x³</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">8 - x³</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // SIMULADOR INTERACTIVO DEL TEOREMA FUNDAMENTAL DEL CÁLCULO
+  // =========================================================================
+
+  interface FuncDef {
+    f: (t: number) => number;
+    F: (x: number) => number; // Primitiva con F(0) = 0
+    fPrime: (x: number) => number;
+    tMin: number;
+    tMax: number;
+    yMin: number;
+    yMax: number;
+    FyMin: number;
+    FyMax: number;
+    fExpr: string;
+    FExpr: string;
+  }
+
+  const FUNC_PRESETS: Record<string, FuncDef> = {
+    parabola: {
+      f: (t) => -Math.pow(t - 1.5, 2) + 3.25,
+      F: (x) => -Math.pow(x - 1.5, 3) / 3 + 3.25 * x - (-Math.pow(-1.5, 3) / 3),
+      fPrime: (x) => -2 * (x - 1.5),
+      tMin: 0,
+      tMax: 3,
+      yMin: 0,
+      yMax: 4.2,
+      FyMin: 0,
+      FyMax: 8.5,
+      fExpr: 'f(t) = -(t - 1.5)² + 3.25',
+      FExpr: 'F(x) = ∫₀ˣ f(t)dt',
+    },
+    seno: {
+      f: (t) => Math.sin(t * 1.8) + 1.25,
+      F: (x) => (-Math.cos(x * 1.8) + 1) / 1.8 + 1.25 * x,
+      fPrime: (x) => 1.8 * Math.cos(x * 1.8),
+      tMin: 0,
+      tMax: 3,
+      yMin: 0,
+      yMax: 2.8,
+      FyMin: 0,
+      FyMax: 6.5,
+      fExpr: 'f(t) = sen(1.8t) + 1.25',
+      FExpr: 'F(x) = ∫₀ˣ f(t)dt',
+    },
+    polinomica: {
+      f: (t) => 0.35 * Math.pow(t, 3) - 1.4 * t + 2.2,
+      F: (x) => 0.35 * Math.pow(x, 4) / 4 - 0.7 * Math.pow(x, 2) + 2.2 * x,
+      fPrime: (x) => 1.05 * Math.pow(x, 2) - 1.4,
+      tMin: 0,
+      tMax: 3,
+      yMin: 0,
+      yMax: 8.0,
+      FyMin: 0,
+      FyMax: 13.5,
+      fExpr: 'f(t) = 0.35t³ - 1.4t + 2.2',
+      FExpr: 'F(x) = ∫₀ˣ f(t)dt',
+    },
+    exponencial: {
+      f: (t) => 0.6 * Math.exp(0.65 * t),
+      F: (x) => (0.6 / 0.65) * (Math.exp(0.65 * x) - 1),
+      fPrime: (x) => 0.6 * 0.65 * Math.exp(0.65 * x),
+      tMin: 0,
+      tMax: 3,
+      yMin: 0,
+      yMax: 4.8,
+      FyMin: 0,
+      FyMax: 6.5,
+      fExpr: 'f(t) = 0.6·e^(0.65t)',
+      FExpr: 'F(x) = ∫₀ˣ f(t)dt',
+    },
+  };
+
+  let currentKey = 'parabola';
+  let curX = 1.5;
+  let curH = 0.25;
+
+  const svgFt = document.getElementById('svg-ft') as SVGSVGElement | null;
+  const svgFx = document.getElementById('svg-fx') as SVGSVGElement | null;
+  const sliderX = document.getElementById('slider-x') as HTMLInputElement | null;
+  const sliderH = document.getElementById('slider-h') as HTMLInputElement | null;
+  const valXDisp = document.getElementById('val-x');
+  const valHDisp = document.getElementById('val-h');
+
+  const metricArea = document.getElementById('metric-area');
+  const metricSlope = document.getElementById('metric-slope');
+  const teleFx = document.getElementById('tele-fx');
+  const teleFprime = document.getElementById('tele-fprime');
+  const teleQuotient = document.getElementById('tele-quotient');
+  const teleError = document.getElementById('tele-error');
+  const teleBarrow = document.getElementById('tele-barrow');
+  const meterFill = document.getElementById('meter-fill');
+  const meterCaption = document.getElementById('meter-caption');
+
+  const W = 580;
+  const H = 200;
+  const PAD = { top: 20, right: 30, bottom: 35, left: 50 };
+  const PLOT_W = W - PAD.left - PAD.right;
+  const PLOT_H = H - PAD.top - PAD.bottom;
+
+  function toSvgX(t: number, tMin: number, tMax: number): number {
+    return PAD.left + ((t - tMin) / (tMax - tMin)) * PLOT_W;
+  }
+
+  function toSvgY(y: number, yMin: number, yMax: number): number {
+    return PAD.top + PLOT_H - ((y - yMin) / (yMax - yMin)) * PLOT_H;
+  }
+
+  function renderLab() {
+    if (!svgFt || !svgFx) return;
+
+    const fn = FUNC_PRESETS[currentKey];
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const axisColor = isLight ? '#94a3b8' : '#475569';
+    const textColor = isLight ? '#475569' : '#94a3b8';
+    const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+    const curveBlue = isLight ? '#0284c7' : '#38bdf8';
+    const curveGreen = isLight ? '#059669' : '#10b981';
+    const areaFill = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.25)';
+    const stripFill = isLight ? 'rgba(245, 158, 11, 0.35)' : 'rgba(245, 158, 11, 0.35)';
+
+    const xVal = curX;
+    const hVal = curH;
+    const fxVal = fn.f(xVal);
+    const FxVal = fn.F(xVal);
+    const FxhVal = fn.F(xVal + hVal);
+    const quotient = (FxhVal - FxVal) / hVal;
+    const error = Math.abs(quotient - fxVal);
+
+    // -------------------------------------------------------------
+    // GRÁFICO 1: f(t) y ÁREA ACUMULADA
+    // -------------------------------------------------------------
+    let ftHtml = `
+      <defs>
+        <linearGradient id="gradArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${curveBlue}" stop-opacity="0.45" />
+          <stop offset="100%" stop-color="${curveBlue}" stop-opacity="0.05" />
+        </linearGradient>
+      </defs>
+    `;
+
+    // Rejilla y Ejes
+    ftHtml += `
+      <line x1="${PAD.left}" y1="${toSvgY(0, fn.yMin, fn.yMax)}" x2="${W - PAD.right}" y2="${toSvgY(0, fn.yMin, fn.yMax)}" stroke="${axisColor}" stroke-width="1.8" />
+      <line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="${axisColor}" stroke-width="1.8" />
+      <text x="${W - PAD.right + 8}" y="${toSvgY(0, fn.yMin, fn.yMax) + 4}" font-size="11" fill="${textColor}" font-family="monospace">t</text>
+      <text x="${PAD.left - 30}" y="${PAD.top + 8}" font-size="11" fill="${textColor}" font-family="monospace">f(t)</text>
+    `;
+
+    // Curva y Área sombreada bajo f(t) hasta x
+    const samples = 100;
+    let pathD = '';
+    let areaD = `M ${toSvgX(0, fn.tMin, fn.tMax)} ${toSvgY(0, fn.yMin, fn.yMax)}`;
+
+    for (let i = 0; i <= samples; i++) {
+      const t = fn.tMin + (i / samples) * (fn.tMax - fn.tMin);
+      const y = fn.f(t);
+      const sx = toSvgX(t, fn.tMin, fn.tMax);
+      const sy = toSvgY(y, fn.yMin, fn.yMax);
+      pathD += (i === 0 ? 'M' : 'L') + ` ${sx} ${sy}`;
+    }
+
+    // Polígono de área sombreada acumulada [0, xVal]
+    const areaSamples = 50;
+    for (let i = 0; i <= areaSamples; i++) {
+      const t = fn.tMin + (i / areaSamples) * (xVal - fn.tMin);
+      const y = fn.f(t);
+      areaD += ` L ${toSvgX(t, fn.tMin, fn.tMax)} ${toSvgY(y, fn.yMin, fn.yMax)}`;
+    }
+    areaD += ` L ${toSvgX(xVal, fn.tMin, fn.tMax)} ${toSvgY(0, fn.yMin, fn.yMax)} Z`;
+
+    // Polígono de tira incremental [xVal, xVal + hVal]
+    let stripD = `M ${toSvgX(xVal, fn.tMin, fn.tMax)} ${toSvgY(0, fn.yMin, fn.yMax)}`;
+    const stripSamples = 20;
+    for (let i = 0; i <= stripSamples; i++) {
+      const t = xVal + (i / stripSamples) * hVal;
+      const y = fn.f(t);
+      stripD += ` L ${toSvgX(t, fn.tMin, fn.tMax)} ${toSvgY(y, fn.yMin, fn.yMax)}`;
+    }
+    stripD += ` L ${toSvgX(xVal + hVal, fn.tMin, fn.tMax)} ${toSvgY(0, fn.yMin, fn.yMax)} Z`;
+
+    ftHtml += `
+      <path d="${areaD}" fill="url(#gradArea)" />
+      <path d="${stripD}" fill="${stripFill}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,3" />
+      <path d="${pathD}" fill="none" stroke="${curveBlue}" stroke-width="2.6" stroke-linecap="round" />
+    `;
+
+    // Línea vertical en x y en x+h
+    const sx_val = toSvgX(xVal, fn.tMin, fn.tMax);
+    const sy_val = toSvgY(fxVal, fn.yMin, fn.yMax);
+    const s_base_y = toSvgY(0, fn.yMin, fn.yMax);
+
+    ftHtml += `
+      <line x1="${sx_val}" y1="${s_base_y}" x2="${sx_val}" y2="${sy_val}" stroke="${curveBlue}" stroke-width="2" stroke-dasharray="4,3" />
+      <circle cx="${sx_val}" cy="${sy_val}" r="4.5" fill="${curveBlue}" />
+      <text x="${sx_val}" y="${s_base_y + 16}" font-size="11" font-weight="700" fill="${curveBlue}" text-anchor="middle" font-family="monospace">x</text>
+
+      <line x1="${toSvgX(xVal + hVal, fn.tMin, fn.tMax)}" y1="${s_base_y}" x2="${toSvgX(xVal + hVal, fn.tMin, fn.tMax)}" y2="${toSvgY(fn.f(xVal + hVal), fn.yMin, fn.yMax)}" stroke="#f59e0b" stroke-width="1.4" stroke-dasharray="3,3" />
+      <text x="${toSvgX(xVal + hVal, fn.tMin, fn.tMax)}" y="${s_base_y + 16}" font-size="10" font-weight="600" fill="#f59e0b" text-anchor="middle" font-family="monospace">x+h</text>
+
+      <!-- Etiqueta de altura instantánea f(x) -->
+      <line x1="${PAD.left}" y1="${sy_val}" x2="${sx_val}" y2="${sy_val}" stroke="${curveBlue}" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+      <text x="${PAD.left - 8}" y="${sy_val + 4}" font-size="10" fill="${curveBlue}" font-weight="700" text-anchor="end" font-family="monospace">f(x)=${fxVal.toFixed(2)}</text>
+    `;
+
+    svgFt.innerHTML = ftHtml;
+
+    // -------------------------------------------------------------
+    // GRÁFICO 2: F(x) y RECTA TANGENTE CON PENDIENTE f(x)
+    // -------------------------------------------------------------
+    let fxHtml = '';
+
+    // Ejes
+    fxHtml += `
+      <line x1="${PAD.left}" y1="${toSvgY(0, fn.FyMin, fn.FyMax)}" x2="${W - PAD.right}" y2="${toSvgY(0, fn.FyMin, fn.FyMax)}" stroke="${axisColor}" stroke-width="1.8" />
+      <line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H - PAD.bottom}" stroke="${axisColor}" stroke-width="1.8" />
+      <text x="${W - PAD.right + 8}" y="${toSvgY(0, fn.FyMin, fn.FyMax) + 4}" font-size="11" fill="${textColor}" font-family="monospace">x</text>
+      <text x="${PAD.left - 30}" y="${PAD.top + 8}" font-size="11" fill="${textColor}" font-family="monospace">F(x)</text>
+    `;
+
+    // Curva F(x)
+    let pathFD = '';
+    for (let i = 0; i <= samples; i++) {
+      const x = fn.tMin + (i / samples) * (fn.tMax - fn.tMin);
+      const yF = fn.F(x);
+      const sx = toSvgX(x, fn.tMin, fn.tMax);
+      const sy = toSvgY(yF, fn.FyMin, fn.FyMax);
+      pathFD += (i === 0 ? 'M' : 'L') + ` ${sx} ${sy}`;
+    }
+
+    fxHtml += `
+      <path d="${pathFD}" fill="none" stroke="${curveGreen}" stroke-width="2.6" stroke-linecap="round" />
+    `;
+
+    // Punto en F(x)
+    const s_Fx_x = toSvgX(xVal, fn.tMin, fn.tMax);
+    const s_Fx_y = toSvgY(FxVal, fn.FyMin, fn.FyMax);
+
+    // Recta Tangente en (x, F(x)) con pendiente f(x)
+    // Longitud visual en x: deltaX = 0.75
+    const dxTangent = 0.65;
+    const xTan1 = Math.max(fn.tMin, xVal - dxTangent);
+    const xTan2 = Math.min(fn.tMax, xVal + dxTangent);
+    const yTan1 = FxVal + fxVal * (xTan1 - xVal);
+    const yTan2 = FxVal + fxVal * (xTan2 - xVal);
+
+    const sTanX1 = toSvgX(xTan1, fn.tMin, fn.tMax);
+    const sTanY1 = toSvgY(yTan1, fn.FyMin, fn.FyMax);
+    const sTanX2 = toSvgX(xTan2, fn.tMin, fn.tMax);
+    const sTanY2 = toSvgY(yTan2, fn.FyMin, fn.FyMax);
+
+    // Secante incremental de ancho h: entre (x, F(x)) y (x+h, F(x+h))
+    const sSecX2 = toSvgX(xVal + hVal, fn.tMin, fn.tMax);
+    const sSecY2 = toSvgY(FxhVal, fn.FyMin, fn.FyMax);
+
+    fxHtml += `
+      <!-- Recta Secante Incremental -->
+      <line x1="${s_Fx_x}" y1="${s_Fx_y}" x2="${sSecX2}" y2="${sSecY2}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3" />
+      <circle cx="${sSecX2}" cy="${sSecY2}" r="3.5" fill="#f59e0b" />
+
+      <!-- Recta Tangente Exacta -->
+      <line x1="${sTanX1}" y1="${sTanY1}" x2="${sTanX2}" y2="${sTanY2}" stroke="${curveGreen}" stroke-width="2.8" stroke-linecap="round" />
+      <circle cx="${s_Fx_x}" cy="${s_Fx_y}" r="5" fill="${curveGreen}" stroke="#ffffff" stroke-width="1.5" />
+
+      <!-- Línea indicadora vertical -->
+      <line x1="${s_Fx_x}" y1="${toSvgY(0, fn.FyMin, fn.FyMax)}" x2="${s_Fx_x}" y2="${s_Fx_y}" stroke="${curveGreen}" stroke-width="1.5" stroke-dasharray="3,3" />
+      <text x="${s_Fx_x}" y="${toSvgY(0, fn.FyMin, fn.FyMax) + 16}" font-size="11" font-weight="700" fill="${curveGreen}" text-anchor="middle" font-family="monospace">x</text>
+
+      <text x="${sTanX2 + 8}" y="${sTanY2}" font-size="11" font-weight="700" fill="${curveGreen}" font-family="monospace">m = F'(x) = ${fxVal.toFixed(2)}</text>
+    `;
+
+    svgFx.innerHTML = fxHtml;
+
+    // Actualizar Telemetría
+    if (metricArea) metricArea.textContent = `Área F(x) = ${FxVal.toFixed(3)}`;
+    if (metricSlope) metricSlope.textContent = `Pendiente F'(x) = ${fxVal.toFixed(3)}`;
+    if (teleFx) teleFx.textContent = fxVal.toFixed(3);
+    if (teleFprime) teleFprime.textContent = fxVal.toFixed(3);
+    if (teleQuotient) teleQuotient.textContent = quotient.toFixed(3);
+    if (teleError) teleError.textContent = error.toFixed(4);
+    if (teleBarrow) teleBarrow.textContent = FxVal.toFixed(3);
+
+    if (valXDisp) valXDisp.textContent = xVal.toFixed(2);
+    if (valHDisp) valHDisp.textContent = hVal.toFixed(2);
+
+    if (meterFill) {
+      // 0 error = 100% convergencia
+      const pct = Math.max(0, Math.min(100, (1 - error / 0.5) * 100));
+      meterFill.style.width = `${pct}%`;
+    }
+  }
+
+  // Event Listeners
+  if (sliderX) {
+    sliderX.addEventListener('input', (e) => {
+      curX = parseFloat((e.target as HTMLInputElement).value);
+      renderLab();
+    });
+  }
+
+  if (sliderH) {
+    sliderH.addEventListener('input', (e) => {
+      curH = parseFloat((e.target as HTMLInputElement).value);
+      renderLab();
+    });
+  }
+
+  const presetBtns = document.querySelectorAll<HTMLButtonElement>('.preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const funcKey = btn.dataset.func;
+      if (funcKey && FUNC_PRESETS[funcKey]) {
+        currentKey = funcKey;
+        renderLab();
+      }
+    });
+  });
+
+  // Escuchar cambios de tema (Modo Claro / Modo Oscuro)
+  const themeObserver = new MutationObserver(() => {
+    renderLab();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // Inicializar simulación
+  renderLab();
+
+  // =========================================================================
+  // SISTEMA DE AUTOEVALUACIÓN CONCEPTUAL (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+  const FEEDBACK_MSGS: Record<string, { correct: string; incorrect: string }> = {
+    '1': {
+      correct: '¡Exacto! Por la regla de Leibniz, G\'(x) = f(x²) · (x²)\' = ln(1 + x²) · 2x. Evaluando en x = 1: G\'(1) = ln(2) · 2 = 2·ln(2).',
+      incorrect: 'Incorrecto. No olvides aplicar la regla de la cadena: la derivada del límite superior x² es 2x. G\'(x) = ln(1 + x²) · 2x.',
+    },
+    '2': {
+      correct: '¡Brillante! La función f(x) = 1/x tiene una discontinuidad asintótica en x = 0, que cae de lleno en el intervalo [-2, 2]. Al no ser continua, la Regla de Barrow es inaplicable.',
+      incorrect: 'Incorrecto. La razón es analítica estricta: Barrow exige como hipótesis innegociable que la función sea continua en todo el intervalo cerrado. En x = 0, f(x) diverge.',
+    },
+    '3': {
+      correct: '¡Correcto! Por el TFC 1, F\'(x) = f(x). Si la primera derivada de F(x) es estrictamente positiva (F\'(x) > 0), el criterio de la primera derivada garantiza que F(x) es estrictamente creciente.',
+      incorrect: 'Incorrecto. Recuerda que la derivada de F(x) es f(x). Si F\'(x) > 0, la función F es creciente. La concavidad dependería de la segunda derivada F\'\'(x) = f\'(x).',
+    },
+    '4': {
+      correct: '¡Impecable! Por las propiedades de la integral definida, invertir los límites cambia el signo: F(x) = -∫₂ˣ t³ dt. Derivando con el TFC 1: F\'(x) = -x³.',
+      incorrect: 'Incorrecto. Como la variable x está en el límite inferior, F(x) = -∫₂ˣ t³ dt. Por tanto su derivada es -x³.',
+    },
+  };
+
+  quizCards.forEach((card) => {
+    const qId = card.dataset.q || '';
+    const btns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const fbBox = card.querySelector<HTMLElement>('.q-feedback');
+    const fbText = card.querySelector<HTMLElement>('.fb-text');
+
+    btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const isCorrect = btn.dataset.correct === 'true';
+
+        btns.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') {
+            b.classList.add('is-right');
+          } else if (b === btn) {
+            b.classList.add('is-wrong');
+          }
+        });
+
+        if (fbBox && fbText) {
+          fbBox.classList.remove('hidden', 'success', 'failure');
+          fbBox.classList.add(isCorrect ? 'success' : 'failure');
+          fbText.textContent = isCorrect ? FEEDBACK_MSGS[qId]?.correct : FEEDBACK_MSGS[qId]?.incorrect;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: TEOREMA FUNDAMENTAL DEL CÁLCULO Y REGLA DE BARROW
+     ========================================================================= */
+
+  /* 1. Tarjeta Hero de Analogía Cinemática */
+  .cinematic-hero-card {
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero-top-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    margin-bottom: 1.4rem;
+  }
+
+  .analogy-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @media (max-width: 850px) {
+    .analogy-dual-grid {
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+    .analogy-bridge {
+      display: none;
+    }
+  }
+
+  .analogy-column {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .analogy-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .analogy-icon-wrap.velocity {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+  }
+
+  .analogy-icon-wrap.odometer {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .analogy-svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .analogy-column h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.05rem;
+    color: #f8fafc;
+  }
+
+  .analogy-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+  }
+
+  .analogy-formula {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .code-pill {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .analogy-bridge {
+    text-align: center;
+  }
+
+  .bridge-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .bridge-arrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .bridge-arrow.top {
+    background: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .bridge-arrow.btm {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .hero-card-footer {
+    margin-top: 1.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  /* 2. Definición y Teoremas Canónicos */
+  .definition-box,
+  .canonical-theorem-card,
+  .concept-banner,
+  .extension-box {
+    border-radius: 14px;
+    padding: 1.6rem 1.8rem;
+    margin: 1.6rem 0;
+  }
+
+  .definition-box {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  .def-badge,
+  .canon-badge,
+  .ext-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .def-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .def-note {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+    border-left: 3px solid #38bdf8;
+  }
+
+  .concept-banner {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .banner-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #10b981;
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-formula {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #34d399;
+    margin-bottom: 0.6rem;
+  }
+
+  .banner-desc {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .canonical-theorem-card {
+    background: #0d1527;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .canonical-theorem-card.barrow-card {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: #091a1a;
+  }
+
+  .canon-badge {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+  }
+
+  .canon-badge.barrow {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+
+  .canon-statement p {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: #f1f5f9;
+  }
+
+  .canon-thesis {
+    margin: 1.2rem 0;
+    padding: 1.1rem;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    text-align: center;
+  }
+
+  .canon-thesis.barrow-thesis {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  .extension-box {
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .ext-badge {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+
+  .formal-proof-wrapper {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .proof-card-header h4 {
+    margin: 0.4rem 0 1.2rem 0;
+    color: #f8fafc;
+    font-size: 1.05rem;
+  }
+
+  .proof-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: 0.08em;
+  }
+
+  .proof-card.compact {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin: 1.4rem 0;
+  }
+
+  .proof-card.compact h4 {
+    margin-top: 0;
+    color: #f8fafc;
+  }
+
+  /* 3. Laboratorio Interactivo */
+  .lab-container {
+    background: #0d1527;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 16px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .preset-btn:hover {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  .preset-btn.is-active {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border-color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 1.4rem;
+  }
+
+  @media (max-width: 990px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lab-visual-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .graph-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .graph-tag {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .graph-tag.blue {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .graph-tag.green {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+  }
+
+  .graph-metric {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e2e8f0;
+  }
+
+  .svg-stage-wrapper {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .lab-controls-panel {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+  }
+
+  .control-val-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .telemetry-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: span 2;
+  }
+
+  .t-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val {
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val.cyan { color: #38bdf8; }
+  .t-val.green { color: #10b981; }
+  .t-val.amber { color: #f59e0b; }
+  .t-val.small { font-size: 0.95rem; color: #34d399; }
+
+  .t-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .convergence-meter {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin: 0.4rem 0;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #10b981);
+    transition: width 0.15s ease;
+  }
+
+  .meter-caption {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    line-height: 1.35;
+  }
+
+  .barrow-eval-preview {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
+    margin-top: 0.3rem;
+    color: #e2e8f0;
+  }
+
+  .code-res {
+    color: #10b981;
+    font-weight: 800;
+  }
+
+  /* 4. Casos Prácticos y Protocolo PAU */
+  .cases-vertical-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .case-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.6rem;
+  }
+
+  .case-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .case-num {
+    font-size: 0.68rem;
+    font-weight: 800;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .case-header h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #f8fafc;
+  }
+
+  .case-problem {
+    font-size: 0.94rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+    padding: 0.7rem 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border-left: 3px solid #f59e0b;
+  }
+
+  .sol-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .sol-note {
+    font-size: 0.86rem;
+    color: #94a3b8;
+    margin-top: 0.8rem;
+    font-style: italic;
+  }
+
+  /* 5. Pecados y Trampas en Exámenes */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 850px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .sin-pill {
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .sin-card h4 {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #f8fafc;
+    line-height: 1.4;
+  }
+
+  .sin-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #6ee7b7;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  /* 6. Autoevaluación Conceptual */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .q-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: 0.08em;
+  }
+
+  .q-header h4 {
+    margin: 0.4rem 0 1.2rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    color: #cbd5e1;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-right {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .q-feedback.hidden {
+    display: none;
+  }
+
+  .q-feedback.success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .q-feedback.failure {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     ADAPTACIÓN AL MODO CLARO (THEME = LIGHT)
+     ========================================================================= */
+  :global([data-theme="light"]) .cinematic-hero-card,
+  :global([data-theme="light"]) .canonical-theorem-card,
+  :global([data-theme="light"]) .lab-container {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .cinematic-hero-card {
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  :global([data-theme="light"]) .analogy-column,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-controls-panel,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .case-card,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card,
+  :global([data-theme="light"]) .definition-box,
+  :global([data-theme="light"]) .formal-proof-wrapper {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .analogy-column h4,
+  :global([data-theme="light"]) .case-header h4,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4,
+  :global([data-theme="light"]) .proof-card-header h4,
+  :global([data-theme="light"]) .proof-card.compact h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .analogy-desc,
+  :global([data-theme="light"]) .hero-card-footer,
+  :global([data-theme="light"]) .def-note,
+  :global([data-theme="light"]) .banner-desc,
+  :global([data-theme="light"]) .canon-statement p,
+  :global([data-theme="light"]) .case-problem,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .code-pill,
+  :global([data-theme="light"]) .def-note,
+  :global([data-theme="light"]) .case-problem,
+  :global([data-theme="light"]) .svg-stage-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .t-sub,
+  :global([data-theme="light"]) .sol-note,
+  :global([data-theme="light"]) .meter-caption {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .t-val.cyan { color: #0284c7; }
+  :global([data-theme="light"]) .t-val.green { color: #059669; }
+  :global([data-theme="light"]) .t-val.amber { color: #d97706; }
+  :global([data-theme="light"]) .t-val.small { color: #059669; }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>

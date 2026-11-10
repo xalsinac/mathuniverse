@@ -1,0 +1,1954 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-03')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-04');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL PROBLEMA DE LA VELOCIDAD INSTANTÁNEA -->
+  <section class="lesson-section" id="origen-fisico">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Dilema de la Velocidad Instantánea: De la Secante a la Tangente</h2>
+
+    <p class="lead-paragraph">
+      Durante más de dos mil años, la física y la geometría se estrellaron contra una paradoja aparentemente insalvable: <strong>¿cómo medir la velocidad de un cuerpo en un instante exacto de tiempo?</strong> La velocidad media sobre un intervalo se calcula dividiendo el espacio recorrido entre el tiempo transcurrido:
+    </p>
+
+    <div class="math-display-eq">
+      v<sub>media</sub> = <span class="math-frac"><span class="num">&Delta;s</span><span class="den">&Delta;t</span></span> = <span class="math-frac"><span class="num">s(t₂ ) - s(t₁)</span><span class="den">t₂ - t₁</span></span>
+    </div>
+
+    <p>
+      Pero si queremos conocer la velocidad exactamente en el instante <code class="inline-code">t₁</code>, el intervalo temporal se reduce a cero (<code class="inline-code">&Delta;t = 0</code>). En ese momento, el espacio recorrido en cero segundos es cero (<code class="inline-code">&Delta;s = 0</code>), lo que nos precipita hacia la división prohibida:
+    </p>
+
+    <!-- Caja de Paradoja Conceptual -->
+    <div class="math-warning-box">
+      <div class="warn-head">
+        <span class="warn-badge">EL CALLEJÓN SIN SALIDA ARITMÉTICO</span>
+        <h4>La Paradoja de la División por Cero</h4>
+      </div>
+      <div class="warn-eq-row">
+        <span>v(t₁) = <span class="math-frac"><span class="num">0 metros</span><span class="den">0 segundos</span></span> = Indeterminación <span class="math-frac"><span class="num">0</span><span class="den">0</span></span></span>
+      </div>
+      <p>
+        Si el tiempo no transcurre, ningún objeto se mueve. Si el tiempo transcurre, la velocidad obtenida ya no es instantánea, sino el promedio de un intervalo.
+      </p>
+    </div>
+
+    <p>
+      La genialidad revolucionaria de <strong>Isaac Newton</strong> y <strong>Gottfried Leibniz</strong> a finales del siglo XVII consistió en no detenerse en el cero estático, sino en construir un <em>proceso dinámico de aproximación infinita</em>: hacer que el intervalo de tiempo <code class="inline-code">h = &Delta;t</code> se aproxime a cero tanto como queramos sin llegar jamás a ser exactamente cero.
+    </p>
+
+    <!-- Contraste Secante vs Tangente -->
+    <div class="sec-tan-contrast-grid">
+      <div class="contrast-card sec-card">
+        <span class="card-tag">GEOMETRÍA DISCRETA · SECANTE</span>
+        <h4>Pendiente de la Recta Secante (m<sub>sec</sub>)</h4>
+        <p>
+          Une dos puntos distintos de la curva: <code class="inline-code">P(x, f(x))</code> y <code class="inline-code">Q(x+h, f(x+h))</code>. Mide la tasa de variación media global:
+        </p>
+        <div class="card-formula">
+          m<sub>sec</sub> = <span class="math-frac"><span class="num">f(x + h) - f(x)</span><span class="den">h</span></span>
+        </div>
+      </div>
+
+      <div class="contrast-card tan-card">
+        <span class="card-tag">ANÁLISIS CONTINUO · TANGENTE</span>
+        <h4>Pendiente de la Recta Tangente (m<sub>tan</sub>)</h4>
+        <p>
+          Es el valor límite exacto al que convergen las infinitas rectas secantes cuando el punto móvil <code class="inline-code">Q</code> colapsa sobre <code class="inline-code">P</code>:
+        </p>
+        <div class="card-formula">
+          m<sub>tan</sub> = f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">f(x + h) - f(x)</span><span class="den">h</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: DEFINICIÓN FORMAL RIGUROSA -->
+  <section class="lesson-section" id="definicion-formal">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Definición Formal del Límite del Cociente Incremental</h2>
+
+    <div class="formal-theorem-banner">
+      <span class="theorem-badge">DEFINICIÓN AXIOMÁTICA DE LA DERIVADA</span>
+      <h3>«Sea f: D ⊆ ℝ → ℝ una función real y x₀ un punto interior de su dominio. Se define la derivada de f en x₀ como el límite finito del cociente incremental»</h3>
+      <div class="theorem-symbolic">
+        f'(x₀) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">f(x₀ + h) - f(x₀)</span><span class="den">h</span></span> = <span class="math-lim">lim<sub>x→x₀</sub></span> <span class="math-frac"><span class="num">f(x) - f(x₀)</span><span class="den">x - x₀</span></span>
+      </div>
+    </div>
+
+    <p>
+      Ambas expresiones son rigurosamente equivalentes mediante el cambio de variable <code class="inline-code">x = x₀ + h</code> (donde <code class="inline-code">h = x - x₀</code>, de modo que <code class="inline-code">x → x₀ ⟺ h → 0</code>):
+    </p>
+
+    <div class="derivative-conditions-grid">
+      <div class="cond-card">
+        <div class="cond-header">
+          <span class="cond-num">01</span>
+          <h4>Existencia del Límite</h4>
+        </div>
+        <p>Para que la derivada exista en un punto, el límite debe ser un número real finito <code class="inline-code">L ∈ ℝ</code>. Si el límite oscila o se dispara a <code class="inline-code">±∞</code>, la función <strong>no es derivable</strong> en ese punto.</p>
+      </div>
+
+      <div class="cond-card">
+        <div class="cond-header">
+          <span class="cond-num">02</span>
+          <h4>Coincidencia de Derivadas Laterales</h4>
+        </div>
+        <p>
+          Al ser un límite, exige que la aproximación por la izquierda coincida exactamente con la aproximación por la derecha:
+        </p>
+        <div class="cond-eq">
+          f'(x₀⁻) = f'(x₀⁺) = f'(x₀)
+        </div>
+      </div>
+
+      <div class="cond-card">
+        <div class="cond-header">
+          <span class="cond-num">03</span>
+          <h4>Naturaleza de la Notación</h4>
+        </div>
+        <p>
+          En la notación de Leibniz, <span class="math-frac"><span class="num">df</span><span class="den">dx</span></span> no representa una fracción algebraica de dos números estáticos, sino el operador diferencial cociente de dos cantidades infinitamente pequeñas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO VISUAL INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-interactivo">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Visual: El Giro de la Secante a la Tangente</h2>
+
+    <p>
+      Experimenta en tiempo real el paso del mundo discreto al continuo. Arrastra el incremento <code class="inline-code">h</code> hacia cero y observa cómo el triángulo diferencial se empequeñece hasta que la recta secante se fusiona exactamente con la recta tangente teórica.
+    </p>
+
+    <div class="der-lab-shell">
+      <div class="lab-glass-panel">
+        <div class="lab-header-bar">
+          <span class="lab-tag">SIMULADOR DIFERENCIAL VECTORIAL</span>
+          <div class="curve-selector-group">
+            <button type="button" class="curve-tab-btn is-active" data-curve="parabola">f(x) = x²</button>
+            <button type="button" class="curve-tab-btn" data-curve="cubic">f(x) = 0.5x³ - x</button>
+            <button type="button" class="curve-tab-btn" data-curve="sqrt">f(x) = 2√x</button>
+          </div>
+        </div>
+
+        <div class="lab-controls-grid">
+          <div class="ctrl-group">
+            <div class="ctrl-header">
+              <label for="slider-x0">Punto de estudio (x₀):</label>
+              <span id="disp-x0" class="ctrl-val-badge">x₀ = 1.00</span>
+            </div>
+            <input type="range" id="slider-x0" min="-2.0" max="2.0" step="0.1" value="1.0" class="lab-slider" />
+          </div>
+
+          <div class="ctrl-group">
+            <div class="ctrl-header">
+              <label for="slider-h">Incremento (h):</label>
+              <span id="disp-h" class="ctrl-val-badge highlight-val">h = 1.20</span>
+            </div>
+            <input type="range" id="slider-h" min="0.05" max="2.00" step="0.05" value="1.20" class="lab-slider slider-accent-amber" />
+          </div>
+
+          <div class="ctrl-actions">
+            <button type="button" id="btn-animate-limit" class="lab-action-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Animar h → 0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Escenario Interactivo SVG + Telemetría -->
+        <div class="lab-stage-container">
+          <div class="svg-viewport">
+            <svg id="derivative-canvas" viewBox="-240 -200 480 400" class="svg-canvas" role="img" aria-label="Plano cartesiano con curva, recta secante y tangente">
+              <!-- Rejilla y Ejes generados por JavaScript -->
+              <g id="grid-layer"></g>
+              <g id="curve-layer"></g>
+              <g id="tangent-layer"></g>
+              <g id="secant-layer"></g>
+              <g id="delta-layer"></g>
+              <g id="points-layer"></g>
+            </svg>
+          </div>
+
+          <!-- Cuadro de Mandos Numérico / Telemetría -->
+          <div class="lab-telemetry-card">
+            <span class="telemetry-title">TELEMETRÍA EN TIEMPO REAL</span>
+
+            <div class="telemetry-rows">
+              <div class="tel-row">
+                <span class="tel-label">Punto base P:</span>
+                <span id="val-point-p" class="tel-val">(1.00, 1.00)</span>
+              </div>
+              <div class="tel-row">
+                <span class="tel-label">Punto secundario Q:</span>
+                <span id="val-point-q" class="tel-val">(2.20, 4.84)</span>
+              </div>
+              <div class="tel-row">
+                <span class="tel-label">Incremento vertical &Delta;y:</span>
+                <span id="val-delta-y" class="tel-val">3.840</span>
+              </div>
+              <div class="tel-row highlight-row-amber">
+                <span class="tel-label">Pendiente Secante (m<sub>sec</sub>):</span>
+                <span id="val-slope-sec" class="tel-val font-bold">3.200</span>
+              </div>
+              <div class="tel-row highlight-row-cyan">
+                <span class="tel-label">Pendiente Tangente Exacta (f'(x₀)):</span>
+                <span id="val-slope-tan" class="tel-val font-bold">2.000</span>
+              </div>
+              <div class="tel-row error-row">
+                <span class="tel-label">Error absoluto |m<sub>sec</sub> - f'|:</span>
+                <span id="val-error" class="tel-val font-mono">1.200</span>
+              </div>
+            </div>
+
+            <div class="lab-convergence-bar-shell">
+              <span class="bar-label">CONVERGENCIA DEL LÍMITE (h → 0):</span>
+              <div class="convergence-track">
+                <div id="convergence-fill" class="convergence-fill" style="width: 40%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: DEDUCCIONES AXIOMÁTICAS PASO A PASO -->
+  <section class="lesson-section" id="deducciones-fundamentales">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Deducción Paso a Paso de las Derivadas Fundamentales</h2>
+
+    <p>
+      Las reglas de derivación de las tablas de Bachillerato no son axiomas caídos del cielo: cada una de ellas es el resultado directo de resolver algebraicamente la indeterminación <code class="inline-code">0/0</code> del cociente incremental.
+    </p>
+
+    <!-- Stepper de 4 Deducciones Esenciales -->
+    <div class="derivations-accordion">
+      <!-- Deducción 1: x² -->
+      <div class="derivation-step-card">
+        <div class="d-step-badge">D1</div>
+        <div class="d-step-body">
+          <div class="d-step-header">
+            <h4>Función Potencial Simple: f(x) = x² ⟹ f'(x) = 2x</h4>
+            <span class="d-rule-tag">Resolución por factor común h</span>
+          </div>
+          <p>
+            Planteamos el cociente incremental desarrollando el binomio al cuadrado <code class="inline-code">(x + h)²</code>:
+          </p>
+
+          <div class="math-derivation-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 1 · Sustitución</span>
+              <span>
+                f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">(x + h)² - x²</span><span class="den">h</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 2 · Expansión</span>
+              <span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">(x² + 2xh + h²) - x²</span><span class="den">h</span></span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">2xh + h²</span><span class="den">h</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 3 · Factorización</span>
+              <span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">h(2x + h)</span><span class="den">h</span></span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> (2x + h)
+              </span>
+            </div>
+
+            <div class="math-step-line is-highlight">
+              <span class="math-step-tag">Paso 4 · Paso al límite</span>
+              <span>
+                = 2x + 0 = 2x
+              </span>
+              <span class="math-qed">∎ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deducción 2: √x -->
+      <div class="derivation-step-card">
+        <div class="d-step-badge">D2</div>
+        <div class="d-step-body">
+          <div class="d-step-header">
+            <h4>Función Radical: f(x) = <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span> ⟹ f'(x) = <span class="math-frac"><span class="num">1</span><span class="den">2<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span></span></span></h4>
+            <span class="d-rule-tag">Resolución mediante multiplicación por el conjugado</span>
+          </div>
+          <p>
+            Al sustituir surge la resta de raíces <code class="inline-code"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> - <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span></code>. Para destruir la indeterminación multiplicamos numerador y denominador por el binomio conjugado:
+          </p>
+
+          <div class="math-derivation-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 1 · Conjugado</span>
+              <span>
+                f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">(<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> - <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span>)(<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span>)</span><span class="den">h(<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span>)</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 2 · Diferencia Cuadrados</span>
+              <span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">(x + h) - x</span><span class="den">h(<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span>)</span></span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">h</span><span class="den">h(<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span>)</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line is-highlight">
+              <span class="math-step-tag">Paso 3 · Cancelación y Límite</span>
+              <span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">1</span><span class="den"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x + h</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span></span></span>
+                = <span class="math-frac"><span class="num">1</span><span class="den"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span> + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span></span></span>
+                = <span class="math-frac"><span class="num">1</span><span class="den">2<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">x</span></span></span></span>
+              </span>
+              <span class="math-qed">∎ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deducción 3: sen(x) -->
+      <div class="derivation-step-card">
+        <div class="d-step-badge">D3</div>
+        <div class="d-step-body">
+          <div class="d-step-header">
+            <h4>Función Trigonométrica: f(x) = sen(x) ⟹ f'(x) = cos(x)</h4>
+            <span class="d-rule-tag">Identidad trigonométrica de suma a producto</span>
+          </div>
+          <p>
+            Aplicamos la fórmula clásica <code class="inline-code">sen(A) - sen(B) = 2·cos((A+B)/2)·sen((A-B)/2)</code>:
+          </p>
+
+          <div class="math-derivation-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 1 · Transformación</span>
+              <span>
+                f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">sen(x + h) - sen(x)</span><span class="den">h</span></span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">2 · cos(x + <span class="math-subfrac"><span class="num">h</span><span class="den">2</span></span>) · sen(<span class="math-subfrac"><span class="num">h</span><span class="den">2</span></span>)</span><span class="den">h</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line is-highlight">
+              <span class="math-step-tag">Paso 2 · Límite notable</span>
+              <span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> cos(x + <span class="math-subfrac"><span class="num">h</span><span class="den">2</span></span>) · <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">sen(h/2)</span><span class="den">h/2</span></span>
+                = cos(x) · 1 = cos(x)
+              </span>
+              <span class="math-qed">∎ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deducción 4: eˣ -->
+      <div class="derivation-step-card">
+        <div class="d-step-badge">D4</div>
+        <div class="d-step-body">
+          <div class="d-step-header">
+            <h4>Función Exponencial Natural: f(x) = eˣ ⟹ f'(x) = eˣ</h4>
+            <span class="d-rule-tag">Límite fundamental que define la base e</span>
+          </div>
+          <p>
+            Extraemos el factor constante <code class="inline-code">eˣ</code> fuera del límite ya que no depende de la variable <code class="inline-code">h</code>:
+          </p>
+
+          <div class="math-derivation-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 1 · Factorización</span>
+              <span>
+                f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">e<sup>x+h</sup> - eˣ</span><span class="den">h</span></span>
+                = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">eˣ(e<sup>h</sup> - 1)</span><span class="den">h</span></span>
+                = eˣ · <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">e<sup>h</sup> - 1</span><span class="den">h</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line is-highlight">
+              <span class="math-step-tag">Paso 2 · Límite rector</span>
+              <span>
+                Por la propia definición del número de Euler, <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">e<sup>h</sup> - 1</span><span class="den">h</span></span> = 1 ⟹ f'(x) = eˣ · 1 = eˣ
+              </span>
+              <span class="math-qed">∎ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: CONTINUIDAD VS DERIVABILIDAD -->
+  <section class="lesson-section" id="continuidad-derivabilidad">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. El Gran Teorema: Derivabilidad implica Continuidad (y los Puntos Angulosos)</h2>
+
+    <p>
+      Uno de los teoremas más celebrados del análisis establece una jerarquía estricta entre la continuidad y la suavidad de una curva:
+    </p>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE REGULARIDAD</div>
+      <h3>«Si una función f es derivable en x₀, entonces f es obligatoriamente continua en x₀»</h3>
+      <div class="math-display-eq">
+        f derivable en x₀ &emsp;⟹&emsp; f continua en x₀
+      </div>
+    </div>
+
+    <!-- Demostración en 3 líneas -->
+    <div class="proof-block">
+      <span class="proof-title">DEMOSTRACIÓN AXIOMÁTICA:</span>
+      <p>
+        Queremos demostrar que <code class="inline-code"><span class="math-lim">lim<sub>x→x₀</sub></span> f(x) = f(x₀)</code>, lo que equivale a probar que <code class="inline-code"><span class="math-lim">lim<sub>x→x₀</sub></span> [f(x) - f(x₀)] = 0</code>. Multiplicamos y dividimos por <code class="inline-code">(x - x₀)</code>:
+      </p>
+
+      <div class="math-derivation-chain">
+        <div class="math-step-line">
+          <span>
+            <span class="math-lim">lim<sub>x→x₀</sub></span> [f(x) - f(x₀)]
+            = <span class="math-lim">lim<sub>x→x₀</sub></span> <span class="math-frac"><span class="num">f(x) - f(x₀)</span><span class="den">x - x₀</span></span> · (x - x₀)
+          </span>
+        </div>
+        <div class="math-step-line is-highlight">
+          <span>
+            = <span class="math-lim">lim<sub>x→x₀</sub></span> <span class="math-frac"><span class="num">f(x) - f(x₀)</span><span class="den">x - x₀</span></span> · <span class="math-lim">lim<sub>x→x₀</sub></span> (x - x₀)
+            = f'(x₀) · 0 = 0
+          </span>
+          <span class="math-qed">∎ Q.E.D.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- El Recíproco es Falso -->
+    <div class="counterexample-card">
+      <div class="ce-header">
+        <span class="ce-tag">¡ALERTA CONCEPTUAL CRÍTICA!</span>
+        <h4>El Recíproco es ROTUNDAMENTE FALSO</h4>
+      </div>
+      <p>
+        Que una función sea continua <strong>NO garantiza</strong> que sea derivable. El contraejemplo canónico es la función valor absoluto <code class="inline-code">f(x) = |x|</code> en el origen <code class="inline-code">x = 0</code>:
+      </p>
+
+      <div class="lateral-derivatives-grid">
+        <div class="lat-card lat-left">
+          <span class="lat-tag">DERIVADA LATERAL IZQUIERDA</span>
+          <div class="lat-eq">
+            f'(0⁻) = <span class="math-lim">lim<sub>h→0⁻</sub></span> <span class="math-frac"><span class="num">|0 + h| - 0</span><span class="den">h</span></span> = <span class="math-frac"><span class="num">-h</span><span class="den">h</span></span> = -1
+          </div>
+          <p>La curva llega al origen con una pendiente constante descendente de 45°.</p>
+        </div>
+
+        <div class="lat-card lat-right">
+          <span class="lat-tag">DERIVADA LATERAL DERECHA</span>
+          <div class="lat-eq">
+            f'(0⁺) = <span class="math-lim">lim<sub>h→0⁺</sub></span> <span class="math-frac"><span class="num">|0 + h| - 0</span><span class="den">h</span></span> = <span class="math-frac"><span class="num">+h</span><span class="den">h</span></span> = +1
+          </div>
+          <p>La curva sale del origen con una pendiente constante ascendente de 45°.</p>
+        </div>
+      </div>
+
+      <div class="ce-verdict">
+        Como <code class="inline-code">f'(0⁻) = -1 ≠ f'(0⁺) = +1</code>, el límite bilateral no existe. Se forma un <strong>punto anguloso o vértice afilado</strong>: la función es 100% continua pero tiene infinitas rectas de apoyo y <strong>ninguna recta tangente única</strong>.
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RECTA TANGENTE Y NORMAL -->
+  <section class="lesson-section" id="recta-tangente-normal">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. La Ecuación Canónica de la Recta Tangente y la Recta Normal</h2>
+
+    <p>
+      La aplicación geométrica estelar de la derivada en las pruebas de acceso a la universidad (PAU) consiste en construir las dos rectas ortogonales asociadas a la curva en el punto de contacto <code class="inline-code">(x₀, f(x₀))</code>:
+    </p>
+
+    <div class="tangent-normal-grid">
+      <!-- Recta Tangente -->
+      <div class="tn-card is-tangent">
+        <div class="tn-badge">RECTA TANGENTE</div>
+        <h4>Ecuación Punto-Pendiente</h4>
+        <p>Tiene por pendiente exactamente el valor de la derivada <code class="inline-code">m = f'(x₀)</code>:</p>
+        <div class="tn-formula">
+          y - f(x₀) = f'(x₀) · (x - x₀)
+        </div>
+        <span class="tn-desc">Aproximación lineal de primer orden (Taylor) de la función en el entorno inmediato de x₀.</span>
+      </div>
+
+      <!-- Recta Normal -->
+      <div class="tn-card is-normal">
+        <div class="tn-badge">RECTA NORMAL</div>
+        <h4>Ecuación Ortogonal Perpendicular</h4>
+        <p>Por condición de perpendicularidad de vectores directores, su pendiente es la opuesta e inversa <code class="inline-code">m<sub>norm</sub> = -1 / f'(x₀)</code> (siempre que <code class="inline-code">f'(x₀) ≠ 0</code>):</p>
+        <div class="tn-formula">
+          y - f(x₀) = -<span class="math-frac"><span class="num">1</span><span class="den">f'(x₀)</span></span> · (x - x₀)
+        </div>
+        <span class="tn-desc">Traza la dirección del vector normal a la trayectoria física (fuerza centrípeta, óptica de reflexión).</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: RÚBRICA DE LOS 4 ERRORES FATALES -->
+  <section class="lesson-section" id="errores-fatales">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica de los 4 Errores Fatales en Exámenes y PAU</h2>
+
+    <p>
+      Comprueba si cometes alguno de estos cuatro fallos arquetípicos que penalizan severamente en las correcciones oficiales:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 01</span>
+          <span class="sin-title">Tachar la h antes de Factorizar</span>
+        </div>
+        <p>Simplificar una <code class="inline-code">h</code> del denominador con un solo término del numerador dejando los demás intactos:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span><span class="math-frac"><span class="num">2xh + h²</span><span class="den">h</span></span> <s>=</s> 2x + h² &emsp;[¡Disparate algebraico!]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span><span class="math-frac"><span class="num">h(2x + h)</span><span class="den">h</span></span> = 2x + h &emsp;[Extracción obligatoria de factor común]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 02</span>
+          <span class="sin-title">Omitir el Símbolo de Límite en los Pasos Intermedios</span>
+        </div>
+        <p>Dejar de escribir <code class="inline-code">lim<sub>h→0</sub></code> mientras la variable <code class="inline-code">h</code> aún está presente en la expresión:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>f'(x) = <span class="math-frac"><span class="num">2xh + h²</span><span class="den">h</span></span> = 2x + h = 2x</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>f'(x) = <span class="math-lim">lim<sub>h→0</sub></span> <span class="math-frac"><span class="num">2xh + h²</span><span class="den">h</span></span> = <span class="math-lim">lim<sub>h→0</sub></span> (2x + h) = 2x</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 03</span>
+          <span class="sin-title">Confundir f'(a) con f'(x)</span>
+        </div>
+        <p>La derivada en un punto concreto <code class="inline-code">f'(a)</code> es un número real escalar; la función derivada <code class="inline-code">f'(x)</code> es una regla matemática:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>Derivada de f(x) = x² en x = 3: «f'(3) = 2x»</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>f'(x) = 2x ⟹ f'(3) = 2 · 3 = 6 (un número escalar)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 04</span>
+          <span class="sin-title">Asumir que toda función continua es derivable</span>
+        </div>
+        <p>Afirmar que una función tiene recta tangente por el mero hecho de que su gráfica se puede dibujar sin levantar el lápiz:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>f(x) = |x| es continua en ℝ ⟹ f'(0) existe</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>Es continua, pero presenta punto anguloso en x = 0 (f'(0⁻) ≠ f'(0⁺))</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Dominio</h2>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>Si una función f cumple que f'(2) = 5, ¿cuál es la ecuación de la recta tangente a la curva en el punto de abscisa x = 2 sabiendo que f(2) = 3?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">y - 5 = 3 · (x - 2)</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">y - 3 = 5 · (x - 2) ⟹ y = 5x - 7</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">y - 2 = 5 · (x - 3)</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>¿Por qué el cociente incremental [f(x+h) - f(x)] / h da siempre una indeterminación 0/0 cuando h tiende a 0 para cualquier función continua?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque el denominador h se hace infinito.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque por continuidad lim<sub>h→0</sub> f(x+h) = f(x), haciendo que tanto numerador como denominador tiendan a 0 simultáneamente.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque la derivada siempre es cero en los puntos críticos.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Sea la función f(x) = x · |x|. ¿Es f derivable en el origen x = 0?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, f'(0) = 0, porque lim<sub>h→0</sub> [h·|h| - 0] / h = lim<sub>h→0</sub> |h| = 0 (ambas derivadas laterales coinciden en 0).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, porque cualquier función con valor absoluto tiene siempre punto anguloso en el cero.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">No, porque f(x) es discontinua en x = 0.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // 1. LÓGICA DEL LABORATORIO VISUAL DE DERIVADAS
+    const sliderX0 = document.getElementById('slider-x0') as HTMLInputElement | null;
+    const sliderH = document.getElementById('slider-h') as HTMLInputElement | null;
+    const dispX0 = document.getElementById('disp-x0');
+    const dispH = document.getElementById('disp-h');
+    const btnAnimate = document.getElementById('btn-animate-limit');
+
+    const valP = document.getElementById('val-point-p');
+    const valQ = document.getElementById('val-point-q');
+    const valDy = document.getElementById('val-delta-y');
+    const valMsec = document.getElementById('val-slope-sec');
+    const valMtan = document.getElementById('val-slope-tan');
+    const valErr = document.getElementById('val-error');
+    const convFill = document.getElementById('convergence-fill');
+
+    // Capas SVG
+    const gridLayer = document.getElementById('grid-layer');
+    const curveLayer = document.getElementById('curve-layer');
+    const tangentLayer = document.getElementById('tangent-layer');
+    const secantLayer = document.getElementById('secant-layer');
+    const deltaLayer = document.getElementById('delta-layer');
+    const pointsLayer = document.getElementById('points-layer');
+
+    const curveTabs = document.querySelectorAll<HTMLButtonElement>('.curve-tab-btn');
+
+    let currentCurve: 'parabola' | 'cubic' | 'sqrt' = 'parabola';
+
+    // Funciones matemáticas y sus derivadas
+    const funcs = {
+      parabola: {
+        f: (x: number) => x * x,
+        df: (x: number) => 2 * x,
+        minX: -2.2,
+        maxX: 2.2,
+        scaleX: 60,
+        scaleY: 35
+      },
+      cubic: {
+        f: (x: number) => 0.5 * x * x * x - x,
+        df: (x: number) => 1.5 * x * x - 1,
+        minX: -2.3,
+        maxX: 2.3,
+        scaleX: 55,
+        scaleY: 45
+      },
+      sqrt: {
+        f: (x: number) => 2 * Math.sqrt(Math.max(0, x)),
+        df: (x: number) => (x > 0 ? 1 / Math.sqrt(x) : 999),
+        minX: 0.1,
+        maxX: 3.8,
+        scaleX: 50,
+        scaleY: 40
+      }
+    };
+
+    curveTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        curveTabs.forEach((t) => t.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        currentCurve = (tab.dataset.curve as any) || 'parabola';
+
+        if (currentCurve === 'sqrt' && sliderX0) {
+          sliderX0.min = '0.2';
+          sliderX0.max = '3.0';
+          if (parseFloat(sliderX0.value) < 0.2) sliderX0.value = '1.0';
+        } else if (sliderX0) {
+          sliderX0.min = '-2.0';
+          sliderX0.max = '2.0';
+        }
+
+        renderLab();
+      });
+    });
+
+    const toSvgX = (x: number, scaleX: number) => x * scaleX;
+    const toSvgY = (y: number, scaleY: number) => -y * scaleY;
+
+    const renderLab = () => {
+      const cfg = funcs[currentCurve];
+      const x0 = sliderX0 ? parseFloat(sliderX0.value) : 1.0;
+      const h = sliderH ? parseFloat(sliderH.value) : 1.0;
+
+      if (dispX0) dispX0.textContent = `x₀ = ${x0.toFixed(2)}`;
+      if (dispH) dispH.textContent = `h = ${h.toFixed(2)}`;
+
+      const y0 = cfg.f(x0);
+      const x1 = x0 + h;
+      const y1 = cfg.f(x1);
+
+      const dy = y1 - y0;
+      const mSec = dy / h;
+      const mTan = cfg.df(x0);
+      const err = Math.abs(mSec - mTan);
+
+      // Actualizar Telemetría
+      if (valP) valP.textContent = `(${x0.toFixed(2)}, ${y0.toFixed(2)})`;
+      if (valQ) valQ.textContent = `(${x1.toFixed(2)}, ${y1.toFixed(2)})`;
+      if (valDy) valDy.textContent = dy.toFixed(3);
+      if (valMsec) valMsec.textContent = mSec.toFixed(3);
+      if (valMtan) valMtan.textContent = mTan.toFixed(3);
+      if (valErr) valErr.textContent = err.toFixed(3);
+
+      if (convFill) {
+        // Cuanto menor es h, más cerca del 100%
+        const pct = Math.max(0, Math.min(100, Math.round((1 - (h - 0.05) / 1.95) * 100)));
+        convFill.style.width = `${pct}%`;
+      }
+
+      // Dibujar SVG
+      if (!gridLayer || !curveLayer || !tangentLayer || !secantLayer || !deltaLayer || !pointsLayer) return;
+
+      // Limpiar capas
+      gridLayer.innerHTML = '';
+      curveLayer.innerHTML = '';
+      tangentLayer.innerHTML = '';
+      secantLayer.innerHTML = '';
+      deltaLayer.innerHTML = '';
+      pointsLayer.innerHTML = '';
+
+      // 1. Ejes coordenados
+      const axisX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      axisX.setAttribute('x1', '-230');
+      axisX.setAttribute('y1', '0');
+      axisX.setAttribute('x2', '230');
+      axisX.setAttribute('y2', '0');
+      axisX.setAttribute('stroke', 'rgba(255, 255, 255, 0.25)');
+      axisX.setAttribute('stroke-width', '1.5');
+      gridLayer.appendChild(axisX);
+
+      const axisY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      axisY.setAttribute('x1', '0');
+      axisY.setAttribute('y1', '-190');
+      axisY.setAttribute('x2', '0');
+      axisY.setAttribute('y2', '190');
+      axisY.setAttribute('stroke', 'rgba(255, 255, 255, 0.25)');
+      axisY.setAttribute('stroke-width', '1.5');
+      gridLayer.appendChild(axisY);
+
+      // 2. Trazo de la curva
+      let dPath = '';
+      const step = 0.04;
+      for (let x = cfg.minX; x <= cfg.maxX; x += step) {
+        const sx = toSvgX(x, cfg.scaleX);
+        const sy = toSvgY(cfg.f(x), cfg.scaleY);
+        dPath += dPath === '' ? `M ${sx} ${sy}` : ` L ${sx} ${sy}`;
+      }
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl.setAttribute('d', dPath);
+      pathEl.setAttribute('fill', 'none');
+      pathEl.setAttribute('stroke', 'var(--block-accent, #38bdf8)');
+      pathEl.setAttribute('stroke-width', '3');
+      curveLayer.appendChild(pathEl);
+
+      // Coordenadas SVG de P y Q
+      const px = toSvgX(x0, cfg.scaleX);
+      const py = toSvgY(y0, cfg.scaleY);
+      const qx = toSvgX(x1, cfg.scaleX);
+      const qy = toSvgY(y1, cfg.scaleY);
+
+      // 3. Recta Tangente (Cian brillante)
+      const tanLen = 140;
+      const angleTan = Math.atan2(-(mTan * cfg.scaleY), cfg.scaleX);
+      const tx1 = px - Math.cos(angleTan) * tanLen;
+      const ty1 = py - Math.sin(angleTan) * tanLen;
+      const tx2 = px + Math.cos(angleTan) * tanLen;
+      const ty2 = py + Math.sin(angleTan) * tanLen;
+
+      const tanLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      tanLine.setAttribute('x1', tx1.toString());
+      tanLine.setAttribute('y1', ty1.toString());
+      tanLine.setAttribute('x2', tx2.toString());
+      tanLine.setAttribute('y2', ty2.toString());
+      tanLine.setAttribute('stroke', '#38bdf8');
+      tanLine.setAttribute('stroke-width', '2');
+      tanLine.setAttribute('stroke-dasharray', '4 4');
+      tanLine.setAttribute('opacity', '0.75');
+      tangentLayer.appendChild(tanLine);
+
+      // 4. Recta Secante (Ámbar / Naranja)
+      const secAngle = Math.atan2(qy - py, qx - px);
+      const secLen = 180;
+      const sx1 = px - Math.cos(secAngle) * (secLen * 0.4);
+      const sy1 = py - Math.sin(secAngle) * (secLen * 0.4);
+      const sx2 = qx + Math.cos(secAngle) * (secLen * 0.6);
+      const sy2 = qy + Math.sin(secAngle) * (secLen * 0.6);
+
+      const secLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      secLine.setAttribute('x1', sx1.toString());
+      secLine.setAttribute('y1', sy1.toString());
+      secLine.setAttribute('x2', sx2.toString());
+      secLine.setAttribute('y2', sy2.toString());
+      secLine.setAttribute('stroke', '#fbbf24');
+      secLine.setAttribute('stroke-width', '2.5');
+      secantLayer.appendChild(secLine);
+
+      // 5. Triángulo de incrementos: base h, altura Δy
+      const triPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      triPath.setAttribute('d', `M ${px} ${py} L ${qx} ${py} L ${qx} ${qy} Z`);
+      triPath.setAttribute('fill', 'rgba(251, 191, 36, 0.12)');
+      triPath.setAttribute('stroke', 'rgba(251, 191, 36, 0.4)');
+      triPath.setAttribute('stroke-width', '1');
+      deltaLayer.appendChild(triPath);
+
+      // 6. Puntos P y Q
+      // Punto P
+      const circP = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circP.setAttribute('cx', px.toString());
+      circP.setAttribute('cy', py.toString());
+      circP.setAttribute('r', '6');
+      circP.setAttribute('fill', '#38bdf8');
+      circP.setAttribute('stroke', '#ffffff');
+      circP.setAttribute('stroke-width', '2');
+      pointsLayer.appendChild(circP);
+
+      const textP = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      textP.setAttribute('x', (px - 14).toString());
+      textP.setAttribute('y', (py - 10).toString());
+      textP.setAttribute('fill', '#38bdf8');
+      textP.setAttribute('font-size', '12');
+      textP.setAttribute('font-weight', '700');
+      textP.textContent = 'P';
+      pointsLayer.appendChild(textP);
+
+      // Punto Q
+      const circQ = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circQ.setAttribute('cx', qx.toString());
+      circQ.setAttribute('cy', qy.toString());
+      circQ.setAttribute('r', '6');
+      circQ.setAttribute('fill', '#fbbf24');
+      circQ.setAttribute('stroke', '#ffffff');
+      circQ.setAttribute('stroke-width', '2');
+      pointsLayer.appendChild(circQ);
+
+      const textQ = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      textQ.setAttribute('x', (qx + 10).toString());
+      textQ.setAttribute('y', (qy - 10).toString());
+      textQ.setAttribute('fill', '#fbbf24');
+      textQ.setAttribute('font-size', '12');
+      textQ.setAttribute('font-weight', '700');
+      textQ.textContent = 'Q';
+      pointsLayer.appendChild(textQ);
+    };
+
+    if (sliderX0) sliderX0.addEventListener('input', renderLab);
+    if (sliderH) sliderH.addEventListener('input', renderLab);
+
+    // Animación de h colapsando a 0.05
+    let animTimer: number | null = null;
+    if (btnAnimate && sliderH) {
+      btnAnimate.addEventListener('click', () => {
+        if (animTimer) clearInterval(animTimer);
+        sliderH.value = '1.80';
+        renderLab();
+
+        animTimer = window.setInterval(() => {
+          let curr = parseFloat(sliderH.value);
+          curr -= 0.05;
+          if (curr <= 0.05) {
+            curr = 0.05;
+            clearInterval(animTimer!);
+            animTimer = null;
+          }
+          sliderH.value = curr.toFixed(2);
+          renderLab();
+        }, 50);
+      });
+    }
+
+    renderLab();
+
+    // 2. LÓGICA DEL QUIZ CONCEPTUAL
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+    quizCards.forEach((card) => {
+      const btns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+      const feedback = card.querySelector<HTMLElement>('.q-feedback');
+
+      btns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          btns.forEach((b) => {
+            b.disabled = true;
+            b.classList.remove('is-selected', 'is-correct', 'is-wrong');
+          });
+
+          btn.classList.add('is-selected');
+          const isCorrect = btn.dataset.correct === 'true';
+
+          if (isCorrect) {
+            btn.classList.add('is-correct');
+            if (feedback) {
+              feedback.innerHTML = '<span class="fb-badge fb-ok">✓ CORRECTO</span> Excelente deducción axiomática fundamentada en la definición formal.';
+              feedback.classList.remove('fb-error-box');
+              feedback.classList.add('fb-success-box');
+            }
+          } else {
+            btn.classList.add('is-wrong');
+            if (feedback) {
+              feedback.innerHTML = '<span class="fb-badge fb-fail">✗ INCORRECTO</span> Revisa la definición formal y las propiedades de continuidad vs derivabilidad.';
+              feedback.classList.remove('fb-success-box');
+              feedback.classList.add('fb-error-box');
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS DE LA LECCIÓN: LA DERIVADA POR DEFINICIÓN FORMAL
+     ========================================================================= */
+
+  .lead-paragraph {
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Cajas de advertencia y paradoja */
+  .math-warning-box {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1.5px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin: 1.5rem 0;
+  }
+
+  :global([data-theme="light"]) .math-warning-box {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.35);
+  }
+
+  .warn-badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #ef4444;
+  }
+
+  .warn-head h4 {
+    margin: 0.3rem 0 0.8rem;
+    color: var(--ink);
+    font-size: 1.15rem;
+  }
+
+  .warn-eq-row {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    color: #f87171;
+    margin-bottom: 0.6rem;
+  }
+
+  :global([data-theme="light"]) .warn-eq-row {
+    color: #dc2626;
+  }
+
+  /* Contraste Secante vs Tangente */
+  .sec-tan-contrast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.4rem;
+    margin: 1.8rem 0;
+  }
+
+  .contrast-card {
+    padding: 1.4rem;
+    border-radius: 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .sec-card .card-tag {
+    color: #fbbf24;
+  }
+
+  .tan-card .card-tag {
+    color: #38bdf8;
+  }
+
+  .contrast-card h4 {
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin: 0.4rem 0 0.8rem;
+  }
+
+  .card-formula {
+    margin-top: 1rem;
+    padding: 0.85rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .card-formula {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .sec-card .card-formula {
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  .tan-card .card-formula {
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  /* Banner de Teorema Formal */
+  .formal-theorem-banner {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.09) 0%, rgba(56, 189, 248, 0.02) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+  }
+
+  :global([data-theme="light"]) .formal-theorem-banner {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.35);
+  }
+
+  .theorem-badge {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--block-accent, #38bdf8);
+  }
+
+  .formal-theorem-banner h3 {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0.6rem 0 1.2rem;
+  }
+
+  .theorem-symbolic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--block-accent, #38bdf8);
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+  }
+
+  :global([data-theme="light"]) .theorem-symbolic {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  /* Condiciones de la derivada */
+  .derivative-conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+    margin: 1.8rem 0;
+  }
+
+  .cond-card {
+    padding: 1.2rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+  }
+
+  .cond-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .cond-num {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.1);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .cond-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .cond-eq {
+    margin-top: 0.6rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    color: var(--block-accent, #38bdf8);
+    text-align: center;
+  }
+
+  :global([data-theme="light"]) .cond-eq {
+    background: #ffffff;
+    color: #0284c7;
+  }
+
+  /* Laboratorio Visual */
+  .der-lab-shell {
+    margin: 2rem 0;
+  }
+
+  .lab-glass-panel {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.6rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  :global([data-theme="light"]) .lab-glass-panel {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  }
+
+  .lab-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .lab-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--block-accent, #38bdf8);
+  }
+
+  .curve-selector-group {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .curve-tab-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .curve-tab-btn.is-active,
+  .curve-tab-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--block-accent, #38bdf8);
+    color: var(--ink);
+  }
+
+  .lab-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1.4rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 800px) {
+    .lab-controls-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ctrl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .ctrl-val-badge {
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .ctrl-val-badge.highlight-val {
+    color: #fbbf24;
+  }
+
+  .lab-slider {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .slider-accent-amber {
+    accent-color: #fbbf24;
+  }
+
+  .lab-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+    border: none;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .lab-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.45);
+  }
+
+  .lab-stage-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 900px) {
+    .lab-stage-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .svg-viewport {
+    background: #080a10;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 380px;
+  }
+
+  :global([data-theme="light"]) .svg-viewport {
+    background: #f8fafc;
+    border-color: rgba(2, 132, 199, 0.2);
+  }
+
+  .svg-canvas {
+    width: 100%;
+    max-width: 460px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .lab-telemetry-card {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .telemetry-title {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .telemetry-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .tel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tel-val {
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  .highlight-row-amber {
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  .highlight-row-amber .tel-val {
+    color: #fbbf24;
+    font-weight: 700;
+  }
+
+  .highlight-row-cyan {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  .highlight-row-cyan .tel-val {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .error-row {
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .error-row .tel-val {
+    color: #f87171;
+  }
+
+  .lab-convergence-bar-shell {
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .bar-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .convergence-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .convergence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #38bdf8);
+    transition: width 0.1s linear;
+  }
+
+  /* Deducciones Acordeón */
+  .derivations-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 1.8rem 0;
+  }
+
+  .derivation-step-card {
+    display: flex;
+    gap: 1.4rem;
+    padding: 1.6rem;
+    border-radius: 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+
+  @media (max-width: 768px) {
+    .derivation-step-card {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  }
+
+  .d-step-badge {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1.5px solid var(--block-accent, #38bdf8);
+    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .d-step-body {
+    flex: 1;
+  }
+
+  .d-step-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .d-step-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .d-rule-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  /* Teorema de Regularidad */
+  .theorem-box-highlight {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0.01) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .thm-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    letter-spacing: 0.1em;
+  }
+
+  .theorem-box-highlight h3 {
+    margin: 0.4rem 0 1rem;
+    color: var(--ink);
+    font-size: 1.2rem;
+  }
+
+  .proof-block {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin: 1.5rem 0;
+  }
+
+  .proof-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* Contraejemplo |x| */
+  .counterexample-card {
+    background: rgba(239, 68, 68, 0.06);
+    border: 1.5px solid rgba(239, 68, 68, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+  }
+
+  .ce-tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: 0.1em;
+  }
+
+  .ce-header h4 {
+    margin: 0.3rem 0 0.8rem;
+    color: var(--ink);
+    font-size: 1.15rem;
+  }
+
+  .lateral-derivatives-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.2rem 0;
+  }
+
+  @media (max-width: 700px) {
+    .lateral-derivatives-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lat-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--line);
+  }
+
+  :global([data-theme="light"]) .lat-card {
+    background: #ffffff;
+  }
+
+  .lat-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .lat-eq {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f87171;
+    margin: 0.6rem 0;
+  }
+
+  :global([data-theme="light"]) .lat-eq {
+    color: #dc2626;
+  }
+
+  .ce-verdict {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  /* Recta Tangente y Normal */
+  .tangent-normal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 750px) {
+    .tangent-normal-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .tn-card {
+    padding: 1.4rem;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+
+  .tn-badge {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .is-tangent .tn-badge {
+    color: #38bdf8;
+  }
+
+  .is-normal .tn-badge {
+    color: #a855f7;
+  }
+
+  .tn-card h4 {
+    margin: 0.3rem 0 0.8rem;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  .tn-formula {
+    padding: 0.85rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+
+  :global([data-theme="light"]) .tn-formula {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .is-tangent .tn-formula {
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  .is-normal .tn-formula {
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.25);
+  }
+
+  .tn-desc {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Pecados de Exámenes */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 1.8rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    padding: 1.4rem;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .sin-header {
+    margin-bottom: 0.8rem;
+  }
+
+  .sin-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ef4444;
+    letter-spacing: 0.1em;
+  }
+
+  .sin-title {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .sin-contrast-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+  }
+
+  .sin-bad,
+  .sin-good {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
+
+  .sin-cross {
+    font-weight: 900;
+    color: #ef4444;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+  }
+
+  .sin-check {
+    font-weight: 900;
+    color: #10b981;
+  }
+
+  /* Quiz */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 1.8rem 0;
+  }
+
+  .quiz-card {
+    padding: 1.5rem;
+    border-radius: 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+
+  .q-badge {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--block-accent, #38bdf8);
+    letter-spacing: 0.1em;
+  }
+
+  .q-header h4 {
+    margin: 0.4rem 0 1rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 0.88rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    border-color: var(--block-accent, #38bdf8);
+    background: rgba(56, 189, 248, 0.06);
+  }
+
+  .opt-letter {
+    font-family: var(--mono);
+    font-weight: 800;
+    color: var(--muted);
+    font-size: 0.8rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+  }
+
+  .q-opt-btn.is-correct .opt-letter {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+  }
+
+  .q-opt-btn.is-wrong .opt-letter {
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .fb-success-box {
+    display: block !important;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+  }
+
+  .fb-error-box {
+    display: block !important;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+
+  .fb-badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-right: 0.4rem;
+  }
+</style>

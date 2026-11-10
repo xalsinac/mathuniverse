@@ -1,0 +1,2183 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'prb-02')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'prb-01');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-01');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: LA ILUSIÓN DEL ESPACIO MUESTRAL COMPLETO -->
+  <section class="lesson-section" id="paradoja-falso-positivo">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. La Ilusión del Espacio Muestral Completo y la Paradoja del Falso Positivo</h2>
+
+    <p class="lead-paragraph">
+      Imagina un test médico de alta tecnología diseñado para detectar una enfermedad rara que afecta a <strong>1 de cada 1.000 personas</strong> (prevalencia del <code class="inline-code">0.1%</code>). El laboratorio certifica que el test tiene una <strong>fiabilidad del 99%</strong>: si estás enfermo da positivo el 99% de las veces, y si estás sano da negativo el 99% de las veces.
+    </p>
+
+    <p>
+      Te sometes a un chequeo rutinario y el resultado es <strong>POSITIVO</strong>. ¿Cuál es la probabilidad real de que padezcas la enfermedad?
+    </p>
+
+    <!-- Caja de Conflicto Cognitivo / Falacia de la Tasa Base -->
+    <div class="conflict-hero-card">
+      <div class="conflict-badge">LA FALACIA DE LA TASA BASE (BASE RATE FALLACY)</div>
+      
+      <div class="conflict-dual-grid">
+        <div class="conflict-box intuition">
+          <div class="c-tag bad">RESPUESTA INTUITIVA COMÚN</div>
+          <h3>«Un 99% de probabilidad»</h3>
+          <p>
+            El cerebro humano confunde instintivamente <code class="inline-code">P(Positivo | Enfermo)</code> (la sensibilidad del test) con <code class="inline-code">P(Enfermo | Positivo)</code> (la certeza de estar enfermo habiendo dado positivo). Es el sesgo judicial conocido como la <em>Falacia del Fiscal</em>.
+          </p>
+        </div>
+
+        <div class="conflict-box reality">
+          <div class="c-tag good">REALIDAD MATEMÁTICA EXACTA</div>
+          <h3>Menos del 9% (~8.99%)</h3>
+          <p>
+            ¡Más del <strong>91%</strong> de las personas que dan positivo en este test están completamente sanas! El volumen abrumador de población sana genera tantos falsos positivos que sepultan a los enfermos reales.
+          </p>
+        </div>
+      </div>
+
+      <!-- Demostración con 100.000 personas -->
+      <div class="frequency-tree-card">
+        <div class="ft-header">
+          <span class="ft-title">DESGLOSE DE FRECUENCIAS NATURALES EN UNA POBLACIÓN DE 100.000 PERSONAS</span>
+        </div>
+        
+        <div class="population-diagram">
+          <div class="pop-branch diseased">
+            <div class="pop-node">
+              <span class="pop-count">100</span>
+              <span class="pop-label">Enfermos reales (0.1%)</span>
+            </div>
+            <div class="pop-subbranches">
+              <div class="pop-leaf positive-hit">
+                <span class="leaf-val">99</span>
+                <span class="leaf-desc">Dan Positivo (Verdaderos Positivos)</span>
+              </div>
+              <div class="pop-leaf negative-miss">
+                <span class="leaf-val">1</span>
+                <span class="leaf-desc">Da Negativo (Falso Negativo)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pop-branch healthy">
+            <div class="pop-node">
+              <span class="pop-count">99.900</span>
+              <span class="pop-label">Sanos (99.9%)</span>
+            </div>
+            <div class="pop-subbranches">
+              <div class="pop-leaf positive-false">
+                <span class="leaf-val alert">999</span>
+                <span class="leaf-desc">Dan Positivo (¡Falsos Positivos!)</span>
+              </div>
+              <div class="pop-leaf negative-hit">
+                <span class="leaf-val">98.901</span>
+                <span class="leaf-desc">Dan Negativo (Verdaderos Negativos)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ft-summary">
+          <p>
+            <strong>El Cálculo Elemental:</strong> Hay en total <code class="inline-code">99 + 999 = 1.098</code> personas con test positivo. De todas ellas, sólo 99 están verdaderamente enfermas:
+          </p>
+          <div class="math-display-eq">
+            P(Enfermo | Positivo) = <span class="math-frac"><span class="num">99</span><span class="den">99 + 999</span></span> = <span class="math-frac"><span class="num">99</span><span class="den">1098</span></span> ≈ 0.0901 &emsp; (9.01%)
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA PROBABILIDAD CONDICIONADA -->
+  <section class="lesson-section" id="probabilidad-condicionada">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Probabilidad Condicionada: Restricción del Espacio Muestral</h2>
+
+    <p class="lead-paragraph">
+      ¿Qué significa matemáticamente la barra vertical <code class="inline-code">|</code> en <code class="inline-code">P(A|B)</code>? Significa que el universo se ha encogido.
+    </p>
+
+    <div class="definition-box">
+      <span class="def-badge">DEFINICIÓN AXIOMÁTICA DE KOLMOGOROV (1933)</span>
+      <p>
+        Sean <code class="inline-code">A</code> y <code class="inline-code">B</code> dos sucesos de un espacio muestral <code class="inline-code">Ω</code> con <code class="inline-code">P(B) &gt; 0</code>. Se define la <strong>probabilidad condicionada de A dado B</strong> como:
+      </p>
+      <div class="math-display-eq">
+        P(A | B) = <span class="math-frac"><span class="num">P(A ∩ B)</span><span class="den">P(B)</span></span>
+      </div>
+      <p class="def-note">
+        <strong>Intuición Geométrica de Conjuntos:</strong> Al saber con total certeza que el suceso <code class="inline-code">B</code> ya ha ocurrido, todos los elementos de <code class="inline-code">Ω \ B</code> quedan fulminados. El nuevo conjunto universal de referencia es <code class="inline-code">B</code>. La probabilidad de que ocurra <code class="inline-code">A</code> es la porción de <code class="inline-code">A</code> que sobrevive dentro de <code class="inline-code">B</code> (es decir, <code class="inline-code">A ∩ B</code>), dividida entre el tamaño del nuevo universo <code class="inline-code">P(B)</code>.
+      </p>
+    </div>
+
+    <h3>La Regla de la Multiplicación (Regla del Producto)</h3>
+    <p>
+      Despejando la probabilidad de la intersección <code class="inline-code">P(A ∩ B)</code> obtenemos la fórmula que permite recorrer las ramas de cualquier diagrama de árbol:
+    </p>
+
+    <div class="concept-banner">
+      <div class="banner-title">REGLA GENERAL DEL PRODUCTO PROBABILÍSTICO:</div>
+      <div class="banner-formula">P(A ∩ B) = P(B) · P(A | B) = P(A) · P(B | A)</div>
+      <p class="banner-desc">
+        La probabilidad simultánea de que ocurran dos hechos es la probabilidad de que ocurra el primero multiplicada por la probabilidad de que ocurra el segundo sabiendo que el primero ya se dio.
+      </p>
+    </div>
+
+    <!-- Comparativa: Dependencia vs Independencia -->
+    <div class="independence-card">
+      <div class="indep-header">
+        <h4>Independencia Estocástica Formal</h4>
+      </div>
+      <p>
+        Decimos que dos sucesos <code class="inline-code">A</code> y <code class="inline-code">B</code> son <strong>independientes</strong> si y sólo si el hecho de que ocurra <code class="inline-code">B</code> no altera en absoluto la certidumbre sobre <code class="inline-code">A</code>:
+      </p>
+      <div class="indep-grid">
+        <div class="indep-cell">
+          <span class="cell-label">CONDICIÓN DE INDEPENDENCIA:</span>
+          <div class="cell-formula">P(A | B) = P(A)</div>
+          <span class="cell-sub">Saber B no aporta ninguna información sobre A.</span>
+        </div>
+        <div class="indep-cell">
+          <span class="cell-label">FORMA MULTIPLICATIVA CANÓNICA:</span>
+          <div class="cell-formula">P(A ∩ B) = P(A) · P(B)</div>
+          <span class="cell-sub">Únicamente válida bajo estricta independencia.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: PARTICIONES Y TEOREMA DE LA PROBABILIDAD TOTAL -->
+  <section class="lesson-section" id="probabilidad-total">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Particiones del Espacio Muestral y el Teorema de la Probabilidad Total</h2>
+
+    <p class="lead-paragraph">
+      Para poder invertir causas y efectos necesitamos primero calcular la probabilidad absoluta de un efecto <code class="inline-code">B</code> cuando este puede ser provocado por múltiples causas alternativas.
+    </p>
+
+    <div class="partition-card">
+      <span class="part-badge">CONCEPTO TOPOLÓGICO</span>
+      <h4>¿Qué es una Partición de un Espacio Muestral?</h4>
+      <p>
+        Una colección de sucesos <code class="inline-code">&#123;A₁, A₂, ..., Aₙ&#125;</code> constituye una <strong>partición</strong> de <code class="inline-code">Ω</code> si cumple tres condiciones matemáticas rigurosas:
+      </p>
+      <ul class="part-list">
+        <li><strong>Incompatibilidad mutua (Disjuntos dos a dos):</strong> <code class="inline-code">A<sub>i</sub> ∩ A<sub>j</sub> = ∅</code> para todo <code class="inline-code">i ≠ j</code> (ningún suceso puede ocurrir a la vez que otro).</li>
+        <li><strong>Cobertura exhaustiva:</strong> <code class="inline-code">A₁ ∪ A₂ ∪ ... ∪ Aₙ = Ω</code> (alguno de ellos ocurre obligatoriamente).</li>
+        <li><strong>Probabilidad no nula:</strong> <code class="inline-code">P(A<sub>i</sub>) &gt; 0</code> para todo <code class="inline-code">i</code>.</li>
+      </ul>
+    </div>
+
+    <div class="canonical-theorem-card total-prob-card">
+      <div class="canon-badge">TEOREMA DE LA PROBABILIDAD TOTAL</div>
+      <div class="canon-statement">
+        <p>
+          Sea <code class="inline-code">&#123;A₁, A₂, ..., Aₙ&#125;</code> una partición del espacio muestral <code class="inline-code">Ω</code> y sea <code class="inline-code">B</code> cualquier suceso arbitrario. Entonces, la probabilidad de <code class="inline-code">B</code> se obtiene sumando sus intersecciones con cada una de las causas:
+        </p>
+        <div class="canon-thesis total-thesis">
+          P(B) = <span class="math-lim">∑<sub>i=1</sub><sup>n</sup></span> P(A<sub>i</sub> ∩ B) = <span class="math-lim">∑<sub>i=1</sub><sup>n</sup></span> P(A<sub>i</sub>) · P(B | A<sub>i</sub>)
+        </div>
+      </div>
+    </div>
+
+    <!-- Demostración Matemática -->
+    <div class="formal-proof-wrapper">
+      <div class="proof-card-header">
+        <span class="proof-tag">DEMOSTRACIÓN CANÓNICA</span>
+        <h4>Deducción formal en 3 pasos mediante la aditividad de Kolmogorov</h4>
+      </div>
+
+      <div class="math-derivation-chain">
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 1</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Expresamos B como su intersección con todo el espacio muestral Ω:</span>
+            <div class="math-step-expr">
+              B = B ∩ Ω = B ∩ (A₁ ∪ A₂ ∪ ... ∪ Aₙ)
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line">
+          <span class="math-step-tag">PASO 2</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Aplicamos la propiedad distributiva de la teoría de conjuntos:</span>
+            <div class="math-step-expr">
+              B = (B ∩ A₁) ∪ (B ∩ A₂) ∪ ... ∪ (B ∩ Aₙ)
+            </div>
+          </div>
+        </div>
+
+        <div class="math-step-line is-highlight">
+          <span class="math-step-tag">PASO 3</span>
+          <div class="math-step-content">
+            <span class="math-step-expl">Como los sucesos A<sub>i</sub> son disjuntos dos a dos, los conjuntos (B ∩ A<sub>i</sub>) también son mutuamente disjuntos. Por el 3º axioma de Kolmogorov (aditividad) y la regla del producto:</span>
+            <div class="math-step-expr">
+              P(B) = <span class="math-lim">∑<sub>i=1</sub><sup>n</sup></span> P(B ∩ A<sub>i</sub>) = <span class="math-lim">∑<sub>i=1</sub><sup>n</sup></span> P(A<sub>i</sub>) · P(B | A<sub>i</sub>) &emsp; <span class="math-qed">■ Q.E.D.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: EL TEOREMA DE BAYES -->
+  <section class="lesson-section" id="teorema-de-bayes">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. El Teorema de Bayes: Inversión de Causas y Efectos</h2>
+
+    <p class="lead-paragraph">
+      Publicado póstumamente en 1763 por Thomas Bayes y consolidado por Pierre-Simon Laplace en 1812, este teorema es la máquina matemática que nos permite <strong>razonar hacia atrás en el tiempo</strong>: conociendo el efecto observado <code class="inline-code">B</code>, ¿cuál fue la causa responsable <code class="inline-code">A<sub>k</sub></code>?
+    </p>
+
+    <div class="canonical-theorem-card bayes-hero-card">
+      <div class="canon-badge bayes">TEOREMA DE BAYES (1763)</div>
+      <div class="canon-statement">
+        <p>
+          Sea <code class="inline-code">&#123;A₁, A₂, ..., Aₙ&#125;</code> una partición del espacio muestral con <code class="inline-code">P(A<sub>i</sub>) &gt; 0</code>, y sea <code class="inline-code">B</code> un suceso con <code class="inline-code">P(B) &gt; 0</code>. La probabilidad a posteriori de la causa particular <code class="inline-code">A<sub>k</sub></code> dado el efecto <code class="inline-code">B</code> es:
+        </p>
+        <div class="canon-thesis bayes-thesis">
+          P(A<sub>k</sub> | B) = <span class="math-frac"><span class="num">P(B | A<sub>k</sub>) · P(A<sub>k</sub>)</span><span class="den"><span class="math-lim">∑<sub>i=1</sub><sup>n</sup></span> P(B | A<sub>i</sub>) · P(A<sub>i</sub>)</span></span> = <span class="math-frac"><span class="num">P(A<sub>k</sub> ∩ B)</span><span class="den">P(B)</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anatomía de los 4 Elementos del Razonamiento Bayesiano -->
+    <div class="bayes-anatomy-grid">
+      <div class="anatomy-cell prior">
+        <div class="cell-head">
+          <span class="dot-indicator"></span>
+          <h5>P(A<sub>k</sub>) · PROBABILIDAD A PRIORI</h5>
+        </div>
+        <p>
+          Nuestra certidumbre o creencia inicial sobre la causa <code class="inline-code">A<sub>k</sub></code> <strong>antes</strong> de observar ningún dato o realizar ningún test (ej. la prevalencia natural de la enfermedad).
+        </p>
+      </div>
+
+      <div class="anatomy-cell likelihood">
+        <div class="cell-head">
+          <span class="dot-indicator"></span>
+          <h5>P(B | A<sub>k</sub>) · VEROSIMILITUD (LIKELIHOOD)</h5>
+        </div>
+        <p>
+          La compatibilidad del efecto observado con esa causa concreta: ¿con qué probabilidad se produciría el síntoma <code class="inline-code">B</code> si la causa real fuera <code class="inline-code">A<sub>k</sub></code>?
+        </p>
+      </div>
+
+      <div class="anatomy-cell evidence">
+        <div class="cell-head">
+          <span class="dot-indicator"></span>
+          <h5>P(B) · EVIDENCIA MARGINAL (NORMALIZADOR)</h5>
+        </div>
+        <p>
+          La probabilidad total de observar el efecto <code class="inline-code">B</code> sumando todas las causas posibles ponderadas por la Probabilidad Total. Garantiza que las probabilidades a posteriori sumen 1.
+        </p>
+      </div>
+
+      <div class="anatomy-cell posterior">
+        <div class="cell-head">
+          <span class="dot-indicator"></span>
+          <h5>P(A<sub>k</sub> | B) · PROBABILIDAD A POSTERIORI</h5>
+        </div>
+        <p>
+          Nuestra certidumbre <strong>actualizada</strong> tras recibir la evidencia: la respuesta final a la pregunta diagnóstica o judicial.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-bayes">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: El Filtro Bayesiano y la Matriz de Confusión</h2>
+
+    <p class="lead-paragraph">
+      Manipula la prevalencia de la enfermedad, la sensibilidad del test clínico y la tasa de falsos positivos. Observa en tiempo real cómo se redistribuyen las áreas de la población en el diagrama proporcional y cómo el <strong>Valor Predictivo Positivo (VPP)</strong> responde dinámicamente:
+    </p>
+
+    <!-- Simulador Bayesiano SVG -->
+    <div class="lab-container">
+      <div class="lab-header">
+        <span class="lab-indicator"></span>
+        <span class="lab-title">SIMULADOR BAYESIANO DE INFERENCIA ESTOCÁSTICA</span>
+      </div>
+
+      <!-- Presets de Escenarios Reales -->
+      <div class="lab-preset-bar">
+        <button type="button" class="preset-btn is-active" data-preset="rara">Enfermedad Rara (0.1% Prevalencia, 99% Test)</button>
+        <button type="button" class="preset-btn" data-preset="comun">Gripe Estacional (12% Prevalencia, 92% Test)</button>
+        <button type="button" class="preset-btn" data-preset="fabrica">Fábrica de Chips (2% Defectuosos, Sensor 98%)</button>
+        <button type="button" class="preset-btn" data-preset="cribado">Cribado Masivo (0.01% Ultrarrara, 99.5% Test)</button>
+      </div>
+
+      <div class="lab-workspace-grid">
+        <!-- Visualizador Proporcional (Treemap / Matriz de Confusión) -->
+        <div class="lab-visual-panels">
+          <div class="graph-card">
+            <div class="graph-card-header">
+              <span class="graph-tag rose">POBLACIÓN TOTAL NORMALIZADA (10.000 INDIVIDUOS)</span>
+              <span class="graph-metric" id="metric-vpp">VPP = 9.01%</span>
+            </div>
+            <div class="svg-stage-wrapper">
+              <svg id="svg-bayes-treemap" viewBox="0 0 580 240" class="lab-svg" aria-label="Diagrama proporcional de la población: enfermos vs sanos y resultados del test">
+                <!-- Se dibuja con JS dinámicamente -->
+              </svg>
+            </div>
+            <div class="treemap-legend">
+              <span class="leg-item"><span class="color-dot vp"></span> Verdaderos Positivos (Enfermos y +)</span>
+              <span class="leg-item"><span class="color-dot fp"></span> Falsos Positivos (Sanos pero +)</span>
+              <span class="leg-item"><span class="color-dot fn"></span> Falsos Negativos (Enfermos pero -)</span>
+              <span class="leg-item"><span class="color-dot vn"></span> Verdaderos Negativos (Sanos y -)</span>
+            </div>
+          </div>
+
+          <!-- Controles de los 3 parámetros de Bayes -->
+          <div class="lab-controls-panel">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-prev">Prevalencia a Priori P(Enfermo):</label>
+                <span class="control-val-display" id="val-prev">0.10%</span>
+              </div>
+              <input type="range" id="slider-prev" min="0.01" max="15" step="0.01" value="0.1" class="lab-range-input" />
+              <div class="range-bounds">
+                <span>0.01% (Casi indetectable)</span>
+                <span>15.00% (Muy común)</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-sens">Sensibilidad del Test P(+ | Enfermo):</label>
+                <span class="control-val-display" id="val-sens">99.0%</span>
+              </div>
+              <input type="range" id="slider-sens" min="70" max="99.9" step="0.1" value="99" class="lab-range-input" />
+              <div class="range-bounds">
+                <span>70.0% (Poco sensible)</span>
+                <span>99.9% (Alta precisión clínica)</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="slider-fp">Tasa de Falsos Positivos P(+ | Sano):</label>
+                <span class="control-val-display" id="val-fp">1.0%</span>
+              </div>
+              <input type="range" id="slider-fp" min="0.1" max="10" step="0.1" value="1.0" class="lab-range-input" />
+              <div class="range-bounds">
+                <span>0.1% (Excelente especificidad)</span>
+                <span>10.0% (Muchos falsos positivos)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetría Bayesiana en Tiempo Real -->
+        <div class="lab-telemetry-panel">
+          <div class="telemetry-header">
+            <h5>TELEMETRÍA BAYESIANA</h5>
+            <span class="telemetry-badge" id="bayes-verdict">DIAGNÓSTICO ENGAÑOSO</span>
+          </div>
+
+          <div class="telemetry-card-grid">
+            <div class="t-cell">
+              <span class="t-label">PROB. TOTAL POSITIVO P(+)</span>
+              <span class="t-val amber" id="tele-ptotal">1.098%</span>
+              <span class="t-sub">P(+|E)P(E) + P(+|S)P(S)</span>
+            </div>
+
+            <div class="t-cell">
+              <span class="t-label">VEROSIMILITUD / SANO</span>
+              <span class="t-val rose" id="tele-ratio">99.0 : 1</span>
+              <span class="t-sub">Ratio de precisión</span>
+            </div>
+
+            <div class="t-cell full-width primary-bayes-cell">
+              <span class="t-label">PROBABILIDAD A POSTERIORI P(Enfermo | +)</span>
+              <span class="t-val big-val" id="tele-vpp">9.01%</span>
+              <span class="t-sub">Valor Predictivo Positivo tras dar positivo</span>
+            </div>
+
+            <div class="t-cell full-width">
+              <div class="t-flex-row">
+                <span class="t-label">CONFIANZA DEL TEST TRAS POSITIVO</span>
+                <span class="t-val small" id="tele-conf-label">Baja Certeza</span>
+              </div>
+              <div class="convergence-meter">
+                <div class="meter-fill" id="bayes-meter" style="width: 9%; background: #ef4444;"></div>
+              </div>
+              <span class="meter-caption" id="bayes-explanation">
+                La prevalencia es tan baja que los falsos positivos superan a los enfermos reales en una proporción de 10 a 1.
+              </span>
+            </div>
+
+            <div class="t-cell full-width">
+              <span class="t-label">DESGLOSE DE FRECUENCIAS (10.000 HAB.)</span>
+              <div class="bayes-counts-box">
+                <div><span>Verdaderos + :</span> <strong id="cnt-vp">10</strong></div>
+                <div><span>Falsos + :</span> <strong id="cnt-fp" class="red-txt">100</strong></div>
+                <div><span>Sanos reales :</span> <strong id="cnt-sanos">9.990</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: PROTOCOLO OFICIAL EN SELECTIVIDAD/PAU -->
+  <section class="lesson-section" id="protocolo-pau">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Protocolo Oficial para Problemas de Probabilidad en Selectividad/PAU</h2>
+
+    <p class="lead-paragraph">
+      Los problemas de probabilidad en Selectividad son muy agradecidos, pero los correctores restan hasta el 50% de la puntuación si se aplican fórmulas numéricas sin definir el modelo formal.
+    </p>
+
+    <div class="protocol-card">
+      <div class="prot-step">
+        <span class="prot-num">1</span>
+        <div class="prot-body">
+          <h5>Definir explícitamente los sucesos con letras mayúsculas</h5>
+          <p>
+            Nunca pongas números sueltos. Escribe siempre: <code class="inline-code">D = "La pieza es defectuosa"</code>, <code class="inline-code">M₁ = "La pieza fue fabricada por la máquina 1"</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="prot-step">
+        <span class="prot-num">2</span>
+        <div class="prot-body">
+          <h5>Plantear el Diagrama de Árbol con todas las ramas normalizadas</h5>
+          <p>
+            Comprueba que en cada nudo del árbol la suma de probabilidades salientes sea exactamente 1: <code class="inline-code">P(M₁) + P(M₂) + P(M₃) = 1</code> y <code class="inline-code">P(D|M₁) + P(D̄|M₁) = 1</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="prot-step">
+        <span class="prot-num">3</span>
+        <div class="prot-body">
+          <h5>Nombrar explícitamente el teorema antes de aplicar la fórmula</h5>
+          <p>
+            Si calculas la probabilidad global de un efecto, escribe: <em>«Por el Teorema de la Probabilidad Total: P(D) = ...»</em>. Si calculas la probabilidad inversa de la causa, escribe: <em>«Por el Teorema de Bayes: P(M₁ | D) = ...»</em>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ejercicio Típico de PAU Resuelto al 100% -->
+    <div class="solved-exercise-card">
+      <div class="ex-badge">EJERCICIO CANÓNICO SELECTIVIDAD / PAU</div>
+      <h4>Control de Calidad en Planta de Ensamblaje</h4>
+      <p class="ex-statement">
+        Una empresa fabrica bombillas LED en tres plantas: la planta <code class="inline-code">A</code> produce el 50% del total, la planta <code class="inline-code">B</code> el 30% y la planta <code class="inline-code">C</code> el 20%. El porcentaje de bombillas defectuosas es del 2% en la planta A, del 3% en la planta B y del 5% en la planta C. Se escoge una bombilla al azar:
+      </p>
+      
+      <div class="ex-subsections">
+        <div class="ex-sub">
+          <strong>a) ¿Cuál es la probabilidad de que la bombilla resulte defectuosa?</strong>
+          <div class="ex-sol">
+            <p>1. Definimos la partición del espacio muestral: <code class="inline-code">A, B, C</code> (plantas de fabricación). Suceso efecto: <code class="inline-code">D = "Bombilla defectuosa"</code>.</p>
+            <p>2. Probabilidades a priori y condicionadas:</p>
+            <div class="math-display-eq">
+              P(A) = 0.50, &emsp; P(B) = 0.30, &emsp; P(C) = 0.20
+            </div>
+            <div class="math-display-eq">
+              P(D | A) = 0.02, &emsp; P(D | B) = 0.03, &emsp; P(D | C) = 0.05
+            </div>
+            <p>3. Aplicamos el <strong>Teorema de la Probabilidad Total</strong>:</p>
+            <div class="math-display-eq">
+              P(D) = P(A)·P(D|A) + P(B)·P(D|B) + P(C)·P(D|C)
+            </div>
+            <div class="math-display-eq">
+              P(D) = 0.50·0.02 + 0.30·0.03 + 0.20·0.05 = 0.010 + 0.009 + 0.010 = <strong>0.029</strong> &emsp; (2.9%)
+            </div>
+          </div>
+        </div>
+
+        <div class="ex-sub">
+          <strong>b) Si la bombilla seleccionada resultó ser defectuosa, ¿cuál es la probabilidad de que fuera fabricada en la planta C?</strong>
+          <div class="ex-sol">
+            <p>Aplicamos el <strong>Teorema de Bayes</strong> para invertir la causa dado el defecto observado:</p>
+            <div class="math-display-eq">
+              P(C | D) = <span class="math-frac"><span class="num">P(C) · P(D | C)</span><span class="den">P(D)</span></span> = <span class="math-frac"><span class="num">0.20 · 0.05</span><span class="den">0.029</span></span> = <span class="math-frac"><span class="num">0.010</span><span class="den">0.029</span></span> = <span class="math-frac"><span class="num">10</span><span class="den">29</span></span> ≈ <strong>0.3448</strong> &emsp; (34.48%)
+            </div>
+            <p class="sol-conclusion">
+              <em>Conclusión analítica:</em> Aunque la planta C solo fabricaba el 20% de las bombillas totales, su alta tasa de defectos (5%) provoca que concentre casi el <strong>34.5%</strong> de todas las bombillas averiadas que circulan por el mercado.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: TRAMPAS HABITUALES EN EXÁMENES -->
+  <section class="lesson-section" id="trampas-probabilidad">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica Oficial y las 4 Trampas Fatales en Exámenes</h2>
+
+    <p class="lead-paragraph">
+      Identifica las confusiones conceptuales más destructivas en los exámenes de Bachillerato y oposiciones:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Error 1 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 01</div>
+        <h4>Confundir la Intersección P(A ∩ B) con la Probabilidad Condicionada P(A | B)</h4>
+        <p>
+          Enunciado: «El 30% de los estudiantes fuman y tienen tos crónica. Si escogemos un estudiante con tos, ¿cuál es la probabilidad de que fume?».
+        </p>
+        <div class="sin-bad">
+          ✕ Responder directamente: «P(Fumar | Tos) = 0.30» [Grave confusión de conceptos]
+        </div>
+        <div class="sin-good">
+          ✓ «El dato 0.30 es la intersección simultánea P(Fumar ∩ Tos). La probabilidad condicionada exige dividir por el total de personas con tos: P(Fumar | Tos) = P(Fumar ∩ Tos) / P(Tos) = 0.30 / P(Tos)».
+        </div>
+      </div>
+
+      <!-- Error 2 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 02</div>
+        <h4>Asumir Independencia en Extracciones sin Devolución</h4>
+        <p>
+          Extraer dos cartas de una baraja sin reemplazamiento e intentar calcular que ambas sean reyes mediante multiplicación simple:
+        </p>
+        <div class="sin-bad">
+          ✕ «P(R₁ ∩ R₂) = (4/40) · (4/40) = 16/1600» [Incorrección estocástica]
+        </div>
+        <div class="sin-good">
+          ✓ «Al no haber devolución, el espacio muestral se altera. Los sucesos son dependientes: P(R₁ ∩ R₂) = P(R₁) · P(R₂ | R₁) = (4/40) · (3/39) = 12/1560».
+        </div>
+      </div>
+
+      <!-- Error 3 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 03</div>
+        <h4>Invertir el Condicionamiento al Traducir el Enunciado a Símbolos</h4>
+        <p>
+          Enunciado: «Sabiendo que un cliente es moroso, la probabilidad de que el banco le deniegue el crédito es del 95%».
+        </p>
+        <div class="sin-bad">
+          ✕ Escribir en el árbol: P(Moroso | Denegado) = 0.95 [Inversión temporal de la causa]
+        </div>
+        <div class="sin-good">
+          ✓ «La condición conocida ("sabiendo que...") siempre va detrás de la barra vertical: P(Denegado | Moroso) = 0.95».
+        </div>
+      </div>
+
+      <!-- Error 4 -->
+      <div class="sin-card">
+        <div class="sin-pill">ERROR FATAL 04</div>
+        <h4>Olvidar que los sucesos de una partición deben sumar obligatoriamente 1</h4>
+        <p>
+          Plantear ramas primarias en el árbol cuyas probabilidades sumen menos o más del 100%:
+        </p>
+        <div class="sin-bad">
+          ✕ Construir ramas con P(A) = 0.40, P(B) = 0.35 y olvidar el resto de la población [Anula el examen]
+        </div>
+        <div class="sin-good">
+          ✓ «El Teorema de Bayes exige como hipótesis sine qua non que los sucesos formen una partición exhaustiva: P(A) + P(B) + P(Resto) = 1».
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN CONCEPTUAL -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p class="lead-paragraph">
+      Resuelve estas 4 cuestiones rigurosas para asegurar el dominio absoluto de la probabilidad condicionada y el Teorema de Bayes:
+    </p>
+
+    <div class="quiz-stack">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>Si dos sucesos A y B son mutuamente excluyentes (incompatibles, A ∩ B = ∅) con P(A) &gt; 0 y P(B) &gt; 0, ¿pueden ser independientes?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, son independientes porque no se tocan.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, nunca pueden ser independientes: si ocurre B, la probabilidad de que ocurra A pasa a ser exactamente 0 (máxima dependencia).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Depende de si la unión de ambos cubre todo el espacio muestral.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>Una prueba de alcoholemia tiene un 5% de falsos positivos. En una carretera donde nadie ha bebido (0% conductores ebrios), se detiene a un conductor al azar y da positivo. ¿Cuál es la probabilidad de que esté ebrio?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">95%</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">5%</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">0%: la probabilidad a priori P(Ebrio) = 0 hace que el numerador de Bayes sea exactamente 0.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Si P(A) = 0.6, P(B) = 0.5 y P(A ∩ B) = 0.3, ¿cuánto vale P(B | A)?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">0.50 (y además A y B son estadísticamente independientes porque P(B|A) = P(B)).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">0.60</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">0.30</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Qué componente de la fórmula de Bayes actúa como constante de normalización para que la suma de las probabilidades a posteriori sea exactamente 1?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">La probabilidad a priori P(A<sub>k</sub>).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">La verosimilitud P(B | A<sub>k</sub>).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">El denominador P(B), calculado mediante el Teorema de la Probabilidad Total.</span>
+          </button>
+        </div>
+        <div class="q-feedback hidden">
+          <p class="fb-text"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  // =========================================================================
+  // SIMULADOR BAYESIANO INTERACTIVO CON TREEMAP PROPORCIONAL
+  // =========================================================================
+
+  interface BayesPreset {
+    prev: number; // Prevalencia %
+    sens: number; // Sensibilidad % P(+|E)
+    fp: number;   // Falsos positivos % P(+|S)
+  }
+
+  const PRESETS: Record<string, BayesPreset> = {
+    rara: { prev: 0.1, sens: 99.0, fp: 1.0 },
+    comun: { prev: 12.0, sens: 92.0, fp: 3.5 },
+    fabrica: { prev: 2.0, sens: 98.0, fp: 0.8 },
+    cribado: { prev: 0.01, sens: 99.5, fp: 0.5 },
+  };
+
+  let curPrev = 0.1;
+  let curSens = 99.0;
+  let curFp = 1.0;
+
+  const svgTree = document.getElementById('svg-bayes-treemap') as SVGSVGElement | null;
+  const sliderPrev = document.getElementById('slider-prev') as HTMLInputElement | null;
+  const sliderSens = document.getElementById('slider-sens') as HTMLInputElement | null;
+  const sliderFp = document.getElementById('slider-fp') as HTMLInputElement | null;
+
+  const valPrevDisp = document.getElementById('val-prev');
+  const valSensDisp = document.getElementById('val-sens');
+  const valFpDisp = document.getElementById('val-fp');
+
+  const metricVpp = document.getElementById('metric-vpp');
+  const telePtotal = document.getElementById('tele-ptotal');
+  const teleRatio = document.getElementById('tele-ratio');
+  const teleVpp = document.getElementById('tele-vpp');
+  const teleConfLabel = document.getElementById('tele-conf-label');
+  const bayesMeter = document.getElementById('bayes-meter');
+  const bayesVerdict = document.getElementById('bayes-verdict');
+  const bayesExplanation = document.getElementById('bayes-explanation');
+
+  const cntVp = document.getElementById('cnt-vp');
+  const cntFp = document.getElementById('cnt-fp');
+  const cntSanos = document.getElementById('cnt-sanos');
+
+  const W = 580;
+  const H = 240;
+  const TOTAL_POP = 10000;
+
+  function renderBayes() {
+    if (!svgTree) return;
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    const pE = curPrev / 100;
+    const pS = 1 - pE;
+    const pPosDadoE = curSens / 100;
+    const pPosDadoS = curFp / 100;
+
+    // Frecuencias en 10.000 individuos
+    const enfermos = TOTAL_POP * pE;
+    const sanos = TOTAL_POP * pS;
+
+    const vp = enfermos * pPosDadoE; // Verdaderos Positivos
+    const fn = enfermos * (1 - pPosDadoE); // Falsos Negativos
+    const fp = sanos * pPosDadoS; // Falsos Positivos
+    const vn = sanos * (1 - pPosDadoS); // Verdaderos Negativos
+
+    const totalPositivos = vp + fp;
+    const vpp = totalPositivos > 0 ? (vp / totalPositivos) * 100 : 0;
+    const pTotalPosPct = (totalPositivos / TOTAL_POP) * 100;
+
+    // Colores adaptados
+    const vpColor = isLight ? '#059669' : '#10b981';
+    const fpColor = isLight ? '#dc2626' : '#ef4444';
+    const fnColor = isLight ? '#d97706' : '#f59e0b';
+    const vnColor = isLight ? '#0284c7' : '#38bdf8';
+    const borderCol = isLight ? '#cbd5e1' : '#334155';
+
+    // Gráfico Treemap Proporcional SVG
+    // Dividimos horizontalmente según enfermos vs sanos
+    // Para que la columna de enfermos sea visible incluso con prevalencia del 0.1%,
+    // usamos una visualización segmentada en dos columnas principales con ancho amplificado si es mínimo:
+    const minColW = 55;
+    const rawEnfermosW = Math.max(minColW, Math.min(220, (enfermos / TOTAL_POP) * (W - 30) * 8));
+    const sanosW = W - 20 - rawEnfermosW;
+
+    // Columna Enfermos (x = 10 a 10 + rawEnfermosW)
+    const hVp = Math.max(16, (vp / Math.max(0.001, enfermos)) * (H - 30));
+    const hFn = (H - 30) - hVp;
+
+    // Columna Sanos (x = 10 + rawEnfermosW + 10 a W - 10)
+    const hFp = Math.max(16, (fp / sanos) * (H - 30));
+    const hVn = (H - 30) - hFp;
+
+    const xEnf = 10;
+    const yStart = 20;
+    const xSanos = xEnf + rawEnfermosW + 10;
+
+    let svgHtml = `
+      <defs>
+        <pattern id="diagHatch" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+        </pattern>
+      </defs>
+
+      <!-- Cabeceras de columnas -->
+      <text x="${xEnf + rawEnfermosW / 2}" y="14" font-size="11" font-weight="700" fill="${isLight ? '#0f172a' : '#f8fafc'}" text-anchor="middle" font-family="monospace">
+        ENFERMOS (${enfermos.toFixed(1)})
+      </text>
+      <text x="${xSanos + sanosW / 2}" y="14" font-size="11" font-weight="700" fill="${isLight ? '#0f172a' : '#f8fafc'}" text-anchor="middle" font-family="monospace">
+        SANOS (${sanos.toFixed(0)})
+      </text>
+
+      <!-- Caja VP: Verdaderos Positivos (Enfermos y Positivos) -->
+      <rect x="${xEnf}" y="${yStart}" width="${rawEnfermosW}" height="${hVp}" rx="5" fill="${vpColor}" fill-opacity="0.85" stroke="${borderCol}" stroke-width="1.2" />
+      <text x="${xEnf + 8}" y="${yStart + Math.min(22, hVp - 6)}" font-size="10" font-weight="700" fill="#ffffff" font-family="monospace">
+        VP: ${vp.toFixed(1)}
+      </text>
+      <text x="${xEnf + 8}" y="${yStart + Math.min(36, hVp + 6)}" font-size="9" fill="#ffffff" opacity="0.9" font-family="sans-serif">
+        ${rawEnfermosW > 70 ? 'Test Positivo' : '+'}
+      </text>
+
+      <!-- Caja FN: Falsos Negativos (Enfermos pero Negativo) -->
+      <rect x="${xEnf}" y="${yStart + hVp}" width="${rawEnfermosW}" height="${hFn}" rx="5" fill="${fnColor}" fill-opacity="0.8" stroke="${borderCol}" stroke-width="1.2" />
+      <text x="${xEnf + 8}" y="${yStart + hVp + Math.min(18, hFn - 4)}" font-size="9" font-weight="700" fill="#ffffff" font-family="monospace">
+        FN: ${fn.toFixed(1)}
+      </text>
+
+      <!-- Caja FP: Falsos Positivos (Sanos pero Positivos - ¡El núcleo de la falacia!) -->
+      <rect x="${xSanos}" y="${yStart}" width="${sanosW}" height="${hFp}" rx="5" fill="${fpColor}" fill-opacity="0.85" stroke="${borderCol}" stroke-width="1.2" />
+      <rect x="${xSanos}" y="${yStart}" width="${sanosW}" height="${hFp}" rx="5" fill="url(#diagHatch)" />
+      <text x="${xSanos + 12}" y="${yStart + Math.min(20, hFp - 6)}" font-size="11" font-weight="800" fill="#ffffff" font-family="monospace">
+        ¡FALSOS POSITIVOS!: ${fp.toFixed(0)} personas sanas
+      </text>
+      <text x="${xSanos + 12}" y="${yStart + Math.min(34, hFp + 6)}" font-size="9.5" fill="#ffffff" opacity="0.95" font-family="sans-serif">
+        Test Positivo (sin tener la enfermedad)
+      </text>
+
+      <!-- Caja VN: Verdaderos Negativos (Sanos y Negativos) -->
+      <rect x="${xSanos}" y="${yStart + hFp}" width="${sanosW}" height="${hVn}" rx="5" fill="${vnColor}" fill-opacity="0.25" stroke="${borderCol}" stroke-width="1.2" />
+      <text x="${xSanos + 12}" y="${yStart + hFp + Math.min(24, hVn - 10)}" font-size="11" font-weight="700" fill="${isLight ? '#0284c7' : '#38bdf8'}" font-family="monospace">
+        VERDADEROS NEGATIVOS: ${vn.toFixed(0)} sanos con test negativo
+      </text>
+    `;
+
+    svgTree.innerHTML = svgHtml;
+
+    // Actualizar Telemetría
+    if (metricVpp) metricVpp.textContent = `VPP = ${vpp.toFixed(2)}%`;
+    if (telePtotal) telePtotal.textContent = `${pTotalPosPct.toFixed(3)}%`;
+    if (teleVpp) teleVpp.textContent = `${vpp.toFixed(2)}%`;
+    if (teleRatio) teleRatio.textContent = `${curSens.toFixed(1)} : ${curFp.toFixed(1)}`;
+
+    if (cntVp) cntVp.textContent = vp.toFixed(1);
+    if (cntFp) cntFp.textContent = fp.toFixed(0);
+    if (cntSanos) cntSanos.textContent = sanos.toFixed(0);
+
+    if (valPrevDisp) valPrevDisp.textContent = `${curPrev.toFixed(2)}%`;
+    if (valSensDisp) valSensDisp.textContent = `${curSens.toFixed(1)}%`;
+    if (valFpDisp) valFpDisp.textContent = `${curFp.toFixed(1)}%`;
+
+    if (bayesMeter && teleConfLabel && bayesVerdict && bayesExplanation) {
+      bayesMeter.style.width = `${Math.min(100, Math.max(2, vpp))}%`;
+
+      if (vpp < 25) {
+        bayesMeter.style.background = '#ef4444';
+        teleConfLabel.textContent = 'Baja Certeza (< 25%)';
+        teleConfLabel.style.color = '#ef4444';
+        bayesVerdict.textContent = 'DIAGNÓSTICO ENGAÑOSO';
+        bayesVerdict.style.color = '#ef4444';
+        bayesVerdict.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+        bayesExplanation.textContent = `Por cada enfermo que da positivo (${vp.toFixed(0)}), hay ${(fp / Math.max(0.01, vp)).toFixed(0)} personas sanas con falso positivo. Se requiere una segunda prueba confirmatoria.`;
+      } else if (vpp < 75) {
+        bayesMeter.style.background = '#f59e0b';
+        teleConfLabel.textContent = 'Certeza Moderada (25-75%)';
+        teleConfLabel.style.color = '#f59e0b';
+        bayesVerdict.textContent = 'CERTEZA INTERMEDIA';
+        bayesVerdict.style.color = '#f59e0b';
+        bayesVerdict.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+        bayesExplanation.textContent = 'La evidencia del test inclina la balanza de forma significativa, pero el margen de error clínico exige cautela.';
+      } else {
+        bayesMeter.style.background = '#10b981';
+        teleConfLabel.textContent = 'Alta Certeza (> 75%)';
+        teleConfLabel.style.color = '#10b981';
+        bayesVerdict.textContent = 'TEST DE ALTA FIABILIDAD';
+        bayesVerdict.style.color = '#10b981';
+        bayesVerdict.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        bayesExplanation.textContent = 'La combinación de alta prevalencia y baja tasa de falsos positivos otorga un valor predictivo contundente.';
+      }
+    }
+  }
+
+  // Event Listeners Sliders
+  if (sliderPrev) {
+    sliderPrev.addEventListener('input', (e) => {
+      curPrev = parseFloat((e.target as HTMLInputElement).value);
+      renderBayes();
+    });
+  }
+
+  if (sliderSens) {
+    sliderSens.addEventListener('input', (e) => {
+      curSens = parseFloat((e.target as HTMLInputElement).value);
+      renderBayes();
+    });
+  }
+
+  if (sliderFp) {
+    sliderFp.addEventListener('input', (e) => {
+      curFp = parseFloat((e.target as HTMLInputElement).value);
+      renderBayes();
+    });
+  }
+
+  // Presets
+  const presetBtns = document.querySelectorAll<HTMLButtonElement>('.preset-btn');
+  presetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const pKey = btn.dataset.preset;
+      if (pKey && PRESETS[pKey]) {
+        const p = PRESETS[pKey];
+        curPrev = p.prev;
+        curSens = p.sens;
+        curFp = p.fp;
+
+        if (sliderPrev) sliderPrev.value = String(curPrev);
+        if (sliderSens) sliderSens.value = String(curSens);
+        if (sliderFp) sliderFp.value = String(curFp);
+
+        renderBayes();
+      }
+    });
+  });
+
+  // Tema Claro / Oscuro
+  const themeObserver = new MutationObserver(() => {
+    renderBayes();
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  renderBayes();
+
+  // =========================================================================
+  // SISTEMA DE AUTOEVALUACIÓN CONCEPTUAL (QUIZ)
+  // =========================================================================
+  const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+  const FEEDBACK_MSGS: Record<string, { correct: string; incorrect: string }> = {
+    '1': {
+      correct: '¡Exacto! Es un error clásico de examen: si A y B son disjuntos, saber que ocurrió B te da la certeza absoluta de que A NO puede haber ocurrido (P(A|B) = 0 ≠ P(A)). Por tanto, dos sucesos incompatibles nunca son independientes.',
+      incorrect: 'Incorrecto. No confundas "incompatibles" con "independientes". Si son incompatibles, A ∩ B = ∅, luego P(A ∩ B) = 0. Para que fueran independientes se requeriría P(A ∩ B) = P(A)·P(B) > 0.',
+    },
+    '2': {
+      correct: '¡Brillante! Si P(Ebrio) = 0, el numerador en el Teorema de Bayes es P(+|Ebrio)·0 = 0. Cualquier positivo obtenido es forzosamente un falso positivo.',
+      incorrect: 'Incorrecto. El Teorema de Bayes modula la evidencia con la probabilidad a priori: P(Ebrio|+) = [P(+|Ebrio)·0] / P(+) = 0.',
+    },
+    '3': {
+      correct: '¡Impecable! P(B|A) = P(A ∩ B) / P(A) = 0.3 / 0.6 = 0.50. Dado que P(B) = 0.50, se cumple exactamente P(B|A) = P(B), lo que demuestra independencia formal.',
+      incorrect: 'Incorrecto. Aplica la definición de Kolmogorov: P(B|A) = P(A ∩ B) / P(A) = 0.3 / 0.6 = 0.5.',
+    },
+    '4': {
+      correct: '¡Totalmente correcto! El denominador P(B) es la probabilidad total que pondera todas las posibles causas, actuando como factor de escala para que la suma de todas las probabilidades a posteriori sea idénticamente 1.',
+      incorrect: 'Incorrecto. El normalizador es el denominador P(B), expandido por el Teorema de la Probabilidad Total.',
+    },
+  };
+
+  quizCards.forEach((card) => {
+    const qId = card.dataset.q || '';
+    const btns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+    const fbBox = card.querySelector<HTMLElement>('.q-feedback');
+    const fbText = card.querySelector<HTMLElement>('.fb-text');
+
+    btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const isCorrect = btn.dataset.correct === 'true';
+
+        btns.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') {
+            b.classList.add('is-right');
+          } else if (b === btn) {
+            b.classList.add('is-wrong');
+          }
+        });
+
+        if (fbBox && fbText) {
+          fbBox.classList.remove('hidden', 'success', 'failure');
+          fbBox.classList.add(isCorrect ? 'success' : 'failure');
+          fbText.textContent = isCorrect ? FEEDBACK_MSGS[qId]?.correct : FEEDBACK_MSGS[qId]?.incorrect;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS ESPECÍFICOS: PROBABILIDAD CONDICIONADA Y TEOREMA DE BAYES
+     ========================================================================= */
+
+  /* 1. Tarjeta Hero de Conflicto Cognitivo */
+  .conflict-hero-card {
+    background: #0f172a;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    border-radius: 16px;
+    padding: 1.8rem;
+    margin: 1.8rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .conflict-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+    margin-bottom: 1.4rem;
+  }
+
+  .conflict-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin-bottom: 1.6rem;
+  }
+
+  @media (max-width: 800px) {
+    .conflict-dual-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .conflict-box {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .conflict-box.intuition {
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .conflict-box.reality {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.05);
+  }
+
+  .c-tag {
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .c-tag.bad {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+
+  .c-tag.good {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+  }
+
+  .conflict-box h3 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: #f8fafc;
+  }
+
+  .conflict-box p {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  /* Desglose de Frecuencias */
+  .frequency-tree-card {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+  }
+
+  .ft-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .ft-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .population-diagram {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  @media (max-width: 760px) {
+    .population-diagram {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pop-branch {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .pop-branch.diseased {
+    border-left: 3px solid #f43f5e;
+  }
+
+  .pop-branch.healthy {
+    border-left: 3px solid #38bdf8;
+  }
+
+  .pop-node {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .pop-count {
+    font-size: 1.35rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: #f8fafc;
+  }
+
+  .pop-label {
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .pop-subbranches {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pop-leaf {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.82rem;
+  }
+
+  .leaf-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #f8fafc;
+    min-width: 32px;
+  }
+
+  .leaf-val.alert {
+    color: #ef4444;
+    font-weight: 800;
+  }
+
+  .leaf-desc {
+    color: #cbd5e1;
+  }
+
+  .ft-summary {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+  }
+
+  /* 2. Definiciones y Teoremas Canónicos */
+  .definition-box,
+  .canonical-theorem-card,
+  .partition-card,
+  .concept-banner,
+  .independence-card {
+    border-radius: 14px;
+    padding: 1.6rem 1.8rem;
+    margin: 1.6rem 0;
+  }
+
+  .definition-box {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+  }
+
+  .def-badge,
+  .canon-badge,
+  .part-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .def-badge {
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+  }
+
+  .def-note {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+    border-left: 3px solid #f43f5e;
+  }
+
+  .concept-banner {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .banner-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-formula {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #7dd3fc;
+    margin-bottom: 0.6rem;
+  }
+
+  .banner-desc {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .independence-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .indep-header h4 {
+    margin: 0 0 0.8rem 0;
+    color: #f8fafc;
+    font-size: 1.05rem;
+  }
+
+  .indep-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 650px) {
+    .indep-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .indep-cell {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .cell-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cell-formula {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+  }
+
+  .cell-sub {
+    font-size: 0.78rem;
+    color: #64748b;
+  }
+
+  .partition-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .part-badge {
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+  }
+
+  .part-list {
+    margin: 0.8rem 0 0 1.2rem;
+    padding: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .canonical-theorem-card {
+    background: #0d1527;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .canonical-theorem-card.bayes-hero-card {
+    border-color: rgba(244, 63, 94, 0.45);
+    background: #150d18;
+  }
+
+  .canon-badge {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+  }
+
+  .canon-badge.bayes {
+    background: rgba(244, 63, 94, 0.25);
+    color: #fb7185;
+  }
+
+  .canon-statement p {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: #f1f5f9;
+  }
+
+  .canon-thesis {
+    margin: 1.2rem 0;
+    padding: 1.2rem;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    text-align: center;
+  }
+
+  .canon-thesis.bayes-thesis {
+    background: rgba(244, 63, 94, 0.12);
+    border-color: rgba(244, 63, 94, 0.35);
+    color: #fda4af;
+  }
+
+  /* 3. Anatomía de Bayes */
+  .bayes-anatomy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 800px) {
+    .bayes-anatomy-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .anatomy-cell {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.3rem;
+  }
+
+  .anatomy-cell.prior { border-left: 3px solid #38bdf8; }
+  .anatomy-cell.likelihood { border-left: 3px solid #10b981; }
+  .anatomy-cell.evidence { border-left: 3px solid #f59e0b; }
+  .anatomy-cell.posterior { border-left: 3px solid #f43f5e; }
+
+  .cell-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .cell-head h5 {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: #f8fafc;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .anatomy-cell p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  /* 4. Laboratorio Interactivo */
+  .lab-container {
+    background: #0d1527;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    border-radius: 16px;
+    padding: 1.6rem;
+    margin: 2rem 0;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+  }
+
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f43f5e;
+    box-shadow: 0 0 10px #f43f5e;
+  }
+
+  .lab-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #f43f5e;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lab-preset-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .preset-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .preset-btn:hover {
+    background: rgba(244, 63, 94, 0.1);
+    color: #f43f5e;
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .preset-btn.is-active {
+    background: rgba(244, 63, 94, 0.18);
+    color: #f43f5e;
+    border-color: #f43f5e;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.25);
+  }
+
+  .lab-workspace-grid {
+    display: grid;
+    grid-template-columns: 1fr 310px;
+    gap: 1.4rem;
+  }
+
+  @media (max-width: 990px) {
+    .lab-workspace-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lab-visual-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .graph-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .graph-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .graph-tag {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .graph-tag.rose {
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+  }
+
+  .graph-metric {
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e2e8f0;
+  }
+
+  .svg-stage-wrapper {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+  }
+
+  .lab-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .treemap-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.8rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .color-dot.vp { background: #10b981; }
+  .color-dot.fp { background: #ef4444; }
+  .color-dot.fn { background: #f59e0b; }
+  .color-dot.vn { background: #38bdf8; opacity: 0.6; }
+
+  .lab-controls-panel {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .control-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+  }
+
+  .control-val-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #f43f5e;
+  }
+
+  .lab-range-input {
+    width: 100%;
+    accent-color: #f43f5e;
+    cursor: pointer;
+  }
+
+  .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-panel {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .telemetry-header h5 {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .telemetry-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .telemetry-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .t-cell {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .t-cell.full-width {
+    grid-column: span 2;
+  }
+
+  .t-cell.primary-bayes-cell {
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+
+  .t-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .t-val.amber { color: #f59e0b; }
+  .t-val.rose { color: #fb7185; }
+  .t-val.big-val { font-size: 1.6rem; color: #f43f5e; }
+  .t-val.small { font-size: 0.88rem; }
+
+  .t-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+  }
+
+  .t-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .convergence-meter {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin: 0.4rem 0;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: width 0.15s ease;
+  }
+
+  .meter-caption {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    line-height: 1.35;
+  }
+
+  .bayes-counts-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #cbd5e1;
+    margin-top: 0.3rem;
+  }
+
+  .bayes-counts-box .red-txt {
+    color: #ef4444;
+  }
+
+  /* 5. Protocolo PAU y Ejercicio */
+  .protocol-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin: 1.6rem 0;
+  }
+
+  .prot-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .prot-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(244, 63, 94, 0.18);
+    color: #f43f5e;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .prot-body h5 {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.95rem;
+    color: #f8fafc;
+  }
+
+  .prot-body p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  .solved-exercise-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin: 1.6rem 0;
+  }
+
+  .ex-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #f43f5e;
+    margin-bottom: 0.5rem;
+  }
+
+  .solved-exercise-card h4 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+  }
+
+  .ex-statement {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    padding: 0.8rem 1rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border-left: 3px solid #f43f5e;
+    margin-bottom: 1.4rem;
+  }
+
+  .ex-subsections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .ex-sub strong {
+    font-size: 0.94rem;
+    color: #f8fafc;
+  }
+
+  .ex-sol {
+    margin-top: 0.6rem;
+    padding-left: 0.8rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .sol-conclusion {
+    margin-top: 0.8rem;
+    font-size: 0.86rem;
+    color: #94a3b8;
+  }
+
+  /* 6. Pecados y Trampas */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.6rem 0;
+  }
+
+  @media (max-width: 850px) {
+    .sins-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sin-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .sin-pill {
+    align-self: flex-start;
+    font-size: 0.65rem;
+    font-weight: 800;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .sin-card h4 {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #f8fafc;
+    line-height: 1.4;
+  }
+
+  .sin-card p {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  .sin-bad {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    color: #6ee7b7;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  /* 7. Autoevaluación Conceptual */
+  .quiz-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.6rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .q-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #f43f5e;
+    letter-spacing: 0.08em;
+  }
+
+  .q-header h4 {
+    margin: 0.4rem 0 1.2rem 0;
+    font-size: 1.02rem;
+    color: #f8fafc;
+    line-height: 1.45;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    color: #cbd5e1;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.35);
+    color: #f43f5e;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-right {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #fca5a5 !important;
+  }
+
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .q-feedback.hidden {
+    display: none;
+  }
+
+  .q-feedback.success {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+
+  .q-feedback.failure {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  /* =========================================================================
+     ADAPTACIÓN AL MODO CLARO (THEME = LIGHT)
+     ========================================================================= */
+  :global([data-theme="light"]) .conflict-hero-card,
+  :global([data-theme="light"]) .canonical-theorem-card,
+  :global([data-theme="light"]) .lab-container {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .conflict-hero-card {
+    border-color: rgba(225, 29, 72, 0.25);
+  }
+
+  :global([data-theme="light"]) .conflict-box,
+  :global([data-theme="light"]) .pop-branch,
+  :global([data-theme="light"]) .graph-card,
+  :global([data-theme="light"]) .lab-controls-panel,
+  :global([data-theme="light"]) .lab-telemetry-panel,
+  :global([data-theme="light"]) .protocol-card,
+  :global([data-theme="light"]) .solved-exercise-card,
+  :global([data-theme="light"]) .sin-card,
+  :global([data-theme="light"]) .quiz-card,
+  :global([data-theme="light"]) .definition-box,
+  :global([data-theme="light"]) .partition-card,
+  :global([data-theme="light"]) .independence-card,
+  :global([data-theme="light"]) .formal-proof-wrapper,
+  :global([data-theme="light"]) .anatomy-cell {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .conflict-box h3,
+  :global([data-theme="light"]) .pop-count,
+  :global([data-theme="light"]) .indep-header h4,
+  :global([data-theme="light"]) .cell-head h5,
+  :global([data-theme="light"]) .prot-body h5,
+  :global([data-theme="light"]) .solved-exercise-card h4,
+  :global([data-theme="light"]) .ex-sub strong,
+  :global([data-theme="light"]) .sin-card h4,
+  :global([data-theme="light"]) .q-header h4,
+  :global([data-theme="light"]) .proof-card-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .conflict-box p,
+  :global([data-theme="light"]) .leaf-desc,
+  :global([data-theme="light"]) .ft-summary,
+  :global([data-theme="light"]) .def-note,
+  :global([data-theme="light"]) .banner-desc,
+  :global([data-theme="light"]) .canon-statement p,
+  :global([data-theme="light"]) .anatomy-cell p,
+  :global([data-theme="light"]) .prot-body p,
+  :global([data-theme="light"]) .ex-statement,
+  :global([data-theme="light"]) .ex-sol,
+  :global([data-theme="light"]) .sin-card p,
+  :global([data-theme="light"]) .q-opt-btn {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .frequency-tree-card,
+  :global([data-theme="light"]) .pop-leaf,
+  :global([data-theme="light"]) .def-note,
+  :global([data-theme="light"]) .indep-cell,
+  :global([data-theme="light"]) .ex-statement,
+  :global([data-theme="light"]) .svg-stage-wrapper,
+  :global([data-theme="light"]) .t-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .pop-label,
+  :global([data-theme="light"]) .cell-sub,
+  :global([data-theme="light"]) .t-sub,
+  :global([data-theme="light"]) .sol-conclusion,
+  :global([data-theme="light"]) .meter-caption {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .t-val.rose { color: #e11d48; }
+  :global([data-theme="light"]) .t-val.big-val { color: #e11d48; }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #fff1f2;
+    border-color: #f43f5e;
+    color: #e11d48;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+</style>

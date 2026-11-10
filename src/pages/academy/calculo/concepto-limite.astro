@@ -41,13 +41,13 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
           Es una operación dinámica sobre un <strong>entorno perforado</strong>. Pregunta a qué valor se aproximan las imágenes <code class="inline-code">f(x)</code> a medida que <code class="inline-code">x</code> se acerca a <code class="inline-code">a</code> tanto como queramos, <strong>sin que x llegue jamás a ser igual a a</strong>.
         </p>
         <div class="contrast-formula-box box-limit">
-          <code>lim_(x→1) (x² - 1)/(x - 1) = lim_(x→1) (x + 1) = 2</code>
+          <code>lim<sub>x→1</sub> (x² - 1)/(x - 1) = lim<sub>x→1</sub> (x + 1) = 2</code>
         </div>
       </div>
     </div>
 
     <p>
-      El hecho de que para funciones continuas elementales ambos valores coincidan (<code class="inline-code">lim f(x) = f(a)</code>) es una <em>propiedad especial de la continuidad</em>, no la definición de límite. El límite existe con total independencia de lo que ocurra exactamente en el punto.
+      El hecho de que para funciones continuas elementales ambos valores coincidan (<code class="inline-code">lim<sub>x→a</sub> f(x) = f(a)</code>) es una <em>propiedad especial de la continuidad</em>, no la definición de límite. El límite existe con total independencia de lo que ocurra exactamente en el punto.
     </p>
   </section>
 
@@ -106,7 +106,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
               </tr>
             </tbody>
           </table>
-          <div class="limit-result-note">lim_(x→1⁻) f(x) = 2</div>
+          <div class="limit-result-note">lim<sub>x→1⁻</sub> f(x) = 2</div>
         </div>
 
         <!-- Derecha -->
@@ -143,7 +143,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
               </tr>
             </tbody>
           </table>
-          <div class="limit-result-note">lim_(x→1⁺) f(x) = 2</div>
+          <div class="limit-result-note">lim<sub>x→1⁺</sub> f(x) = 2</div>
         </div>
       </div>
     </div>
@@ -152,7 +152,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
     <div class="formal-theorem-banner">
       <span class="theorem-badge">TEOREMA FUNDAMENTAL DE EXISTENCIA</span>
       <h3>«El límite global de una función en un punto existe si y solo si ambos límites laterales existen y coinciden en el mismo valor finito L»</h3>
-      <code class="theorem-symbolic">lim_(x→a) f(x) = L ⟺ lim_(x→a⁻) f(x) = L  ∧  lim_(x→a⁺) f(x) = L</code>
+      <code class="theorem-symbolic">lim<sub>x→a</sub> f(x) = L ⟺ lim<sub>x→a⁻</sub> f(x) = L  ∧  lim<sub>x→a⁺</sub> f(x) = L</code>
     </div>
 
     <!-- Caso de Discrepancia -->
@@ -167,15 +167,15 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
       <div class="disc-formulas">
         <div class="disc-f-item">
           <span>Por la izquierda (x &lt; 0):</span>
-          <code>lim_(x→0⁻) (-x)/x = -1</code>
+          <code>lim<sub>x→0⁻</sub> (-x)/x = -1</code>
         </div>
         <div class="disc-f-item">
           <span>Por la derecha (x &gt; 0):</span>
-          <code>lim_(x→0⁺) (x)/x = +1</code>
+          <code>lim<sub>x→0⁺</sub> (x)/x = +1</code>
         </div>
       </div>
       <p class="disc-conclusion">
-        Puesto que <code class="inline-code">-1 ≠ +1</code>, <strong>el límite global lim_(x→0) f(x) NO EXISTE</strong>. La gráfica experimenta una ruptura insalvable conocida como <em>salto finito</em>.
+        Puesto que <code class="inline-code">-1 ≠ +1</code>, <strong>el límite global <code class="inline-code">lim<sub>x→0</sub> f(x)</code> NO EXISTE</strong>. La gráfica experimenta una ruptura insalvable conocida como <em>salto finito</em>.
       </p>
     </div>
   </section>
@@ -362,7 +362,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
             </div>
             <div class="approx-tendency">
               <span>Tendencia lateral inferida:</span>
-              <strong id="left-tendency-display">lim_(x→2⁻) = 4</strong>
+              <strong id="left-tendency-display">lim<sub>x→2⁻</sub> = 4</strong>
             </div>
           </div>
         </div>
@@ -384,7 +384,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
             </div>
             <div class="approx-tendency">
               <span>Tendencia lateral inferida:</span>
-              <strong id="right-tendency-display">lim_(x→2⁺) = 4</strong>
+              <strong id="right-tendency-display">lim<sub>x→2⁺</sub> = 4</strong>
             </div>
           </div>
         </div>
@@ -394,7 +394,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
       <div class="lab-verdict-box" id="lab-verdict-banner">
         <div class="v-header-row">
           <span class="verdict-type-badge" id="v-status-badge">LÍMITE EXISTENTE (FINITO)</span>
-          <h3 id="v-limit-statement">lim_(x→2) f(x) = 4</h3>
+          <h3 id="v-limit-statement">lim<sub>x→2</sub> f(x) = 4</h3>
         </div>
         <p class="v-desc" id="v-desc-text">
           Como el límite lateral izquierdo (4) coincide exactamente con el límite lateral derecho (4), el límite global existe y vale 4, a pesar de que f(2) no esté definida (0/0).
@@ -434,7 +434,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
         <h4>Existe lim f(x)</h4>
         <p>
           Los límites laterales existen, son números reales finitos y coinciden:
-          <code class="inline-code">lim_(x→a⁻) f(x) = lim_(x→a⁺) f(x) = L</code>.
+          <code class="inline-code">lim<sub>x→a⁻</sub> f(x) = lim<sub>x→a⁺</sub> f(x) = L</code>.
         </p>
       </div>
 
@@ -443,7 +443,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
         <h4>Coincidencia Total</h4>
         <p>
           El valor puntual y la tendencia asintótica convergen en el mismo número:
-          <code class="inline-code">lim_(x→a) f(x) = f(a)</code>.
+          <code class="inline-code">lim<sub>x→a</sub> f(x) = f(a)</code>.
         </p>
       </div>
     </div>
@@ -456,7 +456,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
           <strong>Discontinuidad Evitable:</strong> Existe el límite finito <code class="inline-code">L</code>, pero o bien no existe <code class="inline-code">f(a)</code>, o bien <code class="inline-code">f(a) ≠ L</code> (un agujero o punto desplazado).
         </div>
         <div class="d-type-item">
-          <strong>Discontinuidad de Salto Finito:</strong> Existen ambos límites laterales finitos, pero son distintos: <code class="inline-code">lim_(x→a⁻) ≠ lim_(x→a⁺)</code>. Salto = <code class="inline-code">|L₁ - L₂|</code>.
+          <strong>Discontinuidad de Salto Finito:</strong> Existen ambos límites laterales finitos, pero son distintos: <code class="inline-code">lim<sub>x→a⁻</sub> ≠ lim<sub>x→a⁺</sub></code>. Salto = <code class="inline-code">|L₁ - L₂|</code>.
         </div>
         <div class="d-type-item">
           <strong>Discontinuidad de Salto Infinito (Asintótica):</strong> Al menos uno de los límites laterales es infinito (<code class="inline-code">±∞</code>). Representa una asíntota vertical en <code class="inline-code">x = a</code>.
@@ -497,7 +497,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
           <h4>Olvidar límites laterales con valor absoluto</h4>
         </div>
         <p class="trap-wrong">
-          <strong>Error fatal:</strong> Al calcular <code class="inline-code">lim_(x→0) |x|/x</code>, cancelar directamente sin desdoblar el signo.
+          <strong>Error fatal:</strong> Al calcular <code class="inline-code">lim<sub>x→0</sub> |x|/x</code>, cancelar directamente sin desdoblar el signo.
         </p>
         <p class="trap-right">
           <strong>Corrección rigurosa:</strong> Todo valor absoluto exige obligatoriamente estudiar por separado <code class="inline-code">x → 0⁻</code> (donde <code class="inline-code">|x| = -x</code>) y <code class="inline-code">x → 0⁺</code> (donde <code class="inline-code">|x| = x</code>).
@@ -510,7 +510,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
           <h4>Escribir «k/0 = ∞» sin signo</h4>
         </div>
         <p class="trap-wrong">
-          <strong>Error fatal:</strong> Concluir <code class="inline-code">lim_(x→1) 1/(x - 1) = ∞</code> sin evaluar laterales.
+          <strong>Error fatal:</strong> Concluir <code class="inline-code">lim<sub>x→1</sub> 1/(x - 1) = ∞</code> sin evaluar laterales.
         </p>
         <p class="trap-right">
           <strong>Corrección rigurosa:</strong> Por la izquierda <code class="inline-code">1/(0⁻) = -∞</code> y por la derecha <code class="inline-code">1/(0⁺) = +∞</code>. Como tienen signos opuestos, no existe límite global unificado.
@@ -551,7 +551,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
         <div class="quiz-question-header">
           <span class="quiz-num">Q1</span>
           <p class="quiz-question-text">
-            Si se sabe que lim_(x→3⁻) f(x) = 5 y f(3) = 10, ¿qué podemos afirmar con absoluta certeza sobre el límite global lim_(x→3) f(x)?
+            Si se sabe que lim<sub>x→3⁻</sub> f(x) = 5 y f(3) = 10, ¿qué podemos afirmar con absoluta certeza sobre el límite global lim<sub>x→3</sub> f(x)?
           </p>
         </div>
         <div class="quiz-options">
@@ -562,7 +562,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
             B) El límite global vale 10 porque el valor puntual prevalece sobre los laterales.
           </button>
           <button type="button" class="quiz-opt" data-correct="true">
-            C) No podemos concluir si el límite global existe o no hasta conocer el límite lateral derecho lim_(x→3⁺) f(x). El valor f(3) = 10 es irrelevante para la existencia del límite.
+            C) No podemos concluir si el límite global existe o no hasta conocer el límite lateral derecho lim<sub>x→3⁺</sub> f(x). El valor f(3) = 10 es irrelevante para la existencia del límite.
           </button>
           <button type="button" class="quiz-opt" data-correct="false">
             D) El límite global vale (5 + 10)/2 = 7.5.
@@ -601,7 +601,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
         <div class="quiz-question-header">
           <span class="quiz-num">Q3</span>
           <p class="quiz-question-text">
-            Dada la función f(x) = (x - 4) / |x - 4|, ¿cuál es el valor de lim_(x→4) f(x)?
+            Dada la función f(x) = (x - 4) / |x - 4|, ¿cuál es el valor de lim<sub>x→4</sub> f(x)?
           </p>
         </div>
         <div class="quiz-options">
@@ -745,16 +745,16 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
         rightFxVal.textContent = fRight.toFixed(6);
       }
 
-      leftTendency.textContent = `lim_(x→${a}⁻) = ${data.leftLimit}`;
-      rightTendency.textContent = `lim_(x→${a}⁺) = ${data.rightLimit}`;
+      leftTendency.innerHTML = `lim<sub>x→${a}⁻</sub> = ${data.leftLimit}`;
+      rightTendency.innerHTML = `lim<sub>x→${a}⁺</sub> = ${data.rightLimit}`;
 
       // Banner veredicto
       vStatusBadge.textContent = data.statusBadge;
       vStatusBadge.className = 'verdict-type-badge ' + data.badgeClass;
 
-      vLimitStatement.textContent = data.hasLimit
-        ? `lim_(x→${a}) f(x) = ${data.globalLimit}`
-        : `lim_(x→${a}) f(x) NO EXISTE`;
+      vLimitStatement.innerHTML = data.hasLimit
+        ? `lim<sub>x→${a}</sub> f(x) = ${data.globalLimit}`
+        : `lim<sub>x→${a}</sub> f(x) NO EXISTE`;
 
       vDescText.textContent = data.desc;
       vContinuityText.innerHTML = `<strong>Diagnóstico de Continuidad:</strong> ${data.continuity}`;
@@ -888,6 +888,21 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-02');
     border: 1px solid var(--line);
     color: var(--ink);
     font-size: 0.9em;
+  }
+
+  code sub,
+  .inline-code sub,
+  .theorem-symbolic sub,
+  .limit-result-note sub,
+  .contrast-formula-box sub,
+  .disc-formulas sub,
+  .v-header-row sub,
+  .quiz-question-text sub,
+  .quiz-opt sub {
+    font-size: 0.72em;
+    vertical-align: -0.32em;
+    margin-left: 1px;
+    font-weight: 700;
   }
 
   /* Tarjetas de Contraste Fundamental */

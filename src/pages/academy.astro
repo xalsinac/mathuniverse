@@ -271,7 +271,7 @@ const totalBlocks = ACADEMY_BLOCKS.length;
                             <!-- Caja de Fórmula o Concepto Clave -->
                             <div class="concept-key-box">
                               <span class="concept-label">EJE RIGUROSO:</span>
-                              <code class="concept-formula">{lesson.keyConcept}</code>
+                              <code class="concept-formula" set:html={lesson.keyConcept} />
                             </div>
 
                             <p class="lesson-summary">{lesson.summary}</p>
@@ -1694,6 +1694,19 @@ const totalBlocks = ACADEMY_BLOCKS.length;
     font-weight: 700;
     color: var(--card-accent, #ffc14d);
     word-break: break-all;
+  }
+
+  .concept-formula sub {
+    font-size: 0.72em;
+    vertical-align: -0.32em;
+    margin-left: 1px;
+    font-weight: 700;
+  }
+
+  .concept-formula sup {
+    font-size: 0.72em;
+    vertical-align: 0.45em;
+    font-weight: 700;
   }
 
   :global([data-theme="light"]) .concept-formula {

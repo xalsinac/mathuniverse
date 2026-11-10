@@ -241,7 +241,9 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
 
             <div class="total-identity-eval">
               <span class="eval-tag">PROCESO DE RESOLUCIÓN:</span>
-              <code id="eval-trace">x = (-6 ± √16) / 2 = (-6 ± 4) / 2</code>
+              <div id="eval-trace" class="eval-trace-box">
+                x = <span class="math-frac"><span class="num">-6 ± <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">16</span></span></span><span class="den">2</span></span> = <span class="math-frac"><span class="num">-6 ± 4</span><span class="den">2</span></span>
+              </div>
             </div>
           </div>
         </div>
@@ -261,7 +263,9 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
     <div class="formal-theorem-banner">
       <span class="theorem-badge">TEOREMA FUNDAMENTAL DE LA ECUACIÓN CUADRÁTICA</span>
       <h3>«Toda ecuación cuadrática con coeficientes en los números reales y coeficiente principal no nulo admite una fórmula explícita universal para sus raíces»</h3>
-      <code class="theorem-symbolic">∀ a, b, c ∈ ℝ, a ≠ 0 : ax² + bx + c = 0 ⟺ x = (-b ± √(b² - 4ac)) / (2a)</code>
+      <div class="theorem-symbolic">
+        ∀ a, b, c ∈ ℝ, a ≠ 0 : &emsp; ax² + bx + c = 0 &emsp;⟺&emsp; x = <span class="math-frac"><span class="num">-b ± <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2a</span></span>
+      </div>
     </div>
 
     <p>
@@ -295,7 +299,7 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
             Como <code class="inline-code">a ≠ 0</code>, su inverso <code class="inline-code">1/a</code> existe. Multiplicamos toda la ecuación por <code class="inline-code">1/a</code> para conseguir que el monomio principal sea mónico (<code class="inline-code">1 · x²</code>):
           </p>
           <div class="code-step-box">
-            <code>x² + (b / a)x = -c / a</code>
+            <span>x² + <span class="math-frac"><span class="num">b</span><span class="den">a</span></span>x = -<span class="math-frac"><span class="num">c</span><span class="den">a</span></span></span>
           </div>
         </div>
       </div>
@@ -310,10 +314,10 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
             Para que el término lineal <code class="inline-code">(b/a)x</code> coincida con el doble producto <code class="inline-code">2 · x · k</code>, forzamos la igualdad:
           </p>
           <div class="code-step-box">
-            <code>2 · k = (b / a) ⟹ k = b / (2a)</code>
+            <span>2 · k = <span class="math-frac"><span class="num">b</span><span class="den">a</span></span> &emsp;⟹&emsp; k = <span class="math-frac"><span class="num">b</span><span class="den">2a</span></span></span>
           </div>
           <p>
-            Por consiguiente, el término cuadrático que le falta a la izquierda para ser un trinomio cuadrado perfecto es <code class="inline-code">k² = (b / 2a)² = b² / (4a²)</code>.
+            Por consiguiente, el término cuadrático que le falta a la izquierda para ser un trinomio cuadrado perfecto es <code class="inline-code">k² = (b / 2a)² = <span class="math-frac"><span class="num">b²</span><span class="den">4a²</span></span></code>.
           </p>
         </div>
       </div>
@@ -325,10 +329,10 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
           <h4>Completar el cuadrado sumando k² a ambos miembros</h4>
           <span class="step-rule-tag">Axioma de adición de igualdades</span>
           <p>
-            Sumamos <code class="inline-code">b² / (4a²)</code> a izquierda y derecha para no alterar la ecuación:
+            Sumamos <code class="inline-code"><span class="math-frac"><span class="num">b²</span><span class="den">4a²</span></span></code> a izquierda y derecha para no alterar la ecuación:
           </p>
           <div class="code-step-box">
-            <code>x² + (b / a)x + b² / (4a²) = -c / a + b² / (4a²)</code>
+            <span>x² + <span class="math-frac"><span class="num">b</span><span class="den">a</span></span>x + <span class="math-frac"><span class="num">b²</span><span class="den">4a²</span></span> = -<span class="math-frac"><span class="num">c</span><span class="den">a</span></span> + <span class="math-frac"><span class="num">b²</span><span class="den">4a²</span></span></span>
           </div>
         </div>
       </div>
@@ -340,10 +344,10 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
           <h4>Factorización del binomio y denominador común</h4>
           <span class="step-rule-tag">Primera Identidad Notable e igualación fraccionaria</span>
           <p>
-            El miembro izquierdo se colapsa de forma exacta en el cuadrado del binomio <code class="inline-code">(x + b/(2a))²</code>. A la derecha, reducimos a común denominador multiplicando numerador y denominador de <code class="inline-code">-c/a</code> por <code class="inline-code">4a</code>:
+            El miembro izquierdo se colapsa de forma exacta en el cuadrado del binomio <code class="inline-code">(x + <span class="math-frac"><span class="num">b</span><span class="den">2a</span></span>)²</code>. A la derecha, reducimos a común denominador multiplicando numerador y denominador de <code class="inline-code">-c/a</code> por <code class="inline-code">4a</code>:
           </p>
           <div class="code-step-box">
-            <code>(x + b / (2a))² = (-4ac + b²) / (4a²) = (b² - 4ac) / (4a²)</code>
+            <span>(x + <span class="math-frac"><span class="num">b</span><span class="den">2a</span></span>)² = <span class="math-frac"><span class="num">-4ac + b²</span><span class="den">4a²</span></span> = <span class="math-frac"><span class="num">b² - 4ac</span><span class="den">4a²</span></span></span>
           </div>
           <p class="callout-note-inline">
             ¡Aquí nace de manera natural y espontánea la expresión milagrosa <code class="inline-code">b² - 4ac</code>! No es una ocurrencia arbitraria: es el numerador inevitable tras igualar denominadores.
@@ -358,17 +362,39 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
           <h4>Extracción de la raíz cuadrada y justificación estricta del doble signo (±)</h4>
           <span class="step-rule-tag">Propiedad de valor absoluto y radicación en cocientes</span>
           <p>
-            Tomamos raíz cuadrada en ambos miembros: <code class="inline-code">√(u²) = |u|</code>:
+            Tomamos raíz cuadrada en ambos miembros recordando la identidad fundamental <code class="inline-code"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">u²</span></span> = |u|</code>:
           </p>
-          <div class="code-step-box">
-            <code>|x + b / (2a)| = √(b² - 4ac) / √(4a²) = √(b² - 4ac) / (2|a|)</code>
+
+          <div class="math-derivation-chain">
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 6.1 · Radicación</span>
+              <span>
+                |x + <span class="math-frac"><span class="num">b</span><span class="den">2a</span></span>| 
+                = <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">4a²</span></span></span></span>
+                = <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2|a|</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line">
+              <span class="math-step-tag">Paso 6.2 · Absorción del signo</span>
+              <span>
+                x + <span class="math-frac"><span class="num">b</span><span class="den">2a</span></span>
+                = ± <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2a</span></span>
+              </span>
+            </div>
+
+            <div class="math-step-line is-highlight">
+              <span class="math-step-tag">Fórmula Cuadrática Universal</span>
+              <span>
+                x = <span class="math-frac"><span class="num">-b ± <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2a</span></span>
+              </span>
+              <span class="math-qed">∎ Q.E.D.</span>
+            </div>
           </div>
-          <p>
-            Al eliminar el valor absoluto, surge el signo dual <code class="inline-code">±</code>. Dado que <code class="inline-code">± / |a|</code> genera exactamente los mismos dos valores que <code class="inline-code">± / a</code>, el valor absoluto en el denominador queda absorbido:
+
+          <p class="callout-note-inline">
+            El signo dual <code class="inline-code">± / |a|</code> genera exactamente el mismo conjunto binario de valores <code class="inline-code">&#123;+1/a, -1/a&#125;</code> que <code class="inline-code">± / a</code>, por lo que el valor absoluto en el denominador queda rigurosamente absorbido sin pérdida de generalidad.
           </p>
-          <div class="code-step-box highlight-step">
-            <code>x + b / (2a) = ± √(b² - 4ac) / (2a) ⟹ x = (-b ± √(b² - 4ac)) / (2a)  ∎</code>
-          </div>
         </div>
       </div>
     </div>
@@ -395,10 +421,10 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
           <span class="disc-badge">DOS RAÍCES REALES DISTINTAS</span>
         </div>
         <p>
-          La raíz cuadrada <code class="inline-code">√Δ</code> es un número real estrictamente positivo. Sumar y restar <code class="inline-code">√Δ</code> genera dos valores distintos:
+          La raíz cuadrada <code class="inline-code"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></code> es un número real estrictamente positivo. Sumar y restar <code class="inline-code"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></code> genera dos valores distintos:
         </p>
-        <div class="disc-formula">
-          <code>x₁ = (-b + √Δ) / 2a ≠ x₂ = (-b - √Δ) / 2a</code>
+        <div class="disc-formula math-display-eq">
+          x₁ = <span class="math-frac"><span class="num">-b + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span> &emsp;≠&emsp; x₂ = <span class="math-frac"><span class="num">-b - <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span>
         </div>
         <p class="disc-geom-note">
           <strong>Interpretación gráfica:</strong> La parábola <code class="inline-code">y = ax² + bx + c</code> corta al eje X en dos puntos reales independientes.
@@ -412,10 +438,10 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
           <span class="disc-badge">UNA RAÍZ REAL DOBLE</span>
         </div>
         <p>
-          La raíz cuadrada es nula: <code class="inline-code">√0 = 0</code>. Sumar o restar cero no altera la fracción:
+          La raíz cuadrada es nula: <code class="inline-code"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">0</span></span> = 0</code>. Sumar o restar cero no altera la fracción:
         </p>
-        <div class="disc-formula">
-          <code>x₁ = x₂ = -b / (2a)</code>
+        <div class="disc-formula math-display-eq">
+          x₁ = x₂ = -<span class="math-frac"><span class="num">b</span><span class="den">2a</span></span>
         </div>
         <p class="disc-geom-note">
           <strong>Interpretación gráfica:</strong> La parábola es tangente al eje X; su vértice toca exactamente el eje en un único punto.
@@ -431,8 +457,8 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
         <p>
           En el cuerpo de los números reales <code class="inline-code">ℝ</code>, no existe la raíz de un número negativo. Las soluciones viven en el cuerpo complejo <code class="inline-code">ℂ</code>:
         </p>
-        <div class="disc-formula">
-          <code>x = (-b ± i√|Δ|) / (2a) ∈ ℂ</code>
+        <div class="disc-formula math-display-eq">
+          x = <span class="math-frac"><span class="num">-b ± i<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">|Δ|</span></span></span><span class="den">2a</span></span> &emsp;∈&emsp; ℂ
         </div>
         <p class="disc-geom-note">
           <strong>Interpretación gráfica:</strong> La parábola flota por encima o por debajo del eje X sin llegar a tocarlo jamás.
@@ -457,16 +483,16 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
     <div class="vieta-duo-container">
       <div class="vieta-box">
         <h4>1. Suma de Raíces</h4>
-        <div class="vieta-derivation">
-          <code>x₁ + x₂ = [(-b + √Δ) / 2a] + [(-b - √Δ) / 2a] = -2b / 2a = -b / a</code>
+        <div class="vieta-derivation math-display-eq">
+          x₁ + x₂ = <span class="math-frac"><span class="num">-b + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span> + <span class="math-frac"><span class="num">-b - <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span> = <span class="math-frac"><span class="num">-2b</span><span class="den">2a</span></span> = -<span class="math-frac"><span class="num">b</span><span class="den">a</span></span>
         </div>
         <p>La suma de las soluciones es siempre igual al coeficiente lineal con signo cambiado dividido por el coeficiente cuadrático.</p>
       </div>
 
       <div class="vieta-box">
         <h4>2. Producto de Raíces</h4>
-        <div class="vieta-derivation">
-          <code>x₁ · x₂ = [(-b + √Δ)(-b - √Δ)] / (4a²) = [b² - Δ] / (4a²) = 4ac / (4a²) = c / a</code>
+        <div class="vieta-derivation math-display-eq">
+          x₁ · x₂ = <span class="math-frac"><span class="num">(-b + <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span>)(-b - <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span>)</span><span class="den">4a²</span></span> = <span class="math-frac"><span class="num">b² - Δ</span><span class="den">4a²</span></span> = <span class="math-frac"><span class="num">4ac</span><span class="den">4a²</span></span> = <span class="math-frac"><span class="num">c</span><span class="den">a</span></span>
         </div>
         <p>El producto de las soluciones es igual al término independiente dividido por el coeficiente cuadrático.</p>
       </div>
@@ -505,11 +531,11 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
         <div class="sin-contrast-box">
           <div class="sin-bad">
             <span class="sin-cross">✗</span>
-            <code>x = -b ± (√(b²-4ac) / 2a)</code>
+            <span>x = -b ± <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2a</span></span></span>
           </div>
           <div class="sin-good">
             <span class="sin-check">✓</span>
-            <code>x = (-b ± √(b²-4ac)) / (2a)</code>
+            <span>x = <span class="math-frac"><span class="num">-b ± <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">b² - 4ac</span></span></span><span class="den">2a</span></span></span>
           </div>
         </div>
       </div>
@@ -524,11 +550,11 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
         <div class="sin-contrast-box">
           <div class="sin-bad">
             <span class="sin-cross">✗</span>
-            <code>x = -6 ± √(...)</code>
+            <span>x = -6 ± <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span></span>
           </div>
           <div class="sin-good">
             <span class="sin-check">✓</span>
-            <code>x = +6 ± √(...)</code>
+            <span>x = +6 ± <span class="math-frac"><span class="num"><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">Δ</span></span></span><span class="den">2a</span></span></span>
           </div>
         </div>
       </div>
@@ -543,11 +569,11 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
         <div class="sin-contrast-box">
           <div class="sin-bad">
             <span class="sin-cross">✗</span>
-            <code>√(-3² - 4ac) = √(-9 - 4ac)</code>
+            <span><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">-3² - 4ac</span></span> = <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">-9 - 4ac</span></span></span>
           </div>
           <div class="sin-good">
             <span class="sin-check">✓</span>
-            <code>√((-3)² - 4ac) = √(9 - 4ac)</code>
+            <span><span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">(-3)² - 4ac</span></span> = <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">9 - 4ac</span></span></span>
           </div>
         </div>
       </div>
@@ -562,11 +588,11 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
         <div class="sin-contrast-box">
           <div class="sin-bad">
             <span class="sin-cross">✗</span>
-            <code>P(x) = (x - 2)(x - 1/2)  [Da x²...]</code>
+            <span>P(x) = (x - 2)(x - <span class="math-frac"><span class="num">1</span><span class="den">2</span></span>) &emsp;[Falta factor principal a=2]</span>
           </div>
           <div class="sin-good">
             <span class="sin-check">✓</span>
-            <code>P(x) = 2(x - 2)(x - 1/2) = (x - 2)(2x - 1)</code>
+            <span>P(x) = 2(x - 2)(x - <span class="math-frac"><span class="num">1</span><span class="den">2</span></span>) = (x - 2)(2x - 1)</span>
           </div>
         </div>
       </div>
@@ -741,9 +767,12 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
 
       if (evalTrace) {
         if (disc >= 0) {
-          evalTrace.textContent = `x = (${-b} ± √${disc}) / ${2 * a}`;
+          const sq = Math.sqrt(disc);
+          const isExact = Number.isInteger(sq);
+          const exactStep = isExact ? ` = <span class="math-frac"><span class="num">${-b} ± ${sq}</span><span class="den">${2 * a}</span></span>` : '';
+          evalTrace.innerHTML = `x = <span class="math-frac"><span class="num">${-b} ± <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">${disc}</span></span></span><span class="den">${2 * a}</span></span>${exactStep}`;
         } else {
-          evalTrace.textContent = `x = (${-b} ± √${Math.abs(disc)}i) / ${2 * a}`;
+          evalTrace.innerHTML = `x = <span class="math-frac"><span class="num">${-b} ± i<span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">${Math.abs(disc)}</span></span></span><span class="den">${2 * a}</span></span> &isin; &#x2102;`;
         }
       }
 
@@ -1457,11 +1486,14 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'alg-03');
   }
 
   #eval-trace {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
     font-family: var(--mono);
     color: #38bdf8;
-    font-size: 0.92rem;
+    font-size: 0.98rem;
     font-weight: 600;
-    word-break: break-all;
   }
 
   :global([data-theme="light"]) #eval-trace {

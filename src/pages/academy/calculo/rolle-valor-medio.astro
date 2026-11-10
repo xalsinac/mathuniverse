@@ -1,0 +1,2786 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-04')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-03');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-05');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN CINEMÁTICA Y EL RADAR DE TRAMO -->
+  <section class="lesson-section" id="radar-velocidad">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición Cinemática y el Radar de Tramo</h2>
+
+    <p class="lead-paragraph">
+      Imagina que entras en una autopista con un radar de tramo. La distancia entre la cámara de entrada y la de salida es exactamente de <code class="inline-code">120 km</code> y tu vehículo completa el recorrido en exactamente <code class="inline-code">1 hora</code>. Tu <strong>velocidad media</strong> fue indiscutiblemente de <code class="inline-code">120 km/h</code>.
+    </p>
+    <p>
+      Aunque hayas frenado a <code class="inline-code">80 km/h</code> en ciertos tramos o acelerado a <code class="inline-code">150 km/h</code> en rectas desiertas, <strong>existe la certeza matemática absoluta de que en al menos un instante exacto de tu trayecto la aguja del velocímetro marcó exactamente 120 km/h</strong>. Este principio físico, formalizado por Joseph-Louis Lagrange en 1797, es el <strong>Teorema del Valor Medio</strong>.
+    </p>
+
+    <!-- Visual Hero Analogy: Radar de Tramo -->
+    <div class="radar-hero-card">
+      <div class="radar-badge">PRINCIPIO CINEMÁTICO UNIVERSAL</div>
+      <div class="radar-svg-wrap">
+        <svg viewBox="0 0 760 210" class="radar-svg" aria-label="Analogía cinemática: en algún punto c la velocidad instantánea f'(c) iguala a la velocidad media de la secante">
+          <!-- Fondo y Ejes -->
+          <rect x="20" y="15" width="720" height="180" rx="10" fill="rgba(15, 23, 42, 0.4)" stroke="rgba(56, 189, 248, 0.2)" />
+          
+          <!-- Eje Temporal (t) y Espacial (s) -->
+          <line x1="60" y1="170" x2="700" y2="170" stroke="#475569" stroke-width="1.8" />
+          <line x1="60" y1="30" x2="60" y2="170" stroke="#475569" stroke-width="1.8" />
+          <text x="680" y="190" class="radar-axis-text">Tiempo t</text>
+          <text x="35" y="40" class="radar-axis-text">Espacio s(t)</text>
+
+          <!-- Recta Secante (Velocidad Media) -->
+          <line x1="100" y1="145" x2="640" y2="45" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" />
+          <text x="370" y="80" class="radar-label amber">Secante: Pendiente = Vmedia = [s(b) - s(a)] / (b - a)</text>
+
+          <!-- Trayectoria Curva s(t) -->
+          <path d="M 100 145 C 220 165, 290 60, 420 85 C 500 100, 560 30, 640 45" fill="none" stroke="#38bdf8" stroke-width="3.2" stroke-linecap="round" />
+
+          <!-- Recta Tangente Paralela en c -->
+          <line x1="280" y1="106" x2="480" y2="69" stroke="#10b981" stroke-width="2.5" />
+          <text x="440" y="55" class="radar-label green">Tangente en c: f'(c) = Vmedia (Paralelas)</text>
+
+          <!-- Puntos Clave -->
+          <!-- Punto Inicial A -->
+          <circle cx="100" cy="145" r="5.5" fill="#f43f5e" stroke="#fff" stroke-width="1.5" />
+          <line x1="100" y1="145" x2="100" y2="170" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
+          <text x="95" y="185" class="radar-point-text">a (Salida)</text>
+
+          <!-- Punto Tangencia C -->
+          <circle cx="380" cy="87.5" r="6.5" fill="#10b981" stroke="#0f172a" stroke-width="2" />
+          <line x1="380" y1="87.5" x2="380" y2="170" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3,3" />
+          <text x="375" y="185" class="radar-point-text green">c (Vinst = Vmed)</text>
+
+          <!-- Punto Final B -->
+          <circle cx="640" cy="45" r="5.5" fill="#f43f5e" stroke="#fff" stroke-width="1.5" />
+          <line x1="640" y1="45" x2="640" y2="170" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
+          <text x="630" y="185" class="radar-point-text">b (Llegada)</text>
+        </svg>
+      </div>
+      <p class="radar-caption">
+        Geométricamente: entre dos puntos de una curva diferenciable existe al menos un punto intermedio <code class="inline-code">c</code> donde la <strong>recta tangente es estrictamente paralela a la recta secante</strong>.
+      </p>
+    </div>
+
+    <!-- El Caso Particular de Rolle -->
+    <div class="rolle-intro-card">
+      <div class="ri-icon">🎯</div>
+      <div class="ri-body">
+        <h4>El Caso Especial de Michel Rolle (1691): Retorno al Mismo Nivel</h4>
+        <p>
+          Un siglo antes de Lagrange, el matemático francés Michel Rolle demostró el caso particular en el que las alturas de inicio y fin coinciden (<code class="inline-code">f(a) = f(b)</code>). Si lanzas una pelota verticalmente hacia arriba y vuelve a caer a tu mano, en el punto de máxima altura su velocidad vertical se anula obligatoriamente:
+        </p>
+        <div class="ri-formula">
+          f(a) = f(b) ⟹ Vmedia = 0 ⟹ ∃ c ∈ (a, b) / f'(c) = 0 &emsp;[Tangente estrictamente horizontal]
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: TEOREMA DE ROLLE -->
+  <section class="lesson-section" id="teorema-rolle">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. El Teorema de Rolle: Enunciado Formal y Demostración Rigurosa</h2>
+
+    <p>
+      El Teorema de Rolle es la piedra angular sobre la que se construye toda la teoría del valor medio. En los exámenes de Bachillerato y Selectividad se evalúa la verificación minuciosa de sus tres hipótesis:
+    </p>
+
+    <!-- Recuadro Formal de Rolle -->
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE ROLLE (1691)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>Sea una función real <code class="inline-code">f: [a, b] ⟶ ℝ</code> que satisface las tres hipótesis fundamentales:</p>
+      <ol class="thm-cond-list">
+        <li>
+          <span class="cond-pill">Hipótesis 1</span>
+          <strong>Continuidad en el intervalo cerrado:</strong> <code class="inline-code">f</code> es continua en todos los puntos de <code class="inline-code">[a, b]</code>.
+        </li>
+        <li>
+          <span class="cond-pill">Hipótesis 2</span>
+          <strong>Derivabilidad en el intervalo abierto:</strong> <code class="inline-code">f</code> es derivable en todos los puntos de <code class="inline-code">(a, b)</code>.
+        </li>
+        <li>
+          <span class="cond-pill">Hipótesis 3</span>
+          <strong>Igualdad de imágenes en los extremos:</strong>
+          <div class="thm-sign-eq">
+            f(a) = f(b)
+          </div>
+        </li>
+      </ol>
+
+      <div class="thm-thesis">
+        <span class="thesis-pill">TESIS</span>
+        <p class="thesis-text">
+          Existe al menos un punto <code class="inline-code">c</code> perteneciente al intervalo abierto <code class="inline-code">(a, b)</code> con derivada nula (recta tangente horizontal):
+        </p>
+        <div class="thesis-formula">
+          ∃ c ∈ (a, b) &emsp;tal que&emsp; f'(c) = 0
+        </div>
+      </div>
+    </div>
+
+    <!-- Demostración Canónica de Rolle -->
+    <div class="proof-card">
+      <div class="p-header">
+        <span class="p-badge">DEMOSTRACIÓN COMPLETA (VÍA TEOREMA DE WEIERSTRASS)</span>
+        <h4>¿Por qué es infalible? El papel de los extremos absolutos</h4>
+      </div>
+      <div class="p-body">
+        <p>
+          <strong>Paso 1: Aplicación del Teorema de Weierstrass.</strong> Dado que <code class="inline-code">f</code> es continua en el intervalo cerrado y acotado <code class="inline-code">[a, b]</code>, el Teorema de Weierstrass garantiza que <code class="inline-code">f</code> alcanza obligatoriamente un <strong>máximo absoluto M</strong> y un <strong>mínimo absoluto m</strong> en <code class="inline-code">[a, b]</code>.
+        </p>
+        <p>
+          <strong>Paso 2: Análisis por casos exhaustivos.</strong>
+        </p>
+        <div class="cases-dual-grid">
+          <div class="case-col">
+            <span class="case-tag">CASO 1 · FUNCIÓN CONSTANTE (M = m)</span>
+            <p>
+              Si el máximo coincide con el mínimo, la función no varía: <code class="inline-code">f(x) = M</code> para todo <code class="inline-code">x ∈ [a, b]</code>. La derivada de una constante es nula en todos sus puntos: <code class="inline-code">f'(x) = 0</code> para <strong>todo</strong> <code class="inline-code">x ∈ (a, b)</code>. La tesis se cumple de forma trivial.
+            </p>
+          </div>
+          <div class="case-col highlight">
+            <span class="case-tag">CASO 2 · FUNCIÓN NO CONSTANTE (M &gt; m)</span>
+            <p>
+              Como <code class="inline-code">M &gt; m</code> y sabemos por la hipótesis 3 que <code class="inline-code">f(a) = f(b)</code>, <strong>al menos uno de los dos extremos (el máximo o el mínimo) no puede encontrarse en los extremos a y b</strong>. Por tanto, se alcanza en un punto interior <code class="inline-code">c ∈ (a, b)</code>.
+            </p>
+          </div>
+        </div>
+        <p>
+          <strong>Paso 3: Teorema de Fermat sobre extremos relativos.</strong> Si una función alcanza un extremo local en un punto interior <code class="inline-code">c</code> y es derivable en él, su derivada en dicho punto es obligatoriamente cero:
+        </p>
+        <div class="proof-conclusion-box">
+          c es extremo interior &nbsp;∧&nbsp; f derivable en c ⟹ f'(c) = 0 <strong class="text-cyan">∎ Q.E.D.</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: TEOREMA DEL VALOR MEDIO DE LAGRANGE -->
+  <section class="lesson-section" id="valor-medio-lagrange">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. El Teorema del Valor Medio de Lagrange: La Rotación de la Secante</h2>
+
+    <p class="lead-paragraph">
+      ¿Qué ocurre si liberamos a la función de la restricción <code class="inline-code">f(a) = f(b)</code>? Obtenemos el teorema supremo del cálculo diferencial: el <strong>Teorema del Valor Medio de Lagrange</strong>.
+    </p>
+
+    <!-- Recuadro Formal de Lagrange -->
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DEL VALOR MEDIO (LAGRANGE, 1797)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>Sea una función <code class="inline-code">f: [a, b] ⟶ ℝ</code> tal que:</p>
+      <ol class="thm-cond-list">
+        <li>
+          <span class="cond-pill">Hipótesis 1</span>
+          <strong>Continuidad:</strong> <code class="inline-code">f</code> es continua en el intervalo cerrado <code class="inline-code">[a, b]</code>.
+        </li>
+        <li>
+          <span class="cond-pill">Hipótesis 2</span>
+          <strong>Derivabilidad:</strong> <code class="inline-code">f</code> es derivable en el intervalo abierto <code class="inline-code">(a, b)</code>.
+        </li>
+      </ol>
+
+      <div class="thm-thesis">
+        <span class="thesis-pill">TESIS</span>
+        <p class="thesis-text">
+          Existe al menos un punto <code class="inline-code">c ∈ (a, b)</code> en el cual la derivada instantánea coincide exactamente con la tasa de variación media (pendiente de la secante):
+        </p>
+        <div class="thesis-formula">
+          ∃ c ∈ (a, b) &emsp;tal que&emsp; f'(c) = <span class="math-frac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demostración Geométrica Brillante: Reducción a Rolle -->
+    <div class="deduction-chain-card">
+      <div class="dc-header">
+        <span class="dc-badge">DEDUCCIÓN MATEMÁTICA ELEGANTE</span>
+        <h4>Demostración de Lagrange mediante una Rotación hacia Rolle</h4>
+      </div>
+      <div class="dc-body">
+        <p>
+          La ecuación de la recta secante que une los extremos <code class="inline-code">A(a, f(a))</code> y <code class="inline-code">B(b, f(b))</code> es:
+        </p>
+        <div class="math-step-expr">
+          y = f(a) + <span class="math-frac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span> · (x - a)
+        </div>
+        <p>
+          Definimos la <strong>función diferencia auxiliar h(x)</strong> que mide la distancia vertical entre la curva <code class="inline-code">f(x)</code> y la secante:
+        </p>
+        <div class="math-step-expr highlight">
+          h(x) = f(x) - <span class="math-subfrac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span> · (x - a) - f(a)
+        </div>
+        <p>Comprobamos las 3 hipótesis de Rolle para <code class="inline-code">h(x)</code>:</p>
+        <ul class="dc-list">
+          <li><strong>Continuidad:</strong> <code class="inline-code">h(x)</code> es resta de funciones continuas en <code class="inline-code">[a, b]</code>.</li>
+          <li><strong>Derivabilidad:</strong> <code class="inline-code">h(x)</code> es resta de funciones derivables en <code class="inline-code">(a, b)</code>.</li>
+          <li><strong>Extremos iguales:</strong>
+            <div class="dc-eval">
+              h(a) = f(a) - 0 - f(a) = 0
+              <br />
+              h(b) = f(b) - <span class="math-subfrac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span> · (b - a) - f(a) = f(b) - [f(b) - f(a)] - f(a) = 0
+            </div>
+          </li>
+        </ul>
+        <p>
+          Como <code class="inline-code">h(a) = h(b) = 0</code>, por el <strong>Teorema de Rolle</strong> existe <code class="inline-code">c ∈ (a, b)</code> tal que <code class="inline-code">h'(c) = 0</code>:
+        </p>
+        <div class="proof-conclusion-box">
+          h'(c) = f'(c) - <span class="math-frac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span> = 0 ⟹ f'(c) = <span class="math-frac"><span class="num">f(b) - f(a)</span><span class="den">b - a</span></span> <strong class="text-cyan">∎ Q.E.D.</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: GALERÍA DE CONTRAEJEMPLOS QUIRÚRGICOS -->
+  <section class="lesson-section" id="contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Galería de Contraejemplos Quirúrgicos</h2>
+
+    <p>
+      Comprender por qué cada una de las condiciones es indispensable evita errores irreversibles en demostraciones y problemas con parámetros:
+    </p>
+
+    <div class="counterexamples-grid">
+      <!-- Contraejemplo 1: Falta Derivabilidad (Punto Anguloso) -->
+      <div class="counter-card is-failed">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS VIOLADA: DERIVABILIDAD EN (a, b)</span>
+          <span class="c-res">❌ NO EXISTE NINGÚN c</span>
+        </div>
+        <h4>f(x) = |x| en el intervalo [-1, 1]</h4>
+        <p class="c-desc">
+          Evaluamos: <code class="inline-code">f(-1) = 1</code> y <code class="inline-code">f(1) = 1</code>. ¡Extremos idénticos! La recta secante es perfectamente horizontal (<code class="inline-code">m = 0</code>). Además <code class="inline-code">f</code> es continua en <code class="inline-code">[-1, 1]</code>. Sin embargo:
+        </p>
+        <div class="c-formula">
+          f'(x) = -1 &nbsp;(x &lt; 0) &emsp;y&emsp; f'(x) = +1 &nbsp;(x &gt; 0)
+        </div>
+        <p class="c-note">
+          <strong>Por qué falla:</strong> En <code class="inline-code">x = 0</code> hay un punto anguloso donde la derivada no existe. La pendiente salta de <code class="inline-code">-1</code> a <code class="inline-code">+1</code> sin valer jamás <code class="inline-code">0</code>.
+        </p>
+      </div>
+
+      <!-- Contraejemplo 2: Falta Continuidad en el Cerrado -->
+      <div class="counter-card is-failed">
+        <div class="c-head">
+          <span class="c-viol">HIPÓTESIS VIOLADA: CONTINUIDAD EN [a, b]</span>
+          <span class="c-res">❌ LA TANGENTE NO COINCIDE</span>
+        </div>
+        <h4>Discontinuidad en un solo extremo</h4>
+        <p class="c-desc">
+          Sea <code class="inline-code">f(x) = x</code> en <code class="inline-code">[0, 1)</code> y <code class="inline-code">f(1) = 0</code>. Es derivable en todo el interior <code class="inline-code">(0, 1)</code> con <code class="inline-code">f'(x) = 1</code>, y <code class="inline-code">f(0) = f(1) = 0</code>.
+        </p>
+        <div class="c-formula">
+          f(0) = f(1) = 0 &emsp;pero&emsp; f'(x) = 1 ≠ 0 &nbsp;∀x ∈ (0, 1)
+        </div>
+        <p class="c-note">
+          <strong>Por qué falla:</strong> El salto discontinuo en el borde derecho <code class="inline-code">x = 1</code> destruye la compacidad de Weierstrass e invalida el teorema.
+        </p>
+      </div>
+
+      <!-- Contraejemplo 3: ¿Por qué derivable solo en (a, b) abierto? -->
+      <div class="counter-card is-subtle">
+        <div class="c-head">
+          <span class="c-viol">CONDICIÓN SUTIL: DERIVABILIDAD EN EL ABIERTO</span>
+          <span class="c-res">✓ EL TEOREMA SÍ FUNCIONA</span>
+        </div>
+        <h4>f(x) = <span class="math-sqrt"><span class="sqrt-rad">&radic;</span><span class="sqrt-body">1 - x²</span></span> en [-1, 1]</h4>
+        <p class="c-desc">
+          Semicircunferencia superior. Las tangentes en los bordes <code class="inline-code">x = ±1</code> son verticales (<code class="inline-code">f'(-1) = +∞</code>, <code class="inline-code">f'(1) = -∞</code>, no derivable en los extremos). Sin embargo:
+        </p>
+        <div class="c-formula">
+          f(-1) = f(1) = 0 &emsp;y&emsp; f'(0) = 0 &emsp;con&emsp; c = 0 ∈ (-1, 1)
+        </div>
+        <p class="c-note">
+          <strong>La lección:</strong> No se exige derivabilidad en los extremos <code class="inline-code">[a, b]</code>, solo en el interior <code class="inline-code">(a, b)</code>. Esto amplía enormemente el poder del teorema.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO DE LAGRANGE Y ROLLE -->
+  <section class="lesson-section" id="laboratorio-lagrange">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: Rastreador del Punto de Lagrange</h2>
+
+    <p class="lead-paragraph">
+      Experimenta la rotación de la secante y observa cómo el algoritmo localiza en tiempo real los puntos interiores <code class="inline-code">c</code> donde la recta tangente adquiere exactamente la misma inclinación que la recta secante.
+    </p>
+
+    <!-- Simulador Vectorial Interactivo -->
+    <div class="lagrange-lab-container">
+      <div class="lab-topbar">
+        <div class="lab-title-group">
+          <span class="lab-indicator-pulse"></span>
+          <span class="lab-header-text">SIMULADOR DIFERENCIAL DE LAGRANGE</span>
+        </div>
+
+        <div class="lab-func-selector" role="group" aria-label="Seleccionar función para experimentar Lagrange">
+          <button type="button" class="l-tab-btn is-active" data-curve="cubic">
+            Cúbica: x³ - 3x² + 2x
+          </button>
+          <button type="button" class="l-tab-btn" data-curve="parabola">
+            Parábola: -x² + 4x
+          </button>
+          <button type="button" class="l-tab-btn" data-curve="sin">
+            Trigonométrica: sen(x)
+          </button>
+          <button type="button" class="l-tab-btn" data-curve="abs">
+            Punto Anguloso: 1 - |x|
+          </button>
+        </div>
+      </div>
+
+      <div class="lab-workbench-grid">
+        <!-- Canvas/SVG Graph -->
+        <div class="lab-graph-card">
+          <div class="graph-legend">
+            <span class="leg-item"><span class="dot-swatch swatch-curve"></span> Curva f(x)</span>
+            <span class="leg-item"><span class="dot-swatch swatch-secant"></span> Secante AB (m<sub>sec</sub>)</span>
+            <span class="leg-item"><span class="dot-swatch swatch-tangent"></span> Tangente en c (f'(c))</span>
+            <span class="leg-item"><span class="dot-swatch swatch-point-c"></span> Punto c</span>
+          </div>
+
+          <div class="svg-stage-container">
+            <svg id="lagrange-svg" viewBox="-20 -20 640 380" class="lagrange-svg" preserveAspectRatio="xMidYMid meet">
+              <g id="bg-grid"></g>
+              <g id="axes-layer"></g>
+              <!-- Trazo de la curva -->
+              <path id="curve-path" fill="none" stroke="#38bdf8" stroke-width="2.8" stroke-linecap="round" />
+              <!-- Recta secante AB -->
+              <line id="secant-line" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="6,4" />
+              <!-- Recta tangente en c -->
+              <line id="tangent-line" stroke="#10b981" stroke-width="2.5" />
+              <!-- Líneas verticales de a, b, c -->
+              <line id="line-a" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3" />
+              <line id="line-b" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3" />
+              <line id="line-c" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3,3" />
+              <!-- Puntos SVG -->
+              <g id="points-layer"></g>
+            </svg>
+          </div>
+
+          <!-- Sliders de control interactivo de extremos a y b -->
+          <div class="lab-sliders-panel">
+            <div class="slider-control">
+              <div class="slider-head">
+                <span class="sl-label">Extremo Izquierdo a</span>
+                <span class="sl-val" id="disp-slider-a">0.00</span>
+              </div>
+              <input type="range" id="slider-a" min="-1.5" max="1.5" step="0.05" value="0.0" class="lab-range" />
+            </div>
+
+            <div class="slider-control">
+              <div class="slider-head">
+                <span class="sl-label">Extremo Derecho b</span>
+                <span class="sl-val" id="disp-slider-b">2.00</span>
+              </div>
+              <input type="range" id="slider-b" min="0.5" max="3.5" step="0.05" value="2.0" class="lab-range range-amber" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetría en Directo -->
+        <div class="lab-telemetry-card">
+          <div class="tel-head">
+            <span class="tel-title">TELEMETRÍA GEOMÉTRICA</span>
+            <span class="tel-status-badge" id="tel-parallel-status">Paralelismo: 100% ✓</span>
+          </div>
+
+          <div class="tel-metrics-grid">
+            <div class="tel-metric">
+              <span class="m-label">Pendiente Secante m<sub>sec</sub></span>
+              <span class="m-val text-amber" id="val-msec">0.00000</span>
+              <span class="m-sub">Δy / Δx = [f(b) - f(a)] / (b - a)</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Pendiente Tangente f'(c)</span>
+              <span class="m-val text-green" id="val-mtan">0.00000</span>
+              <span class="m-sub">Derivada instantánea en c</span>
+            </div>
+
+            <div class="tel-metric is-highlight">
+              <span class="m-label">Punto de Lagrange c localizado</span>
+              <span class="m-val highlight" id="val-coord-c">c = 0.42265</span>
+              <span class="m-sub" id="val-fc">f(c) = 0.38490 &emsp; c ∈ (a, b)</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Comprobación de Rolle</span>
+              <span class="m-val" id="val-rolle-check">f(a) = f(b) = 0 ✓</span>
+              <span class="m-sub" id="val-rolle-sub">Caso particular de tangente horizontal</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Diferencia Angular |θ<sub>tan</sub> - θ<sub>sec</sub>|</span>
+              <span class="m-val text-green" id="val-diff-angle">0.000°</span>
+              <span class="m-sub">Vectores directores colineales</span>
+            </div>
+
+            <div class="tel-metric">
+              <span class="m-label">Garantía Analítica</span>
+              <span class="m-val text-cyan" id="val-regularity">Continua y Derivable ✓</span>
+              <span class="m-sub">Hipótesis de Lagrange verificadas</span>
+            </div>
+          </div>
+
+          <!-- Nota Didáctica Dinámica -->
+          <div class="tel-dynamic-note" id="tel-note-box">
+            <strong>Condición de Rolle satisfecha:</strong> Como los extremos tienen la misma altura <code class="inline-code">f(a) = f(b)</code>, la pendiente de la secante es cero y la tangente en <code class="inline-code">c</code> es horizontal (<code class="inline-code">f'(c) = 0</code>).
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: CAUCHY Y LA REGLA DE L'HÔPITAL -->
+  <section class="lesson-section" id="cauchy-lhopital">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. El Teorema de Cauchy y la Regla de L'Hôpital</h2>
+
+    <p class="lead-paragraph">
+      Augustin-Louis Cauchy elevó el teorema de Lagrange a un plano paramétrico generalizado, comparando dos funciones simultáneas <code class="inline-code">f(x)</code> y <code class="inline-code">g(x)</code>:
+    </p>
+
+    <!-- Teorema de Cauchy -->
+    <div class="corolario-card">
+      <div class="cor-badge">TEOREMA DEL VALOR MEDIO GENERALIZADO (CAUCHY)</div>
+      <h3>Enunciado Formal</h3>
+      <p>
+        Si <code class="inline-code">f</code> y <code class="inline-code">g</code> son continuas en <code class="inline-code">[a, b]</code>, derivables en <code class="inline-code">(a, b)</code>, y <code class="inline-code">g'(x) ≠ 0</code> para todo <code class="inline-code">x ∈ (a, b)</code>, entonces existe al menos un punto <code class="inline-code">c ∈ (a, b)</code> tal que:
+      </p>
+      <div class="cauchy-formula-box">
+        <span class="math-frac"><span class="num">f'(c)</span><span class="den">g'(c)</span></span> = <span class="math-frac"><span class="num">f(b) - f(a)</span><span class="den">g(b) - g(a)</span></span>
+      </div>
+      <p class="cauchy-desc">
+        Si tomas <code class="inline-code">g(x) = x</code>, recuperas de forma inmediata el Teorema de Lagrange ordinario.
+      </p>
+    </div>
+
+    <!-- El Puente hacia L'Hôpital -->
+    <div class="lhopital-bridge-card">
+      <div class="lb-header">
+        <span class="lb-badge">LA VERDADERA DEDUCCIÓN MATEMÁTICA</span>
+        <h4>Por qué funciona la Regla de L'Hôpital para indeterminaciones 0/0</h4>
+      </div>
+      <div class="lb-body">
+        <p>
+          En Bachillerato se enseña la Regla de L'Hôpital como una receta algebraica: <em>«deriva arriba y deriva abajo»</em>. La justificación rigurosa se fundamenta directamente en el Teorema de Cauchy.
+        </p>
+        <p>
+          Si <code class="inline-code">lim<sub>x→a</sub> f(x) = 0</code> y <code class="inline-code">lim<sub>x→a</sub> g(x) = 0</code>, definiendo <code class="inline-code">f(a) = 0</code> y <code class="inline-code">g(a) = 0</code> para hacerlas continuas, aplicamos el Teorema de Cauchy en cualquier intervalo <code class="inline-code">[a, x]</code>:
+        </p>
+        <div class="math-step-expr highlight">
+          <span class="math-frac"><span class="num">f(x)</span><span class="den">g(x)</span></span> = <span class="math-frac"><span class="num">f(x) - f(a)</span><span class="den">g(x) - g(a)</span></span> = <span class="math-frac"><span class="num">f'(c)</span><span class="den">g'(c)</span></span> &emsp;con&emsp; c ∈ (a, x)
+        </div>
+        <p>
+          Cuando <code class="inline-code">x ⟶ a</code>, como <code class="inline-code">c</code> está atrapado entre <code class="inline-code">a</code> y <code class="inline-code">x</code>, por el Teorema del Sándwich <code class="inline-code">c ⟶ a</code> obligatoriamente:
+        </p>
+        <div class="proof-conclusion-box">
+          <span class="math-lim">lim<sub>x→a</sub></span> <span class="math-frac"><span class="num">f(x)</span><span class="den">g(x)</span></span> = <span class="math-lim">lim<sub>c→a</sub></span> <span class="math-frac"><span class="num">f'(c)</span><span class="den">g'(c)</span></span> <strong class="text-cyan">∎ Q.E.D.</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Los 3 Corolarios Vitales -->
+    <div class="corollaries-grid">
+      <div class="coro-card">
+        <span class="coro-num">COROLARIO 1</span>
+        <h4>Derivada Nula Implica Función Constante</h4>
+        <p>Si <code class="inline-code">f'(x) = 0</code> en todo un intervalo <code class="inline-code">I</code>, entonces <code class="inline-code">f</code> es constante en <code class="inline-code">I</code>. Demostración: para cualesquiera <code class="inline-code">x₁ &lt; x₂</code>, por Lagrange <code class="inline-code">f(x₂) - f(x₁) = f'(c)(x₂ - x₁) = 0 ⟹ f(x₁) = f(x₂)</code>.</p>
+      </div>
+
+      <div class="coro-card">
+        <span class="coro-num">COROLARIO 2</span>
+        <h4>Unicidad de Primitivas Salvo Constante</h4>
+        <p>Si dos funciones tienen la misma derivada <code class="inline-code">f'(x) = g'(x)</code>, entonces <code class="inline-code">(f - g)'(x) = 0 ⟹ f(x) = g(x) + K</code>. Es la base que justifica escribir <code class="inline-code">+ C</code> en todas las integrales indefinidas.</p>
+      </div>
+
+      <div class="coro-card">
+        <span class="coro-num">COROLARIO 3</span>
+        <h4>Criterio Riguroso de Monotonía</h4>
+        <p>Si <code class="inline-code">f'(x) &gt; 0</code> en <code class="inline-code">(a, b)</code>, entonces para <code class="inline-code">x₁ &lt; x₂</code> se tiene <code class="inline-code">f(x₂) - f(x₁) = f'(c)(x₂ - x₁) &gt; 0 ⟹ f(x₂) &gt; f(x₁)</code>: la función es estrictamente creciente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 7: RÚBRICA OFICIAL Y TRAMPAS EN SELECTIVIDAD (PAU) -->
+  <section class="lesson-section" id="trampas-pau">
+    <div class="section-marker">
+      <span class="marker-num">07</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>7. Rúbrica Oficial y las 4 Trampas Fatales en Selectividad (PAU)</h2>
+
+    <p>
+      En las correcciones oficiales de las pruebas de acceso a la universidad, los problemas de Rolle y Lagrange con parámetros (<code class="inline-code">a, b, k</code>) son el filtro donde se cometen penalizaciones severas:
+    </p>
+
+    <div class="sins-grid">
+      <!-- Trampa 1 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 01</span>
+          <span class="sin-title">Olvidar la Derivabilidad Lateral en el Punto de Empalme</span>
+        </div>
+        <p>En funciones a trozos, comprobar que la función es continua pero olvidar demostrar que las derivadas laterales coinciden <code class="inline-code">f'(x₀⁻) = f'(x₀⁺)</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Como f es continua en [-1, 2] y f(-1) = f(2), se cumple Rolle.» [Penalización: -50% de la nota]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Comprobamos continuidad en el empalme y calculamos las derivadas laterales por definición o derivación directa para asegurar derivabilidad en todo el abierto (-1, 2).»</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trampa 2 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 02</span>
+          <span class="sin-title">Aceptar Valores de c que Coinciden con los Extremos</span>
+        </div>
+        <p>Obtener algebraicamente una solución de <code class="inline-code">f'(c) = m</code> que resulta ser <code class="inline-code">c = a</code> o <code class="inline-code">c = b</code>:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Obtenemos c = 0 y c = 2 en el intervalo [0, 2]. Ambas son soluciones válidas de Rolle.» [Falso grave]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«La tesis exige estrictamente c ∈ (a, b) abierto. Se descartan las soluciones que coincidan con los extremos; solo c interior es válido.»</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trampa 3 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 03</span>
+          <span class="sin-title">Confundir Existencia con Unicidad del Punto c</span>
+        </div>
+        <p>Afirmar que existe un único punto con tangente paralela basándose exclusivamente en el Teorema de Lagrange:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Por Lagrange existe un único punto c tal que f'(c) = Vmed.» [Incorrección teórica]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Lagrange garantiza la existencia de al menos un punto c ∈ (a, b). Puede haber múltiples puntos si la curva oscila varias veces.»</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trampa 4 -->
+      <div class="sin-card">
+        <div class="sin-header">
+          <span class="sin-num">ERROR 04</span>
+          <span class="sin-title">Aplicar Rolle cuando f(a) ≠ f(b)</span>
+        </div>
+        <p>Confundir el Teorema de Rolle con el de Lagrange al resolver enunciados sin comprobar la igualdad de imágenes:</p>
+        <div class="sin-contrast-box">
+          <div class="sin-bad">
+            <span class="sin-cross">✗</span>
+            <span>«Por Rolle buscamos f'(c) = [f(b) - f(a)] / (b - a).» [Confusión de nombres de teoremas]</span>
+          </div>
+          <div class="sin-good">
+            <span class="sin-check">✓</span>
+            <span>«Rolle exige estrictamente f(a) = f(b) para f'(c) = 0. Si las alturas son distintas, el teorema aplicable es el del Valor Medio de Lagrange.»</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 8: AUTOEVALUACIÓN INTERACTIVA -->
+  <section class="lesson-section" id="autoevaluacion">
+    <div class="section-marker">
+      <span class="marker-num">08</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>8. Autoevaluación Conceptual: Pon a Prueba tu Criterio</h2>
+
+    <p>
+      Resuelve estas 4 cuestiones rigurosas para afianzar el dominio analítico de ambos teoremas:
+    </p>
+
+    <div class="quiz-container">
+      <!-- Pregunta 1 -->
+      <div class="quiz-card" data-quiz-q="1">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 01</span>
+          <h4>Sea la función f(x) = 1 - ∛(x²) en el intervalo [-1, 1]. Observamos que f(-1) = 0 y f(1) = 0. ¿Es aplicable el Teorema de Rolle para asegurar la existencia de c ∈ (-1, 1) con f'(c) = 0?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Sí, porque f es continua en [-1, 1] y f(-1) = f(1) = 0, cumpliendo todas las hipótesis.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">No, porque f'(x) = -2 / (3·∛x), la cual diverge a infinito en x = 0 ∈ (-1, 1). La función no es derivable en x = 0 (punto de cúspide).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Sí, y el punto c es exactamente x = 0.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 2 -->
+      <div class="quiz-card" data-quiz-q="2">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 02</span>
+          <h4>Para la función polinómica f(x) = x² en el intervalo [a, b], ¿dónde se localiza exactamente el punto c garantizado por el Teorema de Lagrange?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Exactamente en el punto medio aritmético c = (a + b) / 2 para cualquier parábola cuadrática.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">En la media geométrica c = √(a·b).</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Depende de la escala elegida en los ejes coordenados.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 3 -->
+      <div class="quiz-card" data-quiz-q="3">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 03</span>
+          <h4>Si una función f es derivable en ℝ y f'(x) ≠ 2 para todo x, ¿cuántas soluciones reales puede tener como máximo la ecuación f(x) = 2x + 5?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Infinitas soluciones.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Como máximo una solución. Si tuviera dos raíces x₁ &lt; x₂, por Rolle existiría c ∈ (x₁, x₂) con f'(c) - 2 = 0 ⟹ f'(c) = 2, contradiciendo la hipótesis.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Exactamente dos soluciones.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <div class="quiz-card" data-quiz-q="4">
+        <div class="q-header">
+          <span class="q-badge">PREGUNTA 04</span>
+          <h4>¿Por qué el Teorema de Rolle no se puede aplicar a f(x) = tg(x) en el intervalo [0, π] a pesar de que tg(0) = tg(π) = 0?</h4>
+        </div>
+        <div class="q-options">
+          <button type="button" class="q-opt-btn" data-correct="true">
+            <span class="opt-letter">A</span>
+            <span class="opt-text">Porque la tangente sufre una discontinuidad asintótica en x = π/2 ∈ [0, π], violando la hipótesis de continuidad global.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">B</span>
+            <span class="opt-text">Porque su derivada es siempre negativa.</span>
+          </button>
+          <button type="button" class="q-opt-btn" data-correct="false">
+            <span class="opt-letter">C</span>
+            <span class="opt-text">Porque la función es periódica.</span>
+          </button>
+        </div>
+        <div class="q-feedback" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    // -------------------------------------------------------------
+    // 1. LABORATORIO VECTORIAL DE LAGRANGE Y ROLLE
+    // -------------------------------------------------------------
+    interface CurveDef {
+      name: string;
+      f: (x: number) => number;
+      df: (x: number) => number;
+      defaultA: number;
+      defaultB: number;
+      minSlider: number;
+      maxSlider: number;
+      domainMin: number;
+      domainMax: number;
+      rangeMin: number;
+      rangeMax: number;
+      isNonDifferentiable?: boolean;
+    }
+
+    const curves: Record<string, CurveDef> = {
+      cubic: {
+        name: 'Cúbica de Rolle',
+        f: (x: number) => x * x * x - 3 * x * x + 2 * x,
+        df: (x: number) => 3 * x * x - 6 * x + 2,
+        defaultA: 0.0,
+        defaultB: 2.0,
+        minSlider: -0.5,
+        maxSlider: 2.5,
+        domainMin: -0.6,
+        domainMax: 2.6,
+        rangeMin: -1.2,
+        rangeMax: 1.2
+      },
+      parabola: {
+        name: 'Parábola de Lagrange',
+        f: (x: number) => -x * x + 4 * x,
+        df: (x: number) => -2 * x + 4,
+        defaultA: 0.5,
+        defaultB: 3.5,
+        minSlider: -0.5,
+        maxSlider: 4.5,
+        domainMin: -0.8,
+        domainMax: 4.8,
+        rangeMin: -1.0,
+        rangeMax: 4.5
+      },
+      sin: {
+        name: 'Trigonométrica Senoidal',
+        f: (x: number) => Math.sin(x),
+        df: (x: number) => Math.cos(x),
+        defaultA: 0.0,
+        defaultB: 3.14159,
+        minSlider: -0.5,
+        maxSlider: 3.6,
+        domainMin: -0.8,
+        domainMax: 3.8,
+        rangeMin: -1.3,
+        rangeMax: 1.3
+      },
+      abs: {
+        name: 'Punto Anguloso (Contraejemplo)',
+        f: (x: number) => 1 - Math.abs(x),
+        df: (x: number) => (x < 0 ? 1 : x > 0 ? -1 : 0),
+        defaultA: -1.0,
+        defaultB: 1.0,
+        minSlider: -1.5,
+        maxSlider: 1.5,
+        domainMin: -1.8,
+        domainMax: 1.8,
+        rangeMin: -1.0,
+        rangeMax: 1.5,
+        isNonDifferentiable: true
+      }
+    };
+
+    let currentCurveKey = 'cubic';
+
+    // DOM Elements
+    const svgEl = document.getElementById('lagrange-svg') as SVGSVGElement | null;
+    const bgGrid = document.getElementById('bg-grid');
+    const axesLayer = document.getElementById('axes-layer');
+    const curvePath = document.getElementById('curve-path');
+    const secantLine = document.getElementById('secant-line');
+    const tangentLine = document.getElementById('tangent-line');
+    const lineA = document.getElementById('line-a');
+    const lineB = document.getElementById('line-b');
+    const lineC = document.getElementById('line-c');
+    const pointsLayer = document.getElementById('points-layer');
+
+    const sliderA = document.getElementById('slider-a') as HTMLInputElement | null;
+    const sliderB = document.getElementById('slider-b') as HTMLInputElement | null;
+    const dispSliderA = document.getElementById('disp-slider-a');
+    const dispSliderB = document.getElementById('disp-slider-b');
+
+    const tabBtns = document.querySelectorAll<HTMLButtonElement>('.l-tab-btn');
+
+    // Telemetría
+    const valMsec = document.getElementById('val-msec');
+    const valMtan = document.getElementById('val-mtan');
+    const valCoordC = document.getElementById('val-coord-c');
+    const valFc = document.getElementById('val-fc');
+    const valRolleCheck = document.getElementById('val-rolle-check');
+    const valRolleSub = document.getElementById('val-rolle-sub');
+    const valDiffAngle = document.getElementById('val-diff-angle');
+    const valRegularity = document.getElementById('val-regularity');
+    const telParallelStatus = document.getElementById('tel-parallel-status');
+    const telNoteBox = document.getElementById('tel-note-box');
+
+    // Dimensiones SVG
+    const SVG_W = 600;
+    const SVG_H = 340;
+    const PAD = 35;
+
+    function getCoords(x: number, y: number, def: CurveDef) {
+      const sx = PAD + ((x - def.domainMin) / (def.domainMax - def.domainMin)) * (SVG_W - 2 * PAD);
+      const sy = (SVG_H - PAD) - ((y - def.rangeMin) / (def.rangeMax - def.rangeMin)) * (SVG_H - 2 * PAD);
+      return { x: sx, y: sy };
+    }
+
+    function findLagrangeC(def: CurveDef, a: number, b: number, mSec: number): number | null {
+      if (def.isNonDifferentiable) return null;
+
+      if (currentCurveKey === 'parabola') {
+        // -2c + 4 = mSec => c = (4 - mSec) / 2 = (a + b) / 2
+        return (a + b) / 2;
+      }
+
+      if (currentCurveKey === 'sin') {
+        // cos(c) = mSec
+        if (Math.abs(mSec) <= 1) {
+          const cCand = Math.acos(mSec);
+          if (cCand > a && cCand < b) return cCand;
+          const cCand2 = -cCand;
+          if (cCand2 > a && cCand2 < b) return cCand2;
+          const cCand3 = 2 * Math.PI - cCand;
+          if (cCand3 > a && cCand3 < b) return cCand3;
+        }
+      }
+
+      // Método numérico para cúbica u otras: muestreo denso
+      let bestC = (a + b) / 2;
+      let minDiff = Infinity;
+      const samples = 200;
+      for (let i = 1; i < samples; i++) {
+        const xTest = a + (i / samples) * (b - a);
+        const dfVal = def.df(xTest);
+        const diff = Math.abs(dfVal - mSec);
+        if (diff < minDiff) {
+          minDiff = diff;
+          bestC = xTest;
+        }
+      }
+      return bestC;
+    }
+
+    function renderLab() {
+      const def = curves[currentCurveKey];
+      if (!def || !sliderA || !sliderB || !svgEl) return;
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      let a = parseFloat(sliderA.value);
+      let b = parseFloat(sliderB.value);
+
+      // Impedir colapso del intervalo
+      if (b <= a + 0.1) {
+        b = a + 0.1;
+        sliderB.value = b.toFixed(2);
+      }
+
+      if (dispSliderA) dispSliderA.textContent = a.toFixed(2);
+      if (dispSliderB) dispSliderB.textContent = b.toFixed(2);
+
+      const fA = def.f(a);
+      const fB = def.f(b);
+      const mSec = (fB - fA) / (b - a);
+
+      const c = findLagrangeC(def, a, b, mSec);
+      const hasC = c !== null && !def.isNonDifferentiable;
+      const fC = hasC ? def.f(c) : 0;
+      const mTan = hasC ? def.df(c) : 0;
+
+      // 1. Ejes y Rejilla
+      if (axesLayer && bgGrid) {
+        axesLayer.innerHTML = '';
+        bgGrid.innerHTML = '';
+
+        // Eje X (y = 0)
+        const pLeft = getCoords(def.domainMin, 0, def);
+        const pRight = getCoords(def.domainMax, 0, def);
+        const axisX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        axisX.setAttribute('x1', pLeft.x.toString());
+        axisX.setAttribute('y1', pLeft.y.toString());
+        axisX.setAttribute('x2', pRight.x.toString());
+        axisX.setAttribute('y2', pRight.y.toString());
+        axisX.setAttribute('stroke', isLight ? '#94a3b8' : '#475569');
+        axisX.setAttribute('stroke-width', '2');
+        axesLayer.appendChild(axisX);
+
+        // Ticks en X
+        const stepX = (def.domainMax - def.domainMin) / 6;
+        for (let xVal = def.domainMin; xVal <= def.domainMax; xVal += stepX) {
+          const pt = getCoords(xVal, 0, def);
+          const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          tick.setAttribute('x1', pt.x.toString());
+          tick.setAttribute('y1', (pt.y - 4).toString());
+          tick.setAttribute('x2', pt.x.toString());
+          tick.setAttribute('y2', (pt.y + 4).toString());
+          tick.setAttribute('stroke', isLight ? '#cbd5e1' : '#64748b');
+          tick.setAttribute('stroke-width', '1.5');
+          axesLayer.appendChild(tick);
+
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', pt.x.toString());
+          txt.setAttribute('y', (pt.y + 16).toString());
+          txt.setAttribute('fill', isLight ? '#475569' : '#94a3b8');
+          txt.setAttribute('font-size', '10');
+          txt.setAttribute('text-anchor', 'middle');
+          txt.textContent = xVal.toFixed(1);
+          axesLayer.appendChild(txt);
+        }
+      }
+
+      // 2. Trazo de la Curva f(x)
+      if (curvePath) {
+        let dStr = '';
+        const samples = 140;
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const xVal = def.domainMin + t * (def.domainMax - def.domainMin);
+          const yVal = def.f(xVal);
+          const pt = getCoords(xVal, yVal, def);
+          dStr += (i === 0 ? 'M ' : ' L ') + pt.x.toFixed(2) + ' ' + pt.y.toFixed(2);
+        }
+        curvePath.setAttribute('d', dStr);
+        curvePath.setAttribute('stroke', isLight ? '#0284c7' : '#38bdf8');
+      }
+
+      // 3. Recta Secante AB
+      const ptA = getCoords(a, fA, def);
+      const ptB = getCoords(b, fB, def);
+      if (secantLine) {
+        // Extender la línea secante más allá de A y B
+        const extX1 = a - 0.4 * (b - a);
+        const extY1 = fA - 0.4 * (fB - fA);
+        const extX2 = b + 0.4 * (b - a);
+        const extY2 = fB + 0.4 * (fB - fA);
+        const pSec1 = getCoords(extX1, extY1, def);
+        const pSec2 = getCoords(extX2, extY2, def);
+
+        secantLine.setAttribute('x1', pSec1.x.toString());
+        secantLine.setAttribute('y1', pSec1.y.toString());
+        secantLine.setAttribute('x2', pSec2.x.toString());
+        secantLine.setAttribute('y2', pSec2.y.toString());
+      }
+
+      // 4. Recta Tangente en c
+      if (tangentLine) {
+        if (hasC && c !== null) {
+          const tangHalfSpan = 0.5 * (b - a);
+          const tX1 = c - tangHalfSpan;
+          const tY1 = fC - mTan * tangHalfSpan;
+          const tX2 = c + tangHalfSpan;
+          const tY2 = fC + mTan * tangHalfSpan;
+          const pTan1 = getCoords(tX1, tY1, def);
+          const pTan2 = getCoords(tX2, tY2, def);
+
+          tangentLine.setAttribute('x1', pTan1.x.toString());
+          tangentLine.setAttribute('y1', pTan1.y.toString());
+          tangentLine.setAttribute('x2', pTan2.x.toString());
+          tangentLine.setAttribute('y2', pTan2.y.toString());
+          tangentLine.style.display = 'block';
+        } else {
+          tangentLine.style.display = 'none';
+        }
+      }
+
+      // 5. Líneas Verticales Guía
+      const ptA_axis = getCoords(a, 0, def);
+      if (lineA) {
+        lineA.setAttribute('x1', ptA.x.toString());
+        lineA.setAttribute('y1', ptA.y.toString());
+        lineA.setAttribute('x2', ptA_axis.x.toString());
+        lineA.setAttribute('y2', ptA_axis.y.toString());
+      }
+
+      const ptB_axis = getCoords(b, 0, def);
+      if (lineB) {
+        lineB.setAttribute('x1', ptB.x.toString());
+        lineB.setAttribute('y1', ptB.y.toString());
+        lineB.setAttribute('x2', ptB_axis.x.toString());
+        lineB.setAttribute('y2', ptB_axis.y.toString());
+      }
+
+      if (lineC) {
+        if (hasC && c !== null) {
+          const ptC = getCoords(c, fC, def);
+          const ptC_axis = getCoords(c, 0, def);
+          lineC.setAttribute('x1', ptC.x.toString());
+          lineC.setAttribute('y1', ptC.y.toString());
+          lineC.setAttribute('x2', ptC_axis.x.toString());
+          lineC.setAttribute('y2', ptC_axis.y.toString());
+          lineC.style.display = 'block';
+        } else {
+          lineC.style.display = 'none';
+        }
+      }
+
+      // 6. Puntos en PointsLayer
+      if (pointsLayer) {
+        pointsLayer.innerHTML = '';
+
+        // Punto A
+        const circleA = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circleA.setAttribute('cx', ptA.x.toString());
+        circleA.setAttribute('cy', ptA.y.toString());
+        circleA.setAttribute('r', '6');
+        circleA.setAttribute('fill', '#f43f5e');
+        circleA.setAttribute('stroke', isLight ? '#ffffff' : '#0f172a');
+        circleA.setAttribute('stroke-width', '2');
+        pointsLayer.appendChild(circleA);
+
+        // Punto B
+        const circleB = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circleB.setAttribute('cx', ptB.x.toString());
+        circleB.setAttribute('cy', ptB.y.toString());
+        circleB.setAttribute('r', '6');
+        circleB.setAttribute('fill', '#f43f5e');
+        circleB.setAttribute('stroke', isLight ? '#ffffff' : '#0f172a');
+        circleB.setAttribute('stroke-width', '2');
+        pointsLayer.appendChild(circleB);
+
+        // Punto C
+        if (hasC && c !== null) {
+          const ptC = getCoords(c, fC, def);
+          const circleC = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circleC.setAttribute('cx', ptC.x.toString());
+          circleC.setAttribute('cy', ptC.y.toString());
+          circleC.setAttribute('r', '7.5');
+          circleC.setAttribute('fill', '#10b981');
+          circleC.setAttribute('stroke', isLight ? '#ffffff' : '#0f172a');
+          circleC.setAttribute('stroke-width', '2.5');
+          pointsLayer.appendChild(circleC);
+        }
+      }
+
+      // 7. Actualización de Telemetría
+      if (valMsec) valMsec.textContent = mSec.toFixed(5);
+      if (valMtan) valMtan.textContent = hasC ? mTan.toFixed(5) : 'No definida';
+      if (valCoordC) valCoordC.textContent = hasC && c !== null ? `c = ${c.toFixed(5)}` : 'Inexistente ✗';
+      if (valFc) valFc.textContent = hasC ? `f(c) = ${fC.toFixed(5)} ∈ (${a.toFixed(2)}, ${b.toFixed(2)})` : 'Punto anguloso en x = 0';
+
+      const isRolle = Math.abs(fA - fB) < 1e-4;
+      if (valRolleCheck) {
+        if (isRolle) {
+          valRolleCheck.textContent = `f(a) = f(b) = ${fA.toFixed(2)} ✓`;
+          valRolleCheck.className = 'm-val text-green';
+        } else {
+          valRolleCheck.textContent = `f(a) ≠ f(b) (General)`;
+          valRolleCheck.className = 'm-val text-amber';
+        }
+      }
+      if (valRolleSub) {
+        valRolleSub.textContent = isRolle ? 'Cumple hipótesis de Rolle: m_sec = 0' : 'Aplica caso general de Lagrange';
+      }
+
+      if (valDiffAngle) {
+        if (hasC) {
+          const angSec = Math.atan(mSec) * (180 / Math.PI);
+          const angTan = Math.atan(mTan) * (180 / Math.PI);
+          const diffAng = Math.abs(angSec - angTan);
+          valDiffAngle.textContent = `${diffAng.toFixed(3)}°`;
+        } else {
+          valDiffAngle.textContent = 'Indeterminada';
+        }
+      }
+
+      if (valRegularity) {
+        if (def.isNonDifferentiable) {
+          valRegularity.textContent = 'No derivable en x = 0 ✗';
+          valRegularity.className = 'm-val text-red';
+        } else {
+          valRegularity.textContent = 'Continua y Derivable ✓';
+          valRegularity.className = 'm-val text-cyan';
+        }
+      }
+
+      if (telParallelStatus) {
+        if (def.isNonDifferentiable) {
+          telParallelStatus.textContent = 'Fallo de Hipótesis: No Derivable';
+          telParallelStatus.className = 'tel-status-badge is-error';
+        } else {
+          telParallelStatus.textContent = 'Paralelismo: 100% ✓';
+          telParallelStatus.className = 'tel-status-badge is-success';
+        }
+      }
+
+      if (telNoteBox) {
+        if (def.isNonDifferentiable) {
+          telNoteBox.innerHTML = `<strong>Contraejemplo Activo:</strong> La función valor absoluto tiene un punto anguloso en <code class="inline-code">x = 0</code>. Aunque <code class="inline-code">f(-1) = f(1) = 0</code> y la secante es horizontal, <strong>no existe ningún punto con tangente horizontal</strong> ya que <code class="inline-code">f'(x) ∈ &#123;-1, +1&#125;</code>.`;
+        } else if (isRolle) {
+          telNoteBox.innerHTML = `<strong>Condición de Rolle satisfecha:</strong> Como los extremos tienen la misma altura (<code class="inline-code">f(a) = f(b) = ${fA.toFixed(2)}</code>), la pendiente de la secante es nula y la recta tangente en <code class="inline-code">c</code> es estrictamente horizontal (<code class="inline-code">f'(c) = 0</code>).`;
+        } else {
+          telNoteBox.innerHTML = `<strong>Teorema de Lagrange en acción:</strong> La secante tiene pendiente oblicua <code class="inline-code">m = ${mSec.toFixed(3)}</code>. En <code class="inline-code">c = ${c !== null ? c.toFixed(3) : ''}</code> la curva tiene exactamente la misma velocidad instantánea que la media global.`;
+        }
+      }
+    }
+
+    function switchCurve(curveKey: string) {
+      currentCurveKey = curveKey;
+      const def = curves[curveKey];
+      if (!def || !sliderA || !sliderB) return;
+
+      sliderA.min = def.minSlider.toString();
+      sliderA.max = (def.defaultB - 0.2).toString();
+      sliderA.value = def.defaultA.toString();
+
+      sliderB.min = (def.defaultA + 0.2).toString();
+      sliderB.max = def.maxSlider.toString();
+      sliderB.value = def.defaultB.toString();
+
+      renderLab();
+    }
+
+    // Eventos
+    sliderA?.addEventListener('input', () => {
+      if (sliderB && parseFloat(sliderB.value) <= parseFloat(sliderA.value) + 0.1) {
+        sliderB.value = (parseFloat(sliderA.value) + 0.1).toFixed(2);
+      }
+      renderLab();
+    });
+
+    sliderB?.addEventListener('input', () => {
+      if (sliderA && parseFloat(sliderA.value) >= parseFloat(sliderB.value) - 0.1) {
+        sliderA.value = (parseFloat(sliderB.value) - 0.1).toFixed(2);
+      }
+      renderLab();
+    });
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        switchCurve(btn.dataset.curve || 'cubic');
+      });
+    });
+
+    // Inicializar laboratorio
+    renderLab();
+
+    // Observar cambio de tema (claro / oscuro) para actualizar gráficos SVG al vuelo
+    const themeObserver = new MutationObserver(() => {
+      renderLab();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // -------------------------------------------------------------
+    // 2. LÓGICA DE AUTOEVALUACIÓN INTERACTIVA
+    // -------------------------------------------------------------
+    const quizCards = document.querySelectorAll<HTMLElement>('.quiz-card');
+
+    quizCards.forEach((card) => {
+      const optBtns = card.querySelectorAll<HTMLButtonElement>('.q-opt-btn');
+      const feedback = card.querySelector<HTMLElement>('.q-feedback');
+
+      optBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          optBtns.forEach((b) => {
+            b.disabled = true;
+            b.classList.remove('is-selected');
+          });
+          btn.classList.add('is-selected');
+
+          const isCorrect = btn.getAttribute('data-correct') === 'true';
+
+          if (isCorrect) {
+            btn.classList.add('is-correct');
+            if (feedback) {
+              feedback.innerHTML = `
+                <div class="fb-badge fb-success">✓ ¡RESPUESTA EXACTA!</div>
+                <p>Excelente rigor analítico. Has aplicado con precisión las hipótesis de diferenciabilidad y los teoremas de valor medio.</p>
+              `;
+              feedback.className = 'q-feedback show success';
+            }
+          } else {
+            btn.classList.add('is-wrong');
+            optBtns.forEach((b) => {
+              if (b.getAttribute('data-correct') === 'true') {
+                b.classList.add('is-correct');
+              }
+            });
+            if (feedback) {
+              feedback.innerHTML = `
+                <div class="fb-badge fb-error">✗ RESPUESTA INCORRECTA</div>
+                <p>Cuidado con la trampa teórica. Revisa la opción correcta señalada en verde y recuerda verificar siempre la derivabilidad en el intervalo abierto.</p>
+              `;
+              feedback.className = 'q-feedback show error';
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  /* ==============================================================
+     ESTILOS ESPECÍFICOS DE LA LECCIÓN: TEOREMAS DE ROLLE Y LAGRANGE
+     ============================================================== */
+
+  .lead-paragraph {
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--ink, #e2e8f0);
+    margin-bottom: 1.75rem;
+  }
+
+  .inline-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+    padding: 0.15rem 0.4rem;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 4px;
+    color: #38bdf8;
+  }
+
+  /* 1. HERO ANALOGÍA: RADAR DE TRAMO */
+  .radar-hero-card {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .radar-badge {
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .radar-svg-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 0.8rem;
+  }
+
+  .radar-svg {
+    width: 100%;
+    min-width: 580px;
+    height: auto;
+    display: block;
+  }
+
+  .radar-axis-text {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px;
+    fill: #94a3b8;
+  }
+
+  .radar-label {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .radar-label.amber { fill: #f59e0b; }
+  .radar-label.green { fill: #10b981; }
+
+  .radar-point-text {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 10px;
+    fill: #cbd5e1;
+    font-weight: 600;
+  }
+  .radar-point-text.green { fill: #10b981; font-weight: 700; }
+
+  .radar-caption {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Intro Rolle */
+  .rolle-intro-card {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .ri-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .ri-body h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .ri-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0 0 0.6rem 0;
+  }
+
+  .ri-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  /* 2. RECUADROS DE TEOREMA FORMAL */
+  .theorem-box-highlight {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.7) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.08);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .thm-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+
+  .theorem-box-highlight h3 {
+    font-size: 1.45rem;
+    color: var(--ink, #f8fafc);
+    margin: 0 0 1.25rem 0;
+  }
+
+  .thm-cond-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .thm-cond-list li {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    line-height: 1.6;
+    color: var(--ink, #f1f5f9);
+  }
+
+  .cond-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.6rem;
+  }
+
+  .thm-sign-eq {
+    margin-top: 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .thm-thesis {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(56, 189, 248, 0.3);
+  }
+
+  .thesis-pill {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .thesis-text {
+    font-size: 1.1rem;
+    color: var(--ink, #f1f5f9);
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .thesis-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  /* Demostración de Rolle */
+  .proof-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .p-header {
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 0.75rem;
+  }
+
+  .p-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  .p-header h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .p-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0.6rem 0;
+  }
+
+  .cases-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 1.25rem 0;
+  }
+
+  @media (max-width: 760px) {
+    .cases-dual-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .case-col {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+
+  .case-col.highlight {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  .case-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .case-col p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0;
+  }
+
+  .proof-conclusion-box {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 8px;
+    padding: 0.8rem 1.25rem;
+    margin-top: 1rem;
+    color: #10b981;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Deducción de Lagrange */
+  .deduction-chain-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .dc-header {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .dc-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  .dc-header h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .dc-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0.6rem 0;
+  }
+
+  .math-step-expr {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    background: rgba(2, 6, 23, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    margin: 0.6rem 0;
+    color: var(--ink, #f1f5f9);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .math-step-expr.highlight {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+  }
+
+  .dc-list {
+    margin: 0.8rem 0;
+    padding-left: 1.25rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    font-size: 0.95rem;
+  }
+
+  .dc-eval {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.92rem;
+    background: rgba(2, 6, 23, 0.5);
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    margin: 0.4rem 0;
+    line-height: 1.6;
+    color: #f1f5f9;
+  }
+
+  /* 4. CONTRAEJEMPLOS */
+  .counterexamples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .counter-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .counter-card.is-failed {
+    background: rgba(244, 63, 94, 0.05);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+
+  .counter-card.is-subtle {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .c-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .c-viol { color: #f43f5e; }
+  .c-res { color: var(--ink-soft, #cbd5e1); }
+
+  .counter-card h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.15rem;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .c-desc {
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0 0 1rem 0;
+  }
+
+  .c-formula {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.05rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    color: #fca5a5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .counter-card.is-subtle .c-formula {
+    border-color: rgba(245, 158, 11, 0.25);
+    color: #fbbf24;
+  }
+
+  .c-note {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+  }
+
+  /* 5. LABORATORIO INTERACTIVO */
+  .lagrange-lab-container {
+    background: #090e17;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 2.5rem 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .lab-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .lab-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .lab-indicator-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseGlow 2s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .lab-header-text {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+  }
+
+  .lab-func-selector {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .l-tab-btn {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.78rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .l-tab-btn:hover {
+    color: #f1f5f9;
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  .l-tab-btn.is-active {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .lab-workbench-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 960px) {
+    .lab-workbench-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lab-graph-card {
+    background: #060a12;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .graph-legend {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .swatch-curve { background: #38bdf8; }
+  .swatch-secant { background: #f59e0b; }
+  .swatch-tangent { background: #10b981; }
+  .swatch-point-c { background: #10b981; }
+
+  .svg-stage-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #020617;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    overflow: hidden;
+  }
+
+  .lagrange-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .lab-sliders-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .slider-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .slider-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .sl-val {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-weight: 700;
+    color: var(--ink, #f1f5f9);
+  }
+
+  .lab-range {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .range-amber {
+    accent-color: #f59e0b;
+  }
+
+  /* Telemetría */
+  .lab-telemetry-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 0.6rem;
+  }
+
+  .tel-title {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+
+  .tel-status-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+  .tel-status-badge.is-success {
+    background: rgba(16, 185, 129, 0.18);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .tel-status-badge.is-error {
+    background: rgba(244, 63, 94, 0.18);
+    color: #f43f5e;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+  }
+
+  .tel-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tel-metric {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tel-metric.is-highlight {
+    grid-column: span 2;
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .m-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .m-val {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0.2rem 0;
+  }
+  .m-val.highlight {
+    font-size: 1.35rem;
+    color: #10b981;
+  }
+  .m-val.text-green { color: #10b981; }
+  .m-val.text-amber { color: #f59e0b; }
+  .m-val.text-cyan { color: #38bdf8; }
+  .m-val.text-red { color: #f43f5e; }
+
+  .m-sub {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .tel-dynamic-note {
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 6px;
+    padding: 0.8rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-soft, #cbd5e1);
+    margin-top: auto;
+  }
+
+  /* 6. CAUCHY Y COROLARIOS */
+  .corolario-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .cor-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.6rem;
+  }
+
+  .corolario-card h3 {
+    font-size: 1.35rem;
+    color: var(--ink, #f8fafc);
+    margin: 0 0 1rem 0;
+  }
+
+  .cauchy-formula-box {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  .cauchy-desc {
+    font-size: 0.92rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .lhopital-bridge-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .lb-header {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 0.6rem;
+  }
+
+  .lb-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.4rem;
+  }
+
+  .lb-header h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .lb-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0.6rem 0;
+  }
+
+  .corollaries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .coro-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.4rem;
+  }
+
+  .coro-num {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .coro-card h4 {
+    color: var(--ink, #f8fafc);
+    font-size: 1.05rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .coro-card p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink-soft, #94a3b8);
+    margin: 0;
+  }
+
+  /* 7. PECADOS CAPITALES Y RÚBRICA */
+  .sins-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .sin-card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 1.4rem;
+  }
+
+  .sin-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sin-num {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .sin-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink, #f8fafc);
+  }
+
+  .sin-card p {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink-soft, #94a3b8);
+    margin: 0 0 0.8rem 0;
+  }
+
+  .sin-contrast-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sin-bad, .sin-good {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+  }
+
+  .sin-bad {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    color: #fca5a5;
+  }
+
+  .sin-good {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #86efac;
+  }
+
+  .sin-cross {
+    color: #f43f5e;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .sin-check {
+    color: #10b981;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* 8. AUTOEVALUACIÓN INTERACTIVA */
+  .quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .q-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .q-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .q-header h4 {
+    font-size: 1.1rem;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .q-opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    color: var(--ink, #cbd5e1);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .q-opt-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #f8fafc;
+  }
+
+  .opt-letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .q-opt-btn.is-correct {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: #10b981 !important;
+    color: #86efac !important;
+  }
+  .q-opt-btn.is-correct .opt-letter {
+    background: #10b981;
+    color: #0f172a;
+  }
+
+  .q-opt-btn.is-wrong {
+    background: rgba(244, 63, 94, 0.12) !important;
+    border-color: #f43f5e !important;
+    color: #fca5a5 !important;
+  }
+  .q-opt-btn.is-wrong .opt-letter {
+    background: #f43f5e;
+    color: #fff;
+  }
+
+  .q-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .q-feedback.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .q-feedback.success {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #86efac;
+  }
+
+  .q-feedback.error {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.25);
+    color: #fca5a5;
+  }
+
+  .fb-badge {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+  .fb-success { color: #10b981; }
+  .fb-error { color: #f43f5e; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==============================================================
+     ADAPTACIÓN AL TEMA CLARO ([data-theme="light"])
+     ============================================================== */
+
+  :global([data-theme="light"]) .lead-paragraph {
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .inline-code {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  /* 1. Hero Radar en Modo Claro */
+  :global([data-theme="light"]) .radar-hero-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  }
+
+  :global([data-theme="light"]) .radar-caption {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .radar-axis-text {
+    fill: #64748b;
+  }
+
+  :global([data-theme="light"]) .radar-point-text {
+    fill: #334155;
+  }
+
+  :global([data-theme="light"]) .rolle-intro-card {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.25);
+    border-left: 4px solid #0284c7;
+  }
+
+  :global([data-theme="light"]) .ri-body h4 {
+    color: #0c4a6e;
+  }
+
+  :global([data-theme="light"]) .ri-body p {
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .ri-formula {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  /* 2. Recuadros de Teorema en Modo Claro */
+  :global([data-theme="light"]) .theorem-box-highlight {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.35);
+    box-shadow: 0 4px 24px rgba(2, 132, 199, 0.08);
+  }
+
+  :global([data-theme="light"]) .theorem-box-highlight h3 {
+    color: #0c4a6e;
+  }
+
+  :global([data-theme="light"]) .thm-cond-list li {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.15);
+    color: #1e293b;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .thm-sign-eq {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .thesis-text {
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .thesis-formula {
+    background: #ecfdf5;
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  :global([data-theme="light"]) .proof-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .p-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .p-body p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .case-col {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .case-col.highlight {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.25);
+  }
+
+  :global([data-theme="light"]) .case-col p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .proof-conclusion-box {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #059669;
+  }
+
+  /* 3. Deducción de Lagrange en Modo Claro */
+  :global([data-theme="light"]) .deduction-chain-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .dc-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .dc-body p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .math-step-expr {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .math-step-expr.highlight {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .dc-list {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .dc-eval {
+    background: #f8fafc;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+  }
+
+  /* 4. Contraejemplos en Modo Claro */
+  :global([data-theme="light"]) .counter-card.is-failed {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  :global([data-theme="light"]) .counter-card.is-subtle {
+    background: #fffbeb;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  :global([data-theme="light"]) .counter-card h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .c-desc {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .c-formula {
+    background: #ffffff;
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+  }
+
+  :global([data-theme="light"]) .counter-card.is-subtle .c-formula {
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #d97706;
+  }
+
+  :global([data-theme="light"]) .c-note {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .c-res {
+    color: #475569;
+  }
+
+  /* 5. Laboratorio en Modo Claro */
+  :global([data-theme="light"]) .lagrange-lab-container {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .lab-topbar {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .lab-header-text {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .l-tab-btn {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .l-tab-btn:hover {
+    color: #0f172a;
+    border-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .l-tab-btn.is-active {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .lab-graph-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .svg-stage-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .slider-control {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .slider-head {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .sl-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .lab-telemetry-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .tel-head {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .tel-title {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .tel-metric {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  }
+
+  :global([data-theme="light"]) .tel-metric.is-highlight {
+    background: rgba(16, 185, 129, 0.06);
+    border-color: rgba(16, 185, 129, 0.25);
+  }
+
+  :global([data-theme="light"]) .m-label {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .m-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .m-val.highlight {
+    color: #059669;
+  }
+
+  :global([data-theme="light"]) .tel-dynamic-note {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #334155;
+  }
+
+  /* 6. Cauchy y Corolarios en Modo Claro */
+  :global([data-theme="light"]) .corolario-card {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .corolario-card h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .cauchy-formula-box {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.25);
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .cauchy-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .lhopital-bridge-card {
+    background: #ffffff;
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .lb-header h4 {
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .lb-body p {
+    color: #166534;
+  }
+
+  :global([data-theme="light"]) .coro-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .coro-card h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .coro-card p {
+    color: #475569;
+  }
+
+  /* 7. Pecados Capitales en Modo Claro */
+  :global([data-theme="light"]) .sin-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .sin-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .sin-card p {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .sin-bad {
+    background: #fef2f2;
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+  }
+
+  :global([data-theme="light"]) .sin-good {
+    background: #f0fdf4;
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #166534;
+  }
+
+  /* 8. Autoevaluación en Modo Claro */
+  :global([data-theme="light"]) .quiz-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .q-header h4 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .q-opt-btn:hover:not(:disabled) {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .opt-letter {
+    background: rgba(0, 0, 0, 0.06);
+    color: #64748b;
+  }
+</style>
