@@ -78,13 +78,13 @@ import { site } from '../config/site';
           </div>
           <div class="about-copy">
             <p>
-              <strong><span class="math-word">Math</span> Universe</strong> nace de una convicción sencilla: las matemáticas se entienden mejor
-              cuando se pueden mirar desde distintos ángulos.
+              <strong><span class="math-word">Math</span> Universe</strong> nace de una convicción fundamental: las matemáticas no son solo números en una pizarra; son un lenguaje vivo que se entiende mejor cuando se explora desde distintos ángulos.
             </p>
             <p>
-              Este es el punto de encuentro de proyectos que irán creciendo con clases,
-              herramientas, juegos, problemas y demostraciones. Cada uno con su personalidad; todos
-              compartiendo una misma curiosidad.
+              A menudo se enseña una única forma de llegar a la solución, pero nosotros creemos en la multiplicidad. Por eso, este espacio está diseñado como un ecosistema educativo en constante expansión. Es el punto de encuentro de diversos proyectos que combinan <strong>lecciones estructuradas</strong>, <strong>herramientas interactivas</strong>, <strong>juegos</strong>, <strong>exámenes</strong> y <strong>demostraciones visuales</strong>.
+            </p>
+            <p>
+              Cada subweb dentro de este universo tiene su propia personalidad y metodología, pero todas orbitan alrededor de una misma misión: transformar la manera en que interactuamos con los números, haciendo que el aprendizaje sea <strong>accesible</strong>, <strong>riguroso</strong> y, sobre todo, <strong>fascinante</strong>.
             </p>
             <span class="quote-mark">∴</span>
           </div>
@@ -120,7 +120,7 @@ import { site } from '../config/site';
             Pensado desde la <em>intuición</em>.
           </h2>
           <p class="principles-sub">
-            Cada aplicación y recurso de <strong><span class="math-word">Math</span> Universe</strong> se construye bajo tres reglas fundamentales.
+            <strong><span class="math-word">Math</span> Universe</strong> sigue seis reglas fundamentales a la hora de crecer.
           </p>
         </div>
 
@@ -128,26 +128,67 @@ import { site } from '../config/site';
           <div class="principle-cell">
             <div class="principle-top">
               <span class="principle-badge">01</span>
-              <span class="principle-tag">Descubrimiento</span>
+              <span class="principle-tag">Curiosidad</span>
             </div>
-            <h3>Explorar antes de memorizar.</h3>
-            <p>Manipular objetos visuales y experimentar con patrones antes de formalizar la regla.</p>
+            <div class="principle-content">
+              <h3>La curiosidad como motor.</h3>
+              <p>No se busca únicamente la memorización mecánica de fórmulas, sino despertar el «porqué» detrás de ellas. El aprendizaje real ocurre cuando el estudiante se hace preguntas.</p>
+            </div>
           </div>
+
           <div class="principle-cell">
             <div class="principle-top">
               <span class="principle-badge">02</span>
-              <span class="principle-tag">Autonomía</span>
+              <span class="principle-tag">Multiplicidad</span>
             </div>
-            <h3>Entender para poder crear.</h3>
-            <p>Dominar el porqué de cada herramienta para resolver problemas nuevos con criterio propio.</p>
+            <div class="principle-content">
+              <h3>Exploración multidimensional.</h3>
+              <p>No hay un único camino para asimilar un concepto complejo. Al combinar teoría, práctica, gamificación y exámenes, ofrecemos diferentes puertas de entrada a una misma idea matemática.</p>
+            </div>
           </div>
+
           <div class="principle-cell">
             <div class="principle-top">
               <span class="principle-badge">03</span>
-              <span class="principle-tag">Asombro</span>
+              <span class="principle-tag">Accesibilidad</span>
             </div>
-            <h3>Hacer de la dificultad un lugar interesante.</h3>
-            <p>Convertir los retos abstractos en escenarios donde apetece detenerse a pensar.</p>
+            <div class="principle-content">
+              <h3>Rigor accesible.</h3>
+              <p>Las matemáticas deben estar al alcance de todos. Nuestro objetivo es simplificar lo complejo y hacerlo intuitivo, sin perder la exactitud ni la belleza que las caracteriza.</p>
+            </div>
+          </div>
+
+          <div class="principle-cell">
+            <div class="principle-top">
+              <span class="principle-badge">04</span>
+              <span class="principle-tag">Expansión</span>
+            </div>
+            <div class="principle-content">
+              <h3>Un universo en expansión.</h3>
+              <p>Al igual que el cosmos, este proyecto está vivo. Math Universe es un espacio dinámico que seguirá sumando nuevos «mundos» —nuevos juegos, herramientas y retos— para acompañar a quienes nunca dejan de aprender.</p>
+            </div>
+          </div>
+
+          <div class="principle-cell">
+            <div class="principle-top">
+              <span class="principle-badge">05</span>
+              <span class="principle-tag">Escalabilidad</span>
+            </div>
+            <div class="principle-content">
+              <h3>Escalabilidad.</h3>
+              <p>Cada uno puede crecer a su propio ritmo, sin fin, según sus intereses y sus capacidades.</p>
+            </div>
+          </div>
+
+          <div class="principle-cell">
+            <div class="principle-top">
+              <span class="principle-badge">06</span>
+              <span class="principle-tag">Tradición</span>
+            </div>
+            <div class="principle-content">
+              <h3>Respeto por la tradición.</h3>
+              <p>Interiorizar es la parte más importante de todas, y para ello no vale solo con explorar. Hay que memorizar, entender, practicar… y luego explorar más allá de los confines de nuestro propio saber.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -412,6 +453,7 @@ import { site } from '../config/site';
   .principles-grid {
     background: var(--line);
     border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
     display: grid;
     gap: 1px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -421,9 +463,10 @@ import { site } from '../config/site';
     background: var(--bg);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 260px;
-    padding: clamp(1.6rem, 3vw, 2.4rem);
+    justify-content: flex-start;
+    gap: 1.5rem;
+    min-height: 250px;
+    padding: clamp(1.6rem, 2.6vw, 2.4rem);
     transition: background-color 0.25s ease;
   }
 
@@ -435,7 +478,7 @@ import { site } from '../config/site';
     align-items: center;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 2.2rem;
+    margin-bottom: 0.4rem;
   }
 
   .principle-badge {
@@ -459,19 +502,19 @@ import { site } from '../config/site';
 
   .principle-cell h3 {
     font-family: var(--display);
-    font-size: clamp(1.35rem, 1.9vw, 1.85rem);
+    font-size: clamp(1.2rem, 1.55vw, 1.5rem);
     font-stretch: 118%;
     font-variation-settings: 'wdth' 118;
     font-weight: 620;
     letter-spacing: -0.03em;
-    line-height: 1.06;
+    line-height: 1.15;
     margin: 0 0 0.85rem;
   }
 
   .principle-cell p {
     color: var(--muted);
     font-size: 0.95rem;
-    line-height: 1.55;
+    line-height: 1.58;
     margin: 0;
   }
 
@@ -541,6 +584,12 @@ import { site } from '../config/site';
     }
   }
 
+  @media (max-width: 1040px) {
+    .principles-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   @media (max-width: 900px) {
     .topbar-nav,
     .status {
@@ -550,7 +599,9 @@ import { site } from '../config/site';
     .about-grid {
       grid-template-columns: 1fr;
     }
+  }
 
+  @media (max-width: 680px) {
     .principles-grid {
       grid-template-columns: 1fr;
     }
