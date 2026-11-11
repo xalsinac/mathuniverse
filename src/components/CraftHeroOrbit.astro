@@ -5,28 +5,28 @@ import { craftProjects, type CraftProject } from '../data/craft';
 // para que tengan radios distintos, velocidades distintas y nunca se apelotonen
 const ORBIT_ASSIGNMENTS = [
   // Órbita 0 (Interior - 4 tarjetas, radio medio, giran más rápido)
-  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Monty Hall
-  { projectIdx: 1, orbitRing: 0, phaseOffset: Math.PI * 0.5 },            // Torres de Hanoi
-  { projectIdx: 2, orbitRing: 0, phaseOffset: Math.PI * 1.0 },            // Demolición FIQ
-  { projectIdx: 3, orbitRing: 0, phaseOffset: Math.PI * 1.5 },            // Math Dojo Arena
+  { projectId: 'astro-raya', orbitRing: 0, phaseOffset: 0.0 },
+  { projectId: 'galaxy-pong', orbitRing: 0, phaseOffset: Math.PI * 0.5 },
+  { projectId: 'monty-hall', orbitRing: 0, phaseOffset: Math.PI * 1.0 },
+  { projectId: 'torres-hanoi', orbitRing: 0, phaseOffset: Math.PI * 1.5 },
 
   // Órbita 1 (Media - 5 tarjetas, radio amplio, velocidad intermedia)
-  { projectIdx: 4, orbitRing: 1, phaseOffset: 0.25 },                    // Math Dojo Junior
-  { projectIdx: 5, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 2) / 5 }, // Orbital Kepler
-  { projectIdx: 6, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 4) / 5 }, // Vóxel Polyhedra 3D
-  { projectIdx: 7, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 6) / 5 }, // Sierpinski Chaos
-  { projectIdx: 8, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 8) / 5 }, // Vector Pong
+  { projectId: 'game-theory-dilemma', orbitRing: 1, phaseOffset: 0.25 },
+  { projectId: 'orbital-gravity', orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 2) / 5 },
+  { projectId: 'voxel-polyhedra', orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 4) / 5 },
+  { projectId: 'demolicion-fiq', orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 6) / 5 },
+  { projectId: 'math-dojo-arcade', orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 8) / 5 },
 
   // Órbita 2 (Exterior - 5 tarjetas, radio grande panorámico, giro pausado)
-  { projectIdx: 9, orbitRing: 2, phaseOffset: 0.5 },                     // Dilema del Prisionero
-  { projectIdx: 0, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 2) / 5 }, // Monty Hall
-  { projectIdx: 1, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 4) / 5 }, // Torres de Hanoi
-  { projectIdx: 2, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 6) / 5 }, // Demolición FIQ
-  { projectIdx: 3, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 8) / 5 }, // Math Dojo Arena
+  { projectId: 'math-dojo-junior', orbitRing: 2, phaseOffset: 0.5 },
+  { projectId: 'astro-raya', orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 2) / 5 },
+  { projectId: 'galaxy-pong', orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 4) / 5 },
+  { projectId: 'orbital-gravity', orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 6) / 5 },
+  { projectId: 'voxel-polyhedra', orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 8) / 5 },
 ];
 
 const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
-  const project = craftProjects[assign.projectIdx % craftProjects.length];
+  const project = craftProjects.find((p) => p.id === assign.projectId) ?? craftProjects[0];
   return {
     nodeIndex: idx,
     orbitRing: assign.orbitRing,
@@ -232,7 +232,29 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
                   <line x1="63" y1="35" x2="97" y2="61" stroke="#ffc14d" stroke-width="0.8" opacity="0.5" />
                 </svg>
               )}
-              {!['monty-hall', 'torres-hanoi', 'demolicion-fiq', 'math-dojo-arcade', 'math-dojo-junior', 'orbital-gravity', 'voxel-polyhedra', 'sierpinski-chaos', 'vector-pong', 'galaxy-pong', 'game-theory-dilemma'].includes(card.id) && (
+              {card.id === 'astro-raya' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#0d1124" class="card-bg-rect" data-card="astro-raya" />
+                  <circle cx="24" cy="22" r="1" fill="#ffffff" opacity="0.6" />
+                  <circle cx="136" cy="78" r="1.2" fill="#38bdf8" opacity="0.7" />
+                  <circle cx="130" cy="20" r="0.8" fill="#b48cff" opacity="0.7" />
+                  <!-- Tablero 3x3 cósmico -->
+                  <line x1="68" y1="18" x2="68" y2="82" stroke="#38bdf8" stroke-width="1.2" opacity="0.4" />
+                  <line x1="92" y1="18" x2="92" y2="82" stroke="#38bdf8" stroke-width="1.2" opacity="0.4" />
+                  <line x1="46" y1="39" x2="114" y2="39" stroke="#38bdf8" stroke-width="1.2" opacity="0.4" />
+                  <line x1="46" y1="61" x2="114" y2="61" stroke="#38bdf8" stroke-width="1.2" opacity="0.4" />
+                  <!-- Fichas X (cyan) en diagonal ganadora -->
+                  <path d="M51 23 L62 34 M62 23 L51 34" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" />
+                  <path d="M74.5 44.5 L85.5 55.5 M85.5 44.5 L74.5 55.5" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" />
+                  <path d="M98 66 L109 77 M109 66 L98 77" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" />
+                  <!-- Fichas O (lila orbital) -->
+                  <circle cx="103.5" cy="28.5" r="5.5" stroke="#b48cff" stroke-width="2" />
+                  <circle cx="56.5" cy="71.5" r="5.5" stroke="#b48cff" stroke-width="2" />
+                  <!-- Rayo ganador diagonal -->
+                  <line x1="48" y1="20" x2="112" y2="80" stroke="#3fe0b5" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
+                </svg>
+              )}
+              {!['monty-hall', 'torres-hanoi', 'demolicion-fiq', 'math-dojo-arcade', 'math-dojo-junior', 'orbital-gravity', 'voxel-polyhedra', 'sierpinski-chaos', 'vector-pong', 'galaxy-pong', 'game-theory-dilemma', 'astro-raya'].includes(card.id) && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
                   <rect width="160" height="100" fill="#121620" class="card-bg-rect" />
                   <circle cx="80" cy="50" r="32" stroke="var(--card-color, #38bdf8)" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.4" />
@@ -528,7 +550,8 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     fill: #f0f9ff !important;
   }
 
-  :global([data-theme="light"]) .card-bg-rect[data-card="orbital-gravity"] {
+  :global([data-theme="light"]) .card-bg-rect[data-card="orbital-gravity"],
+  :global([data-theme="light"]) .card-bg-rect[data-card="astro-raya"] {
     fill: #eff6ff !important;
   }
 

@@ -137,12 +137,15 @@ const totalCount = craftProjects.length;
           </div>
         </div>
 
-        <!-- Rejilla de Tarjetas Compactas de Juegos -->
+        <!-- Rejilla de Tarjetas Cuadradas Simplificadas (Cristal) -->
         <div class="craft-cards-grid section-body" data-craft-grid>
           {
             craftProjects.map((project) => (
-              <article
-                class="craft-card"
+              <a
+                href={project.url}
+                target={project.isExternal ? '_blank' : undefined}
+                rel={project.isExternal ? 'noopener noreferrer' : undefined}
+                class={`craft-card ${project.url === '#' ? 'is-upcoming' : ''}`}
                 id={`game-${project.id}`}
                 data-craft-card
                 data-id={project.id}
@@ -155,7 +158,7 @@ const totalCount = craftProjects.length;
                 data-topic={project.mathTopic.toLowerCase()}
                 style={`--card-accent:${project.color}`}
               >
-                <!-- Miniatura / Previsualización 16:9 compacta -->
+                <!-- Miniatura Visual -->
                 <div class="card-media-frame">
                   {project.previewImage ? (
                     <img
@@ -167,6 +170,31 @@ const totalCount = craftProjects.length;
                   ) : (
                     <div class="card-placeholder-art" aria-hidden="true">
                       <!-- Procedural vector art según tipo de juego -->
+                      {project.id === 'astro-raya' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#0d1124" />
+                          <circle cx="52" cy="36" r="1.4" fill="#ffffff" opacity="0.65" />
+                          <circle cx="272" cy="144" r="1.8" fill="#38bdf8" opacity="0.75" />
+                          <circle cx="255" cy="34" r="1.2" fill="#b48cff" opacity="0.7" />
+                          <circle cx="66" cy="148" r="1.2" fill="#3fe0b5" opacity="0.6" />
+                          <circle cx="160" cy="90" r="68" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 5" opacity="0.22" />
+                          <!-- Tablero 3x3 cósmico centrado -->
+                          <line x1="138" y1="30" x2="138" y2="150" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
+                          <line x1="182" y1="30" x2="182" y2="150" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
+                          <line x1="100" y1="70" x2="220" y2="70" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
+                          <line x1="100" y1="110" x2="220" y2="110" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
+                          <!-- X en diagonal ganadora -->
+                          <path d="M108 40 L128 60 M128 40 L108 60" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+                          <path d="M150 80 L170 100 M170 80 L150 100" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+                          <path d="M192 120 L212 140 M212 120 L192 140" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+                          <!-- O orbitales -->
+                          <circle cx="202" cy="50" r="10.5" stroke="#b48cff" stroke-width="3.2" />
+                          <circle cx="118" cy="130" r="10.5" stroke="#b48cff" stroke-width="3.2" />
+                          <!-- Línea láser de victoria -->
+                          <line x1="102" y1="34" x2="218" y2="146" stroke="#3fe0b5" stroke-width="2.5" stroke-linecap="round" opacity="0.88" />
+                          <text x="20" y="30" fill="#38bdf8" font-family="monospace" font-size="11" letter-spacing="1">ASTRO · RAYA</text>
+                        </svg>
+                      )}
                       {project.id === 'monty-hall' && (
                         <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
                           <rect width="320" height="180" fill="#0d1b18" />
@@ -393,75 +421,43 @@ const totalCount = craftProjects.length;
                     </div>
                   )}
 
-                  <!-- Insignia de estado sobre la imagen -->
-                  <div class="card-status-pill">
-                    {project.status === 'playable' && <span class="badge-playable">DISPONIBLE</span>}
+                  <!-- Insignia sutil de estado o lanzamiento al pasar el ratón -->
+                  <div class="card-top-badges">
                     {project.status === 'beta' && <span class="badge-beta">BETA</span>}
-                    {project.status === 'prototype' && <span class="badge-proto">PROTOTIPO</span>}
+                    {project.status === 'prototype' && <span class="badge-proto">PRÓXIMAMENTE</span>}
+                    {project.url !== '#' && (
+                      <span class="card-hover-arrow" aria-hidden="true">↗</span>
+                    )}
                   </div>
                 </div>
 
-                <!-- Cabecera de autor con diferenciación clara -->
-                <div class="card-body">
-                  <div class="card-author-header">
+                <!-- Panel Cristal inferior minimalista: Autor, Título y Frase corta -->
+                <div class="card-crystal-panel">
+                  <div class="card-author-row">
                     {project.authorType === 'student' ? (
-                      <div class="author-badge is-student" title={`Proyecto programado por ${project.authorName}`}>
-                        <span class="badge-icon">🎒</span>
-                        <div class="badge-text-col">
-                          <span class="badge-title">{project.authorName}</span>
-                          <span class="badge-sub">{project.schoolOrCourse || project.authorRole || 'Alumno'}</span>
-                        </div>
-                      </div>
+                      <span class="author-chip is-student">
+                        <span class="chip-dot" aria-hidden="true"></span>
+                        <span>{project.authorName} · {project.schoolOrCourse || 'Alumno'}</span>
+                      </span>
                     ) : (
-                      <div class="author-badge is-teacher" title="Proyecto desarrollado por Xavier Alsina">
-                        <span class="badge-icon">👨‍🏫</span>
-                        <div class="badge-text-col">
-                          <span class="badge-title">PROFESOR</span>
-                          <span class="badge-sub">Xavier Alsina</span>
-                        </div>
-                      </div>
+                      <span class="author-chip is-teacher">
+                        <span class="chip-dot" aria-hidden="true"></span>
+                        <span>{project.authorName}</span>
+                      </span>
                     )}
                   </div>
 
-                  <!-- Título y descripción -->
-                  <h2 class="card-title">
-                    <a
-                      href={project.url}
-                      target={project.isExternal ? '_blank' : undefined}
-                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
-                    >
-                      {project.title}
-                    </a>
-                  </h2>
+                  <h2 class="card-title">{project.title}</h2>
+                  <p class="card-description">{project.shortDescription || project.description}</p>
 
-                  <p class="card-math-topic">
-                    <span class="topic-icon">📐</span>
-                    <span>{project.mathTopic}</span>
-                  </p>
-
-                  <p class="card-description">{project.description}</p>
-
-                  <!-- Fila de etiquetas técnicas -->
-                  <div class="card-tags-row">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <span class="card-tag">#{tag}</span>
+                  <!-- Etiquetas técnicas ocultas (activas para buscador y accesibilidad) -->
+                  <div class="card-tags-hidden" hidden aria-hidden="true">
+                    {project.tags.map((tag) => (
+                      <span>#{tag}</span>
                     ))}
                   </div>
-
-                  <!-- Botón de acción directo -->
-                  <div class="card-footer">
-                    <a
-                      href={project.url}
-                      target={project.isExternal ? '_blank' : undefined}
-                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
-                      class="card-launch-btn"
-                    >
-                      <span>{project.isExternal ? 'Jugar en línea' : 'Ver proyecto'}</span>
-                      <span class="launch-arrow" aria-hidden="true">↗</span>
-                    </a>
-                  </div>
                 </div>
-              </article>
+              </a>
             ))
           }
         </div>
@@ -791,30 +787,45 @@ const totalCount = craftProjects.length;
   }
 
   /* ---------------------------------------------------- */
-  /* REJILLA DE TARJETAS COMPACTAS (FICHAS MÁS PEQUEÑAS)   */
+  /* REJILLA DE TARJETAS CUADRADAS SIMPLIFICADAS (CRISTAL)*/
   /* ---------------------------------------------------- */
+  [hidden] {
+    display: none !important;
+  }
+
   .craft-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+    gap: 1.15rem;
     padding: 1.5rem;
   }
 
   .craft-card {
+    aspect-ratio: 1 / 1;
     background: var(--bg-raised);
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 14px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
     position: relative;
     scroll-margin-top: 5rem;
+    transition:
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.2s ease,
+      box-shadow 0.24s ease;
+  }
+
+  .craft-card.is-upcoming {
+    opacity: 0.78;
+    cursor: default;
   }
 
   .craft-card:target {
     border-color: var(--card-accent, #b48cff);
-    box-shadow: 0 0 0 2px var(--card-accent, #b48cff), 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px var(--card-accent, #b48cff), 0 12px 32px rgba(0, 0, 0, 0.4);
     animation: targetPulse 1.6s ease;
   }
 
@@ -824,18 +835,20 @@ const totalCount = craftProjects.length;
   }
 
   .craft-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     border-color: var(--card-accent, #b48cff);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    box-shadow:
+      0 14px 32px rgba(0, 0, 0, 0.24),
+      0 0 0 1px color-mix(in srgb, var(--card-accent, #b48cff) 35%, transparent);
   }
 
-  /* Marco 16:9 para capturas de juego */
+  /* Marco visual superior dentro del cuadrado */
   .card-media-frame {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    flex: 1 1 56%;
+    min-height: 0;
     background: var(--bg-sunken);
-    border-bottom: 1px solid var(--line);
     overflow: hidden;
   }
 
@@ -844,11 +857,11 @@ const totalCount = craftProjects.length;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .craft-card:hover .card-img {
-    transform: scale(1.03);
+    transform: scale(1.05);
   }
 
   .card-placeholder-art {
@@ -863,218 +876,188 @@ const totalCount = craftProjects.length;
     width: 100%;
     height: 100%;
     display: block;
-    transition: transform 0.3s ease;
+    object-fit: cover;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .craft-card:hover .preview-svg {
-    transform: scale(1.02);
+    transform: scale(1.04);
   }
 
-  /* Insignia de estado */
-  .card-status-pill {
+  /* Badges superiores sutiles */
+  .card-top-badges {
     position: absolute;
     top: 0.6rem;
     right: 0.6rem;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 
-  .badge-playable,
+  .card-hover-arrow {
+    width: 26px;
+    height: 26px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 18, 28, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0;
+    transform: translate(-3px, 3px);
+    transition: all 0.2s ease;
+  }
+
+  .craft-card:hover .card-hover-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+    background: var(--card-accent, #b48cff);
+    border-color: var(--card-accent, #b48cff);
+    color: #0b0d14;
+  }
+
   .badge-beta,
   .badge-proto {
     font-family: var(--mono);
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     padding: 0.2rem 0.45rem;
-    border-radius: 4px;
-    backdrop-filter: blur(6px);
-  }
-
-  .badge-playable {
-    background: rgba(63, 224, 181, 0.18);
-    color: #3fe0b5;
-    border: 1px solid #3fe0b566;
+    border-radius: 5px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .badge-beta {
-    background: rgba(255, 193, 77, 0.18);
+    background: rgba(255, 193, 77, 0.22);
     color: #ffc14d;
     border: 1px solid #ffc14d66;
   }
 
   .badge-proto {
-    background: rgba(180, 140, 255, 0.18);
-    color: #b48cff;
+    background: rgba(180, 140, 255, 0.22);
+    color: #d8b4fe;
     border: 1px solid #b48cff66;
   }
 
-  /* CUERPO DE LA TARJETA */
-  .card-body {
-    padding: 1rem;
+  /* PANEL CRISTAL INFERIOR */
+  .card-crystal-panel {
+    position: relative;
+    padding: 0.8rem 0.95rem 0.85rem;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    gap: 0.55rem;
+    justify-content: center;
+    gap: 0.3rem;
+    background: linear-gradient(
+      180deg,
+      rgba(22, 26, 40, 0.82) 0%,
+      rgba(15, 18, 29, 0.96) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
-  /* Cabecera de Autor */
-  .card-author-header {
+  :global([data-theme='light']) .card-crystal-panel,
+  :root[data-theme='light'] .card-crystal-panel {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.88) 0%,
+      rgba(248, 250, 252, 0.98) 100%
+    );
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  :global([data-theme='light']) .card-hover-arrow,
+  :root[data-theme='light'] .card-hover-arrow {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(15, 23, 42, 0.15);
+    color: #0f172a;
+  }
+
+  .card-author-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
   }
 
-  .author-badge {
+  .author-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    gap: 0.35rem;
     font-family: var(--mono);
-  }
-
-  .author-badge.is-student {
-    background: rgba(56, 200, 255, 0.08);
-    border: 1px solid rgba(56, 200, 255, 0.35);
-  }
-
-  .author-badge.is-teacher {
-    background: rgba(180, 140, 255, 0.08);
-    border: 1px solid rgba(180, 140, 255, 0.35);
-  }
-
-  .badge-icon {
-    font-size: 0.8rem;
-  }
-
-  .badge-text-col {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-
-  .author-badge.is-student .badge-title {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #38c8ff;
-    letter-spacing: 0.06em;
-  }
-
-  .author-badge.is-teacher .badge-title {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #b48cff;
-    letter-spacing: 0.06em;
-  }
-
-  .badge-sub {
     font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .author-chip.is-teacher .chip-dot {
+    background: #b48cff;
+    box-shadow: 0 0 6px #b48cffaa;
+  }
+
+  .author-chip.is-student .chip-dot {
+    background: #38c8ff;
+    box-shadow: 0 0 6px #38c8ffaa;
+  }
+
+  .author-chip.is-student {
+    color: #38c8ff;
+  }
+
+  :global([data-theme='light']) .author-chip.is-student,
+  :root[data-theme='light'] .author-chip.is-student {
+    color: #0284c7;
   }
 
   /* Título */
   .card-title {
     font-family: var(--display);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.22;
     margin: 0;
-  }
-
-  .card-title a {
     color: var(--ink-strong);
-    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     transition: color 0.15s ease;
   }
 
-  .card-title a:hover {
+  .craft-card:hover .card-title {
     color: var(--card-accent, #b48cff);
   }
 
-  /* Tema matemático */
-  .card-math-topic {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    color: var(--card-accent, #b48cff);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-
-  .topic-icon {
-    font-size: 0.72rem;
-  }
-
-  /* Descripción corta */
+  /* Descripción cristal corta */
   .card-description {
     font-family: var(--sans);
-    font-size: 0.8rem;
-    line-height: 1.45;
+    font-size: 0.75rem;
+    line-height: 1.38;
     color: var(--ink-soft);
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
-
-  /* Etiquetas */
-  .card-tags-row {
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    margin-top: 0.2rem;
-  }
-
-  .card-tag {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--muted);
-    background: var(--bg);
-    border: 1px solid var(--line);
-    padding: 0.12rem 0.38rem;
-    border-radius: 3px;
-  }
-
-  /* Footer con botón de acción */
-  .card-footer {
-    margin-top: auto;
-    padding-top: 0.6rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .card-launch-btn {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.75rem;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 5px;
-    color: var(--ink-strong);
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-
-  .card-launch-btn:hover {
-    background: var(--card-accent, #b48cff);
-    border-color: var(--card-accent, #b48cff);
-    color: #101116;
-  }
-
-  .launch-arrow {
-    font-size: 0.85rem;
-    transition: transform 0.15s ease;
-  }
-
-  .card-launch-btn:hover .launch-arrow {
-    transform: translate(2px, -2px);
   }
 
   /* ESTADO VACÍO */
@@ -1261,7 +1244,17 @@ const totalCount = craftProjects.length;
 
   @media (max-width: 640px) {
     .craft-cards-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+
+    .card-crystal-panel {
+      padding: 0.65rem 0.75rem 0.75rem;
+    }
+
+    .card-title {
+      font-size: 0.92rem;
     }
 
     .craft-hud-stats {
@@ -1275,6 +1268,12 @@ const totalCount = craftProjects.length;
 
     .hud-stat-cell {
       flex: 1 1 40%;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .craft-cards-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>
