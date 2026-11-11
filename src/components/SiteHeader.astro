@@ -186,6 +186,29 @@ const isHome = activePage === 'home';
 
       <div class="mobile-drawer-divider" aria-hidden="true"></div>
 
+      <!-- Selector de Tema en Móvil -->
+      <div class="mobile-drawer-theme-row">
+        <span class="md-theme-title">Aspecto visual:</span>
+        <button
+          type="button"
+          class="mobile-drawer-theme-btn"
+          data-theme-toggle
+          aria-label="Cambiar entre modo oscuro y modo claro"
+          title="Cambiar entre modo oscuro y modo claro"
+        >
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+          </svg>
+          <span>Modo <span data-theme-label>Oscuro</span></span>
+        </button>
+      </div>
+
+      <div class="mobile-drawer-divider" aria-hidden="true"></div>
+
       <div class="mobile-drawer-direct">
         <a href="/craft" class="mobile-drawer-chip">
           <span class="chip-dot" style="background:#38c8ff;"></span>
@@ -211,17 +234,23 @@ const isHome = activePage === 'home';
 <CommandPalette />
 
 <script>
-  const toggleBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-  const labelEl = document.querySelector<HTMLElement>('[data-theme-label]');
+  const toggleBtns = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+  const labelEls = document.querySelectorAll<HTMLElement>('[data-theme-label]');
 
   const syncToggleUI = (theme: string) => {
-    if (labelEl) {
-      labelEl.textContent = theme === 'light' ? 'Claro' : 'Oscuro';
-    }
-    toggleBtn?.setAttribute(
-      'aria-label',
-      theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro',
-    );
+    labelEls.forEach((el) => {
+      el.textContent = theme === 'light' ? 'Claro' : 'Oscuro';
+    });
+    toggleBtns.forEach((btn) => {
+      btn.setAttribute(
+        'aria-label',
+        theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro',
+      );
+      btn.setAttribute(
+        'title',
+        theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro',
+      );
+    });
   };
 
   const updateCrossLinks = (theme: string) => {
@@ -250,19 +279,21 @@ const isHome = activePage === 'home';
   syncToggleUI(initialCurrentTheme);
   updateCrossLinks(initialCurrentTheme);
 
-  toggleBtn?.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-    document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem('math-universe-theme', next);
-      localStorage.setItem('mathlab_theme', next);
-      localStorage.setItem('mathdojo_theme', next);
-    } catch {}
-    const meta = document.querySelector('[data-theme-meta]');
-    if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
-    syncToggleUI(next);
-    updateCrossLinks(next);
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
+  toggleBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('math-universe-theme', next);
+        localStorage.setItem('mathlab_theme', next);
+        localStorage.setItem('mathdojo_theme', next);
+      } catch {}
+      const meta = document.querySelector('[data-theme-meta]');
+      if (meta) meta.setAttribute('content', next === 'light' ? '#f2f0ea' : '#101116');
+      syncToggleUI(next);
+      updateCrossLinks(next);
+      window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: next } }));
+    });
   });
 
   window.addEventListener('pageshow', () => {
@@ -574,6 +605,45 @@ const isHome = activePage === 'home';
     height: 1px;
     background: var(--line);
     margin: 0.4rem 0;
+  }
+
+  .mobile-drawer-theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .md-theme-title {
+    font: 600 0.72rem/1.2 var(--mono);
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .mobile-drawer-theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    color: var(--ink-strong);
+    font: 600 0.76rem/1.2 var(--mono);
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease;
+  }
+
+  .mobile-drawer-theme-btn:hover {
+    background: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .mobile-drawer-theme-btn svg {
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
   .mobile-drawer-direct {

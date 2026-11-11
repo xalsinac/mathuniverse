@@ -5,24 +5,24 @@ import { craftProjects, type CraftProject } from '../data/craft';
 // para que tengan radios distintos, velocidades distintas y nunca se apelotonen
 const ORBIT_ASSIGNMENTS = [
   // Órbita 0 (Interior - 4 tarjetas, radio medio, giran más rápido)
-  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Demolición FIQ (Leo Rueda)
-  { projectIdx: 1, orbitRing: 0, phaseOffset: Math.PI * 0.5 },            // Math Dojo Arena (Profesor)
-  { projectIdx: 4, orbitRing: 0, phaseOffset: Math.PI * 1.0 },            // Vóxel Polyhedra 3D (Profesor)
-  { projectIdx: 5, orbitRing: 0, phaseOffset: Math.PI * 1.5 },            // Sierpinski Chaos (Profesor)
+  { projectIdx: 0, orbitRing: 0, phaseOffset: 0.0 },                     // Monty Hall
+  { projectIdx: 1, orbitRing: 0, phaseOffset: Math.PI * 0.5 },            // Torres de Hanoi
+  { projectIdx: 2, orbitRing: 0, phaseOffset: Math.PI * 1.0 },            // Demolición FIQ
+  { projectIdx: 3, orbitRing: 0, phaseOffset: Math.PI * 1.5 },            // Math Dojo Arena
 
   // Órbita 1 (Media - 5 tarjetas, radio amplio, velocidad intermedia)
-  { projectIdx: 6, orbitRing: 1, phaseOffset: 0.25 },                    // Vector Pong (Alumno)
-  { projectIdx: 3, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 2) / 5 }, // Orbital Kepler (Profesor)
-  { projectIdx: 2, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 4) / 5 }, // Math Dojo Jr (Profesor)
-  { projectIdx: 7, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 6) / 5 }, // Dilema del Prisionero (Profesor)
-  { projectIdx: 0, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 8) / 5 }, // Demolición FIQ (Segunda pasada)
+  { projectIdx: 4, orbitRing: 1, phaseOffset: 0.25 },                    // Math Dojo Junior
+  { projectIdx: 5, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 2) / 5 }, // Orbital Kepler
+  { projectIdx: 6, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 4) / 5 }, // Vóxel Polyhedra 3D
+  { projectIdx: 7, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 6) / 5 }, // Sierpinski Chaos
+  { projectIdx: 8, orbitRing: 1, phaseOffset: 0.25 + (Math.PI * 8) / 5 }, // Vector Pong
 
   // Órbita 2 (Exterior - 5 tarjetas, radio grande panorámico, giro pausado)
-  { projectIdx: 1, orbitRing: 2, phaseOffset: 0.5 },
-  { projectIdx: 4, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 2) / 5 },
-  { projectIdx: 6, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 4) / 5 },
-  { projectIdx: 3, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 6) / 5 },
-  { projectIdx: 5, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 8) / 5 },
+  { projectIdx: 9, orbitRing: 2, phaseOffset: 0.5 },                     // Dilema del Prisionero
+  { projectIdx: 0, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 2) / 5 }, // Monty Hall
+  { projectIdx: 1, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 4) / 5 }, // Torres de Hanoi
+  { projectIdx: 2, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 6) / 5 }, // Demolición FIQ
+  { projectIdx: 3, orbitRing: 2, phaseOffset: 0.5 + (Math.PI * 8) / 5 }, // Math Dojo Arena
 ];
 
 const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
@@ -71,9 +71,58 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
           <div class="screen-frame">
             <!-- Pura ventana visual sin textos ni badges superpuestos -->
             <div class="screen-visual">
+              {card.id === 'monty-hall' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#0d1b18" class="card-bg-rect" data-card="monty-hall" />
+                  <circle cx="80" cy="50" r="36" stroke="#3fe0b5" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.3" />
+                  <!-- Puerta 1 -->
+                  <g transform="translate(24, 25)">
+                    <rect width="28" height="52" rx="3" stroke="#3fe0b5" stroke-width="1.4" fill="#132b26" class="card-fill-dark" />
+                    <circle cx="23" cy="27" r="2" fill="#3fe0b5" />
+                    <text x="14" y="20" fill="#3fe0b5" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">1</text>
+                  </g>
+                  <!-- Puerta 2 (abierta con coche) -->
+                  <g transform="translate(66, 25)">
+                    <rect width="28" height="52" rx="3" stroke="#3fe0b5" stroke-width="1.2" stroke-dasharray="2 2" fill="#091412" class="card-fill-darker" opacity="0.6" />
+                    <!-- Coche simplificado -->
+                    <path d="M7 32 Q14 20 21 20 Q25 24 26 32 Z" fill="#3fe0b5" />
+                    <circle cx="11" cy="34" r="3.5" fill="#091412" stroke="#3fe0b5" stroke-width="1.2" />
+                    <circle cx="21" cy="34" r="3.5" fill="#091412" stroke="#3fe0b5" stroke-width="1.2" />
+                    <!-- Hoja abierta -->
+                    <path d="M0 0 L-10 8 L-10 46 L0 52 Z" fill="#163830" stroke="#3fe0b5" stroke-width="1.4" class="card-door-leaf" />
+                  </g>
+                  <!-- Puerta 3 -->
+                  <g transform="translate(108, 25)">
+                    <rect width="28" height="52" rx="3" stroke="#3fe0b5" stroke-width="1.4" fill="#132b26" class="card-fill-dark" />
+                    <circle cx="23" cy="27" r="2" fill="#3fe0b5" />
+                    <text x="14" y="20" fill="#3fe0b5" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">3</text>
+                  </g>
+                </svg>
+              )}
+              {card.id === 'torres-hanoi' && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#08131e" class="card-bg-rect" data-card="torres-hanoi" />
+                  <circle cx="80" cy="50" r="36" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.3" />
+                  <!-- Base -->
+                  <rect x="18" y="78" width="124" height="6" rx="3" fill="#0f1d2d" stroke="#38bdf8" stroke-width="1.2" class="card-fill-dark" />
+                  <!-- 3 Varas -->
+                  <rect x="41" y="26" width="3" height="52" rx="1.5" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8" opacity="0.85" />
+                  <rect x="79" y="26" width="3" height="52" rx="1.5" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8" opacity="0.85" />
+                  <rect x="117" y="26" width="3" height="52" rx="1.5" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8" opacity="0.85" />
+                  <!-- Discos en Vara A -->
+                  <rect x="25" y="69" width="35" height="8" rx="2" fill="#f43f5e" stroke="#fda4af" stroke-width="1" />
+                  <rect x="29" y="59" width="27" height="8" rx="2" fill="#fbbf24" stroke="#fde68a" stroke-width="1" />
+                  <!-- Arco de movimiento -->
+                  <path d="M 42 52 Q 80 10 118 60" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3 2" opacity="0.75" />
+                  <!-- Disco 1 volando en el aire -->
+                  <rect x="70" y="22" width="20" height="7" rx="2" fill="#38bdf8" stroke="#7dd3fc" stroke-width="1.2" transform="rotate(8 80 25)" />
+                  <!-- Disco en Vara C -->
+                  <rect x="107" y="69" width="23" height="8" rx="2" fill="#3fe0b5" stroke="#6ee7b7" stroke-width="1" />
+                </svg>
+              )}
               {card.id === 'demolicion-fiq' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#1b1216" />
+                  <rect width="160" height="100" fill="#1b1216" class="card-bg-rect" data-card="demolicion-fiq" />
                   <line x1="8" y1="84" x2="152" y2="84" stroke="#ff8a5b" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.4" />
                   <!-- Cañón de lanzamiento balístico -->
                   <circle cx="26" cy="78" r="8" stroke="#ff8a5b" stroke-width="1.8" />
@@ -93,15 +142,15 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
               )}
               {card.id === 'math-dojo-arcade' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#181310" />
+                  <rect width="160" height="100" fill="#181310" class="card-bg-rect" data-card="math-dojo-arcade" />
                   <circle cx="80" cy="50" r="34" stroke="#ff8a5b" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.35" />
                   <!-- Icono Oficial Math Dojo Torii -->
                   <g transform="translate(80, 50) scale(0.68) translate(-50, -50)">
                     <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" fill="#ff8a5b" />
-                    <path d="M18 28h64l-2 5H20l-2-5Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
-                    <rect x="17" y="42" width="66" height="6" rx="2" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
+                    <path d="M18 28h64l-2 5H20l-2-5Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" class="card-fill-dark" />
+                    <rect x="17" y="42" width="66" height="6" rx="2" stroke="#ff8a5b" stroke-width="3" fill="#251610" class="card-fill-dark" />
                     <rect x="46" y="33" width="8" height="9" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
-                    <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" />
+                    <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" stroke="#ff8a5b" stroke-width="3" fill="#251610" class="card-fill-dark" />
                     <rect x="21" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
                     <rect x="65" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
                     <path d="M12 84h76" stroke="#ff8a5b" stroke-width="2.5" stroke-linecap="round" />
@@ -110,23 +159,23 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
               )}
               {card.id === 'math-dojo-junior' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#0c1622" />
+                  <rect width="160" height="100" fill="#0c1622" class="card-bg-rect" data-card="math-dojo-junior" />
                   <circle cx="80" cy="50" r="34" stroke="#38c8ff" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.35" />
                   <!-- Icono Oficial Math Dojo Junior Ninja -->
                   <g transform="translate(80, 50) scale(0.68) translate(-50, -50)">
                     <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff35" />
                     <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round" />
                     <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round" />
-                    <circle cx="50" cy="36" r="19" stroke="#38c8ff" stroke-width="3" fill="#132338" />
+                    <circle cx="50" cy="36" r="19" stroke="#38c8ff" stroke-width="3" fill="#132338" class="card-fill-dark" />
                     <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff" />
-                    <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" stroke="#38c8ff" stroke-width="3" fill="#132338" />
+                    <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" stroke="#38c8ff" stroke-width="3" fill="#132338" class="card-fill-dark" />
                     <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
                   </g>
                 </svg>
               )}
               {card.id === 'orbital-gravity' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#0b1220" />
+                  <rect width="160" height="100" fill="#0b1220" class="card-bg-rect" data-card="orbital-gravity" />
                   <ellipse cx="80" cy="50" rx="58" ry="26" stroke="#4d94ff" stroke-width="1.4" stroke-dasharray="5 3" opacity="0.6" transform="rotate(-15 80 50)" />
                   <circle cx="65" cy="48" r="10" fill="#ffc14d" />
                   <circle cx="65" cy="48" r="18" stroke="#ffc14d" stroke-width="0.8" opacity="0.4" />
@@ -136,7 +185,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
               )}
               {card.id === 'voxel-polyhedra' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#161220" />
+                  <rect width="160" height="100" fill="#161220" class="card-bg-rect" data-card="voxel-polyhedra" />
                   <g transform="translate(80, 50)">
                     <path d="M 0 -28 L 28 -14 L 0 0 L -28 -14 Z" stroke="#b48cff" stroke-width="1.4" fill="#b48cff30" />
                     <path d="M -28 -14 L 0 0 L 0 28 L -28 14 Z" stroke="#b48cff" stroke-width="1.4" fill="#b48cff18" />
@@ -146,7 +195,7 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
               )}
               {card.id === 'sierpinski-chaos' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#0d1b16" />
+                  <rect width="160" height="100" fill="#0d1b16" class="card-bg-rect" data-card="sierpinski-chaos" />
                   <polygon points="80,15 36,84 124,84" stroke="#3fe0b5" stroke-width="1.5" fill="none" opacity="0.8" />
                   <polygon points="80,84 58,49 102,49" stroke="#3fe0b5" stroke-width="1.2" fill="#3fe0b530" />
                   <circle cx="80" cy="32" r="1.5" fill="#3fe0b5" />
@@ -154,20 +203,23 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
                   <circle cx="112" cy="74" r="1.5" fill="#3fe0b5" />
                 </svg>
               )}
-              {card.id === 'vector-pong' && (
+              {(card.id === 'galaxy-pong' || card.id === 'vector-pong') && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#1b101c" />
-                  <line x1="16" y1="28" x2="16" y2="72" stroke="#e68aff" stroke-width="3" stroke-linecap="round" />
-                  <line x1="144" y1="38" x2="144" y2="82" stroke="#e68aff" stroke-width="3" stroke-linecap="round" />
+                  <rect width="160" height="100" fill="#140f24" class="card-bg-rect" data-card="galaxy-pong" />
+                  <circle cx="25" cy="20" r="0.8" fill="#ffffff" opacity="0.7" />
+                  <circle cx="135" cy="80" r="1" fill="#e68aff" opacity="0.8" />
+                  <ellipse cx="80" cy="50" rx="48" ry="18" transform="rotate(-15 80 50)" stroke="#e68aff" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.3" />
+                  <rect x="14" y="28" width="4" height="34" rx="2" fill="#38bdf8" />
+                  <rect x="142" y="42" width="4" height="34" rx="2" fill="#e68aff" />
                   <line x1="80" y1="10" x2="80" y2="90" stroke="#e68aff" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.3" />
-                  <circle cx="62" cy="46" r="4" fill="#e68aff" />
-                  <line x1="62" y1="46" x2="88" y2="30" stroke="#e68aff" stroke-width="1.5" />
-                  <line x1="88" y1="30" x2="114" y2="52" stroke="#e68aff" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.6" />
+                  <circle cx="68" cy="46" r="4" fill="#ffffff" />
+                  <circle cx="68" cy="46" r="7" fill="#e68aff" opacity="0.4" />
+                  <line x1="68" y1="46" x2="94" y2="32" stroke="#3fe0b5" stroke-width="1.2" />
                 </svg>
               )}
               {card.id === 'game-theory-dilemma' && (
                 <svg viewBox="0 0 160 100" class="card-svg" fill="none">
-                  <rect width="160" height="100" fill="#1c160c" />
+                  <rect width="160" height="100" fill="#1c160c" class="card-bg-rect" data-card="game-theory-dilemma" />
                   <rect x="48" y="24" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d28" />
                   <rect x="82" y="24" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d18" />
                   <rect x="48" y="50" width="30" height="22" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d18" />
@@ -178,6 +230,14 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
                   <circle cx="63" cy="61" r="3" fill="#ffc14d" />
                   <circle cx="97" cy="61" r="3" fill="#ffc14d" />
                   <line x1="63" y1="35" x2="97" y2="61" stroke="#ffc14d" stroke-width="0.8" opacity="0.5" />
+                </svg>
+              )}
+              {!['monty-hall', 'torres-hanoi', 'demolicion-fiq', 'math-dojo-arcade', 'math-dojo-junior', 'orbital-gravity', 'voxel-polyhedra', 'sierpinski-chaos', 'vector-pong', 'galaxy-pong', 'game-theory-dilemma'].includes(card.id) && (
+                <svg viewBox="0 0 160 100" class="card-svg" fill="none">
+                  <rect width="160" height="100" fill="#121620" class="card-bg-rect" />
+                  <circle cx="80" cy="50" r="32" stroke="var(--card-color, #38bdf8)" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.4" />
+                  <polygon points="80,30 98,62 62,62" stroke="var(--card-color, #38bdf8)" stroke-width="1.6" fill="color-mix(in srgb, var(--card-color, #38bdf8) 20%, transparent)" />
+                  <circle cx="80" cy="50" r="3.5" fill="var(--card-color, #38bdf8)" />
                 </svg>
               )}
             </div>
@@ -427,10 +487,11 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
   }
 
+  :global([data-theme="light"]) .screen-frame,
   :root[data-theme='light'] .screen-frame {
     background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
   }
 
   .craft-screen-card:hover .screen-frame {
@@ -445,6 +506,60 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     overflow: hidden;
     position: relative;
     background: #090a0f;
+  }
+
+  :global([data-theme="light"]) .screen-visual,
+  :root[data-theme='light'] .screen-visual {
+    background: #ffffff;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect,
+  :root[data-theme='light'] .card-bg-rect {
+    fill: #ffffff !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="demolicion-fiq"],
+  :global([data-theme="light"]) .card-bg-rect[data-card="math-dojo-arcade"] {
+    fill: #fff7ed !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="math-dojo-junior"],
+  :global([data-theme="light"]) .card-bg-rect[data-card="torres-hanoi"] {
+    fill: #f0f9ff !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="orbital-gravity"] {
+    fill: #eff6ff !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="voxel-polyhedra"] {
+    fill: #faf5ff !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="sierpinski-chaos"],
+  :global([data-theme="light"]) .card-bg-rect[data-card="monty-hall"] {
+    fill: #f0fdf4 !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="vector-pong"],
+  :global([data-theme="light"]) .card-bg-rect[data-card="galaxy-pong"] {
+    fill: #fdf4ff !important;
+  }
+
+  :global([data-theme="light"]) .card-bg-rect[data-card="game-theory-dilemma"] {
+    fill: #fffbeb !important;
+  }
+
+  :global([data-theme="light"]) .card-fill-dark {
+    fill: #f1f5f9 !important;
+  }
+
+  :global([data-theme="light"]) .card-fill-darker {
+    fill: #e2e8f0 !important;
+  }
+
+  :global([data-theme="light"]) .card-door-leaf {
+    fill: #ccfbf1 !important;
   }
 
   .card-svg {
@@ -506,6 +621,23 @@ const orbitCards = ORBIT_ASSIGNMENTS.map((assign, idx) => {
     font-family: var(--mono);
     font-size: 0.68rem;
     color: #8e919e;
+  }
+
+  :global([data-theme="light"]) .hud-pill,
+  :root[data-theme='light'] .hud-pill {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .hud-title,
+  :root[data-theme='light'] .hud-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .hud-author,
+  :root[data-theme='light'] .hud-author {
+    color: #64748b;
   }
 
   /* ---------------------------------------------------- */

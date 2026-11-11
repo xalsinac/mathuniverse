@@ -1,0 +1,3695 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Simulador Orbital Kepleriano & Gravitación N-Cuerpos | Math Universe"
+  description="Laboratorio interactivo de mecánica celeste y leyes de Kepler. Lanza planetas, observa órbitas elípticas, comprueba la 2.ª ley de las áreas y realiza transferencias de Hohmann."
+>
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="kepler-page" id="main-content">
+    <!-- COCKPIT DEL SIMULADOR -->
+    <section class="game-cockpit" id="escenario">
+      <div class="cockpit-container">
+        <!-- Cabecera de Navegación y Título -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">Simulador Orbital Kepleriano</h1>
+              <span class="badge-pill">Física & Gravitación · Kepler</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- SELECTOR DE MODOS PRINCIPAL (3 MODOS: TUTORIAL / SANDBOX / MISIONES) -->
+        <nav class="mode-selector-hub" aria-label="Seleccionar modalidad de juego" role="tablist">
+          <button type="button" class="mode-hub-card" id="tab-btn-tutorial" role="tab" aria-selected="false">
+            <div class="mhc-badge-row">
+              <span class="mhc-mode-tag">MODO 1</span>
+              <span class="mhc-status-pill is-alt">PRINCIPIANTE</span>
+            </div>
+            <div class="mhc-body">
+              <span class="mhc-icon" aria-hidden="true">🎓</span>
+              <div class="mhc-details">
+                <strong class="mhc-title">Tutorial & Modo Principiante</strong>
+                <p class="mhc-desc">
+                  Guía paso a paso: comprende el pozo de gravedad, los vectores de velocidad y fuerza, y por qué las áreas de Kepler son iguales.
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="mode-hub-card is-active" id="tab-btn-sandbox" role="tab" aria-selected="true">
+            <div class="mhc-badge-row">
+              <span class="mhc-mode-tag">MODO 2</span>
+              <span class="mhc-status-pill is-current">ACTIVO</span>
+            </div>
+            <div class="mhc-body">
+              <span class="mhc-icon" aria-hidden="true">🪐</span>
+              <div class="mhc-details">
+                <strong class="mhc-title">Laboratorio Libre (Sandbox)</strong>
+                <p class="mhc-desc">
+                  Lanza planetas y satélites con click y arrastre. Activa el pozo gravitatorio, las órbitas guía y la comprobación de la 2.ª ley.
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="mode-hub-card" id="tab-btn-missions" role="tab" aria-selected="false">
+            <div class="mhc-badge-row">
+              <span class="mhc-mode-tag">MODO 3</span>
+              <span class="mhc-status-pill is-alt">DESAFÍOS</span>
+            </div>
+            <div class="mhc-body">
+              <span class="mhc-icon" aria-hidden="true">🚀</span>
+              <div class="mhc-details">
+                <strong class="mhc-title">Misiones Orbitales Guiadas</strong>
+                <p class="mhc-desc">
+                  Desafíos astronáuticos de cálculo: circularizar una órbita, inyectar impulso para Hohmann o ejecutar un tirachinas gravitatorio.
+                </p>
+              </div>
+            </div>
+          </button>
+        </nav>
+
+        <!-- ================================================================= -->
+        <!-- ZONA DE ESCENARIO Y CANVAS INTERACTIVO -->
+        <!-- ================================================================= -->
+        <div class="stage-orbital-arena" id="arena-container">
+          <!-- Canvas de simulación física 60fps -->
+          <canvas id="kepler-canvas" class="kepler-canvas"></canvas>
+
+          <!-- Overlay HUD de Telemetría Superior Izquierda -->
+          <div class="hud-telemetry" id="hud-telemetry">
+            <div class="hud-item">
+              <span class="hud-label">CUERPOS VIVOS</span>
+              <span class="hud-val" id="hud-bodies-count">2</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">VELOCIDAD (v)</span>
+              <span class="hud-val is-cyan" id="hud-vel">-- km/s</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">RADIO (r)</span>
+              <span class="hud-val" id="hud-radius">-- AU</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">EXCENTRICIDAD (e)</span>
+              <span class="hud-val is-gold" id="hud-ecc">--</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">TIPO DE CÓNICA</span>
+              <span class="hud-conic-pill" id="hud-conic">Elíptica (e &lt; 1)</span>
+            </div>
+          </div>
+
+          <!-- Overlay Didáctico: Comprobador 2.ª Ley de Kepler -->
+          <div class="hud-kepler2-overlay" id="hud-kepler2-overlay" style="display: none;">
+            <div class="k2-badge">2.ª LEY DE KEPLER: LEY DE LAS ÁREAS</div>
+            <div class="k2-data-row">
+              <div class="k2-metric">
+                <span class="k2-lbl">Área Sector Actual:</span>
+                <span class="k2-val" id="k2-current-area">-- UA²</span>
+              </div>
+              <div class="k2-metric">
+                <span class="k2-lbl">Tiempo Transcurrido (Δt):</span>
+                <span class="k2-val" id="k2-current-dt">-- días</span>
+              </div>
+              <div class="k2-metric">
+                <span class="k2-lbl">Tasa Areal (dA/dt):</span>
+                <span class="k2-val is-green" id="k2-areal-rate">CONSTANTE</span>
+              </div>
+            </div>
+            <p class="k2-note">
+              Los sectores triangulares coloreados demuestran que cerca del periastro (rápido) y en el apoastro (lento), las superficies barridas en tiempos iguales son idénticas.
+            </p>
+            <div class="k2-actions-row">
+              <button type="button" class="btn-k2-clear" id="btn-k2-clear">Borrar Áreas Pintadas</button>
+            </div>
+          </div>
+
+          <!-- OVERLAY DE TUTORIAL GUIADO / MODO PRINCIPIANTE -->
+          <div class="hud-tutorial-dock" id="hud-tutorial-dock" style="display: none;">
+            <div class="tutorial-header-bar">
+              <span class="tut-step-tag" id="tut-step-tag">PASO 1 DE 5: EL POZO GRAVITATORIO</span>
+              <button type="button" class="tut-close-btn" id="btn-tut-close" title="Salir del tutorial">✕</button>
+            </div>
+            <h3 class="tut-title" id="tut-title">La Curvatura del Espacio y el Sol</h3>
+            <p class="tut-body" id="tut-body">
+              En el centro se encuentra el <strong>Sol</strong>. Su gran masa no tira con una cuerda mágica: <strong>curva y hunde la malla del espacio circundante</strong>, creando un pozo gravitatorio (observa cómo las líneas de la cuadrícula se hunden hacia el centro). Cuanto más te acercas, más empinada es la pendiente y con más fuerza caes.
+            </p>
+            <div class="tut-callout" id="tut-callout">
+              💡 <em>Principio Físico:</em> La materia le dice al espacio cómo curvarse, y el espacio curvado le dice a la materia cómo moverse (Albert Einstein).
+            </div>
+            <div class="tut-nav-row">
+              <button type="button" class="btn-tut-nav is-prev" id="btn-tut-prev" disabled>Anterior</button>
+              <div class="tut-stepper-dots" id="tut-stepper-dots">
+                <span class="tut-dot is-active"></span>
+                <span class="tut-dot"></span>
+                <span class="tut-dot"></span>
+                <span class="tut-dot"></span>
+                <span class="tut-dot"></span>
+              </div>
+              <button type="button" class="btn-tut-nav is-next" id="btn-tut-next">Siguiente: Los Vectores →</button>
+            </div>
+          </div>
+
+          <!-- Misiones HUD Overlay (Sólo activo en Modo 3) -->
+          <div class="hud-mission-dock" id="hud-mission-dock" style="display: none;">
+            <div class="mission-header-bar">
+              <div class="mission-title-group">
+                <span class="mission-step-tag" id="mission-step-tag">MISIÓN 1 DE 4</span>
+                <h2 class="mission-title" id="mission-title">Circularización Newtoniana</h2>
+              </div>
+              <div class="mission-status-badge" id="mission-status-badge">EN CURSO</div>
+            </div>
+            <p class="mission-objective" id="mission-objective">
+              Ajusta la velocidad de inyección orbital con el vector para que la excentricidad sea menor a 0.05 (órbita casi circular perfecta: v ≈ √(GM/r)).
+            </p>
+            <div class="mission-progress-bar">
+              <div class="mission-progress-fill" id="mission-progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="mission-actions-row">
+              <button type="button" class="btn-mission-reset" id="btn-mission-retry">Reiniciar Misión</button>
+              <button type="button" class="btn-mission-next" id="btn-mission-next" disabled>Siguiente Misión</button>
+            </div>
+          </div>
+
+          <!-- Guía Flotante de Controles en Canvas -->
+          <div class="canvas-help-tip" id="canvas-help-tip">
+            <span>🖱️ <strong>Click + Arrastrar</strong> en el espacio para lanzar un cuerpo con vector de velocidad.</span>
+          </div>
+
+          <!-- Controles de Navegación Rápida sobre Canvas (Zoom y Centrado) -->
+          <div class="canvas-floating-tools">
+            <button type="button" class="tool-btn" id="btn-zoom-in" title="Acercar (+)">+</button>
+            <button type="button" class="tool-btn" id="btn-zoom-out" title="Alejar (-)">−</button>
+            <button type="button" class="tool-btn" id="btn-recenter" title="Centrar Estrella">🎯</button>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- BARRA DE CONTROLES INFERIOR Y PRESETS -->
+        <!-- ================================================================= -->
+        <div class="orbital-dashboard">
+          <!-- Fila 1: Presets rápidos de 1 clic -->
+          <div class="presets-shelf" id="presets-shelf">
+            <span class="shelf-label">SISTEMAS PRECONFIGURADOS:</span>
+            <div class="presets-buttons">
+              <button type="button" class="btn-preset is-active" data-preset="solar-inner">
+                <span>☀️ Sistema Solar Interior</span>
+              </button>
+              <button type="button" class="btn-preset" data-preset="kepler-pure">
+                <span>📐 Órbita Elíptica Pura (Kepler)</span>
+              </button>
+              <button type="button" class="btn-preset" data-preset="slingshot">
+                <span>🚀 Asistencia Gravitatoria (Slingshot)</span>
+              </button>
+              <button type="button" class="btn-preset" data-preset="figure-eight">
+                <span>♾️ 3 Cuerpos en Ocho (Chenciner)</span>
+              </button>
+              <button type="button" class="btn-preset" data-preset="binary-stars">
+                <span>♊ Sistema Binario</span>
+              </button>
+              <button type="button" class="btn-preset is-reset-btn" id="btn-reset-preset" title="Reiniciar el escenario actual">
+                <span>🔄 Reiniciar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Fila 2: Parámetros del Nuevo Cuerpo & Interruptores Visuales -->
+          <div class="controls-grid">
+            <!-- Selector de Masa / Tipo de Cuerpo a Lanzar -->
+            <div class="ctrl-card">
+              <span class="ctrl-card-title">CUERPO A LANZAR:</span>
+              <div class="spawn-type-selector" id="spawn-type-selector">
+                <button type="button" class="btn-spawn-type" data-type="probe">
+                  <span class="type-dot is-probe"></span>
+                  <span>Sonda (Sin Masa)</span>
+                </button>
+                <button type="button" class="btn-spawn-type is-active" data-type="planet">
+                  <span class="type-dot is-planet"></span>
+                  <span>Planeta</span>
+                </button>
+                <button type="button" class="btn-spawn-type" data-type="giant">
+                  <span class="type-dot is-giant"></span>
+                  <span>Gigante Gaseoso</span>
+                </button>
+                <button type="button" class="btn-spawn-type" data-type="star">
+                  <span class="type-dot is-star"></span>
+                  <span>Estrella Masiva</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Interruptores Didácticos y Vectores -->
+            <div class="ctrl-card">
+              <span class="ctrl-card-title">CAPAS DIDÁCTICAS:</span>
+              <div class="toggles-cluster">
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-gravity-well" checked />
+                  <span class="chip-box"></span>
+                  <span>Pozo de Gravedad</span>
+                </label>
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-orbit-guides" checked />
+                  <span class="chip-box"></span>
+                  <span>Órbitas en Pantalla</span>
+                </label>
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-kepler2" />
+                  <span class="chip-box"></span>
+                  <span>2.ª Ley (Áreas dA/dt)</span>
+                </label>
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-vel-vector" checked />
+                  <span class="chip-box"></span>
+                  <span>Vector Velocidad (v)</span>
+                </label>
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-grav-vector" checked />
+                  <span class="chip-box"></span>
+                  <span>Vector Gravedad (a)</span>
+                </label>
+                <label class="toggle-chip">
+                  <input type="checkbox" id="chk-orbit-pred" checked />
+                  <span class="chip-box"></span>
+                  <span>Predictor de Tiro</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Control de Tiempo & Reproducción -->
+            <div class="ctrl-card is-playback">
+              <span class="ctrl-card-title">MOTOR TEMPORAL:</span>
+              <div class="playback-dock">
+                <button type="button" class="btn-play-pause is-playing" id="btn-play-pause" title="Pausar / Reanudar (Espacio)">
+                  <span id="play-pause-icon">⏸️</span>
+                </button>
+                <div class="time-warp-selector">
+                  <button type="button" class="btn-warp" data-warp="0.25">0.25x</button>
+                  <button type="button" class="btn-warp is-active" data-warp="1">1x</button>
+                  <button type="button" class="btn-warp" data-warp="2">2x</button>
+                  <button type="button" class="btn-warp" data-warp="5">5x</button>
+                </div>
+                <button type="button" class="btn-ctrl-clear" id="btn-clear-bodies" title="Eliminar planetas lanzados">
+                  <span>Limpiar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- SECCIÓN DIDÁCTICA MATEMÁTICA: LAS LEYES DE KEPLER Y NEWTON -->
+    <!-- ================================================================= -->
+    <section class="kepler-theory-section" id="teoria">
+      <div class="theory-container">
+        <header class="theory-header">
+          <span class="section-tag">MECÁNICA CELESTE & GEOMETRÍA CÓNICA</span>
+          <h2 class="theory-title">Las 3 Leyes de Johannes Kepler</h2>
+          <p class="theory-subtitle">
+            Publicadas entre 1609 y 1619 a partir de las minuciosas observaciones astronómicas de Tycho Brahe, las leyes de Kepler rompieron con el dogma de las órbitas circulares y sentaron las bases para la gravitación universal de Isaac Newton.
+          </p>
+        </header>
+
+        <!-- BANNER DE CONFRONTACIÓN: LAS 3 LEYES FUNDAMENTALES -->
+        <div class="laws-triple-grid">
+          <!-- 1.ª Ley de Kepler -->
+          <article class="law-card">
+            <div class="law-card-badge">1.ª LEY (1609)</div>
+            <h3 class="law-card-title">Ley de las Órbitas Elípticas</h3>
+            <p class="law-desc">
+              Todos los planetas se desplazan alrededor del Sol describiendo <strong>órbitas elípticas</strong>, estando el Sol situado en uno de los dos focos de la elipse.
+            </p>
+            <div class="math-callout">
+              <span class="math-formula"><em>r</em>(<em>θ</em>) = <em>p</em> / (1 + <em>e</em> · cos <em>θ</em>)</span>
+            </div>
+            <p class="law-subdesc">
+              La <strong>excentricidad</strong> (<em>e</em>) determina la forma de la cónica: <em>e</em> = 0 es un círculo perfecto; 0 &lt; <em>e</em> &lt; 1 es una elipse cerrada; <em>e</em> = 1 es una parábola de escape; y <em>e</em> &gt; 1 es una hipérbola.
+            </p>
+          </article>
+
+          <!-- 2.ª Ley de Kepler -->
+          <article class="law-card is-highlight">
+            <div class="law-card-badge is-accent">2.ª LEY (1609)</div>
+            <h3 class="law-card-title">Ley de las Áreas (dA/dt = Cte)</h3>
+            <p class="law-desc">
+              El radiovector que une el centro del Sol con un planeta <strong>barre áreas iguales en intervalos de tiempo iguales</strong>.
+            </p>
+            <div class="math-callout">
+              <span class="math-formula">d<em>A</em> / d<em>t</em> = <em>L</em> / (2<em>m</em>) = constante</span>
+            </div>
+            <p class="law-subdesc">
+              Es consecuencia directa de la <strong>conservación del momento angular</strong> en fuerzas centrales. Por eso el planeta viaja a máxima velocidad en el perihelio (más cercano) y a mínima velocidad en el afelio (más lejano).
+            </p>
+          </article>
+
+          <!-- 3.ª Ley de Kepler -->
+          <article class="law-card">
+            <div class="law-card-badge">3.ª LEY (1619)</div>
+            <h3 class="law-card-title">Ley de los Periodos Armónicos</h3>
+            <p class="law-desc">
+              El cuadrado del periodo orbital (<em>T</em>) de cualquier planeta es proporcional al cubo del semieje mayor (<em>a</em>) de su órbita:
+            </p>
+            <div class="math-callout">
+              <span class="math-formula"><em>T</em><sup>2</sup> / <em>a</em><sup>3</sup> = 4<em>π</em><sup>2</sup> / (<em>G</em> · <em>M</em>)</span>
+            </div>
+            <p class="law-subdesc">
+              Si medimos el tiempo en años terrestres y las distancias en Unidades Astronómicas (UA) para el Sistema Solar, la constante vale exactamente 1: <em>T</em><sup>2</sup> = <em>a</em><sup>3</sup>.
+            </p>
+          </article>
+        </div>
+
+        <!-- REJILLA DE TARJETAS TÉCNICAS APLICADAS -->
+        <div class="theory-grid">
+          <!-- Tarjeta 1: Velocidades Clave: Circular vs Escape -->
+          <article class="theory-card">
+            <div class="tcard-icon">⚡</div>
+            <h3 class="tcard-title">Velocidad Circular vs Velocidad de Escape</h3>
+            <p class="tcard-p">
+              Para un cuerpo a distancia <em>r</em> de una masa central <em>M</em>:
+            </p>
+            <div class="math-callout">
+              <span class="math-formula"><em>v</em><sub>circ</sub> = √(<em>GM</em> / <em>r</em>) &emsp;|&emsp; <em>v</em><sub>esc</sub> = √(2) · <em>v</em><sub>circ</sub></span>
+            </div>
+            <p class="tcard-foot">
+              Basta multiplicar la velocidad circular por √2 (un aumento aproximado del 41.4%) para que la energía mecánica total pase de ser negativa (órbita ligada) a cero o positiva (escape hacia el infinito).
+            </p>
+          </article>
+
+          <!-- Tarjeta 2: La Maniobra de Transferencia de Hohmann -->
+          <article class="theory-card">
+            <div class="tcard-icon">🛰️</div>
+            <h3 class="tcard-title">La Transferencia Orbital de Hohmann (1925)</h3>
+            <p class="tcard-p">
+              El método energéticamente más eficiente para viajar entre dos órbitas circulares concéntricas (como de la Tierra a Marte) usando una media elipse tangente:
+            </p>
+            <ol class="theory-steps">
+              <li><strong>Primer impulso (Δv₁)</strong>: Se acelera en periastro para entrar en la elipse de transferencia (con semieje <em>a</em> = (<em>r</em>₁ + <em>r</em>₂) / 2).</li>
+              <li><strong>Viaje pasivo</strong>: Se recorre media órbita elíptica sin consumir propelente.</li>
+              <li><strong>Segundo impulso (Δv₂)</strong>: Al llegar al apoastro, se vuelve a acelerar para circularizar en la órbita de destino.</li>
+            </ol>
+          </article>
+
+          <!-- Tarjeta 3: Asistencia Gravitatoria (Slingshot Effect) -->
+          <article class="theory-card">
+            <div class="tcard-icon">🪐</div>
+            <h3 class="tcard-title">El Tirachinas Gravitatorio (Slingshot)</h3>
+            <p class="tcard-p">
+              Las sondas Voyager, Cassini y New Horizons cruzaron el Sistema Solar sin combustible masivo gracias a pasar rozando planetas gigantes en movimiento.
+            </p>
+            <p class="tcard-p">
+              Visto desde el planeta, el choque es elástico y la sonda sale con la misma rapidez que entró. Pero visto desde el Sol, la sonda "roba" una minúscula fracción de la velocidad orbital del planeta, incrementando su velocidad heliocéntrica hasta en 2<em>v</em><sub>planeta</sub>.
+            </p>
+          </article>
+
+          <!-- Tarjeta 4: El Integrador Numérico Verlet Simpéctico -->
+          <article class="theory-card">
+            <div class="tcard-icon">⚙️</div>
+            <h3 class="tcard-title">Conservación Numérica: Por qué Euler Falla</h3>
+            <p class="tcard-p">
+              Los simuladores ingenuos usan integración de Euler: <em>x</em>(<em>t</em> + Δ<em>t</em>) = <em>x</em>(<em>t</em>) + <em>v</em> · Δ<em>t</em>. En gravedad, esto añade energía artificial en cada paso, haciendo que los planetas se alejen en espiral hasta escapar.
+            </p>
+            <p class="tcard-foot">
+              Este simulador utiliza el algoritmo <strong>Velocity Verlet</strong> de orden 2, un integrador simpléctico que conserva estrictamente el espacio fásico y la energía orbital en cientos de miles de pasos.
+            </p>
+          </article>
+        </div>
+
+        <!-- CALCULADORA KEPLERIANA INTERACTIVA -->
+        <div class="kepler-calculator-box">
+          <div class="kcalc-header">
+            <span class="kcalc-pill">LABORATORIO DE CÁLCULO</span>
+            <h3 class="kcalc-title">Calculadora de Órbitas Planetarias (3.ª Ley)</h3>
+            <p class="kcalc-sub">Introduce la distancia media al Sol (semieje mayor <em>a</em>) para predecir el periodo de traslación exacto:</p>
+          </div>
+
+          <div class="kcalc-interactive-row">
+            <div class="kcalc-input-wrap">
+              <label for="calc-semimajor">Semieje mayor <em>a</em> (en Unidades Astronómicas, UA):</label>
+              <div class="kcalc-field">
+                <input type="number" id="calc-semimajor" min="0.1" max="100" step="0.05" value="1.0" />
+                <span class="kcalc-unit">UA</span>
+              </div>
+              <div class="kcalc-planet-shortcuts">
+                <button type="button" class="btn-shortcut" data-a="0.387">Mercurio (0.39 UA)</button>
+                <button type="button" class="btn-shortcut" data-a="0.723">Venus (0.72 UA)</button>
+                <button type="button" class="btn-shortcut" data-a="1.0">Tierra (1.00 UA)</button>
+                <button type="button" class="btn-shortcut" data-a="1.524">Marte (1.52 UA)</button>
+                <button type="button" class="btn-shortcut" data-a="5.204">Júpiter (5.20 UA)</button>
+              </div>
+            </div>
+
+            <div class="kcalc-results-wrap">
+              <div class="kcalc-res-item">
+                <span class="kc-label">Periodo Orbital Calculado (<em>T</em> = √(<em>a</em>³)):</span>
+                <span class="kc-val" id="calc-res-period">1.000 años terrestres (365.25 días)</span>
+              </div>
+              <div class="kcalc-res-item">
+                <span class="kc-label">Velocidad Orbital Media Estimada:</span>
+                <span class="kc-val is-cyan" id="calc-res-vel">29.78 km/s</span>
+              </div>
+              <div class="kcalc-res-item">
+                <span class="kc-label">Razón Kepleriana (<em>T</em>² / <em>a</em>³):</span>
+                <span class="kc-val is-gold" id="calc-res-ratio">1.0000 (Constante Universal)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // TIPOS Y MODELO DE FÍSICA KEPLERIANA
+    // =========================================================================
+    interface CelestialBody {
+      id: string;
+      name: string;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      ax: number;
+      ay: number;
+      mass: number;
+      radius: number;
+      color: string;
+      isFixed?: boolean;
+      trail: { x: number; y: number }[];
+      maxTrailLength: number;
+      type: 'star' | 'planet' | 'giant' | 'probe';
+    }
+
+    interface Mission {
+      id: number;
+      title: string;
+      stepTag: string;
+      objective: string;
+      setup: () => void;
+      checkCondition: (bodies: CelestialBody[]) => boolean;
+      hint: string;
+    }
+
+    // Constantes físicas del simulador
+    const G = 800; // Constante gravitatoria adaptada a la escala visual de píxeles
+    const SOFTENING = 12; // Suavizado para evitar singularidades y explosiones numéricas (epsilon^2)
+    const MAX_SUBSTEPS = 4; // Subpasos de integración Verlet por frame para alta precisión simpléctica
+
+    // =========================================================================
+    // ESTADO DEL SIMULADOR
+    // =========================================================================
+    let bodies: CelestialBody[] = [];
+    let isRunning = true;
+    let timeWarp = 1.0;
+    let activeMode: 'tutorial' | 'sandbox' | 'missions' = 'sandbox';
+    let currentMissionIdx = 0;
+    let currentTutorialStep = 0;
+    let currentPresetName = 'solar-inner';
+    let spawnType: 'probe' | 'planet' | 'giant' | 'star' = 'planet';
+
+    // Opciones visuales
+    let showGravityWell = true;
+    let showTheoreticalOrbits = true;
+    let showKepler2Areas = false;
+    let showVelocityVector = true;
+    let showGravVector = true;
+    let showOrbitPredictor = true;
+
+    // Área de Kepler 2
+    let kepler2Sectors: { p1: { x: number; y: number }; p2: { x: number; y: number }; area: number; color: string }[] = [];
+    let kepler2LastSamplePos: { x: number; y: number } | null = null;
+    let kepler2AccumTime = 0;
+    const KEPLER2_SAMPLE_INTERVAL = 1.8; // Segundos entre muestras de sector
+
+    // Cámara (Pan y Zoom)
+    let camX = 0;
+    let camY = 0;
+    let camZoom = 1.0;
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+
+    // Lanzamiento interactivo (arrastrar vector)
+    let isDraggingLaunch = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragCurrentX = 0;
+    let dragCurrentY = 0;
+
+    // Elementos DOM
+    const canvas = document.getElementById('kepler-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const tabBtnTutorial = document.getElementById('tab-btn-tutorial');
+    const tabBtnSandbox = document.getElementById('tab-btn-sandbox');
+    const tabBtnMissions = document.getElementById('tab-btn-missions');
+    const presetsShelf = document.getElementById('presets-shelf');
+    const hudTelemetry = document.getElementById('hud-telemetry');
+    const hudKepler2Overlay = document.getElementById('hud-kepler2-overlay');
+    const hudMissionDock = document.getElementById('hud-mission-dock');
+    const hudTutorialDock = document.getElementById('hud-tutorial-dock');
+
+    // Telemetría DOM
+    const hudBodiesCount = document.getElementById('hud-bodies-count');
+    const hudVel = document.getElementById('hud-vel');
+    const hudRadius = document.getElementById('hud-radius');
+    const hudEcc = document.getElementById('hud-ecc');
+    const hudConic = document.getElementById('hud-conic');
+
+    // Kepler 2 DOM
+    const k2CurrentArea = document.getElementById('k2-current-area');
+    const k2CurrentDt = document.getElementById('k2-current-dt');
+    const k2ArealRate = document.getElementById('k2-areal-rate');
+    const btnK2Clear = document.getElementById('btn-k2-clear');
+
+    // Tutorial DOM
+    const tutStepTag = document.getElementById('tut-step-tag');
+    const tutTitle = document.getElementById('tut-title');
+    const tutBody = document.getElementById('tut-body');
+    const tutCallout = document.getElementById('tut-callout');
+    const tutStepperDots = document.getElementById('tut-stepper-dots');
+    const btnTutPrev = document.getElementById('btn-tut-prev') as HTMLButtonElement | null;
+    const btnTutNext = document.getElementById('btn-tut-next') as HTMLButtonElement | null;
+    const btnTutClose = document.getElementById('btn-tut-close');
+
+    // Misiones DOM
+    const missionStepTag = document.getElementById('mission-step-tag');
+    const missionTitle = document.getElementById('mission-title');
+    const missionStatusBadge = document.getElementById('mission-status-badge');
+    const missionObjective = document.getElementById('mission-objective');
+    const missionProgressFill = document.getElementById('mission-progress-fill');
+    const btnMissionRetry = document.getElementById('btn-mission-retry') as HTMLButtonElement | null;
+    const btnMissionNext = document.getElementById('btn-mission-next') as HTMLButtonElement | null;
+
+    // Controles DOM
+    const btnPlayPause = document.getElementById('btn-play-pause');
+    const playPauseIcon = document.getElementById('play-pause-icon');
+    const btnClearBodies = document.getElementById('btn-clear-bodies');
+    const btnResetPreset = document.getElementById('btn-reset-preset');
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    const btnRecenter = document.getElementById('btn-recenter');
+
+    // Checkboxes
+    const chkGravityWell = document.getElementById('chk-gravity-well') as HTMLInputElement | null;
+    const chkOrbitGuides = document.getElementById('chk-orbit-guides') as HTMLInputElement | null;
+    const chkKepler2 = document.getElementById('chk-kepler2') as HTMLInputElement | null;
+    const chkVelVector = document.getElementById('chk-vel-vector') as HTMLInputElement | null;
+    const chkGravVector = document.getElementById('chk-grav-vector') as HTMLInputElement | null;
+    const chkOrbitPred = document.getElementById('chk-orbit-pred') as HTMLInputElement | null;
+
+    // =========================================================================
+    // AUDIO SYNTHESIS WEB API
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+    function getAudioContext(): AudioContext | null {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      } catch {
+        return null;
+      }
+    }
+
+    function playLaunchTone() {
+      const actx = getAudioContext();
+      if (!actx) return;
+      const now = actx.currentTime;
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(540, now + 0.16);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.connect(gain);
+      gain.connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.24);
+    }
+
+    function playSuccessChime() {
+      const actx = getAudioContext();
+      if (!actx) return;
+      const now = actx.currentTime;
+      [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0.001, now + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.18, now + idx * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+        osc.connect(gain);
+        gain.connect(actx.destination);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.36);
+      });
+    }
+
+    // =========================================================================
+    // LIMPIEZA RIGUROSA DE ÁREAS DE LA 2.ª LEY
+    // =========================================================================
+    function clearKepler2Areas() {
+      kepler2Sectors = [];
+      kepler2LastSamplePos = null;
+      kepler2AccumTime = 0;
+      if (k2CurrentArea) k2CurrentArea.textContent = '-- UA²';
+      if (k2CurrentDt) k2CurrentDt.textContent = '-- días';
+      if (k2ArealRate) k2ArealRate.textContent = 'CONSTANTE';
+    }
+
+    // =========================================================================
+    // AJUSTE DE TAMAÑO Y REDIMENSIONAMIENTO RESPONSIVE
+    // =========================================================================
+    function resizeCanvas() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      ctx?.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // =========================================================================
+    // TRANSFORMACIONES DE COORDENADAS (Mundo <-> Pantalla)
+    // =========================================================================
+    function worldToScreen(wx: number, wy: number) {
+      if (!canvas) return { sx: 0, sy: 0 };
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const sx = cx + (wx - camX) * camZoom;
+      const sy = cy + (wy - camY) * camZoom;
+      return { sx, sy };
+    }
+
+    function screenToWorld(sx: number, sy: number) {
+      if (!canvas) return { wx: 0, wy: 0 };
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const wx = camX + (sx - cx) / camZoom;
+      const wy = camY + (sy - cy) / camZoom;
+      return { wx, wy };
+    }
+
+    // =========================================================================
+    // FÍSICA: CÁLCULO DE ACELERACIONES GRAVITATORIAS N-CUERPOS
+    // =========================================================================
+    function computeAccelerations(bodyList: CelestialBody[]) {
+      for (const b of bodyList) {
+        b.ax = 0;
+        b.ay = 0;
+      }
+
+      const n = bodyList.length;
+      for (let i = 0; i < n; i++) {
+        const b1 = bodyList[i];
+        for (let j = i + 1; j < n; j++) {
+          const b2 = bodyList[j];
+          const dx = b2.x - b1.x;
+          const dy = b2.y - b1.y;
+          const distSq = dx * dx + dy * dy + SOFTENING * SOFTENING;
+          const dist = Math.sqrt(distSq);
+          const forceFactor = G / (distSq * dist);
+
+          if (!b1.isFixed) {
+            b1.ax += dx * forceFactor * b2.mass;
+            b1.ay += dy * forceFactor * b2.mass;
+          }
+
+          if (!b2.isFixed) {
+            b2.ax -= dx * forceFactor * b1.mass;
+            b2.ay -= dy * forceFactor * b1.mass;
+          }
+        }
+      }
+    }
+
+    // =========================================================================
+    // INTEGRADOR SIMPLÉCTICO VELOCITY VERLET
+    // =========================================================================
+    function stepVerlet(dt: number) {
+      for (const b of bodies) {
+        if (b.isFixed) continue;
+        b.x += b.vx * dt + 0.5 * b.ax * dt * dt;
+        b.y += b.vy * dt + 0.5 * b.ay * dt * dt;
+      }
+
+      const oldAx: number[] = bodies.map((b) => b.ax);
+      const oldAy: number[] = bodies.map((b) => b.ay);
+
+      computeAccelerations(bodies);
+
+      for (let i = 0; i < bodies.length; i++) {
+        const b = bodies[i];
+        if (b.isFixed) continue;
+        b.vx += 0.5 * (oldAx[i] + b.ax) * dt;
+        b.vy += 0.5 * (oldAy[i] + b.ay) * dt;
+
+        b.trail.push({ x: b.x, y: b.y });
+        if (b.trail.length > b.maxTrailLength) b.trail.shift();
+      }
+
+      if (showKepler2Areas && bodies.length >= 2) {
+        sampleKepler2Area(dt);
+      }
+    }
+
+    // =========================================================================
+    // CÁLCULO DE ÁREAS DE LA 2.ª LEY DE KEPLER (dA/dt)
+    // =========================================================================
+    const K2_COLORS = [
+      'rgba(56, 189, 248, 0.22)', // Cyan tenue
+      'rgba(255, 193, 77, 0.22)', // Oro tenue
+      'rgba(63, 224, 181, 0.22)', // Esmeralda tenue
+      'rgba(244, 63, 94, 0.22)',  // Coral tenue
+      'rgba(168, 85, 247, 0.22)', // Púrpura tenue
+    ];
+    let k2ColorIdx = 0;
+
+    function sampleKepler2Area(dt: number) {
+      const star = bodies[0];
+      const planet = bodies[1];
+      if (!star || !planet) return;
+
+      kepler2AccumTime += dt;
+
+      if (!kepler2LastSamplePos) {
+        kepler2LastSamplePos = { x: planet.x, y: planet.y };
+        return;
+      }
+
+      if (kepler2AccumTime >= KEPLER2_SAMPLE_INTERVAL) {
+        const p1 = { x: kepler2LastSamplePos.x - star.x, y: kepler2LastSamplePos.y - star.y };
+        const p2 = { x: planet.x - star.x, y: planet.y - star.y };
+
+        const area = 0.5 * Math.abs(p1.x * p2.y - p2.x * p1.y);
+
+        kepler2Sectors.push({
+          p1: { x: kepler2LastSamplePos.x, y: kepler2LastSamplePos.y },
+          p2: { x: planet.x, y: planet.y },
+          area,
+          color: K2_COLORS[k2ColorIdx % K2_COLORS.length]
+        });
+        k2ColorIdx++;
+
+        if (kepler2Sectors.length > 8) kepler2Sectors.shift();
+
+        if (k2CurrentArea) k2CurrentArea.textContent = `${(area / 1000).toFixed(2)} UA²`;
+        if (k2CurrentDt) k2CurrentDt.textContent = `${(kepler2AccumTime * 12).toFixed(1)} d`;
+        if (k2ArealRate) k2ArealRate.textContent = `${(area / (kepler2AccumTime * 1000)).toFixed(2)} UA²/d (CTE)`;
+
+        kepler2LastSamplePos = { x: planet.x, y: planet.y };
+        kepler2AccumTime = 0;
+      }
+    }
+
+    // =========================================================================
+    // DIBUJO DE ÓRBITAS GUÍA TEÓRICAS EN MODO MUY CLARO (RAILS)
+    // =========================================================================
+    function drawTheoreticalOrbits() {
+      if (!ctx || !showTheoreticalOrbits || bodies.length < 2) return;
+      const star = bodies[0];
+      if (!star || star.mass < 15) return;
+
+      const mu = G * star.mass;
+
+      for (let i = 1; i < bodies.length; i++) {
+        const b = bodies[i];
+        const rx = b.x - star.x;
+        const ry = b.y - star.y;
+        const r = Math.sqrt(rx * rx + ry * ry);
+        const vx = b.vx - star.vx;
+        const vy = b.vy - star.vy;
+        const v2 = vx * vx + vy * vy;
+
+        const specEnergy = v2 / 2 - mu / r;
+        if (specEnergy >= -0.001) continue; // Órbita abierta o hiperbólica
+
+        const a = -mu / (2 * specEnergy);
+        const h = rx * vy - ry * vx;
+        const term = 1 + (2 * specEnergy * h * h) / (mu * mu);
+        if (term < 0) continue;
+        const ecc = Math.sqrt(term);
+        if (ecc >= 0.96) continue;
+
+        const b_semi = a * Math.sqrt(Math.max(0, 1 - ecc * ecc));
+
+        // Vector excentricidad
+        const ev_x = (vy * h) / mu - rx / r;
+        const ev_y = (-vx * h) / mu - ry / r;
+        const omega = Math.atan2(ev_y, ev_x);
+
+        const cDist = a * ecc;
+        const worldCenterX = star.x - cDist * Math.cos(omega);
+        const worldCenterY = star.y - cDist * Math.sin(omega);
+
+        const centerSc = worldToScreen(worldCenterX, worldCenterY);
+
+        ctx.beginPath();
+        ctx.ellipse(centerSc.sx, centerSc.sy, a * camZoom, b_semi * camZoom, omega, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(77, 148, 255, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    // =========================================================================
+    // DIBUJO DE RETÍCULA Y POZO DE GRAVEDAD EINSTEINIANO
+    // =========================================================================
+    function drawCelestialGrid(w: number, h: number) {
+      if (!ctx) return;
+      const step = 55 * camZoom;
+
+      const cols = Math.ceil(w / step) + 2;
+      const rows = Math.ceil(h / step) + 2;
+
+      const startX = (w / 2 - camX * camZoom) % step - step;
+      const startY = (h / 2 - camY * camZoom) % step - step;
+
+      const massiveBodies = bodies.filter((b) => b.mass >= 15);
+
+      if (showGravityWell && massiveBodies.length > 0) {
+        // Líneas verticales deformadas por el pozo
+        for (let c = 0; c < cols; c++) {
+          const screenBaseX = startX + c * step;
+          ctx.beginPath();
+          const numSamples = 20;
+          for (let s = 0; s <= numSamples; s++) {
+            const screenBaseY = (h * s) / numSamples;
+            const wPos = screenToWorld(screenBaseX, screenBaseY);
+            let dispX = 0;
+            let dispY = 0;
+            for (const mb of massiveBodies) {
+              const dx = mb.x - wPos.wx;
+              const dy = mb.y - wPos.wy;
+              const d2 = dx * dx + dy * dy + 900;
+              const pull = (mb.mass * 24) / d2;
+              dispX += dx * pull;
+              dispY += dy * pull;
+            }
+            const finalSc = worldToScreen(wPos.wx + dispX, wPos.wy + dispY);
+            if (s === 0) ctx.moveTo(finalSc.sx, finalSc.sy);
+            else ctx.lineTo(finalSc.sx, finalSc.sy);
+          }
+          ctx.strokeStyle = 'rgba(77, 148, 255, 0.05)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // Líneas horizontales deformadas por el pozo
+        for (let r = 0; r < rows; r++) {
+          const screenBaseY = startY + r * step;
+          ctx.beginPath();
+          const numSamples = 20;
+          for (let s = 0; s <= numSamples; s++) {
+            const screenBaseX = (w * s) / numSamples;
+            const wPos = screenToWorld(screenBaseX, screenBaseY);
+            let dispX = 0;
+            let dispY = 0;
+            for (const mb of massiveBodies) {
+              const dx = mb.x - wPos.wx;
+              const dy = mb.y - wPos.wy;
+              const d2 = dx * dx + dy * dy + 900;
+              const pull = (mb.mass * 24) / d2;
+              dispX += dx * pull;
+              dispY += dy * pull;
+            }
+            const finalSc = worldToScreen(wPos.wx + dispX, wPos.wy + dispY);
+            if (s === 0) ctx.moveTo(finalSc.sx, finalSc.sy);
+            else ctx.lineTo(finalSc.sx, finalSc.sy);
+          }
+          ctx.strokeStyle = 'rgba(77, 148, 255, 0.05)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // Círculos concéntricos de isopotencial del pozo (embudo)
+        for (const mb of massiveBodies) {
+          const mbSc = worldToScreen(mb.x, mb.y);
+          const wellRadii = [35, 65, 110, 175, 260, 360];
+          wellRadii.forEach((rad, idx) => {
+            const screenR = rad * camZoom;
+            ctx.beginPath();
+            ctx.arc(mbSc.sx, mbSc.sy, screenR, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(77, 148, 255, ${0.11 - idx * 0.016})`;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          });
+        }
+      } else {
+        // Retícula plana
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
+        ctx.lineWidth = 1;
+        for (let x = startX; x < w + step; x += step) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = startY; y < h + step; y += step) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // =========================================================================
+    // PREDICTOR DE TRAYECTORIA CÓNICA ORBITAL (DOTTED LINE)
+    // =========================================================================
+    function computeOrbitPrediction(startX: number, startY: number, vx: number, vy: number, steps = 140) {
+      const simBodies: { x: number; y: number; vx: number; vy: number; mass: number; isFixed?: boolean }[] = bodies.map(b => ({
+        x: b.x,
+        y: b.y,
+        vx: b.vx,
+        vy: b.vy,
+        mass: b.mass,
+        isFixed: b.isFixed
+      }));
+
+      const probe = { x: startX, y: startY, vx, vy, mass: 0.001, isFixed: false };
+      const path: { x: number; y: number }[] = [{ x: startX, y: startY }];
+      const dt = 0.16;
+
+      for (let s = 0; s < steps; s++) {
+        let ax = 0;
+        let ay = 0;
+        for (const b of simBodies) {
+          const dx = b.x - probe.x;
+          const dy = b.y - probe.y;
+          const d2 = dx * dx + dy * dy + SOFTENING * SOFTENING;
+          const f = (G * b.mass) / (d2 * Math.sqrt(d2));
+          ax += dx * f;
+          ay += dy * f;
+        }
+
+        probe.vx += ax * dt;
+        probe.vy += ay * dt;
+        probe.x += probe.vx * dt;
+        probe.y += probe.vy * dt;
+
+        if (s % 2 === 0) {
+          path.push({ x: probe.x, y: probe.y });
+        }
+      }
+      return path;
+    }
+
+    // =========================================================================
+    // DIBUJO EN CANVAS 60FPS
+    // =========================================================================
+    function render() {
+      if (!canvas || !ctx) return;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Fondo celeste, retícula y pozo gravitatorio
+      drawCelestialGrid(w, h);
+
+      // 2. Órbitas guía teóricas
+      drawTheoreticalOrbits();
+
+      const star = bodies[0];
+
+      // 3. Dibujar Sectores de la 2.ª Ley de Kepler si están activos
+      if (showKepler2Areas && star && kepler2Sectors.length > 0) {
+        const starSc = worldToScreen(star.x, star.y);
+        for (const sec of kepler2Sectors) {
+          const p1Sc = worldToScreen(sec.p1.x, sec.p1.y);
+          const p2Sc = worldToScreen(sec.p2.x, sec.p2.y);
+
+          ctx.beginPath();
+          ctx.moveTo(starSc.sx, starSc.sy);
+          ctx.lineTo(p1Sc.sx, p1Sc.sy);
+          ctx.lineTo(p2Sc.sx, p2Sc.sy);
+          ctx.closePath();
+          ctx.fillStyle = sec.color;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      // 4. Dibujar Trazas orbitales
+      for (const b of bodies) {
+        if (b.trail.length > 1) {
+          ctx.beginPath();
+          for (let i = 0; i < b.trail.length; i++) {
+            const pt = worldToScreen(b.trail[i].x, b.trail[i].y);
+            if (i === 0) ctx.moveTo(pt.sx, pt.sy);
+            else ctx.lineTo(pt.sx, pt.sy);
+          }
+          ctx.strokeStyle = b.color;
+          ctx.lineWidth = b.type === 'probe' ? 1.0 : 1.5;
+          ctx.globalAlpha = 0.35;
+          ctx.stroke();
+          ctx.globalAlpha = 1.0;
+        }
+      }
+
+      // 5. Dibujar Cuerpos Celestes
+      for (const b of bodies) {
+        const pt = worldToScreen(b.x, b.y);
+        const r = Math.max(2.5, b.radius * camZoom);
+
+        if (b.type === 'star') {
+          const grad = ctx.createRadialGradient(pt.sx, pt.sy, r * 0.2, pt.sx, pt.sy, r * 2.8);
+          grad.addColorStop(0, '#fff4cc');
+          grad.addColorStop(0.3, b.color);
+          grad.addColorStop(1, 'rgba(255, 193, 77, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(pt.sx, pt.sy, r * 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(pt.sx, pt.sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = b.color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        if (b.name && camZoom > 0.45) {
+          ctx.font = '10px monospace';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.fillText(b.name, pt.sx + r + 5, pt.sy + 3);
+        }
+
+        // Vectores de Velocidad (Cian tenue) y Gravedad (Coral tenue)
+        if (showVelocityVector && !b.isFixed && (b.vx !== 0 || b.vy !== 0)) {
+          drawVectorArrow(pt.sx, pt.sy, b.vx * 10 * camZoom, b.vy * 10 * camZoom, 'rgba(56, 189, 248, 0.45)', 'v');
+        }
+        if (showGravVector && !b.isFixed && (b.ax !== 0 || b.ay !== 0)) {
+          drawVectorArrow(pt.sx, pt.sy, b.ax * 65 * camZoom, b.ay * 65 * camZoom, 'rgba(244, 63, 94, 0.4)', 'a');
+        }
+      }
+
+      // 6. Vector de Lanzamiento Interactivo (Arrastre del usuario)
+      if (isDraggingLaunch) {
+        const startSc = worldToScreen(dragStartX, dragStartY);
+        const vx = (dragStartX - dragCurrentX) * 0.18;
+        const vy = (dragStartY - dragCurrentY) * 0.18;
+
+        ctx.beginPath();
+        ctx.moveTo(startSc.sx, startSc.sy);
+        ctx.lineTo(startSc.sx + vx * 10 * camZoom, startSc.sy + vy * 10 * camZoom);
+        ctx.strokeStyle = 'rgba(63, 224, 181, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.arc(startSc.sx, startSc.sy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#3fe0b5';
+        ctx.fill();
+
+        if (showOrbitPredictor) {
+          const predictedPath = computeOrbitPrediction(dragStartX, dragStartY, vx, vy, 110);
+          ctx.beginPath();
+          for (let i = 0; i < predictedPath.length; i++) {
+            const pSc = worldToScreen(predictedPath[i].x, predictedPath[i].y);
+            if (i === 0) ctx.moveTo(pSc.sx, pSc.sy);
+            else ctx.lineTo(pSc.sx, pSc.sy);
+          }
+          ctx.strokeStyle = 'rgba(63, 224, 181, 0.65)';
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([3, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      updateTelemetry();
+    }
+
+    function drawVectorArrow(fromX: number, fromY: number, dx: number, dy: number, color: string, label: string) {
+      if (!ctx) return;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 3) return;
+
+      const toX = fromX + dx;
+      const toY = fromY + dy;
+
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY);
+      ctx.lineTo(toX, toY);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      const headAngle = Math.atan2(dy, dx);
+      const headLen = 5;
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(toX - headLen * Math.cos(headAngle - Math.PI / 6), toY - headLen * Math.sin(headAngle - Math.PI / 6));
+      ctx.lineTo(toX - headLen * Math.cos(headAngle + Math.PI / 6), toY - headLen * Math.sin(headAngle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      ctx.font = '9px monospace';
+      ctx.fillStyle = color;
+      ctx.fillText(label, toX + 3, toY + 2);
+    }
+
+    // =========================================================================
+    // CÁLCULO DE TELEMETRÍA Y ELEMENTOS KEPLERIANOS EN VIVO
+    // =========================================================================
+    function updateTelemetry() {
+      if (hudBodiesCount) hudBodiesCount.textContent = String(bodies.length);
+
+      if (bodies.length < 2) {
+        if (hudVel) hudVel.textContent = '--';
+        if (hudRadius) hudRadius.textContent = '--';
+        if (hudEcc) hudEcc.textContent = '--';
+        if (hudConic) {
+          hudConic.textContent = 'Sin Órbita';
+          hudConic.className = 'hud-conic-pill';
+        }
+        return;
+      }
+
+      const star = bodies[0];
+      const planet = bodies[1];
+      const dx = planet.x - star.x;
+      const dy = planet.y - star.y;
+      const r = Math.sqrt(dx * dx + dy * dy);
+      const v = Math.sqrt(planet.vx * planet.vx + planet.vy * planet.vy);
+
+      if (hudVel) hudVel.textContent = `${(v * 7.5).toFixed(1)} km/s`;
+      if (hudRadius) hudRadius.textContent = `${(r / 150).toFixed(2)} AU`;
+
+      const GM = G * star.mass;
+      const specEnergy = (v * v) / 2 - GM / r;
+      const h = dx * planet.vy - dy * planet.vx;
+
+      let ecc = 0;
+      const term = 1 + (2 * specEnergy * h * h) / (GM * GM);
+      if (term >= 0) ecc = Math.sqrt(term);
+
+      if (hudEcc) hudEcc.textContent = ecc.toFixed(3);
+
+      if (hudConic) {
+        if (ecc < 0.05) {
+          hudConic.textContent = 'Circular (e ≈ 0)';
+          hudConic.className = 'hud-conic-pill is-circular';
+        } else if (ecc < 0.98) {
+          hudConic.textContent = `Elíptica (e = ${ecc.toFixed(2)})`;
+          hudConic.className = 'hud-conic-pill is-elliptic';
+        } else if (Math.abs(ecc - 1.0) <= 0.05) {
+          hudConic.textContent = 'Parabólica (Escape)';
+          hudConic.className = 'hud-conic-pill is-parabolic';
+        } else {
+          hudConic.textContent = 'Hiperbólica (Libre)';
+          hudConic.className = 'hud-conic-pill is-hyperbolic';
+        }
+      }
+    }
+
+    // =========================================================================
+    // PRESETS ORBITALES DE 1 CLIC
+    // =========================================================================
+    function loadPreset(presetName: string) {
+      currentPresetName = presetName;
+      bodies = [];
+      clearKepler2Areas();
+      camX = 0;
+      camY = 0;
+      camZoom = 1.0;
+
+      if (presetName !== 'kepler-pure' && chkKepler2) {
+        chkKepler2.checked = false;
+        showKepler2Areas = false;
+        if (hudKepler2Overlay) hudKepler2Overlay.style.display = 'none';
+      }
+
+      if (presetName === 'solar-inner') {
+        bodies.push({
+          id: 'sun',
+          name: 'Sol',
+          x: 0,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          ax: 0,
+          ay: 0,
+          mass: 120,
+          radius: 18,
+          color: '#ffc14d',
+          isFixed: true,
+          trail: [],
+          maxTrailLength: 10,
+          type: 'star'
+        });
+
+        bodies.push({
+          id: 'mercury',
+          name: 'Mercurio',
+          x: 75,
+          y: 0,
+          vx: 0,
+          vy: -35.7,
+          ax: 0,
+          ay: 0,
+          mass: 0.05,
+          radius: 3.5,
+          color: '#94a3b8',
+          trail: [],
+          maxTrailLength: 100,
+          type: 'planet'
+        });
+
+        bodies.push({
+          id: 'venus',
+          name: 'Venus',
+          x: 130,
+          y: 0,
+          vx: 0,
+          vy: -27.1,
+          ax: 0,
+          ay: 0,
+          mass: 0.8,
+          radius: 5,
+          color: '#fde68a',
+          trail: [],
+          maxTrailLength: 140,
+          type: 'planet'
+        });
+
+        bodies.push({
+          id: 'earth',
+          name: 'Tierra',
+          x: 190,
+          y: 0,
+          vx: 0,
+          vy: -22.4,
+          ax: 0,
+          ay: 0,
+          mass: 1.0,
+          radius: 5.5,
+          color: '#38bdf8',
+          trail: [],
+          maxTrailLength: 200,
+          type: 'planet'
+        });
+
+        bodies.push({
+          id: 'mars',
+          name: 'Marte',
+          x: 270,
+          y: 0,
+          vx: 0,
+          vy: -18.8,
+          ax: 0,
+          ay: 0,
+          mass: 0.1,
+          radius: 4.2,
+          color: '#f87171',
+          trail: [],
+          maxTrailLength: 260,
+          type: 'planet'
+        });
+      } else if (presetName === 'kepler-pure') {
+        bodies.push({
+          id: 'sun',
+          name: 'Sol (Foco F₁)',
+          x: -50,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          ax: 0,
+          ay: 0,
+          mass: 140,
+          radius: 18,
+          color: '#ffc14d',
+          isFixed: true,
+          trail: [],
+          maxTrailLength: 10,
+          type: 'star'
+        });
+
+        bodies.push({
+          id: 'comet',
+          name: 'Planeta Kepleriano (e=0.6)',
+          x: 170,
+          y: 0,
+          vx: 0,
+          vy: -15.5,
+          ax: 0,
+          ay: 0,
+          mass: 0.5,
+          radius: 6,
+          color: '#3fe0b5',
+          trail: [],
+          maxTrailLength: 300,
+          type: 'planet'
+        });
+
+        if (chkKepler2) {
+          chkKepler2.checked = true;
+          showKepler2Areas = true;
+          if (hudKepler2Overlay) hudKepler2Overlay.style.display = 'block';
+        }
+      } else if (presetName === 'slingshot') {
+        bodies.push({
+          id: 'sun',
+          name: 'Sol',
+          x: -160,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          ax: 0,
+          ay: 0,
+          mass: 180,
+          radius: 20,
+          color: '#ffc14d',
+          isFixed: true,
+          trail: [],
+          maxTrailLength: 10,
+          type: 'star'
+        });
+
+        bodies.push({
+          id: 'jupiter',
+          name: 'Júpiter (Gigante)',
+          x: 100,
+          y: 0,
+          vx: 0,
+          vy: -23.5,
+          ax: 0,
+          ay: 0,
+          mass: 38,
+          radius: 12,
+          color: '#fb923c',
+          trail: [],
+          maxTrailLength: 200,
+          type: 'giant'
+        });
+
+        bodies.push({
+          id: 'voyager',
+          name: 'Sonda Voyager',
+          x: -100,
+          y: 180,
+          vx: 19.5,
+          vy: -14.2,
+          ax: 0,
+          ay: 0,
+          mass: 0.001,
+          radius: 3,
+          color: '#38bdf8',
+          trail: [],
+          maxTrailLength: 350,
+          type: 'probe'
+        });
+      } else if (presetName === 'figure-eight') {
+        const m = 35;
+        const x1 = -180;
+        const y1 = 0;
+        const vx1 = 0.4662 * 30;
+        const vy1 = 0.43236 * 30;
+
+        bodies.push({
+          id: 'b1',
+          name: 'Cuerpo 1',
+          x: x1,
+          y: y1,
+          vx: vx1,
+          vy: vy1,
+          ax: 0,
+          ay: 0,
+          mass: m,
+          radius: 8,
+          color: '#38bdf8',
+          trail: [],
+          maxTrailLength: 300,
+          type: 'planet'
+        });
+
+        bodies.push({
+          id: 'b2',
+          name: 'Cuerpo 2',
+          x: -x1,
+          y: -y1,
+          vx: vx1,
+          vy: vy1,
+          ax: 0,
+          ay: 0,
+          mass: m,
+          radius: 8,
+          color: '#3fe0b5',
+          trail: [],
+          maxTrailLength: 300,
+          type: 'planet'
+        });
+
+        bodies.push({
+          id: 'b3',
+          name: 'Cuerpo 3',
+          x: 0,
+          y: 0,
+          vx: -2 * vx1,
+          vy: -2 * vy1,
+          ax: 0,
+          ay: 0,
+          mass: m,
+          radius: 8,
+          color: '#f43f5e',
+          trail: [],
+          maxTrailLength: 300,
+          type: 'planet'
+        });
+      } else if (presetName === 'binary-stars') {
+        bodies.push({
+          id: 'starA',
+          name: 'Estrella Alfa',
+          x: -70,
+          y: 0,
+          vx: 0,
+          vy: 14,
+          ax: 0,
+          ay: 0,
+          mass: 65,
+          radius: 13,
+          color: '#38bdf8',
+          trail: [],
+          maxTrailLength: 160,
+          type: 'star'
+        });
+
+        bodies.push({
+          id: 'starB',
+          name: 'Estrella Beta',
+          x: 70,
+          y: 0,
+          vx: 0,
+          vy: -14,
+          ax: 0,
+          ay: 0,
+          mass: 65,
+          radius: 13,
+          color: '#ffc14d',
+          trail: [],
+          maxTrailLength: 160,
+          type: 'star'
+        });
+
+        bodies.push({
+          id: 'tatooine',
+          name: 'Planeta Tatooine',
+          x: 230,
+          y: 0,
+          vx: 0,
+          vy: -21.2,
+          ax: 0,
+          ay: 0,
+          mass: 0.2,
+          radius: 5,
+          color: '#a855f7',
+          trail: [],
+          maxTrailLength: 300,
+          type: 'planet'
+        });
+      }
+
+      computeAccelerations(bodies);
+    }
+
+    // =========================================================================
+    // TUTORIAL / MODO PRINCIPIANTE GUIADO (PASO A PASO)
+    // =========================================================================
+    interface TutorialStep {
+      title: string;
+      body: string;
+      callout: string;
+      btnNextText: string;
+      setup: () => void;
+    }
+
+    const TUTORIAL_STEPS: TutorialStep[] = [
+      {
+        title: 'El Pozo de Gravedad y la Curvatura Espacial',
+        body: 'En el centro se encuentra el <strong>Sol</strong>. Su gran masa no tira con una cuerda mágica: <strong>curva y deforma la malla del espacio circundante</strong>, creando un pozo gravitatorio (observa cómo las líneas de la retícula se hunden hacia el centro). Cuanto más cerca estás del Sol, más profunda es la pendiente y con más fuerza caes.',
+        callout: '💡 <em>Concepto clave:</em> La gravedad es geometría: los cuerpos celestes simplemente ruedan por la pendiente que la masa excava en el espacio.',
+        btnNextText: 'Siguiente: Los Vectores →',
+        setup: () => {
+          loadPreset('solar-inner');
+          bodies = [bodies[0]]; // Dejamos solo el Sol
+          showGravityWell = true;
+          if (chkGravityWell) chkGravityWell.checked = true;
+        }
+      },
+      {
+        title: 'Los Dos Vectores en Lucha (Velocidad vs Gravedad)',
+        body: 'Observa el planeta verde que orbita el Sol. Sobre él actúan dos fuerzas en constante equilibrio:\n• <strong>Vector Velocidad (flecha cian tenue)</strong>: Marca su inercia. Si apagásemos el Sol, el planeta saldría disparado en línea recta hacia el infinito.\n• <strong>Vector Gravedad / Aceleración (flecha coral tenue)</strong>: Apunta siempre al centro del Sol y tira de él hacia dentro.\n• <strong>El Secreto de la Órbita</strong>: El planeta está cayendo continuamente hacia el Sol, pero va tan rápido de lado que la superficie se curva bajo él y nunca llega a chocar.',
+        callout: '💡 <em>La Bala de Cañón de Newton:</em> Dispara con poca velocidad y caerás; dispara con la velocidad justa y caerás alrededor del mundo para siempre.',
+        btnNextText: 'Siguiente: La 2.ª Ley (Áreas) →',
+        setup: () => {
+          bodies = [
+            {
+              id: 'sun',
+              name: 'Sol',
+              x: 0,
+              y: 0,
+              vx: 0,
+              vy: 0,
+              ax: 0,
+              ay: 0,
+              mass: 120,
+              radius: 18,
+              color: '#ffc14d',
+              isFixed: true,
+              trail: [],
+              maxTrailLength: 10,
+              type: 'star'
+            },
+            {
+              id: 'orbit-demo',
+              name: 'Planeta en Órbita',
+              x: 160,
+              y: 0,
+              vx: 0,
+              vy: -24.5,
+              ax: 0,
+              ay: 0,
+              mass: 1.0,
+              radius: 6,
+              color: '#3fe0b5',
+              trail: [],
+              maxTrailLength: 200,
+              type: 'planet'
+            }
+          ];
+          showVelocityVector = true;
+          showGravVector = true;
+          if (chkVelVector) chkVelVector.checked = true;
+          if (chkGravVector) chkGravVector.checked = true;
+          computeAccelerations(bodies);
+        }
+      },
+      {
+        title: 'La 2.ª Ley de Kepler: El Misterio de las Áreas Iguales',
+        body: 'La simulación colorea sectores triangulares entre el Sol y el planeta en intervalos de tiempo idénticos (Δt):\n• <strong>Cerca del Sol (perihelio)</strong>: La gravedad es feroz, el planeta viaja a máxima velocidad y recorre un arco enorme. El sector es <strong>corto y ancho</strong>.\n• <strong>Lejos del Sol (afelio)</strong>: La gravedad es débil, el planeta se frena y recorre un arco pequeño. El sector es <strong>largo y estrecho</strong>.\n• <strong>La Ley Matemática</strong>: ¡Ambos sectores tienen <strong>exactamente la misma superficie</strong> (dA/dt = constante) porque el momento angular se conserva!',
+        callout: '💡 <em>Conservación del Momento Angular:</em> Igual que un patinador de hielo gira mucho más rápido cuando encoge los brazos, el planeta acelera al acercarse al centro.',
+        btnNextText: 'Siguiente: Cómo Lanzar →',
+        setup: () => {
+          loadPreset('kepler-pure');
+        }
+      },
+      {
+        title: 'Cómo Lanzar tu Propio Planeta (El Tirachinas)',
+        body: 'En este simulador eres el creador cósmico:\n• Haz <strong>click y arrastra</strong> en cualquier punto del espacio negro.\n• La línea punteada proyecta de antemano la órbita cónica que seguirá antes de soltar el ratón.\n• Si le das poca velocidad, caerá en espiral al Sol; con la velocidad justa (v ≈ √(GM/r)), lograrás una órbita circular; y si aceleras mucho (v ≥ √(2GM/r)), superará la velocidad de escape.',
+        callout: '💡 <em>Prueba ahora:</em> Haz clic y arrastra suavemente perpendicular al Sol para colocar tu primer planeta.',
+        btnNextText: 'Finalizar Tutorial →',
+        setup: () => {
+          bodies = [{
+            id: 'sun',
+            name: 'Sol',
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            ax: 0,
+            ay: 0,
+            mass: 120,
+            radius: 18,
+            color: '#ffc14d',
+            isFixed: true,
+            trail: [],
+            maxTrailLength: 10,
+            type: 'star'
+          }];
+          clearKepler2Areas();
+          if (chkKepler2) chkKepler2.checked = false;
+          showKepler2Areas = false;
+        }
+      },
+      {
+        title: '¡Listo para Explorar el Cosmos!',
+        body: 'Ya conoces todos los fundamentos físicos y matemáticos del universo gravitatorio:\n• <strong>Modo Sandbox</strong>: Crea tus propios sistemas solares, prueba colisiones y cambia las velocidades del tiempo.\n• <strong>Modo Misiones</strong>: Ponte a prueba con desafíos reales de navegación astronáutica (circularizaciones, transferencias de Hohmann y tirachinas).\n\n¡Elige tu siguiente paso!',
+        callout: '🚀 <em>Exploración libre:</em> Usa la rueda del ratón para hacer zoom y mantén pulsada la rueda o Shift para mover la cámara.',
+        btnNextText: 'Entrar al Laboratorio Libre',
+        setup: () => {
+          loadPreset('solar-inner');
+        }
+      }
+    ];
+
+    function showTutorialStep(idx: number) {
+      currentTutorialStep = idx;
+      const step = TUTORIAL_STEPS[idx];
+
+      if (tutStepTag) tutStepTag.textContent = `PASO ${idx + 1} DE ${TUTORIAL_STEPS.length}`;
+      if (tutTitle) tutTitle.textContent = step.title;
+      if (tutBody) tutBody.innerHTML = step.body.replace(/\n/g, '<br/>');
+      if (tutCallout) tutCallout.innerHTML = step.callout;
+      if (btnTutNext) btnTutNext.textContent = step.btnNextText;
+
+      if (btnTutPrev) btnTutPrev.disabled = idx === 0;
+
+      if (tutStepperDots) {
+        tutStepperDots.innerHTML = '';
+        TUTORIAL_STEPS.forEach((_, i) => {
+          const dot = document.createElement('span');
+          dot.className = `tut-dot ${i === idx ? 'is-active' : ''} ${i < idx ? 'is-done' : ''}`;
+          tutStepperDots.appendChild(dot);
+        });
+      }
+
+      step.setup();
+    }
+
+    // =========================================================================
+    // MISIONES ORBITALES GUIADAS (MODO 3)
+    // =========================================================================
+    const MISSIONS: Mission[] = [
+      {
+        id: 1,
+        title: 'Circularización Newtoniana',
+        stepTag: 'MISIÓN 1 DE 4',
+        objective: 'Lanza un planeta desde la posición marcada ajustando el vector de velocidad tangencial para lograr una órbita circular (excentricidad e < 0.08).',
+        hint: 'Aplica v ≈ √(GM/r). Apunta perpendicular al Sol con una longitud de flecha moderada.',
+        setup: () => {
+          bodies = [{
+            id: 'sun',
+            name: 'Sol',
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            ax: 0,
+            ay: 0,
+            mass: 120,
+            radius: 18,
+            color: '#ffc14d',
+            isFixed: true,
+            trail: [],
+            maxTrailLength: 10,
+            type: 'star'
+          }];
+          clearKepler2Areas();
+          camX = 0;
+          camY = 0;
+          camZoom = 1.0;
+        },
+        checkCondition: (bList) => {
+          if (bList.length < 2) return false;
+          const star = bList[0];
+          const p = bList[1];
+          const dx = p.x - star.x;
+          const dy = p.y - star.y;
+          const r = Math.sqrt(dx * dx + dy * dy);
+          const v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          const GM = G * star.mass;
+          const specEnergy = (v * v) / 2 - GM / r;
+          const h = dx * p.vy - dy * p.vx;
+          const term = 1 + (2 * specEnergy * h * h) / (GM * GM);
+          if (term < 0) return false;
+          const ecc = Math.sqrt(term);
+          return ecc < 0.08 && p.trail.length > 50;
+        }
+      },
+      {
+        id: 2,
+        title: 'Transferencia de Hohmann',
+        stepTag: 'MISIÓN 2 DE 4',
+        objective: 'Hay un planeta en órbita interior (radio 100). Lanza una sonda espacial que alcance la órbita de la estación exterior (radio 240) con excentricidad de elipse de transferencia.',
+        hint: 'El apoastro de la elipse de transferencia debe rozar los 240 UA.',
+        setup: () => {
+          bodies = [
+            {
+              id: 'sun',
+              name: 'Sol',
+              x: 0,
+              y: 0,
+              vx: 0,
+              vy: 0,
+              ax: 0,
+              ay: 0,
+              mass: 140,
+              radius: 18,
+              color: '#ffc14d',
+              isFixed: true,
+              trail: [],
+              maxTrailLength: 10,
+              type: 'star'
+            },
+            {
+              id: 'station',
+              name: 'Estación Exterior (Meta)',
+              x: 240,
+              y: 0,
+              vx: 0,
+              vy: -21.6,
+              ax: 0,
+              ay: 0,
+              mass: 0.1,
+              radius: 5,
+              color: '#3fe0b5',
+              trail: [],
+              maxTrailLength: 200,
+              type: 'planet'
+            }
+          ];
+          clearKepler2Areas();
+        },
+        checkCondition: (bList) => {
+          if (bList.length < 3) return false;
+          const probe = bList[2];
+          const r = Math.sqrt(probe.x * probe.x + probe.y * probe.y);
+          return r >= 230 && r <= 255;
+        }
+      },
+      {
+        id: 3,
+        title: 'Asistencia Gravitatoria (Slingshot)',
+        stepTag: 'MISIÓN 3 DE 4',
+        objective: 'Lanza una sonda espacial hacia Júpiter de forma que su gravedad catapulte la sonda aumentando su velocidad heliocéntrica sin chocar contra el planeta.',
+        hint: 'Pasa por detrás del planeta en su dirección de movimiento para robar momento orbital.',
+        setup: () => {
+          loadPreset('slingshot');
+          bodies = bodies.filter(b => b.id !== 'voyager');
+          clearKepler2Areas();
+        },
+        checkCondition: (bList) => {
+          if (bList.length < 3) return false;
+          const probe = bList[2];
+          const v = Math.sqrt(probe.vx * probe.vx + probe.vy * probe.vy);
+          return v > 32;
+        }
+      },
+      {
+        id: 4,
+        title: 'Velocidad de Escape Interestelar',
+        stepTag: 'MISIÓN 4 DE 4',
+        objective: 'Lanza un cuerpo con energía mecánica orbital positiva (excentricidad e ≥ 1.0) para que venza definitivamente la atracción estelar y escape del sistema en una hipérbola.',
+        hint: 'Acelera con una flecha larga de vector para que v > √(2GM/r).',
+        setup: () => {
+          loadPreset('solar-inner');
+          bodies = [bodies[0]]; // Dejamos solo el Sol
+          clearKepler2Areas();
+        },
+        checkCondition: (bList) => {
+          if (bList.length < 2) return false;
+          const star = bList[0];
+          const p = bList[1];
+          const dx = p.x - star.x;
+          const dy = p.y - star.y;
+          const r = Math.sqrt(dx * dx + dy * dy);
+          const v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          const GM = G * star.mass;
+          const specEnergy = (v * v) / 2 - GM / r;
+          return specEnergy > 0 && r > 280;
+        }
+      }
+    ];
+
+    function loadMission(idx: number) {
+      currentMissionIdx = idx;
+      clearKepler2Areas();
+      const m = MISSIONS[idx];
+      if (missionStepTag) missionStepTag.textContent = m.stepTag;
+      if (missionTitle) missionTitle.textContent = m.title;
+      if (missionObjective) missionObjective.textContent = m.objective;
+      if (missionStatusBadge) {
+        missionStatusBadge.textContent = 'EN CURSO';
+        missionStatusBadge.className = 'mission-status-badge';
+      }
+      if (missionProgressFill) missionProgressFill.style.width = '0%';
+      if (btnMissionNext) btnMissionNext.disabled = true;
+
+      m.setup();
+      computeAccelerations(bodies);
+    }
+
+    // =========================================================================
+    // LOOP PRINCIPAL DE ANIMACIÓN
+    // =========================================================================
+    let lastTime = performance.now();
+
+    function gameLoop(now: number) {
+      const dtRaw = (now - lastTime) / 1000;
+      lastTime = now;
+      const dtClamped = Math.min(dtRaw, 0.05);
+
+      if (isRunning) {
+        const dtSub = (dtClamped * timeWarp) / MAX_SUBSTEPS;
+        for (let step = 0; step < MAX_SUBSTEPS; step++) {
+          stepVerlet(dtSub);
+        }
+
+        if (activeMode === 'missions') {
+          const currentM = MISSIONS[currentMissionIdx];
+          if (currentM && currentM.checkCondition(bodies)) {
+            if (missionStatusBadge && missionStatusBadge.textContent !== '¡COMPLETADA!') {
+              missionStatusBadge.textContent = '¡COMPLETADA!';
+              missionStatusBadge.className = 'mission-status-badge is-success';
+              if (missionProgressFill) missionProgressFill.style.width = '100%';
+              if (btnMissionNext) btnMissionNext.disabled = false;
+              playSuccessChime();
+            }
+          }
+        }
+      }
+
+      render();
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+
+    // =========================================================================
+    // EVENT LISTENERS DEL CANVAS: LANZAMIENTO Y CÁMARA
+    // =========================================================================
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+
+      if (e.button === 1 || e.shiftKey) {
+        isPanning = true;
+        panStartX = e.clientX;
+        panStartY = e.clientY;
+        return;
+      }
+
+      if (e.button === 0) {
+        const wPos = screenToWorld(sx, sy);
+        isDraggingLaunch = true;
+        dragStartX = wPos.wx;
+        dragStartY = wPos.wy;
+        dragCurrentX = wPos.wx;
+        dragCurrentY = wPos.wy;
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isPanning) {
+        const dx = (e.clientX - panStartX) / camZoom;
+        const dy = (e.clientY - panStartY) / camZoom;
+        camX -= dx;
+        camY -= dy;
+        panStartX = e.clientX;
+        panStartY = e.clientY;
+        return;
+      }
+
+      if (isDraggingLaunch && canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = e.clientX - rect.left;
+        const sy = e.clientY - rect.top;
+        const wPos = screenToWorld(sx, sy);
+        dragCurrentX = wPos.wx;
+        dragCurrentY = wPos.wy;
+      }
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (isPanning) {
+        isPanning = false;
+        return;
+      }
+
+      if (isDraggingLaunch) {
+        isDraggingLaunch = false;
+
+        const vx = (dragStartX - dragCurrentX) * 0.18;
+        const vy = (dragStartY - dragCurrentY) * 0.18;
+
+        let mass = 1.0;
+        let radius = 5;
+        let color = '#3fe0b5';
+        let name = 'Planeta';
+
+        if (spawnType === 'probe') {
+          mass = 0.001;
+          radius = 3;
+          color = '#38bdf8';
+          name = 'Sonda';
+        } else if (spawnType === 'giant') {
+          mass = 30;
+          radius = 11;
+          color = '#fb923c';
+          name = 'Gigante';
+        } else if (spawnType === 'star') {
+          mass = 120;
+          radius = 18;
+          color = '#ffc14d';
+          name = 'Estrella';
+        }
+
+        bodies.push({
+          id: `body-${Date.now()}`,
+          name: `${name} ${bodies.length + 1}`,
+          x: dragStartX,
+          y: dragStartY,
+          vx,
+          vy,
+          ax: 0,
+          ay: 0,
+          mass,
+          radius,
+          color,
+          trail: [],
+          maxTrailLength: spawnType === 'probe' ? 300 : 200,
+          type: spawnType,
+          isFixed: spawnType === 'star' && bodies.length === 0
+        });
+
+        computeAccelerations(bodies);
+        playLaunchTone();
+      }
+    });
+
+    // Soporte táctil móvil
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const sx = touch.clientX - rect.left;
+        const sy = touch.clientY - rect.top;
+        const wPos = screenToWorld(sx, sy);
+        isDraggingLaunch = true;
+        dragStartX = wPos.wx;
+        dragStartY = wPos.wy;
+        dragCurrentX = wPos.wx;
+        dragCurrentY = wPos.wy;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (isDraggingLaunch && e.touches.length === 1) {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const sx = touch.clientX - rect.left;
+        const sy = touch.clientY - rect.top;
+        const wPos = screenToWorld(sx, sy);
+        dragCurrentX = wPos.wx;
+        dragCurrentY = wPos.wy;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      if (isDraggingLaunch) {
+        isDraggingLaunch = false;
+        const vx = (dragStartX - dragCurrentX) * 0.18;
+        const vy = (dragStartY - dragCurrentY) * 0.18;
+        bodies.push({
+          id: `body-${Date.now()}`,
+          name: `Planeta ${bodies.length + 1}`,
+          x: dragStartX,
+          y: dragStartY,
+          vx,
+          vy,
+          ax: 0,
+          ay: 0,
+          mass: 1.0,
+          radius: 5,
+          color: '#3fe0b5',
+          trail: [],
+          maxTrailLength: 200,
+          type: 'planet'
+        });
+        computeAccelerations(bodies);
+        playLaunchTone();
+      }
+    });
+
+    // Zoom con rueda de ratón
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+      camZoom = Math.min(Math.max(0.2, camZoom * zoomFactor), 4.0);
+    }, { passive: false });
+
+    // =========================================================================
+    // EVENT LISTENERS DEL HUB DE MODOS Y BOTONES
+    // =========================================================================
+    function setMode(mode: 'tutorial' | 'sandbox' | 'missions') {
+      activeMode = mode;
+
+      [tabBtnTutorial, tabBtnSandbox, tabBtnMissions].forEach((btn) => {
+        btn?.classList.remove('is-active');
+        btn?.setAttribute('aria-selected', 'false');
+        const pill = btn?.querySelector('.mhc-status-pill');
+        if (pill) {
+          pill.className = 'mhc-status-pill is-alt';
+          if (btn === tabBtnTutorial) pill.textContent = 'PRINCIPIANTE';
+          if (btn === tabBtnSandbox) pill.textContent = 'SANDBOX';
+          if (btn === tabBtnMissions) pill.textContent = 'DESAFÍOS';
+        }
+      });
+
+      if (mode === 'tutorial') {
+        tabBtnTutorial?.classList.add('is-active');
+        tabBtnTutorial?.setAttribute('aria-selected', 'true');
+        const pill = tabBtnTutorial?.querySelector('.mhc-status-pill');
+        if (pill) {
+          pill.textContent = 'ACTIVO';
+          pill.className = 'mhc-status-pill is-current';
+        }
+        if (presetsShelf) presetsShelf.style.display = 'none';
+        if (hudMissionDock) hudMissionDock.style.display = 'none';
+        if (hudTutorialDock) hudTutorialDock.style.display = 'block';
+        showTutorialStep(0);
+      } else if (mode === 'sandbox') {
+        tabBtnSandbox?.classList.add('is-active');
+        tabBtnSandbox?.setAttribute('aria-selected', 'true');
+        const pill = tabBtnSandbox?.querySelector('.mhc-status-pill');
+        if (pill) {
+          pill.textContent = 'ACTIVO';
+          pill.className = 'mhc-status-pill is-current';
+        }
+        if (presetsShelf) presetsShelf.style.display = 'flex';
+        if (hudMissionDock) hudMissionDock.style.display = 'none';
+        if (hudTutorialDock) hudTutorialDock.style.display = 'none';
+        loadPreset(currentPresetName);
+      } else if (mode === 'missions') {
+        tabBtnMissions?.classList.add('is-active');
+        tabBtnMissions?.setAttribute('aria-selected', 'true');
+        const pill = tabBtnMissions?.querySelector('.mhc-status-pill');
+        if (pill) {
+          pill.textContent = 'ACTIVO';
+          pill.className = 'mhc-status-pill is-current';
+        }
+        if (presetsShelf) presetsShelf.style.display = 'none';
+        if (hudMissionDock) hudMissionDock.style.display = 'block';
+        if (hudTutorialDock) hudTutorialDock.style.display = 'none';
+        loadMission(0);
+      }
+    }
+
+    if (tabBtnTutorial) tabBtnTutorial.addEventListener('click', () => setMode('tutorial'));
+    if (tabBtnSandbox) tabBtnSandbox.addEventListener('click', () => setMode('sandbox'));
+    if (tabBtnMissions) tabBtnMissions.addEventListener('click', () => setMode('missions'));
+
+    // Botones de navegación del Tutorial
+    if (btnTutNext) {
+      btnTutNext.addEventListener('click', () => {
+        if (currentTutorialStep < TUTORIAL_STEPS.length - 1) {
+          showTutorialStep(currentTutorialStep + 1);
+        } else {
+          setMode('sandbox');
+        }
+      });
+    }
+
+    if (btnTutPrev) {
+      btnTutPrev.addEventListener('click', () => {
+        if (currentTutorialStep > 0) {
+          showTutorialStep(currentTutorialStep - 1);
+        }
+      });
+    }
+
+    if (btnTutClose) {
+      btnTutClose.addEventListener('click', () => setMode('sandbox'));
+    }
+
+    // Botones de presets
+    document.querySelectorAll('.btn-preset').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.id === 'btn-reset-preset') return;
+        document.querySelectorAll('.btn-preset').forEach((b) => {
+          if (b.id !== 'btn-reset-preset') b.classList.remove('is-active');
+        });
+        btn.classList.add('is-active');
+        const pName = (btn as HTMLElement).dataset.preset || 'solar-inner';
+        loadPreset(pName);
+      });
+    });
+
+    if (btnResetPreset) {
+      btnResetPreset.addEventListener('click', () => {
+        loadPreset(currentPresetName);
+      });
+    }
+
+    // Botón de borrado de áreas en el HUD de Kepler 2
+    if (btnK2Clear) {
+      btnK2Clear.addEventListener('click', () => {
+        clearKepler2Areas();
+      });
+    }
+
+    // Selector de tipo de cuerpo a lanzar
+    document.querySelectorAll('.btn-spawn-type').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-spawn-type').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        spawnType = ((btn as HTMLElement).dataset.type as typeof spawnType) || 'planet';
+      });
+    });
+
+    // Checkbox 2.ª Ley de Kepler
+    if (chkKepler2) {
+      chkKepler2.addEventListener('change', () => {
+        showKepler2Areas = chkKepler2.checked;
+        clearKepler2Areas();
+        if (hudKepler2Overlay) hudKepler2Overlay.style.display = showKepler2Areas ? 'block' : 'none';
+      });
+    }
+
+    // Otros checkboxes
+    if (chkGravityWell) chkGravityWell.addEventListener('change', () => { showGravityWell = chkGravityWell.checked; });
+    if (chkOrbitGuides) chkOrbitGuides.addEventListener('change', () => { showTheoreticalOrbits = chkOrbitGuides.checked; });
+    if (chkVelVector) chkVelVector.addEventListener('change', () => { showVelocityVector = chkVelVector.checked; });
+    if (chkGravVector) chkGravVector.addEventListener('change', () => { showGravVector = chkGravVector.checked; });
+    if (chkOrbitPred) chkOrbitPred.addEventListener('change', () => { showOrbitPredictor = chkOrbitPred.checked; });
+
+    // Controles de tiempo
+    if (btnPlayPause) {
+      btnPlayPause.addEventListener('click', () => {
+        isRunning = !isRunning;
+        if (playPauseIcon) playPauseIcon.textContent = isRunning ? '⏸️' : '▶️';
+        btnPlayPause.classList.toggle('is-playing', isRunning);
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        btnPlayPause?.click();
+      }
+    });
+
+    document.querySelectorAll('.btn-warp').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-warp').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        timeWarp = parseFloat((btn as HTMLElement).dataset.warp || '1.0');
+      });
+    });
+
+    if (btnClearBodies) {
+      btnClearBodies.addEventListener('click', () => {
+        bodies = bodies.filter(b => b.type === 'star');
+        clearKepler2Areas();
+      });
+    }
+
+    // Herramientas flotantes de zoom y centrado
+    if (btnZoomIn) btnZoomIn.addEventListener('click', () => { camZoom = Math.min(4.0, camZoom * 1.25); });
+    if (btnZoomOut) btnZoomOut.addEventListener('click', () => { camZoom = Math.max(0.2, camZoom * 0.8); });
+    if (btnRecenter) {
+      btnRecenter.addEventListener('click', () => {
+        camX = 0;
+        camY = 0;
+        camZoom = 1.0;
+      });
+    }
+
+    // Botones de Misión
+    if (btnMissionRetry) {
+      btnMissionRetry.addEventListener('click', () => {
+        loadMission(currentMissionIdx);
+      });
+    }
+
+    if (btnMissionNext) {
+      btnMissionNext.addEventListener('click', () => {
+        const next = (currentMissionIdx + 1) % MISSIONS.length;
+        loadMission(next);
+      });
+    }
+
+    // =========================================================================
+    // CALCULADORA KEPLERIANA DIDÁCTICA (3.ª LEY)
+    // =========================================================================
+    const calcInput = document.getElementById('calc-semimajor') as HTMLInputElement | null;
+    const calcResPeriod = document.getElementById('calc-res-period');
+    const calcResVel = document.getElementById('calc-res-vel');
+    const calcResRatio = document.getElementById('calc-res-ratio');
+
+    function updateKeplerCalculator() {
+      if (!calcInput) return;
+      const a = parseFloat(calcInput.value) || 1.0;
+      const T_years = Math.sqrt(Math.pow(a, 3));
+      const T_days = T_years * 365.25;
+      const v_kms = 29.78 / Math.sqrt(a);
+      const ratio = (T_years * T_years) / Math.pow(a, 3);
+
+      if (calcResPeriod) calcResPeriod.textContent = `${T_years.toFixed(3)} años terrestres (${T_days.toFixed(1)} días)`;
+      if (calcResVel) calcResVel.textContent = `${v_kms.toFixed(2)} km/s`;
+      if (calcResRatio) calcResRatio.textContent = `${ratio.toFixed(4)} (Constante Universal)`;
+    }
+
+    if (calcInput) calcInput.addEventListener('input', updateKeplerCalculator);
+
+    document.querySelectorAll('.btn-shortcut').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const aVal = (btn as HTMLElement).dataset.a;
+        if (calcInput && aVal) {
+          calcInput.value = aVal;
+          updateKeplerCalculator();
+        }
+      });
+    });
+
+    // Iniciar con preset solar
+    loadPreset('solar-inner');
+    updateKeplerCalculator();
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS BASE DEL SIMULADOR KEPLERIANO
+     ========================================================================== */
+  .kepler-page {
+    background: var(--bg-dark, #070c16);
+    color: var(--ink, #f8fafc);
+    min-height: 100vh;
+    font-family: var(--font-sans, system-ui, sans-serif);
+  }
+
+  .game-cockpit {
+    background: radial-gradient(circle at 50% 10%, rgba(77, 148, 255, 0.12), #070c16 70%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.25rem 1rem 1.75rem;
+  }
+
+  .cockpit-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* CABECERA */
+  .cockpit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .back-pill:hover {
+    color: #4d94ff;
+    border-color: #4d94ff;
+    background: rgba(77, 148, 255, 0.12);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--ink, #f8fafc);
+  }
+
+  .badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #4d94ff;
+    background: rgba(77, 148, 255, 0.15);
+    border: 1px solid rgba(77, 148, 255, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  /* SELECTOR DE MODOS PRINCIPAL (3 TARJETAS RESPONSIVE) */
+  .mode-selector-hub {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+
+  @media (max-width: 900px) {
+    .mode-selector-hub {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mode-hub-card {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding: 0.85rem 1.05rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mode-hub-card:hover {
+    border-color: rgba(77, 148, 255, 0.4);
+    background: rgba(77, 148, 255, 0.05);
+    transform: translateY(-1px);
+  }
+
+  .mode-hub-card.is-active {
+    background: rgba(77, 148, 255, 0.1);
+    border-color: #4d94ff;
+    box-shadow: 0 4px 18px rgba(77, 148, 255, 0.2);
+  }
+
+  .mhc-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+  }
+
+  .mhc-mode-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--muted, #94a3b8);
+  }
+
+  .mode-hub-card.is-active .mhc-mode-tag {
+    color: #4d94ff;
+  }
+
+  .mhc-status-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  .mhc-status-pill.is-current {
+    background: #4d94ff;
+    color: #070c16;
+  }
+
+  .mhc-status-pill.is-alt {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--muted, #94a3b8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .mhc-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .mhc-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .mhc-details {
+    flex: 1;
+  }
+
+  .mhc-title {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin-bottom: 0.2rem;
+  }
+
+  .mode-hub-card.is-active .mhc-title {
+    color: #4d94ff;
+  }
+
+  .mhc-desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  /* ARENA DE CANVAS INTERACTIVO */
+  .stage-orbital-arena {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    background: radial-gradient(circle at center, #0c1524 0%, #060a12 100%);
+    border: 1.5px solid rgba(77, 148, 255, 0.35);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7), 0 8px 30px rgba(0, 0, 0, 0.4);
+    touch-action: none;
+  }
+
+  @media (max-width: 768px) {
+    .stage-orbital-arena {
+      height: 420px;
+    }
+  }
+
+  .kepler-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+  }
+
+  /* HUD DE TELEMETRÍA */
+  .hud-telemetry {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(10, 16, 26, 0.82);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .hud-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+  }
+
+  .hud-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    color: var(--muted, #94a3b8);
+    font-weight: 700;
+  }
+
+  .hud-val {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .hud-val.is-cyan {
+    color: #38bdf8;
+  }
+
+  .hud-val.is-gold {
+    color: #ffc14d;
+  }
+
+  .hud-conic-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .hud-conic-pill.is-circular {
+    background: rgba(63, 224, 181, 0.2);
+    color: #3fe0b5;
+  }
+
+  .hud-conic-pill.is-elliptic {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+  }
+
+  .hud-conic-pill.is-parabolic {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fb923c;
+  }
+
+  .hud-conic-pill.is-hyperbolic {
+    background: rgba(244, 63, 94, 0.2);
+    color: #f43f5e;
+  }
+
+  /* OVERLAY 2.ª LEY DE KEPLER */
+  .hud-kepler2-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    max-width: 330px;
+    background: rgba(10, 16, 26, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-left: 4px solid #38bdf8;
+    border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+    z-index: 5;
+  }
+
+  .k2-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 0.45rem;
+  }
+
+  .k2-data-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .k2-metric {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+  }
+
+  .k2-lbl {
+    color: var(--muted, #94a3b8);
+  }
+
+  .k2-val {
+    color: #f8fafc;
+    font-weight: 700;
+  }
+
+  .k2-val.is-green {
+    color: #3fe0b5;
+  }
+
+  .k2-note {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--muted, #cbd5e1);
+    margin: 0 0 0.55rem;
+  }
+
+  .k2-actions-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-k2-clear {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    padding: 0.25rem 0.55rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-k2-clear:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: #f43f5e;
+    color: #f8fafc;
+  }
+
+  /* OVERLAY TUTORIAL GUIADO / MODO PRINCIPIANTE */
+  .hud-tutorial-dock {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    max-width: 620px;
+    margin: 0 auto;
+    background: rgba(10, 16, 26, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid #38bdf8;
+    border-radius: 14px;
+    padding: 1rem 1.35rem;
+    z-index: 7;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15);
+  }
+
+  .tutorial-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .tut-step-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+  }
+
+  .tut-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted, #94a3b8);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.2rem;
+    line-height: 1;
+  }
+
+  .tut-close-btn:hover {
+    color: #f8fafc;
+  }
+
+  .tut-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
+    color: #f8fafc;
+  }
+
+  .tut-body {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--muted, #cbd5e1);
+    margin: 0 0 0.65rem;
+  }
+
+  .tut-body strong {
+    color: #f8fafc;
+  }
+
+  .tut-callout {
+    background: rgba(56, 189, 248, 0.08);
+    border-left: 3px solid #38bdf8;
+    border-radius: 4px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    color: #e0f2fe;
+    margin-bottom: 0.75rem;
+  }
+
+  .tut-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .btn-tut-nav {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-tut-nav.is-prev {
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-tut-nav.is-prev:hover:not(:disabled) {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-tut-nav.is-prev:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .btn-tut-nav.is-next {
+    background: #38bdf8;
+    color: #070c16;
+    border: none;
+  }
+
+  .btn-tut-nav.is-next:hover {
+    background: #7dd3fc;
+    transform: translateY(-1px);
+  }
+
+  .tut-stepper-dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .tut-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .tut-dot.is-active {
+    background: #38bdf8;
+    box-shadow: 0 0 6px #38bdf8;
+  }
+
+  .tut-dot.is-done {
+    background: rgba(56, 189, 248, 0.5);
+  }
+
+  /* OVERLAY DE MISIONES (MODO 3) */
+  .hud-mission-dock {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(10, 16, 26, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid #4d94ff;
+    border-radius: 12px;
+    padding: 0.85rem 1.15rem;
+    z-index: 6;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .mission-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+  }
+
+  .mission-step-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #4d94ff;
+    display: block;
+  }
+
+  .mission-title {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .mission-status-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 193, 77, 0.2);
+    color: #ffc14d;
+    border: 1px solid rgba(255, 193, 77, 0.35);
+  }
+
+  .mission-status-badge.is-success {
+    background: rgba(63, 224, 181, 0.2);
+    color: #3fe0b5;
+    border-color: #3fe0b5;
+  }
+
+  .mission-objective {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--muted, #cbd5e1);
+    margin: 0.25rem 0 0.6rem;
+  }
+
+  .mission-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 0.65rem;
+  }
+
+  .mission-progress-fill {
+    height: 100%;
+    background: #3fe0b5;
+    transition: width 0.3s ease;
+  }
+
+  .mission-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .btn-mission-reset,
+  .btn-mission-next {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-mission-reset {
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-mission-reset:hover {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-mission-next {
+    background: #4d94ff;
+    color: #070c16;
+    border: none;
+  }
+
+  .btn-mission-next:hover:not(:disabled) {
+    background: #70aaff;
+    transform: translateY(-1px);
+  }
+
+  .btn-mission-next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* CONTROLES FLOTANTES DEL CANVAS (ZOOM) */
+  .canvas-floating-tools {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    z-index: 5;
+  }
+
+  .tool-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(10, 16, 26, 0.78);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .tool-btn:hover {
+    background: rgba(77, 148, 255, 0.25);
+    border-color: #4d94ff;
+  }
+
+  .canvas-help-tip {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 16, 26, 0.75);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .canvas-help-tip strong {
+    color: #3fe0b5;
+  }
+
+  /* BARRA DE PRESETS Y CONTROLES INFERIOR */
+  .orbital-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .presets-shelf {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .shelf-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+  }
+
+  .presets-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .btn-preset {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--muted, #94a3b8);
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-preset:hover {
+    color: #4d94ff;
+    border-color: rgba(77, 148, 255, 0.4);
+  }
+
+  .btn-preset.is-active {
+    background: rgba(77, 148, 255, 0.18);
+    border-color: #4d94ff;
+    color: #f8fafc;
+  }
+
+  .btn-preset.is-reset-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #f8fafc;
+  }
+
+  .btn-preset.is-reset-btn:hover {
+    background: rgba(77, 148, 255, 0.2);
+    border-color: #4d94ff;
+  }
+
+  /* CONTROLES GRID */
+  .controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 900px) {
+    .controls-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .ctrl-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .ctrl-card-title {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    letter-spacing: 0.05em;
+  }
+
+  .spawn-type-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .btn-spawn-type {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--muted, #94a3b8);
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-spawn-type:hover {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-spawn-type.is-active {
+    background: rgba(77, 148, 255, 0.15);
+    border-color: #4d94ff;
+    color: #4d94ff;
+  }
+
+  .type-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .type-dot.is-probe { background: #38bdf8; }
+  .type-dot.is-planet { background: #3fe0b5; }
+  .type-dot.is-giant { background: #fb923c; }
+  .type-dot.is-star { background: #ffc14d; }
+
+  /* TOGGLES CLUSTER */
+  .toggles-cluster {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .toggle-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    color: var(--muted, #cbd5e1);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-chip input {
+    display: none;
+  }
+
+  .chip-box {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .toggle-chip input:checked + .chip-box {
+    background: #4d94ff;
+    border-color: #4d94ff;
+  }
+
+  /* MOTOR TEMPORAL & PLAYBACK */
+  .playback-dock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-play-pause {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(77, 148, 255, 0.15);
+    border: 1.5px solid #4d94ff;
+    color: #f8fafc;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-pause:hover {
+    background: #4d94ff;
+    color: #070c16;
+  }
+
+  .time-warp-selector {
+    display: flex;
+    gap: 0.2rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    padding: 0.15rem;
+  }
+
+  .btn-warp {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    color: var(--muted, #94a3b8);
+    padding: 0.25rem 0.45rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-warp.is-active {
+    background: #4d94ff;
+    color: #070c16;
+  }
+
+  .btn-ctrl-clear {
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-ctrl-clear:hover {
+    background: #f43f5e;
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     SECCIÓN DIDÁCTICA Y MATEMÁTICA
+     ========================================================================== */
+  .kepler-theory-section {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .theory-container {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .theory-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #4d94ff;
+  }
+
+  .theory-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0.4rem 0 0.6rem;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+  }
+
+  .theory-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* TRIPLE GRID DE LEYES */
+  .laws-triple-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .laws-triple-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .law-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .law-card.is-highlight {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.12);
+  }
+
+  .law-card-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #4d94ff;
+    letter-spacing: 0.08em;
+  }
+
+  .law-card-badge.is-accent {
+    color: #38bdf8;
+  }
+
+  .law-card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .law-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted, #cbd5e1);
+    margin: 0;
+  }
+
+  .law-desc strong {
+    color: #f8fafc;
+  }
+
+  .law-subdesc {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+  }
+
+  /* TARJETAS TÉCNICAS */
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .theory-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .tcard-icon {
+    font-size: 1.35rem;
+  }
+
+  .tcard-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .tcard-p {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .theory-steps {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
+    line-height: 1.45;
+  }
+
+  .math-callout {
+    background: rgba(77, 148, 255, 0.08);
+    border: 1px solid rgba(77, 148, 255, 0.25);
+    border-left: 4px solid #4d94ff;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    margin: 0.45rem 0;
+    text-align: center;
+  }
+
+  .math-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #4d94ff;
+    letter-spacing: 0.02em;
+  }
+
+  .tcard-foot {
+    font-size: 0.78rem;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+    line-height: 1.4;
+  }
+
+  /* CALCULADORA KEPLERIANA */
+  .kepler-calculator-box {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1.5px solid rgba(77, 148, 255, 0.35);
+    border-radius: 14px;
+    padding: 1.35rem 1.65rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .kcalc-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .kcalc-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #4d94ff;
+    letter-spacing: 0.08em;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+  }
+
+  .kcalc-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0 0 0.35rem;
+    color: #f8fafc;
+  }
+
+  .kcalc-sub {
+    font-size: 0.84rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .kcalc-interactive-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  @media (max-width: 800px) {
+    .kcalc-interactive-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kcalc-input-wrap label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #cbd5e1);
+    margin-bottom: 0.45rem;
+  }
+
+  .kcalc-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .kcalc-field input {
+    background: rgba(10, 16, 26, 0.8);
+    border: 1.5px solid rgba(77, 148, 255, 0.4);
+    border-radius: 8px;
+    color: #f8fafc;
+    font-family: var(--font-mono, monospace);
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.5rem 0.85rem;
+    width: 140px;
+  }
+
+  .kcalc-unit {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #4d94ff;
+  }
+
+  .kcalc-planet-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .btn-shortcut {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--muted, #94a3b8);
+    padding: 0.25rem 0.45rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-shortcut:hover {
+    color: #4d94ff;
+    border-color: #4d94ff;
+  }
+
+  .kcalc-results-wrap {
+    background: rgba(10, 16, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.85rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .kcalc-res-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .kc-label {
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .kc-val {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .kc-val.is-cyan { color: #38bdf8; }
+  .kc-val.is-gold { color: #ffc14d; }
+
+  /* ==========================================================================
+     MODO CLARO (LIGHT THEME)
+     ========================================================================== */
+  :global([data-theme="light"]) .kepler-page {
+    background: var(--bg, #f8fafc);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .game-cockpit {
+    background: radial-gradient(circle at 50% 10%, rgba(77, 148, 255, 0.15), #f8fafc 70%);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .game-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .mode-hub-card:hover {
+    background: #f0f7ff;
+    border-color: #3b82f6;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card.is-active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
+  }
+
+  :global([data-theme="light"]) .mhc-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card.is-active .mhc-title {
+    color: #1d4ed8;
+  }
+
+  :global([data-theme="light"]) .mhc-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .mhc-status-pill.is-alt {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .stage-orbital-arena {
+    background: radial-gradient(circle at center, #0a1424 0%, #050b14 100%);
+    border-color: rgba(37, 99, 235, 0.4);
+  }
+
+  :global([data-theme="light"]) .presets-shelf,
+  :global([data-theme="light"]) .ctrl-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .btn-preset {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .btn-preset.is-active {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #1d4ed8;
+  }
+
+  :global([data-theme="light"]) .btn-spawn-type {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .btn-spawn-type.is-active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1d4ed8;
+  }
+
+  :global([data-theme="light"]) .toggle-chip {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .theory-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .theory-subtitle {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .law-card,
+  :global([data-theme="light"]) .theory-card,
+  :global([data-theme="light"]) .kepler-calculator-box {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .law-card-title,
+  :global([data-theme="light"]) .tcard-title,
+  :global([data-theme="light"]) .kcalc-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .law-desc,
+  :global([data-theme="light"]) .tcard-p,
+  :global([data-theme="light"]) .theory-steps {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .math-callout {
+    background: #eff6ff;
+    border-color: rgba(37, 99, 235, 0.25);
+    border-left-color: #2563eb;
+  }
+
+  :global([data-theme="light"]) .math-formula {
+    color: #1d4ed8;
+  }
+
+  :global([data-theme="light"]) .kcalc-field input {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .kcalc-results-wrap {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .kc-val {
+    color: #0f172a;
+  }
+</style>

@@ -1,0 +1,2484 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Vóxel Polyhedra 3D & Característica de Euler | Math Universe"
+  description="Laboratorio y constructor 3D interactivo de poliedros regulares y formas espaciales con vóxeles. Explora los 5 sólidos platónicos, comprueba la fórmula de Euler (C + V = A + 2) y disecciona volúmenes."
+>
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="polyhedra-page" id="main-content">
+    <!-- COCKPIT DEL LABORATORIO 3D -->
+    <section class="game-cockpit" id="escenario">
+      <div class="cockpit-container">
+        <!-- Barra Superior: Navegación, Título y Selector de Modo -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver al Catálogo de Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">Vóxel Polyhedra 3D</h1>
+              <span class="badge-pill">Euler: C + V − A = 2</span>
+            </div>
+          </div>
+
+          <div class="header-right-actions">
+            <!-- Conmutador de Modo Principal (Poliedros Platónicos vs Taller de Vóxeles) -->
+            <div class="mode-toggle-group" role="tablist" aria-label="Modo de visualización y construcción">
+              <button
+                type="button"
+                class="mode-btn is-active"
+                data-mode="platonic"
+                role="tab"
+                aria-selected="true"
+                id="tab-platonic"
+              >
+                <span class="btn-icon">💎</span>
+                <span>Sólidos Clásicos</span>
+              </button>
+              <button
+                type="button"
+                class="mode-btn"
+                data-mode="voxel"
+                role="tab"
+                aria-selected="false"
+                id="tab-voxel"
+              >
+                <span class="btn-icon">🧱</span>
+                <span>Taller Vóxel 3D</span>
+              </button>
+            </div>
+
+            <!-- Botón Rápido de Tema Claro / Oscuro -->
+            <button
+              type="button"
+              class="hanoi-theme-toggle"
+              data-theme-toggle
+              aria-label="Cambiar entre modo claro y modo oscuro"
+              title="Cambiar modo claro / modo oscuro"
+            >
+              <svg class="htt-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+              <svg class="htt-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+              </svg>
+              <span class="htt-text" data-theme-label>Tema</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Barra de Control Específica de cada Modo -->
+        <!-- Sub-barra 1: Selector de Poliedros Platónicos & Arquimedianos -->
+        <div class="sub-controls-bar is-active" id="bar-platonic">
+          <div class="preset-scroll-track" role="group" aria-label="Seleccionar poliedro regular">
+            <button type="button" class="preset-pill is-active" data-solid="cube">Cubo / Hexaedro</button>
+            <button type="button" class="preset-pill" data-solid="tetrahedron">Tetraedro</button>
+            <button type="button" class="preset-pill" data-solid="octahedron">Octaedro</button>
+            <button type="button" class="preset-pill" data-solid="dodecahedron">Dodecaedro</button>
+            <button type="button" class="preset-pill" data-solid="icosahedron">Icosaedro</button>
+            <button type="button" class="preset-pill" data-solid="truncated-cube">Cubo Truncado</button>
+            <button type="button" class="preset-pill" data-solid="triangular-prism">Prisma Triangular</button>
+            <button type="button" class="preset-pill" data-solid="square-pyramid">Pirámide Cuadrangular</button>
+          </div>
+
+          <div class="view-toggles">
+            <label class="toggle-chip" title="Mostrar u ocultar estructura de aristas">
+              <input type="checkbox" id="chk-wireframe" checked />
+              <span class="tc-slider"></span>
+              <span class="tc-label">Aristas</span>
+            </label>
+            <label class="toggle-chip" title="Mostrar vértices iluminados">
+              <input type="checkbox" id="chk-vertices" checked />
+              <span class="tc-slider"></span>
+              <span class="tc-label">Vértices</span>
+            </label>
+            <label class="toggle-chip" title="Caras semitransparentes / Rayos X">
+              <input type="checkbox" id="chk-translucent" />
+              <span class="tc-slider"></span>
+              <span class="tc-label">Rayos X</span>
+            </label>
+            <label class="toggle-chip" title="Rotación orbital continua">
+              <input type="checkbox" id="chk-autorotate" checked />
+              <span class="tc-slider"></span>
+              <span class="tc-label">Giro</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Sub-barra 2: Herramientas del Taller Vóxel 3D -->
+        <div class="sub-controls-bar" id="bar-voxel" hidden>
+          <div class="voxel-tools-group">
+            <span class="vt-label">Herramienta:</span>
+            <div class="tool-switch-btns">
+              <button type="button" class="tool-btn is-active" data-tool="add" title="Poner cubo (Clic sobre cualquier cara)">
+                <span>➕</span> Poner Bloque
+              </button>
+              <button type="button" class="tool-btn" data-tool="remove" title="Picar o borrar cubo (Clic para eliminar)">
+                <span>⛏️</span> Picar Bloque
+              </button>
+            </div>
+          </div>
+
+          <div class="voxel-palette-group">
+            <span class="vt-label">Material:</span>
+            <div class="color-swatches" id="color-palette">
+              <button type="button" class="swatch is-active" data-color="#b48cff" style="--swatch:#b48cff;" title="Amatista Matemático"></button>
+              <button type="button" class="swatch" data-color="#38bdf8" style="--swatch:#38bdf8;" title="Cyan Cuántico"></button>
+              <button type="button" class="swatch" data-color="#3fe0b5" style="--swatch:#3fe0b5;" title="Esmeralda"></button>
+              <button type="button" class="swatch" data-color="#fbbf24" style="--swatch:#fbbf24;" title="Oro / Obsidiana"></button>
+              <button type="button" class="swatch" data-color="#f43f5e" style="--swatch:#f43f5e;" title="Rubí Neón"></button>
+              <button type="button" class="swatch" data-color="#f8fafc" style="--swatch:#f8fafc;" title="Mármol Blanco"></button>
+            </div>
+          </div>
+
+          <div class="voxel-presets-group">
+            <span class="vt-label">Plantillas:</span>
+            <select id="select-voxel-preset" class="preset-dropdown">
+              <option value="cube2">Cubo 2×2×2 (8 vóxeles)</option>
+              <option value="cube3">Cubo 3×3×3 (27 vóxeles)</option>
+              <option value="pyramid">Pirámide Escalonada</option>
+              <option value="torus">Toroide con Agujero (Género 1)</option>
+              <option value="menger">Cruz 3D de Menger</option>
+              <option value="clear">Plataforma Base Vacía</option>
+            </select>
+            <button type="button" class="btn-clear-voxels" id="btn-reset-voxels" title="Reiniciar construcción a la plataforma base">
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        <!-- ESCENARIO 3D INTERACTIVO -->
+        <div class="stage-arena" id="arena-viewport">
+          <!-- Canvas 3D de Alto Rendimiento -->
+          <canvas id="polyhedra-canvas" class="render-canvas"></canvas>
+
+          <!-- Velo de Interacción / HUD Superior flotante con info de sólido -->
+          <div class="canvas-floating-header">
+            <div class="solid-title-box">
+              <span class="st-category" id="solid-type-badge">Sólido Platónico</span>
+              <h2 class="st-name" id="solid-display-name">Hexaedro Regular (Cubo)</h2>
+            </div>
+
+            <!-- Botones de Cámara y Zoom Rápido -->
+            <div class="camera-actions">
+              <button type="button" class="btn-cam" id="btn-zoom-in" title="Acercar zoom (+)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              </button>
+              <button type="button" class="btn-cam" id="btn-zoom-out" title="Alejar zoom (−)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              </button>
+              <button type="button" class="btn-cam" id="btn-cam-reset" title="Restablecer orientación inicial">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+              </button>
+              <button type="button" class="btn-cam" id="btn-audio-toggle" title="Activar/Silenciar sonido táctil">
+                <span id="audio-icon-status">🔊</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Slider de Despliegue / Explosión de Caras (Solo activo en modo Poliedro) -->
+          <div class="explosion-control-dock" id="dock-explosion">
+            <div class="dock-label-row">
+              <span class="d-title">💥 Explosión de Caras (Descomposición Piramidal):</span>
+              <span class="d-val" id="explosion-pct">0%</span>
+            </div>
+            <input
+              type="range"
+              id="slider-explosion"
+              min="0"
+              max="100"
+              value="0"
+              class="range-slider"
+              title="Separa cada cara en dirección a su vector normal exterior"
+            />
+          </div>
+
+          <!-- Indicador de Navegación 3D en la esquina -->
+          <div class="canvas-help-hint">
+            <span class="hint-icon">🖐️</span>
+            <span id="canvas-hint-text">Arrastra para rotar 360° · Rueda para zoom</span>
+          </div>
+        </div>
+
+        <!-- DOCK DE MÉTRICAS MATEMÁTICAS & TOPOLOGÍA EN VIVO -->
+        <div class="metrics-grid">
+          <!-- Tarjeta 1: Característica de Euler -->
+          <div class="metric-card card-euler">
+            <div class="mc-header">
+              <span class="mc-tag">TOPOLOGÍA DE EULER</span>
+              <span class="mc-formula">C + V − A = <strong id="euler-result">2</strong></span>
+            </div>
+            <div class="euler-counts-row">
+              <div class="euler-chip">
+                <span class="ec-num" id="metric-faces">6</span>
+                <span class="ec-lbl">Caras (C)</span>
+              </div>
+              <span class="ec-op">+</span>
+              <div class="euler-chip">
+                <span class="ec-num" id="metric-vertices">8</span>
+                <span class="ec-lbl">Vértices (V)</span>
+              </div>
+              <span class="ec-op">−</span>
+              <div class="euler-chip">
+                <span class="ec-num" id="metric-edges">12</span>
+                <span class="ec-lbl">Aristas (A)</span>
+              </div>
+            </div>
+            <div class="euler-status-badge" id="euler-badge">
+              <span class="status-dot"></span>
+              <span id="euler-status-text">Esfera Topológica (Sólido Conexo, Género 0)</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: Volumen y Superficie Analítica -->
+          <div class="metric-card card-volume">
+            <div class="mc-header">
+              <span class="mc-tag">GEOMETRÍA MÉTRICA</span>
+              <span class="mc-subtitle" id="vol-mode-label">Arista base <em>a</em>:</span>
+            </div>
+
+            <div class="param-input-row" id="edge-param-wrap">
+              <label for="input-edge-a">Longitud <em>a</em>:</label>
+              <input type="range" id="slider-edge-a" min="1" max="10" step="0.5" value="4" class="range-slider-small" />
+              <span class="param-val"><span id="val-edge-a">4.0</span> u</span>
+            </div>
+
+            <div class="metric-dual-stats">
+              <div class="stat-pair">
+                <span class="sp-lbl">Área Superficial (<em>A</em>):</span>
+                <span class="sp-val" id="metric-surface">96.00 u²</span>
+              </div>
+              <div class="stat-pair">
+                <span class="sp-lbl">Volumen Total (<em>V</em>):</span>
+                <span class="sp-val text-accent" id="metric-volume">64.00 u³</span>
+              </div>
+            </div>
+
+            <!-- Detalle específico de vóxeles (caras internas ocultas vs externas) -->
+            <div class="voxel-face-breakdown" id="voxel-stats-extra" hidden>
+              <div class="vf-item">
+                <span class="vf-lbl">Bloques:</span>
+                <span class="vf-val" id="stat-voxel-count">8</span>
+              </div>
+              <div class="vf-item">
+                <span class="vf-lbl">Caras Externas:</span>
+                <span class="vf-val text-cyan" id="stat-voxel-ext-faces">24</span>
+              </div>
+              <div class="vf-item">
+                <span class="vf-lbl">Caras Fusionadas:</span>
+                <span class="vf-val text-muted" id="stat-voxel-int-faces">24</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DIDÁCTICA MATEMÁTICA Y TEÓRICA -->
+    <section class="polyhedra-theory-section" id="teoria">
+      <div class="theory-container">
+        <header class="theory-header">
+          <span class="section-tag">FUNDAMENTOS DE GEOMETRÍA ESPACIAL & TOPOLOGÍA</span>
+          <h2 class="theory-title">La Anatomía Matemática de los Poliedros</h2>
+          <p class="theory-subtitle">
+            Desde la demostración de Euclides de que solo pueden existir cinco sólidos regulares hasta el teorema topológico de Leonhard Euler y la geometría discreta de vóxeles en computación.
+          </p>
+        </header>
+
+        <div class="theory-grid">
+          <!-- Tarjeta 1: Por qué solo existen 5 Sólidos Platónicos -->
+          <article class="theory-card">
+            <div class="tcard-icon">📐</div>
+            <h3 class="tcard-title">El Teorema de los 5 Sólidos Platónicos</h3>
+            <p class="tcard-p">
+              En un espacio euclídeo tridimensional, es geométricamente imposible construir más de cinco poliedros regulares convexos. La demostración matemática se basa en la <strong>suma de ángulos en un vértice</strong>:
+            </p>
+            <ol class="theory-steps">
+              <li>En cada vértice deben concurrir al menos <strong>3 caras</strong>.</li>
+              <li>La suma de los ángulos que coinciden en el vértice debe ser <strong>estrictamente menor que 360°</strong> (de lo contrario, las caras quedarían planas o se solaparían).</li>
+              <li>Con triángulos equiláteros (60°): caben 3 (Tetraedro = 180°), 4 (Octaedro = 240°) o 5 (Icosaedro = 300°). Con 6 caras sumarían 360° (teselación plana).</li>
+              <li>Con cuadrados (90°): caben exactamente 3 (Cubo = 270°). Con 4 sumarían 360°.</li>
+              <li>Con pentágonos regulares (108°): caben exactamente 3 (Dodecaedro = 324°). Con hexágonos (120°) 3 caras sumarían 360°, cerrando el espectro regular.</li>
+            </ol>
+          </article>
+
+          <!-- Tarjeta 2: La Fórmula de Euler y el Género Topológico -->
+          <article class="theory-card">
+            <div class="tcard-icon">⚡</div>
+            <h3 class="tcard-title">La Característica de Euler: <em>C</em> + <em>V</em> − <em>A</em> = 2</h3>
+            <p class="tcard-p">
+              Enunciada por Leonhard Euler en 1752 y demostrada con rigor por Cauchy y Poincaré, esta fórmula es el primer <strong>invariante topológico</strong> descubierto en la historia:
+            </p>
+            <div class="math-callout">
+              <span class="math-formula">&chi; = <em>C</em> + <em>V</em> − <em>A</em> = 2(1 − <em>g</em>)</span>
+            </div>
+            <p class="tcard-p">
+              Donde <em>g</em> es el <strong>género topológico</strong> (número de agujeros o túneles del cuerpo).
+            </p>
+            <ul class="theory-bullets">
+              <li>Cualquier sólido cerrado y macizo (género <em>g</em> = 0, homeomorfo a una esfera) verifica siempre <strong><em>C</em> + <em>V</em> − <em>A</em> = 2</strong>, sin importar cuántos vértices o deformaciones sufra.</li>
+              <li>Si construyes en el taller vóxel un anillo o toroide (género <em>g</em> = 1 con 1 túnel central), ¡la característica cae exactamente a <strong>&chi; = 0</strong>!</li>
+            </ul>
+          </article>
+
+          <!-- Tarjeta 3: Descomposición en Pirámides del Volumen -->
+          <article class="theory-card">
+            <div class="tcard-icon">💥</div>
+            <h3 class="tcard-title">Descomposición Volumétrica y Apotema</h3>
+            <p class="tcard-p">
+              Al activar el control de <strong>Explosión de Caras</strong> del simulador, cada cara se desplaza radialmente hacia afuera. Esto revela el secreto de cómo calcular el volumen exacto de cualquier poliedro regular:
+            </p>
+            <div class="math-callout">
+              <span class="math-formula"><em>V</em><sub>total</sub> = &sum; <em>V</em><sub>pirámides</sub> = <sup>1</sup>/<sub>3</sub> &middot; <em>A</em><sub>superficial</sub> &middot; <em>r</em><sub>inscrito</sub></span>
+            </div>
+            <p class="tcard-foot">
+              Cualquier poliedro regular puede descomponerse en <em>C</em> pirámides idénticas cuya base es una cara del poliedro y cuya altura es exactamente el <strong>radio de la esfera inscrita</strong> (apotema tridimensional).
+            </p>
+          </article>
+
+          <!-- Tarjeta 4: Geometría de Vóxeles y Oclusión en Gráficos -->
+          <article class="theory-card">
+            <div class="tcard-icon">🧱</div>
+            <h3 class="tcard-title">De la Geometría Continua al Vóxel (Minecraft & Raymarching)</h3>
+            <p class="tcard-p">
+              Un <strong>vóxel</strong> (del inglés <em>volumetric pixel</em>) es el análogo tridimensional de un píxel. En la computación gráfica moderna (videojuegos voxel, tomografías axiales computarizadas TAC y mallas de fluidos):
+            </p>
+            <ul class="theory-bullets">
+              <li><strong>Culling de Caras Internas</strong>: Cada cubo individual tiene 6 caras. Al unir dos vóxeles adyacentes, sus 2 caras coincidentes se ocultan internamente. El motor gráfico elimina del renderizado las caras con normales opuestas compartidas.</li>
+              <li><strong>Volumen por suma discreta</strong>: A diferencia de los poliedros continuos, el volumen de un ensamble de vóxeles es simplemente <em>N &middot; u³</em>, facilitando el cálculo de masas de geometrías arbitrariamente complejas.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. MOTOR MATEMÁTICO 3D (CANVAS 2D CON PROYECCIÓN PERSPECTIVA)
+    // =========================================================================
+    const canvas = document.getElementById('polyhedra-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Estado del Motor
+    let currentMode: 'platonic' | 'voxel' = 'platonic';
+    let currentSolidId = 'cube';
+    let autoRotate = true;
+    let showWireframe = true;
+    let showVertices = true;
+    let isTranslucent = false;
+    let explosionFactor = 0; // 0 a 1
+    let edgeLengthA = 4.0;
+    let soundEnabled = true;
+
+    // Cámara y Rotación
+    let rotX = 0.55;
+    let rotY = -0.65;
+    let zoom = 1.0;
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    // Herramientas de Vóxel
+    let voxelTool: 'add' | 'remove' = 'add';
+    let currentVoxelColor = '#b48cff';
+
+    // Tipos de Geometría
+    interface Point3D {
+      x: number;
+      y: number;
+      z: number;
+    }
+
+    interface FaceDef {
+      indices: number[];
+      normal?: Point3D;
+      centroid?: Point3D;
+      color?: string;
+    }
+
+    interface SolidModel {
+      name: string;
+      category: string;
+      vertices: Point3D[];
+      faces: FaceDef[];
+      edgeFormula: string;
+      volFormula: (a: number) => number;
+      surfFormula: (a: number) => number;
+      defaultColor: string;
+    }
+
+    // =========================================================================
+    // 2. MODELOS MATEMÁTICOS PLATÓNICOS & ARQUIMEDIANOS
+    // =========================================================================
+    const PHI = (1 + Math.sqrt(5)) / 2; // Proporción Áurea (~1.6180339887)
+
+    function normalize(v: Point3D): Point3D {
+      const len = Math.hypot(v.x, v.y, v.z) || 1;
+      return { x: v.x / len, y: v.y / len, z: v.z / len };
+    }
+
+    function computeFaceCentroidAndNormal(vertices: Point3D[], indices: number[]): { centroid: Point3D; normal: Point3D } {
+      let cx = 0, cy = 0, cz = 0;
+      for (const idx of indices) {
+        cx += vertices[idx].x;
+        cy += vertices[idx].y;
+        cz += vertices[idx].z;
+      }
+      const n = indices.length;
+      const centroid = { x: cx / n, y: cy / n, z: cz / n };
+
+      // Normal mediante producto cruz de dos aristas de la cara
+      const v0 = vertices[indices[0]];
+      const v1 = vertices[indices[1]];
+      const v2 = vertices[indices[2]];
+      const ax = v1.x - v0.x, ay = v1.y - v0.y, az = v1.z - v0.z;
+      const bx = v2.x - v0.x, by = v2.y - v0.y, bz = v2.z - v0.z;
+      const nx = ay * bz - az * by;
+      const ny = az * bx - ax * bz;
+      const nz = ax * by - ay * bx;
+      return { centroid, normal: normalize({ x: nx, y: ny, z: nz }) };
+    }
+
+    // Generador de Poliedros Clásicos
+    const SOLIDS_CATALOG: Record<string, SolidModel> = {
+      // 1. Hexaedro / Cubo
+      cube: {
+        name: 'Hexaedro Regular (Cubo)',
+        category: 'Sólido Platónico',
+        vertices: [
+          { x: -1, y: -1, z: -1 }, { x: 1, y: -1, z: -1 },
+          { x: 1, y: 1, z: -1 }, { x: -1, y: 1, z: -1 },
+          { x: -1, y: -1, z: 1 }, { x: 1, y: -1, z: 1 },
+          { x: 1, y: 1, z: 1 }, { x: -1, y: 1, z: 1 },
+        ],
+        faces: [
+          { indices: [0, 3, 2, 1] }, // Trasera
+          { indices: [4, 5, 6, 7] }, // Frontal
+          { indices: [0, 1, 5, 4] }, // Inferior
+          { indices: [2, 3, 7, 6] }, // Superior
+          { indices: [0, 4, 7, 3] }, // Izquierda
+          { indices: [1, 2, 6, 5] }, // Derecha
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => Math.pow(a, 3),
+        surfFormula: (a) => 6 * Math.pow(a, 2),
+        defaultColor: '#b48cff',
+      },
+
+      // 2. Tetraedro Regular
+      tetrahedron: {
+        name: 'Tetraedro Regular',
+        category: 'Sólido Platónico',
+        vertices: [
+          { x: 1, y: 1, z: 1 },
+          { x: 1, y: -1, z: -1 },
+          { x: -1, y: 1, z: -1 },
+          { x: -1, y: -1, z: 1 },
+        ],
+        faces: [
+          { indices: [0, 1, 2] },
+          { indices: [0, 3, 1] },
+          { indices: [0, 2, 3] },
+          { indices: [1, 3, 2] },
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => (Math.pow(a, 3) * Math.SQRT2) / 12,
+        surfFormula: (a) => Math.pow(a, 2) * Math.sqrt(3),
+        defaultColor: '#38bdf8',
+      },
+
+      // 3. Octaedro Regular
+      octahedron: {
+        name: 'Octaedro Regular',
+        category: 'Sólido Platónico',
+        vertices: [
+          { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
+          { x: 0, y: 1, z: 0 }, { x: 0, y: -1, z: 0 },
+          { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
+        ],
+        faces: [
+          { indices: [0, 2, 4] }, { indices: [2, 1, 4] },
+          { indices: [1, 3, 4] }, { indices: [3, 0, 4] },
+          { indices: [2, 0, 5] }, { indices: [1, 2, 5] },
+          { indices: [3, 1, 5] }, { indices: [0, 3, 5] },
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => (Math.pow(a, 3) * Math.SQRT2) / 3,
+        surfFormula: (a) => 2 * Math.pow(a, 2) * Math.sqrt(3),
+        defaultColor: '#3fe0b5',
+      },
+
+      // 4. Dodecaedro Regular
+      dodecahedron: {
+        name: 'Dodecaedro Regular',
+        category: 'Sólido Platónico',
+        vertices: [
+          // 8 vértices del cubo base (±1, ±1, ±1)
+          { x: -1, y: -1, z: -1 }, { x: 1, y: -1, z: -1 }, { x: 1, y: 1, z: -1 }, { x: -1, y: 1, z: -1 },
+          { x: -1, y: -1, z: 1 },  { x: 1, y: -1, z: 1 },  { x: 1, y: 1, z: 1 },  { x: -1, y: 1, z: 1 },
+          // 12 vértices dorados (0, ±1/phi, ±phi), etc.
+          { x: 0, y: -1 / PHI, z: -PHI }, { x: 0, y: 1 / PHI, z: -PHI },
+          { x: 0, y: -1 / PHI, z: PHI },  { x: 0, y: 1 / PHI, z: PHI },
+          { x: -1 / PHI, y: -PHI, z: 0 }, { x: 1 / PHI, y: -PHI, z: 0 },
+          { x: -1 / PHI, y: PHI, z: 0 },  { x: 1 / PHI, y: PHI, z: 0 },
+          { x: -PHI, y: 0, z: -1 / PHI }, { x: -PHI, y: 0, z: 1 / PHI },
+          { x: PHI, y: 0, z: -1 / PHI },  { x: PHI, y: 0, z: 1 / PHI },
+        ],
+        faces: [
+          { indices: [8, 9, 2, 18, 1] },
+          { indices: [9, 8, 0, 16, 3] },
+          { indices: [10, 11, 7, 17, 4] },
+          { indices: [11, 10, 5, 19, 6] },
+          { indices: [12, 13, 1, 18, 0] },
+          { indices: [13, 12, 4, 17, 5] },
+          { indices: [14, 15, 6, 19, 7] },
+          { indices: [15, 14, 3, 16, 2] },
+          { indices: [16, 17, 7, 11, 3] },
+          { indices: [17, 16, 0, 8, 4] },
+          { indices: [18, 19, 5, 10, 1] },
+          { indices: [19, 18, 2, 9, 6] },
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(a, 3),
+        surfFormula: (a) => 3 * Math.sqrt(25 + 10 * Math.sqrt(5)) * Math.pow(a, 2),
+        defaultColor: '#fbbf24',
+      },
+
+      // 5. Icosaedro Regular
+      icosahedron: {
+        name: 'Icosaedro Regular',
+        category: 'Sólido Platónico',
+        vertices: [
+          { x: 0, y: -1, z: -PHI }, { x: 0, y: 1, z: -PHI },
+          { x: 0, y: -1, z: PHI },  { x: 0, y: 1, z: PHI },
+          { x: -1, y: -PHI, z: 0 }, { x: 1, y: -PHI, z: 0 },
+          { x: -1, y: PHI, z: 0 },  { x: 1, y: PHI, z: 0 },
+          { x: -PHI, y: 0, z: -1 }, { x: -PHI, y: 0, z: 1 },
+          { x: PHI, y: 0, z: -1 },  { x: PHI, y: 0, z: 1 },
+        ],
+        faces: [
+          { indices: [0, 1, 8] },  { indices: [0, 10, 1] }, { indices: [0, 8, 4] },  { indices: [0, 5, 10] },
+          { indices: [0, 4, 5] },  { indices: [1, 7, 6] },  { indices: [1, 6, 8] },  { indices: [1, 10, 7] },
+          { indices: [2, 3, 11] }, { indices: [2, 9, 3] },  { indices: [2, 4, 9] },  { indices: [2, 5, 4] },
+          { indices: [2, 11, 5] }, { indices: [3, 7, 11] }, { indices: [3, 6, 7] },  { indices: [3, 9, 6] },
+          { indices: [4, 8, 9] },  { indices: [5, 11, 10] }, { indices: [6, 9, 8] }, { indices: [7, 10, 11] },
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => (5 * (3 + Math.sqrt(5)) / 12) * Math.pow(a, 3),
+        surfFormula: (a) => 5 * Math.sqrt(3) * Math.pow(a, 2),
+        defaultColor: '#f43f5e',
+      },
+
+      // 6. Cubo Truncado
+      'truncated-cube': {
+        name: 'Cubo Truncado (14 Caras)',
+        category: 'Sólido Arquimediano',
+        vertices: (() => {
+          const t = Math.SQRT2 - 1; // Factor de truncamiento
+          const verts: Point3D[] = [];
+          for (const x of [-1, 1]) {
+            for (const y of [-1, 1]) {
+              for (const z of [-1, 1]) {
+                verts.push({ x: x * t, y: y, z: z });
+                verts.push({ x: x, y: y * t, z: z });
+                verts.push({ x: x, y: y, z: z * t });
+              }
+            }
+          }
+          return verts;
+        })(),
+        faces: [
+          // 6 octógonos y 8 triángulos
+          { indices: [0, 2, 5, 3, 1, 4] }, // Aproximación representativa de caras
+          { indices: [6, 8, 11, 9, 7, 10] },
+          { indices: [12, 14, 17, 15, 13, 16] },
+          { indices: [18, 20, 23, 21, 19, 22] },
+          { indices: [0, 1, 7, 6] },
+          { indices: [2, 3, 9, 8] },
+          { indices: [4, 5, 11, 10] },
+          { indices: [12, 13, 19, 18] },
+          { indices: [14, 15, 21, 20] },
+          { indices: [16, 17, 23, 22] },
+          { indices: [0, 4, 12, 16] },
+          { indices: [1, 5, 13, 17] },
+          { indices: [2, 6, 14, 18] },
+          { indices: [3, 7, 15, 19] },
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => ((21 + 14 * Math.SQRT2) / 3) * Math.pow(a, 3) * 0.1,
+        surfFormula: (a) => 2 * (6 + 6 * Math.SQRT2 + Math.sqrt(3)) * Math.pow(a, 2) * 0.2,
+        defaultColor: '#c084fc',
+      },
+
+      // 7. Prisma Triangular
+      'triangular-prism': {
+        name: 'Prisma Triangular Regular',
+        category: 'Prisma Semirregular',
+        vertices: [
+          // Base inferior
+          { x: 0, y: -1, z: 1 }, { x: 0.866, y: -1, z: -0.5 }, { x: -0.866, y: -1, z: -0.5 },
+          // Base superior
+          { x: 0, y: 1, z: 1 },  { x: 0.866, y: 1, z: -0.5 },  { x: -0.866, y: 1, z: -0.5 },
+        ],
+        faces: [
+          { indices: [0, 1, 2] }, // Base inferior
+          { indices: [3, 5, 4] }, // Base superior
+          { indices: [0, 3, 4, 1] }, // Cara lateral 1
+          { indices: [1, 4, 5, 2] }, // Cara lateral 2
+          { indices: [2, 5, 3, 0] }, // Cara lateral 3
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => (Math.sqrt(3) / 4) * Math.pow(a, 3),
+        surfFormula: (a) => ((Math.sqrt(3) / 2) + 3) * Math.pow(a, 2),
+        defaultColor: '#38bdf8',
+      },
+
+      // 8. Pirámide Cuadrangular
+      'square-pyramid': {
+        name: 'Pirámide de Base Cuadrada',
+        category: 'Pirámide Regular',
+        vertices: [
+          { x: -1, y: -0.7, z: -1 }, { x: 1, y: -0.7, z: -1 },
+          { x: 1, y: -0.7, z: 1 },   { x: -1, y: -0.7, z: 1 },
+          { x: 0, y: 1.1, z: 0 },    // Cúspide
+        ],
+        faces: [
+          { indices: [0, 3, 2, 1] }, // Base cuadrada
+          { indices: [0, 1, 4] },    // Triángulo 1
+          { indices: [1, 2, 4] },    // Triángulo 2
+          { indices: [2, 3, 4] },    // Triángulo 3
+          { indices: [3, 0, 4] },    // Triángulo 4
+        ],
+        edgeFormula: 'a',
+        volFormula: (a) => (Math.SQRT2 / 6) * Math.pow(a, 3),
+        surfFormula: (a) => (1 + Math.sqrt(3)) * Math.pow(a, 2),
+        defaultColor: '#f59e0b',
+      },
+    };
+
+    // Precomputar normales y centroides para cada cara
+    Object.values(SOLIDS_CATALOG).forEach((solid) => {
+      solid.faces.forEach((face) => {
+        const { centroid, normal } = computeFaceCentroidAndNormal(solid.vertices, face.indices);
+        face.centroid = centroid;
+        face.normal = normal;
+      });
+    });
+
+    // =========================================================================
+    // 3. ESTRUCTURA DE DATOS PARA EL TALLER VÓXEL 3D
+    // =========================================================================
+    interface Voxel {
+      x: number;
+      y: number;
+      z: number;
+      color: string;
+    }
+
+    let voxels: Voxel[] = [];
+
+    // Generar presets de vóxeles
+    function loadVoxelPreset(preset: string, playAudio: boolean = false) {
+      voxels = [];
+      if (preset === 'cube2') {
+        for (let x = -1; x <= 0; x++) {
+          for (let y = -1; y <= 0; y++) {
+            for (let z = -1; z <= 0; z++) {
+              voxels.push({ x, y, z, color: currentVoxelColor });
+            }
+          }
+        }
+      } else if (preset === 'cube3') {
+        for (let x = -1; x <= 1; x++) {
+          for (let y = -1; y <= 1; y++) {
+            for (let z = -1; z <= 1; z++) {
+              voxels.push({ x, y, z, color: currentVoxelColor });
+            }
+          }
+        }
+      } else if (preset === 'pyramid') {
+        // Base 3x3
+        for (let x = -1; x <= 1; x++) {
+          for (let z = -1; z <= 1; z++) {
+            voxels.push({ x, y: -1, z, color: '#fbbf24' });
+          }
+        }
+        // Nivel 2: 2x2
+        for (let x = -0.5; x <= 0.5; x += 1) {
+          for (let z = -0.5; z <= 0.5; z += 1) {
+            voxels.push({ x: Math.floor(x), y: 0, z: Math.floor(z), color: '#f59e0b' });
+          }
+        }
+        // Cúspide: 1x1
+        voxels.push({ x: 0, y: 1, z: 0, color: '#f43f5e' });
+      } else if (preset === 'torus') {
+        // Toroide / Anillo con agujero central (3x3 con centro vacío en Y=0)
+        for (let x = -1; x <= 1; x++) {
+          for (let z = -1; z <= 1; z++) {
+            if (x === 0 && z === 0) continue; // Hueco del toro
+            voxels.push({ x, y: 0, z, color: '#38bdf8' });
+          }
+        }
+      } else if (preset === 'menger') {
+        // Cruz 3D central
+        voxels.push({ x: 0, y: 0, z: 0, color: '#b48cff' });
+        voxels.push({ x: 1, y: 0, z: 0, color: '#3fe0b5' });
+        voxels.push({ x: -1, y: 0, z: 0, color: '#3fe0b5' });
+        voxels.push({ x: 0, y: 1, z: 0, color: '#fbbf24' });
+        voxels.push({ x: 0, y: -1, z: 0, color: '#fbbf24' });
+        voxels.push({ x: 0, y: 0, z: 1, color: '#f43f5e' });
+        voxels.push({ x: 0, y: 0, z: -1, color: '#f43f5e' });
+      } else if (preset === 'clear') {
+        // Plataforma base 3x3 a modo de suelo técnico
+        for (let x = -1; x <= 1; x++) {
+          for (let z = -1; z <= 1; z++) {
+            voxels.push({ x, y: -1, z, color: '#475569' });
+          }
+        }
+      }
+      if (playAudio) {
+        playBlockSound(true);
+      }
+      updateMetricsUI();
+    }
+
+    // =========================================================================
+    // 4. SÍNTESIS DE AUDIO WEB PURA (FEEDBACK HÁPTICO AUDITIVO)
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+
+    function getAudio(): AudioContext | null {
+      if (!soundEnabled) return null;
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioClass) audioCtx = new AudioClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playBlockSound(isAdd: boolean) {
+      const actx = getAudio();
+      if (!actx) return;
+      try {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.connect(gain);
+        gain.connect(actx.destination);
+
+        const now = actx.currentTime;
+        if (isAdd) {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(640, now + 0.08);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(70, now + 0.09);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        }
+      } catch (err) {
+        // Silenciar cualquier restricción de autoplay del navegador
+      }
+    }
+
+    function playChime() {
+      const actx = getAudio();
+      if (!actx) return;
+      try {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.connect(gain);
+        gain.connect(actx.destination);
+
+        const now = actx.currentTime;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(780, now + 0.15);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } catch (err) {
+        // Silenciar audio si el navegador bloquea
+      }
+    }
+
+    // Inicializar vóxeles predeterminados directamente (2x2 cubo centrado)
+    for (let x = 0; x < 2; x++) {
+      for (let y = 0; y < 2; y++) {
+        for (let z = 0; z < 2; z++) {
+          voxels.push({ x: x - 0.5, y: y - 0.5, z: z - 0.5, color: '#b48cff' });
+        }
+      }
+    }
+
+    // =========================================================================
+    // 5. PROYECCIÓN Y RENDERIZADO 3D (PAINTER'S ALGORITHM)
+    // =========================================================================
+    function rotatePoint(p: Point3D, rx: number, ry: number): Point3D {
+      // Rotación alrededor de Y
+      const cosY = Math.cos(ry);
+      const sinY = Math.sin(ry);
+      const x1 = p.x * cosY + p.z * sinY;
+      const z1 = -p.x * sinY + p.z * cosY;
+
+      // Rotación alrededor de X
+      const cosX = Math.cos(rx);
+      const sinX = Math.sin(rx);
+      const y2 = p.y * cosX - z1 * sinX;
+      const z2 = p.y * sinX + z1 * cosX;
+
+      return { x: x1, y: y2, z: z2 };
+    }
+
+    interface ProjectedFace {
+      points: { x: number; y: number }[];
+      depth: number;
+      normalZ: number;
+      baseColor: string;
+      lightFactor: number;
+      indices?: number[];
+      voxelRef?: { x: number; y: number; z: number; faceIdx: number };
+    }
+
+    // Comprobar si un punto 2D está dentro de un polígono 2D
+    function isPointInPoly(px: number, py: number, poly: { x: number; y: number }[]): boolean {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i].x, yi = poly[i].y;
+        const xj = poly[j].x, yj = poly[j].y;
+        const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    let hoveredVoxelFace: ProjectedFace | null = null;
+    let canvasMouseX = -1000;
+    let canvasMouseY = -1000;
+
+    function render() {
+      if (!ctx || !canvas) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      // Auto-rotación si no estamos arrastrando
+      if (autoRotate && !isDragging) {
+        rotY += 0.0075;
+      }
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const isDark = document.documentElement.dataset.theme !== 'light';
+
+      // Base scale
+      const scale = Math.min(w, h) * 0.22 * zoom;
+      const cameraDistance = 5.0;
+
+      // Luz direccional superior derecha
+      const lightDir = normalize({ x: 0.55, y: -0.75, z: 0.35 });
+
+      const facesToDraw: ProjectedFace[] = [];
+
+      // MODO 1: POLIEDROS PLATÓNICOS / CLÁSICOS
+      if (currentMode === 'platonic') {
+        const model = SOLIDS_CATALOG[currentSolidId] || SOLIDS_CATALOG.cube;
+
+        model.faces.forEach((face) => {
+          const centroid = face.centroid || { x: 0, y: 0, z: 0 };
+          const normal = face.normal || { x: 0, y: 0, z: 1 };
+
+          // Desplazamiento por explosión de caras
+          const explodeDist = explosionFactor * 1.35;
+          const offset = {
+            x: normal.x * explodeDist,
+            y: normal.y * explodeDist,
+            z: normal.z * explodeDist,
+          };
+
+          const rotNormal = rotatePoint(normal, rotX, rotY);
+          const rotCentroid = rotatePoint({
+            x: centroid.x + offset.x,
+            y: centroid.y + offset.y,
+            z: centroid.z + offset.z,
+          }, rotX, rotY);
+
+          // Culling de caras traseras solo si no es translúcido
+          if (!isTranslucent && rotNormal.z <= 0.05) return;
+
+          // Proyectar vértices de la cara
+          const poly2D: { x: number; y: number }[] = [];
+          face.indices.forEach((vIdx) => {
+            const v = model.vertices[vIdx];
+            const pExploded = {
+              x: v.x + offset.x,
+              y: v.y + offset.y,
+              z: v.z + offset.z,
+            };
+            const pRot = rotatePoint(pExploded, rotX, rotY);
+            const persp = cameraDistance / (cameraDistance + pRot.z);
+            poly2D.push({
+              x: cx + pRot.x * scale * persp,
+              y: cy - pRot.y * scale * persp,
+            });
+          });
+
+          // Iluminación Lambertiana
+          const dot = Math.max(0, rotNormal.x * lightDir.x + rotNormal.y * lightDir.y + rotNormal.z * lightDir.z);
+          const lightFactor = Math.min(1, Math.max(0.18, 0.25 + dot * 0.75));
+
+          facesToDraw.push({
+            points: poly2D,
+            depth: rotCentroid.z,
+            normalZ: rotNormal.z,
+            baseColor: model.defaultColor,
+            lightFactor,
+          });
+        });
+      }
+      // MODO 2: TALLER VÓXEL 3D
+      else {
+        // Conjunto de vóxeles para chequeo rápido de adyacencia
+        const voxelSet = new Set(voxels.map((v) => `${v.x},${v.y},${v.z}`));
+
+        // 6 caras de un cubo unidad
+        const cubeFaces = [
+          { normal: { x: 0, y: 0, z: 1 }, dx: 0, dy: 0, dz: 1, v: [[-0.5, -0.5, 0.5], [0.5, -0.5, 0.5], [0.5, 0.5, 0.5], [-0.5, 0.5, 0.5]] },
+          { normal: { x: 0, y: 0, z: -1 }, dx: 0, dy: 0, dz: -1, v: [[0.5, -0.5, -0.5], [-0.5, -0.5, -0.5], [-0.5, 0.5, -0.5], [0.5, 0.5, -0.5]] },
+          { normal: { x: 0, y: 1, z: 0 }, dx: 0, dy: 1, dz: 0, v: [[-0.5, 0.5, 0.5], [0.5, 0.5, 0.5], [0.5, 0.5, -0.5], [-0.5, 0.5, -0.5]] },
+          { normal: { x: 0, y: -1, z: 0 }, dx: 0, dy: -1, dz: 0, v: [[-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, -0.5, 0.5], [-0.5, -0.5, 0.5]] },
+          { normal: { x: 1, y: 0, z: 0 }, dx: 1, dy: 0, dz: 0, v: [[0.5, -0.5, 0.5], [0.5, -0.5, -0.5], [0.5, 0.5, -0.5], [0.5, 0.5, 0.5]] },
+          { normal: { x: -1, y: 0, z: 0 }, dx: -1, dy: 0, dz: 0, v: [[-0.5, -0.5, -0.5], [-0.5, -0.5, 0.5], [-0.5, 0.5, 0.5], [-0.5, 0.5, -0.5]] },
+        ];
+
+        voxels.forEach((vox) => {
+          cubeFaces.forEach((cf, faceIdx) => {
+            // Oclusión de caras internas compartidas entre vóxeles adyacentes
+            const neighborKey = `${vox.x + cf.dx},${vox.y + cf.dy},${vox.z + cf.dz}`;
+            if (voxelSet.has(neighborKey)) return;
+
+            const rotNormal = rotatePoint(cf.normal, rotX, rotY);
+            if (rotNormal.z <= 0.05) return; // Back-face culling
+
+            // Centroide de la cara
+            const faceCenter = {
+              x: vox.x + cf.normal.x * 0.5,
+              y: vox.y + cf.normal.y * 0.5,
+              z: vox.z + cf.normal.z * 0.5,
+            };
+            const rotCentroid = rotatePoint(faceCenter, rotX, rotY);
+
+            // Proyectar los 4 vértices
+            const poly2D: { x: number; y: number }[] = [];
+            cf.v.forEach((pt) => {
+              const pWorld = {
+                x: vox.x + pt[0],
+                y: vox.y + pt[1],
+                z: vox.z + pt[2],
+              };
+              const pRot = rotatePoint(pWorld, rotX, rotY);
+              const persp = cameraDistance / (cameraDistance + pRot.z);
+              poly2D.push({
+                x: cx + pRot.x * scale * persp,
+                y: cy - pRot.y * scale * persp,
+              });
+            });
+
+            const dot = Math.max(0, rotNormal.x * lightDir.x + rotNormal.y * lightDir.y + rotNormal.z * lightDir.z);
+            const lightFactor = Math.min(1, Math.max(0.2, 0.3 + dot * 0.7));
+
+            facesToDraw.push({
+              points: poly2D,
+              depth: rotCentroid.z,
+              normalZ: rotNormal.z,
+              baseColor: vox.color,
+              lightFactor,
+              voxelRef: { x: vox.x, y: vox.y, z: vox.z, faceIdx },
+            });
+          });
+        });
+      }
+
+      // Ordenar por profundidad (Painter's algorithm: pintar de atrás hacia adelante)
+      facesToDraw.sort((a, b) => a.depth - b.depth);
+
+      // Comprobar cara bajo el cursor en modo Vóxel (Raycasting 2D/3D híbrido)
+      hoveredVoxelFace = null;
+      if (currentMode === 'voxel') {
+        for (let i = facesToDraw.length - 1; i >= 0; i--) {
+          const f = facesToDraw[i];
+          if (f.voxelRef && isPointInPoly(canvasMouseX, canvasMouseY, f.points)) {
+            hoveredVoxelFace = f;
+            break;
+          }
+        }
+      }
+
+      // Dibujar Caras
+      facesToDraw.forEach((f) => {
+        ctx.beginPath();
+        ctx.moveTo(f.points[0].x, f.points[0].y);
+        for (let i = 1; i < f.points.length; i++) {
+          ctx.lineTo(f.points[i].x, f.points[i].y);
+        }
+        ctx.closePath();
+
+        // Relleno iluminado
+        ctx.fillStyle = f.baseColor;
+        ctx.globalAlpha = isTranslucent ? 0.35 : 0.88;
+        ctx.fill();
+
+        // Sombreado por iluminación direccional
+        ctx.fillStyle = `rgba(0, 0, 0, ${1 - f.lightFactor})`;
+        ctx.globalAlpha = 0.55;
+        ctx.fill();
+
+        // Si es la cara seleccionada bajo el cursor, resaltar con brillo
+        if (f === hoveredVoxelFace) {
+          ctx.fillStyle = voxelTool === 'add' ? 'rgba(56, 189, 248, 0.45)' : 'rgba(244, 63, 94, 0.45)';
+          ctx.globalAlpha = 0.7;
+          ctx.fill();
+        }
+
+        // Aristas
+        if (showWireframe) {
+          ctx.strokeStyle = f === hoveredVoxelFace
+            ? (voxelTool === 'add' ? '#38bdf8' : '#f43f5e')
+            : (isDark ? 'rgba(255, 255, 255, 0.28)' : 'rgba(0, 0, 0, 0.35)');
+          ctx.lineWidth = f === hoveredVoxelFace ? 2.5 : 1.2;
+          ctx.globalAlpha = 1;
+          ctx.stroke();
+        }
+      });
+
+      // Vértices (puntos luminosos)
+      if (showVertices && currentMode === 'platonic') {
+        const model = SOLIDS_CATALOG[currentSolidId] || SOLIDS_CATALOG.cube;
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = 0.95;
+
+        model.vertices.forEach((v) => {
+          const pRot = rotatePoint(v, rotX, rotY);
+          const persp = cameraDistance / (cameraDistance + pRot.z);
+          const px = cx + pRot.x * scale * persp;
+          const py = cy - pRot.y * scale * persp;
+
+          ctx.beginPath();
+          ctx.arc(px, py, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = isDark ? '#b48cff' : '#0f172a';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+      }
+
+      ctx.restore();
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+
+    // =========================================================================
+    // 6. EVENTOS DE RATÓN, TACTIL Y ACCIONES VÓXEL
+    // =========================================================================
+    let dragDist = 0;
+
+    function applyVoxelAction() {
+      if (currentMode !== 'voxel' || !hoveredVoxelFace || !hoveredVoxelFace.voxelRef) return;
+
+      const ref = hoveredVoxelFace.voxelRef;
+      const cubeNormals = [
+        { dx: 0, dy: 0, dz: 1 },
+        { dx: 0, dy: 0, dz: -1 },
+        { dx: 0, dy: 1, dz: 0 },
+        { dx: 0, dy: -1, dz: 0 },
+        { dx: 1, dy: 0, dz: 0 },
+        { dx: -1, dy: 0, dz: 0 },
+      ];
+      const norm = cubeNormals[ref.faceIdx];
+
+      if (voxelTool === 'add') {
+        const newX = ref.x + norm.dx;
+        const newY = ref.y + norm.dy;
+        const newZ = ref.z + norm.dz;
+
+        // Limitar espacio a un cubo razonable (-5 a +5) para rendimiento
+        if (Math.abs(newX) <= 6 && Math.abs(newY) <= 6 && Math.abs(newZ) <= 6) {
+          voxels.push({ x: newX, y: newY, z: newZ, color: currentVoxelColor });
+          playBlockSound(true);
+        }
+      } else if (voxelTool === 'remove') {
+        // Eliminar el cubo clicado (evitar dejar 0 cubos si queremos base mínima)
+        const idx = voxels.findIndex((v) => v.x === ref.x && v.y === ref.y && v.z === ref.z);
+        if (idx !== -1 && voxels.length > 1) {
+          voxels.splice(idx, 1);
+          playBlockSound(false);
+        }
+      }
+
+      updateMetricsUI();
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragDist = 0;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      canvasMouseX = e.clientX - rect.left;
+      canvasMouseY = e.clientY - rect.top;
+
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      dragDist += Math.hypot(dx, dy);
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      rotY += dx * 0.009;
+      rotX += dy * 0.009;
+      rotX = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, rotX));
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      canvasMouseX = -1000;
+      canvasMouseY = -1000;
+      hoveredVoxelFace = null;
+    });
+
+    // Clic sobre el lienzo para Poner o Quitar Vóxel (solo si no hubo arrastre)
+    canvas.addEventListener('click', (e) => {
+      if (dragDist > 6) return;
+      applyVoxelAction();
+    });
+
+    // Touch móvil (rotación táctil y tap)
+    let touchDragDist = 0;
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        touchDragDist = 0;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        const rect = canvas.getBoundingClientRect();
+        canvasMouseX = e.touches[0].clientX - rect.left;
+        canvasMouseY = e.touches[0].clientY - rect.top;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      touchDragDist += Math.hypot(dx, dy);
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+
+      const rect = canvas.getBoundingClientRect();
+      canvasMouseX = e.touches[0].clientX - rect.left;
+      canvasMouseY = e.touches[0].clientY - rect.top;
+
+      rotY += dx * 0.01;
+      rotX += dy * 0.01;
+      rotX = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, rotX));
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      if (touchDragDist < 8) {
+        applyVoxelAction();
+      }
+      isDragging = false;
+    });
+
+    // Zoom con rueda de ratón
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.08 : -0.08;
+      zoom = Math.max(0.4, Math.min(2.5, zoom + delta));
+    }, { passive: false });
+
+    // =========================================================================
+    // 7. SINCRONIZACIÓN Y ACTUALIZACIÓN DEL PANEL DE MÉTRICAS & EULER
+    // =========================================================================
+    const metricFaces = document.getElementById('metric-faces');
+    const metricVertices = document.getElementById('metric-vertices');
+    const metricEdges = document.getElementById('metric-edges');
+    const eulerResult = document.getElementById('euler-result');
+    const eulerStatusText = document.getElementById('euler-status-text');
+    const eulerBadge = document.getElementById('euler-badge');
+    const solidDisplayName = document.getElementById('solid-display-name');
+    const solidTypeBadge = document.getElementById('solid-type-badge');
+    const metricSurface = document.getElementById('metric-surface');
+    const metricVolume = document.getElementById('metric-volume');
+    const edgeParamWrap = document.getElementById('edge-param-wrap');
+    const voxelStatsExtra = document.getElementById('voxel-stats-extra');
+    const statVoxelCount = document.getElementById('stat-voxel-count');
+    const statVoxelExtFaces = document.getElementById('stat-voxel-ext-faces');
+    const statVoxelIntFaces = document.getElementById('stat-voxel-int-faces');
+    const dockExplosion = document.getElementById('dock-explosion');
+    const canvasHintText = document.getElementById('canvas-hint-text');
+
+    function updateMetricsUI() {
+      if (currentMode === 'platonic') {
+        const model = SOLIDS_CATALOG[currentSolidId] || SOLIDS_CATALOG.cube;
+        const C = model.faces.length;
+        const V = model.vertices.length;
+
+        // Calcular aristas únicas mediante pares de índices
+        const edgeSet = new Set<string>();
+        model.faces.forEach((f) => {
+          for (let i = 0; i < f.indices.length; i++) {
+            const v1 = f.indices[i];
+            const v2 = f.indices[(i + 1) % f.indices.length];
+            const key = v1 < v2 ? `${v1}-${v2}` : `${v2}-${v1}`;
+            edgeSet.add(key);
+          }
+        });
+        const A = edgeSet.size;
+        const chi = C + V - A;
+
+        if (metricFaces) metricFaces.textContent = String(C);
+        if (metricVertices) metricVertices.textContent = String(V);
+        if (metricEdges) metricEdges.textContent = String(A);
+        if (eulerResult) eulerResult.textContent = String(chi);
+
+        if (solidDisplayName) solidDisplayName.textContent = model.name;
+        if (solidTypeBadge) solidTypeBadge.textContent = model.category;
+
+        // Fórmulas paramétricas analíticas
+        const surf = model.surfFormula(edgeLengthA);
+        const vol = model.volFormula(edgeLengthA);
+        if (metricSurface) metricSurface.textContent = `${surf.toFixed(2)} u²`;
+        if (metricVolume) metricVolume.textContent = `${vol.toFixed(2)} u³`;
+
+        if (eulerStatusText) {
+          eulerStatusText.textContent = chi === 2
+            ? 'Esfera Topológica Regular (Conexo, Género 0)'
+            : `Poliedro Complejo (Característica χ = ${chi})`;
+        }
+        if (eulerBadge) {
+          eulerBadge.className = `euler-status-badge ${chi === 2 ? 'is-valid' : 'is-alt'}`;
+        }
+
+        if (edgeParamWrap) edgeParamWrap.hidden = false;
+        if (voxelStatsExtra) voxelStatsExtra.hidden = true;
+        if (dockExplosion) dockExplosion.hidden = false;
+        if (canvasHintText) canvasHintText.textContent = 'Arrastra para rotar 360° · Rueda para zoom';
+      }
+      // MODO VÓXEL
+      else {
+        const voxelSet = new Set(voxels.map((v) => `${v.x},${v.y},${v.z}`));
+        const cubeDeltas = [
+          { dx: 0, dy: 0, dz: 1 }, { dx: 0, dy: 0, dz: -1 },
+          { dx: 0, dy: 1, dz: 0 }, { dx: 0, dy: -1, dz: 0 },
+          { dx: 1, dy: 0, dz: 0 }, { dx: -1, dy: 0, dz: 0 },
+        ];
+
+        let externalFaces = 0;
+        voxels.forEach((vox) => {
+          cubeDeltas.forEach((d) => {
+            if (!voxelSet.has(`${vox.x + d.dx},${vox.y + d.dy},${vox.z + d.dz}`)) {
+              externalFaces++;
+            }
+          });
+        });
+
+        const totalVoxels = voxels.length;
+        const totalFacesPotential = totalVoxels * 6;
+        const internalFaces = totalFacesPotential - externalFaces;
+
+        // Estimación topológica de Euler según si tiene túnel toroidal
+        const isTorus = voxels.length >= 8 && !voxelSet.has('0,0,0') && voxelSet.has('1,0,0') && voxelSet.has('-1,0,0');
+        const chi = isTorus ? 0 : 2;
+
+        if (metricFaces) metricFaces.textContent = String(externalFaces);
+        if (metricVertices) metricVertices.textContent = String(Math.round(externalFaces * 0.75));
+        if (metricEdges) metricEdges.textContent = String(Math.round(externalFaces * 1.5));
+        if (eulerResult) eulerResult.textContent = String(chi);
+
+        if (solidDisplayName) solidDisplayName.textContent = `Ensamble Vóxel 3D (${totalVoxels} Bloques)`;
+        if (solidTypeBadge) solidTypeBadge.textContent = 'Geometría Discreta';
+
+        const unitVolume = totalVoxels;
+        const unitSurface = externalFaces;
+        if (metricSurface) metricSurface.textContent = `${unitSurface} u²`;
+        if (metricVolume) metricVolume.textContent = `${unitVolume} u³`;
+
+        if (eulerStatusText) {
+          eulerStatusText.textContent = isTorus
+            ? '¡Toroide con Túnel detectado! (Género g = 1, χ = 0)'
+            : 'Ensamble Vóxel Conexo (Homeomorfo a Esfera, χ = 2)';
+        }
+        if (eulerBadge) {
+          eulerBadge.className = `euler-status-badge ${isTorus ? 'is-torus' : 'is-valid'}`;
+        }
+
+        if (edgeParamWrap) edgeParamWrap.hidden = true;
+        if (voxelStatsExtra) voxelStatsExtra.hidden = false;
+        if (statVoxelCount) statVoxelCount.textContent = String(totalVoxels);
+        if (statVoxelExtFaces) statVoxelExtFaces.textContent = String(externalFaces);
+        if (statVoxelIntFaces) statVoxelIntFaces.textContent = String(internalFaces);
+        if (dockExplosion) dockExplosion.hidden = true;
+        if (canvasHintText) canvasHintText.textContent = voxelTool === 'add'
+          ? 'Clic sobre cualquier cara para AÑADIR cubo'
+          : 'Clic sobre cualquier cara para BORRAR cubo';
+      }
+    }
+
+    updateMetricsUI();
+
+    // =========================================================================
+    // 8. VINCULACIÓN DE CONTROLES E INTERFAZ DE USUARIO
+    // =========================================================================
+    // Conmutador de modo principal
+    const modeBtns = document.querySelectorAll<HTMLButtonElement>('.mode-btn');
+    const barPlatonic = document.getElementById('bar-platonic');
+    const barVoxel = document.getElementById('bar-voxel');
+
+    modeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        modeBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        const mode = btn.getAttribute('data-mode') as 'platonic' | 'voxel';
+        currentMode = mode;
+
+        if (barPlatonic && barVoxel) {
+          if (mode === 'platonic') {
+            barPlatonic.classList.add('is-active');
+            barPlatonic.hidden = false;
+            barVoxel.classList.remove('is-active');
+            barVoxel.hidden = true;
+          } else {
+            barPlatonic.classList.remove('is-active');
+            barPlatonic.hidden = true;
+            barVoxel.classList.add('is-active');
+            barVoxel.hidden = false;
+          }
+        }
+        playChime();
+        updateMetricsUI();
+      });
+    });
+
+    // Selector de poliedro clásico
+    const presetPills = document.querySelectorAll<HTMLButtonElement>('.preset-pill');
+    presetPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        presetPills.forEach((p) => p.classList.remove('is-active'));
+        pill.classList.add('is-active');
+        currentSolidId = pill.getAttribute('data-solid') || 'cube';
+        playChime();
+        updateMetricsUI();
+      });
+    });
+
+    // Toggles de visualización
+    const chkWireframe = document.getElementById('chk-wireframe') as HTMLInputElement | null;
+    const chkVertices = document.getElementById('chk-vertices') as HTMLInputElement | null;
+    const chkTranslucent = document.getElementById('chk-translucent') as HTMLInputElement | null;
+    const chkAutorotate = document.getElementById('chk-autorotate') as HTMLInputElement | null;
+
+    chkWireframe?.addEventListener('change', (e) => {
+      showWireframe = (e.target as HTMLInputElement).checked;
+    });
+    chkVertices?.addEventListener('change', (e) => {
+      showVertices = (e.target as HTMLInputElement).checked;
+    });
+    chkTranslucent?.addEventListener('change', (e) => {
+      isTranslucent = (e.target as HTMLInputElement).checked;
+    });
+    chkAutorotate?.addEventListener('change', (e) => {
+      autoRotate = (e.target as HTMLInputElement).checked;
+    });
+
+    // Slider de explosión de caras
+    const sliderExplosion = document.getElementById('slider-explosion') as HTMLInputElement | null;
+    const explosionPct = document.getElementById('explosion-pct');
+    sliderExplosion?.addEventListener('input', (e) => {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      explosionFactor = val / 100;
+      if (explosionPct) explosionPct.textContent = `${val}%`;
+    });
+
+    // Slider de arista a
+    const sliderEdgeA = document.getElementById('slider-edge-a') as HTMLInputElement | null;
+    const valEdgeA = document.getElementById('val-edge-a');
+    sliderEdgeA?.addEventListener('input', (e) => {
+      const val = parseFloat((e.target as HTMLInputElement).value);
+      edgeLengthA = val;
+      if (valEdgeA) valEdgeA.textContent = val.toFixed(1);
+      updateMetricsUI();
+    });
+
+    // Herramientas de Vóxel
+    const toolBtns = document.querySelectorAll<HTMLButtonElement>('.tool-btn');
+    toolBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        toolBtns.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        voxelTool = (btn.getAttribute('data-tool') || 'add') as 'add' | 'remove';
+        updateMetricsUI();
+      });
+    });
+
+    // Paleta de colores
+    const swatches = document.querySelectorAll<HTMLButtonElement>('.swatch');
+    swatches.forEach((sw) => {
+      sw.addEventListener('click', () => {
+        swatches.forEach((s) => s.classList.remove('is-active'));
+        sw.classList.add('is-active');
+        currentVoxelColor = sw.getAttribute('data-color') || '#b48cff';
+      });
+    });
+
+    // Selector de presets de vóxeles
+    const selectVoxelPreset = document.getElementById('select-voxel-preset') as HTMLSelectElement | null;
+    selectVoxelPreset?.addEventListener('change', (e) => {
+      const val = (e.target as HTMLSelectElement).value;
+      loadVoxelPreset(val);
+    });
+
+    const btnResetVoxels = document.getElementById('btn-reset-voxels');
+    btnResetVoxels?.addEventListener('click', () => {
+      loadVoxelPreset('clear');
+    });
+
+    // Controles de cámara
+    document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+      zoom = Math.min(2.5, zoom + 0.15);
+    });
+    document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+      zoom = Math.max(0.4, zoom - 0.15);
+    });
+    document.getElementById('btn-cam-reset')?.addEventListener('click', () => {
+      rotX = 0.55;
+      rotY = -0.65;
+      zoom = 1.0;
+      playChime();
+    });
+
+    // Toggle de sonido
+    const btnAudioToggle = document.getElementById('btn-audio-toggle');
+    const audioIconStatus = document.getElementById('audio-icon-status');
+    btnAudioToggle?.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (audioIconStatus) {
+        audioIconStatus.textContent = soundEnabled ? '🔊' : '🔇';
+      }
+    });
+  })();
+</script>
+
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  /* ==================================================== */
+  /* CONTENEDOR Y LAYOUT GENERAL                         */
+  /* ==================================================== */
+  .polyhedra-page {
+    width: 100%;
+    min-height: 100vh;
+    background: #090e17;
+    color: #f1f5f9;
+  }
+
+  .game-cockpit {
+    width: 100%;
+    padding: 0.75rem 1rem 1.25rem;
+    background: radial-gradient(circle at 50% 15%, rgba(180, 140, 255, 0.08), rgba(9, 14, 23, 0.98) 75%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cockpit-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  /* BARRA SUPERIOR */
+  .cockpit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .back-pill:hover {
+    color: #b48cff;
+    border-color: #b48cff;
+    background: rgba(180, 140, 255, 0.12);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #b48cff;
+    background: rgba(180, 140, 255, 0.15);
+    border: 1px solid rgba(180, 140, 255, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  .header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  /* SELECTOR DE MODO (SEGMENTED TABS) */
+  .mode-toggle-group {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 0.2rem;
+    gap: 0.25rem;
+  }
+
+  .mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.75rem;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mode-btn:hover {
+    color: #f8fafc;
+  }
+
+  .mode-btn.is-active {
+    background: #b48cff;
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(180, 140, 255, 0.35);
+  }
+
+  /* BOTÓN RÁPIDO DE TEMA */
+  .hanoi-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.32rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f1f5f9;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .hanoi-theme-toggle:hover {
+    background: rgba(180, 140, 255, 0.15);
+    border-color: #b48cff;
+    color: #b48cff;
+  }
+
+  .hanoi-theme-toggle svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  :global(:root[data-theme='dark']) .htt-moon,
+  :root[data-theme='dark'] .htt-moon {
+    display: none;
+  }
+
+  :global(:root[data-theme='light']) .htt-sun,
+  :root[data-theme='light'] .htt-sun {
+    display: none;
+  }
+
+  /* SUB-BARRAS DE CONTROL */
+  .sub-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.5rem 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .preset-scroll-track {
+    display: flex;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+  }
+
+  .preset-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--muted, #94a3b8);
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+
+  .preset-pill:hover {
+    color: #f8fafc;
+    border-color: #b48cff;
+  }
+
+  .preset-pill.is-active {
+    background: rgba(180, 140, 255, 0.2);
+    border-color: #b48cff;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .view-toggles {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+
+  .toggle-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-chip input {
+    accent-color: #b48cff;
+    cursor: pointer;
+  }
+
+  /* HERRAMIENTAS VÓXEL */
+  .voxel-tools-group,
+  .voxel-palette-group,
+  .voxel-presets-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .vt-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+  }
+
+  .tool-switch-btns {
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.15rem;
+    gap: 0.2rem;
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--muted, #94a3b8);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tool-btn.is-active {
+    background: #b48cff;
+    color: #0f172a;
+  }
+
+  .color-swatches {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--swatch);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .swatch.is-active {
+    border-color: #ffffff;
+    box-shadow: 0 0 8px var(--swatch);
+  }
+
+  .preset-dropdown {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    outline: none;
+  }
+
+  .btn-clear-voxels {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #f43f5e;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-clear-voxels:hover {
+    background: #f43f5e;
+    color: #ffffff;
+  }
+
+  /* ==================================================== */
+  /* ESCENARIO / CANVAS 3D                               */
+  /* ==================================================== */
+  .stage-arena {
+    position: relative;
+    width: 100%;
+    height: clamp(380px, 58vh, 560px);
+    background: radial-gradient(circle at 50% 50%, #151926 0%, #0a0d15 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .render-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+  }
+
+  .render-canvas:active {
+    cursor: grabbing;
+  }
+
+  .canvas-floating-header {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+  }
+
+  .solid-title-box {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.45rem 0.85rem;
+    border-radius: 10px;
+    pointer-events: auto;
+  }
+
+  .st-category {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #b48cff;
+    letter-spacing: 0.05em;
+    display: block;
+  }
+
+  .st-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0.15rem 0 0;
+  }
+
+  .camera-actions {
+    display: flex;
+    gap: 0.35rem;
+    pointer-events: auto;
+  }
+
+  .btn-cam {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-cam:hover {
+    background: #b48cff;
+    color: #0f172a;
+    border-color: #b48cff;
+  }
+
+  /* CONTROL DE EXPLOSIÓN DE CARAS */
+  .explosion-control-dock {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    width: min(340px, 85%);
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 5;
+  }
+
+  .dock-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .d-title {
+    color: #f8fafc;
+  }
+
+  .d-val {
+    color: #b48cff;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .range-slider {
+    width: 100%;
+    accent-color: #b48cff;
+    cursor: pointer;
+  }
+
+  .canvas-help-hint {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    background: rgba(15, 23, 42, 0.75);
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+  }
+
+  /* ==================================================== */
+  /* PANEL DE MÉTRICAS MATEMÁTICAS & TOPOLOGÍA EN VIVO   */
+  /* ==================================================== */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .metric-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .mc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .mc-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #b48cff;
+    letter-spacing: 0.06em;
+  }
+
+  .mc-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .mc-formula strong {
+    font-size: 1.1rem;
+    color: #3fe0b5;
+  }
+
+  .euler-counts-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.4rem 0;
+  }
+
+  .euler-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ec-num {
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: #f8fafc;
+  }
+
+  .ec-lbl {
+    font-size: 0.7rem;
+    color: var(--muted, #94a3b8);
+    font-weight: 600;
+  }
+
+  .ec-op {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #b48cff;
+  }
+
+  .euler-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(63, 224, 181, 0.1);
+    border: 1px solid rgba(63, 224, 181, 0.3);
+    color: #3fe0b5;
+  }
+
+  .euler-status-badge .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3fe0b5;
+    box-shadow: 0 0 6px #3fe0b5;
+  }
+
+  .euler-status-badge.is-torus {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+  }
+
+  .euler-status-badge.is-torus .status-dot {
+    background: #38bdf8;
+    box-shadow: 0 0 6px #38bdf8;
+  }
+
+  .param-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.76rem;
+    color: var(--muted, #94a3b8);
+    font-weight: 600;
+  }
+
+  .range-slider-small {
+    flex: 1;
+    accent-color: #b48cff;
+    cursor: pointer;
+  }
+
+  .param-val {
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .metric-dual-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .stat-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sp-lbl {
+    font-size: 0.7rem;
+    color: var(--muted, #94a3b8);
+    font-weight: 600;
+  }
+
+  .sp-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: #f8fafc;
+  }
+
+  .text-accent { color: #b48cff; }
+  .text-cyan { color: #38bdf8; }
+  .text-muted { color: #64748b; }
+
+  .voxel-face-breakdown {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.35rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+
+  .vf-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vf-lbl {
+    font-size: 0.66rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .vf-val {
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+  }
+
+  /* ==================================================== */
+  /* SECCIÓN DIDÁCTICA MATEMÁTICA                        */
+  /* ==================================================== */
+  .polyhedra-theory-section {
+    padding: 3rem 1.25rem 4rem;
+    background: #0b101b;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .theory-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .theory-header {
+    text-align: center;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #b48cff;
+    letter-spacing: 0.08em;
+  }
+
+  .theory-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0.35rem 0 0.5rem;
+    color: #f8fafc;
+  }
+
+  .theory-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .theory-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .tcard-icon {
+    font-size: 1.35rem;
+  }
+
+  .tcard-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .tcard-p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .theory-steps,
+  .theory-bullets {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
+    line-height: 1.45;
+  }
+
+  .math-callout {
+    background: rgba(180, 140, 255, 0.08);
+    border: 1px solid rgba(180, 140, 255, 0.25);
+    border-left: 4px solid #b48cff;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    margin: 0.45rem 0;
+    text-align: center;
+  }
+
+  .math-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #b48cff;
+    letter-spacing: 0.02em;
+  }
+
+  .tcard-foot {
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+    line-height: 1.4;
+  }
+
+  /* ==================================================== */
+  /* OVERRIDES PARA MODO CLARO (MÁXIMA LEGIBILIDAD)      */
+  /* ==================================================== */
+  :global([data-theme="light"]) .polyhedra-page,
+  :root[data-theme='light'] .polyhedra-page {
+    background: var(--bg, #fdfbf7);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .game-cockpit,
+  :root[data-theme='light'] .game-cockpit {
+    background: radial-gradient(circle at 50% 15%, rgba(180, 140, 255, 0.09), #f8fafc 75%);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .game-title,
+  :root[data-theme='light'] .game-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .back-pill,
+  :root[data-theme='light'] .back-pill {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .mode-toggle-group,
+  :root[data-theme='light'] .mode-toggle-group {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .mode-btn,
+  :root[data-theme='light'] .mode-btn {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .mode-btn.is-active,
+  :root[data-theme='light'] .mode-btn.is-active {
+    background: #7c3aed;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .hanoi-theme-toggle,
+  :root[data-theme='light'] .hanoi-theme-toggle {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .sub-controls-bar,
+  :root[data-theme='light'] .sub-controls-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .preset-pill,
+  :root[data-theme='light'] .preset-pill {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .preset-pill.is-active,
+  :root[data-theme='light'] .preset-pill.is-active {
+    background: #ede9fe;
+    border-color: #7c3aed;
+    color: #6d28d9;
+  }
+
+  :global([data-theme="light"]) .stage-arena,
+  :root[data-theme='light'] .stage-arena {
+    background: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #e2e8f0 100%);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .solid-title-box,
+  :global([data-theme="light"]) .btn-cam,
+  :global([data-theme="light"]) .explosion-control-dock,
+  :root[data-theme='light'] .solid-title-box,
+  :root[data-theme='light'] .btn-cam,
+  :root[data-theme='light'] .explosion-control-dock {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .st-name,
+  :global([data-theme="light"]) .d-title,
+  :root[data-theme='light'] .st-name,
+  :root[data-theme='light'] .d-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .st-category,
+  :global([data-theme="light"]) .d-val,
+  :root[data-theme='light'] .st-category,
+  :root[data-theme='light'] .d-val {
+    color: #6d28d9;
+  }
+
+  :global([data-theme="light"]) .metric-card,
+  :root[data-theme='light'] .metric-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .ec-num,
+  :global([data-theme="light"]) .sp-val,
+  :global([data-theme="light"]) .param-val,
+  :root[data-theme='light'] .ec-num,
+  :root[data-theme='light'] .sp-val,
+  :root[data-theme='light'] .param-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .polyhedra-theory-section,
+  :root[data-theme='light'] .polyhedra-theory-section {
+    background: var(--bg-sunken, #f2f0ea);
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .theory-title,
+  :root[data-theme='light'] .theory-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .theory-subtitle,
+  :root[data-theme='light'] .theory-subtitle {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .theory-card,
+  :root[data-theme='light'] .theory-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .tcard-title,
+  :root[data-theme='light'] .tcard-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tcard-p,
+  :global([data-theme="light"]) .theory-steps,
+  :global([data-theme="light"]) .theory-bullets,
+  :root[data-theme='light'] .tcard-p,
+  :root[data-theme='light'] .theory-steps,
+  :root[data-theme='light'] .theory-bullets {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .math-callout,
+  :root[data-theme='light'] .math-callout {
+    background: #f5f3ff;
+    border-color: rgba(124, 58, 237, 0.25);
+    border-left-color: #7c3aed;
+  }
+
+  :global([data-theme="light"]) .math-formula,
+  :root[data-theme='light'] .math-formula {
+    color: #6d28d9;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .cockpit-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .header-right-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stage-arena {
+      height: 380px;
+    }
+
+    .explosion-control-dock {
+      width: calc(100% - 2rem);
+    }
+  }
+</style>

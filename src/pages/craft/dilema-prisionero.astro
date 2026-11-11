@@ -1,0 +1,2709 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="El Dilema del Prisionero & Algoritmos | Math Universe"
+  description="Aventura interactiva y simulador evolutivo del Dilema del Prisionero. Explora la Teoría de Juegos, equilibrios de Nash y el torneo de Robert Axelrod."
+>
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="dilemma-page" id="main-content">
+    <!-- COCKPIT DEL JUEGO -->
+    <section class="game-cockpit" id="escenario">
+      <div class="cockpit-container">
+        <!-- Barra Superior: Navegación, Título y Selector de Modo -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">El Dilema del Prisionero</h1>
+              <span class="badge-pill">Teoría de Juegos · Nash</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- SELECTOR DE MODOS PRINCIPAL (GRAN VISIBILIDAD) -->
+        <nav class="mode-selector-hub" aria-label="Seleccionar modalidad de juego" role="tablist">
+          <button type="button" class="mode-hub-card is-active" id="tab-btn-adventure" role="tab" aria-selected="true">
+            <div class="mhc-badge-row">
+              <span class="mhc-mode-tag">MODO 1</span>
+              <span class="mhc-status-pill is-current">JUGANDO AHORA</span>
+            </div>
+            <div class="mhc-body">
+              <span class="mhc-icon" aria-hidden="true">🎭</span>
+              <div class="mhc-details">
+                <strong class="mhc-title">Aventura Interactiva (1 vs 1)</strong>
+                <p class="mhc-desc">
+                  Duelos narrativos por capítulos contra 6 arquetipos con diálogo reactivo tipo cómic, matriz de pagos y el nuevo rival misterioso.
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <button type="button" class="mode-hub-card" id="tab-btn-sandbox" role="tab" aria-selected="false">
+            <div class="mhc-badge-row">
+              <span class="mhc-mode-tag">MODO 2</span>
+              <span class="mhc-status-pill is-alt">PROBAR TORNEO</span>
+            </div>
+            <div class="mhc-body">
+              <span class="mhc-icon" aria-hidden="true">🧬</span>
+              <div class="mhc-details">
+                <strong class="mhc-title">Torneo Evolutivo de Axelrod</strong>
+                <p class="mhc-desc">
+                  Simulación de ecosistema con 120 agentes y generaciones. Experimenta con el ruido aleatorio y descubre por qué ganan los generosos.
+                </p>
+              </div>
+            </div>
+          </button>
+        </nav>
+
+        <!-- ================================================================= -->
+        <!-- MODO 1: AVENTURA INTERACTIVA (DUELOS POR CAPÍTULOS DE PERSONAJES) -->
+        <!-- ================================================================= -->
+        <div class="game-mode-view" id="view-adventure">
+          <!-- Barra de Progreso de Capítulos -->
+          <div class="chapters-stepper">
+            <span class="stepper-label">OPONENTES:</span>
+            <div class="stepper-track" id="stepper-track">
+              <!-- Se generan dinámicamente: 1. Cooperador, 2. Traidor, 3. Ojo por Ojo, 4. Rencoroso, 5. Detective, 6. Misterioso -->
+            </div>
+          </div>
+
+          <!-- Escenario de Duelo Interactivo -->
+          <div class="stage-arena" id="duel-arena">
+            <!-- Canvas de Confetti para Final de Capítulo / Victoria -->
+            <canvas id="fx-confetti-canvas" class="fx-confetti-canvas"></canvas>
+
+            <!-- Cabecera del Oponente -->
+            <div class="opponent-profile-card" id="opponent-card">
+              <div class="opp-avatar-wrap">
+                <span class="opp-avatar" id="opp-avatar">😇</span>
+              </div>
+              <div class="opp-info">
+                <div class="opp-title-row">
+                  <h2 class="opp-name" id="opp-name">El Cooperador Ingenuo</h2>
+                  <span class="opp-badge" id="opp-badge">Capítulo 1 de 6 · Confianza Ciega</span>
+                </div>
+                <p class="opp-bio" id="opp-bio">
+                  Siempre coopera contigo. Cree firmemente en la bondad humana y pondrá una moneda en cada ronda, sin importar si tú le correspondes o lo traicionas.
+                </p>
+              </div>
+            </div>
+
+            <!-- Bocadillo de Diálogo Dinámico del Personaje -->
+            <div class="comic-speech-container">
+              <div class="comic-speech-bubble" id="duel-dialogue-bubble">
+                <span class="bubble-arrow" aria-hidden="true"></span>
+                <div class="bubble-content" id="duel-dialogue">
+                  "¡Hola! Yo siempre pongo mi moneda para que ambos ganemos. ¡Confío en que tú harás lo mismo!"
+                </div>
+              </div>
+            </div>
+
+            <!-- Zona de Juego Central: Marcador y Matriz en Vivo -->
+            <div class="duel-play-cluster">
+              <!-- Puntuación Jugador vs Oponente -->
+              <div class="score-dock">
+                <div class="score-card player-score-card">
+                  <span class="sc-label">TUS MONEDAS</span>
+                  <span class="sc-val" id="player-score">0</span>
+                  <span class="sc-tag">TÚ (Agente)</span>
+                </div>
+
+                <div class="versus-tag">VS</div>
+
+                <div class="score-card opp-score-card">
+                  <span class="sc-label">MONEDAS OPONENTE</span>
+                  <span class="sc-val" id="opp-score">0</span>
+                  <span class="sc-tag" id="opp-score-tag">COOPERADOR</span>
+                </div>
+              </div>
+
+              <!-- Matriz de Pagos Activa (Resalta el resultado en cada ronda) -->
+              <div class="payoff-matrix-compact" aria-label="Matriz de Pagos">
+                <div class="pm-corner">TÚ \ RIVAL</div>
+                <div class="pm-col-head">RIVAL COOPERA</div>
+                <div class="pm-col-head">RIVAL DEFRAUDA</div>
+
+                <div class="pm-row-head">COOPERAS</div>
+                <div class="pm-cell" id="pm-cell-cc">
+                  <span class="pm-title">RECOMPENSA MUTUA</span>
+                  <span class="pm-vals">+2 / +2</span>
+                </div>
+                <div class="pm-cell" id="pm-cell-cd">
+                  <span class="pm-title">TIMO DEL INGENUO</span>
+                  <span class="pm-vals">-1 / +3</span>
+                </div>
+
+                <div class="pm-row-head">DEFRAUDAS</div>
+                <div class="pm-cell" id="pm-cell-dc">
+                  <span class="pm-title">TENTACIÓN GANADORA</span>
+                  <span class="pm-vals">+3 / -1</span>
+                </div>
+                <div class="pm-cell" id="pm-cell-dd">
+                  <span class="pm-title">CASTIGO MUTUO</span>
+                  <span class="pm-vals">0 / 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Historial de Rondas Recientes (Tiras de Decisiones) -->
+            <div class="rounds-history-strip">
+              <span class="rh-label">HISTORIAL DE RONDAS (<span id="rounds-current">0</span> / <span id="rounds-total">5</span>):</span>
+              <div class="rh-pills" id="rh-pills">
+                <!-- Se inyectan fichas circulares C (verde) o T (rojo) -->
+              </div>
+            </div>
+
+            <!-- Botonera de Acción del Jugador -->
+            <div class="duel-actions-bar" id="duel-actions-bar">
+              <button type="button" class="btn-action-duel btn-cooperate" id="btn-cooperate">
+                <div class="btn-duel-icon">🤝</div>
+                <div class="btn-duel-text">
+                  <span class="bdt-main">COOPERAR</span>
+                  <span class="bdt-sub">Pones 1 moneda (el rival recibe 3)</span>
+                </div>
+              </button>
+
+              <button type="button" class="btn-action-duel btn-defect" id="btn-defect">
+                <div class="btn-duel-icon">🗡️</div>
+                <div class="btn-duel-text">
+                  <span class="bdt-main">DEFRAUDAR</span>
+                  <span class="bdt-sub">No pones nada (te quedas lo que dé el rival)</span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Panel de Conclusión de Capítulo (Oculto durante el duelo) -->
+            <div class="chapter-recap-panel" id="chapter-recap" style="display: none;">
+              <h3 class="recap-title" id="recap-title">¡Capítulo Finalizado!</h3>
+              <p class="recap-desc" id="recap-desc"></p>
+              <div class="recap-stats" id="recap-stats"></div>
+              <div class="recap-actions">
+                <button type="button" class="btn-recap-next" id="btn-next-chapter">
+                  <span>Siguiente Oponente</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button type="button" class="btn-recap-retry" id="btn-retry-chapter">
+                  <span>Repetir Capítulo</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- MODO 2: SIMULADOR EVOLUTIVO DE ROBERT AXELROD (ECOSISTEMA) -->
+        <!-- ================================================================= -->
+        <div class="game-mode-view" id="view-sandbox" style="display: none;">
+          <!-- BANNER DIDÁCTICO DEL ECOSISTEMA: POR QUÉ GANAN LOS GENEROSOS -->
+          <div class="sandbox-insight-banner">
+            <div class="sib-icon" aria-hidden="true">💡</div>
+            <div class="sib-body">
+              <strong class="sib-title">¿Por qué se extinguen los Traidores y ganan los Generosos?</strong>
+              <p class="sib-p">
+                Al inicio, los <em>Traidores</em> devoran a los <em>Cooperadores Ingenuos</em> y su población se dispara. Pero cuando los ingenuos se extinguen, los traidores solo compiten entre sí y obtienen <strong>0 puntos</strong> (mueren de inanición evolutiva). En cambio, los <strong>Ojo por Ojo y los Generosos</strong> cooperan entre sí acumulando miles de puntos (+2 en cada turno). Y si activas el <strong>Ruido (Glitch)</strong>, los <strong>Generosos</strong> son los únicos que sobreviven porque su perdón ocasional evita quedar atrapados en guerras de venganza infinita.
+              </p>
+            </div>
+          </div>
+
+          <div class="sandbox-controls-bar">
+            <div class="sandbox-stat">
+              <span class="sb-label">GENERACIÓN</span>
+              <span class="sb-val" id="sb-gen-count">0</span>
+            </div>
+            <div class="sandbox-stat">
+              <span class="sb-label">POBLACIÓN TOTAL</span>
+              <span class="sb-val" id="sb-pop-count">100 agentes</span>
+            </div>
+            <div class="sandbox-stat">
+              <span class="sb-label">NIVEL DE RUIDO (GLITCH)</span>
+              <div class="noise-control">
+                <input type="range" id="noise-slider" min="0" max="15" value="0" />
+                <span class="noise-val" id="noise-val">0%</span>
+              </div>
+            </div>
+
+            <div class="sandbox-actions">
+              <button type="button" class="btn-sb-action btn-sb-step" id="btn-sb-step">
+                <span>+1 Generación</span>
+              </button>
+              <button type="button" class="btn-sb-action btn-sb-play is-accent" id="btn-sb-play">
+                <span id="sb-play-text">Auto-Evolución</span>
+              </button>
+              <button type="button" class="btn-sb-action btn-sb-reset" id="btn-sb-reset">
+                <span>Reiniciar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Arena del Ecosistema: Gráfico de Población y Desglose -->
+          <div class="stage-arena sandbox-arena">
+            <!-- Barra Proporcional de la Población Viva -->
+            <div class="pop-bar-stacked" id="pop-bar-stacked">
+              <!-- Franjas proporcionales coloreadas dinámicamente -->
+            </div>
+
+            <!-- Rejilla de Estrategias y Censo -->
+            <div class="census-grid" id="census-grid">
+              <!-- Tarjetas de cada una de las 6 especies estratégicas -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DIDÁCTICA Y MATEMÁTICA: ROBERT AXELROD & TEORÍA DE JUEGOS -->
+    <section class="dilemma-theory-section" id="teoria">
+      <div class="theory-container">
+        <header class="theory-header">
+          <span class="section-tag">TEORÍA DE JUEGOS & MATEMÁTICAS APLICADAS</span>
+          <h2 class="theory-title">La Gran Paradoja Resuelta: ¿Cuál es Realmente la Mejor Estrategia?</h2>
+          <p class="theory-subtitle">
+            El Dilema del Prisionero esconde una aparente contradicción que desconcierta a estudiantes y economistas: ¿por qué los libros de texto afirman que traicionar es la respuesta racional, pero en las simulaciones evolutivas los traidores se extinguen y solo triunfan los cooperadores generosos?
+          </p>
+        </header>
+
+        <!-- GRAN BANNER COMPARATIVO: 1 TURNO VS ENCUENTROS REPETIDOS -->
+        <div class="theory-confrontation-banner">
+          <div class="tcb-header">
+            <span class="tcb-pill">LA CLAVE MATEMÁTICA</span>
+            <h3 class="tcb-title">El Factor Decisivo: La "Sombra del Futuro" (Partida Única vs Partida Iterada)</h3>
+          </div>
+
+          <div class="tcb-columns">
+            <!-- Escenario A: 1 Solo Turno -->
+            <div class="tcb-col is-single-shot">
+              <div class="tcb-col-header">
+                <span class="tcb-icon" aria-hidden="true">⚡</span>
+                <div>
+                  <h4 class="tcb-col-title">1. En un Encuentro Único (1 Solo Turno)</h4>
+                  <span class="tcb-subtitle">Interacción anónima sin pasado ni futuro</span>
+                </div>
+              </div>
+              <div class="tcb-verdict is-defect">Ganador Matemático: DEFRAUDAR / TRAICIONAR</div>
+              <p class="tcb-desc">
+                Si te encuentras con un rival al que <strong>nunca volverás a ver</strong> y no hay leyes, cámaras ni reputación que te juzguen, la fría lógica matemática individual te empuja a traicionar (el <strong>Equilibrio de Nash</strong>):
+              </p>
+              <ul class="tcb-list">
+                <li>Si tu rival coopera: ganas <strong>+3 monedas</strong> defraudando en vez de +2.</li>
+                <li>Si tu rival defrauda: evitas perder <strong>-1 moneda</strong> defraudando tú también (0 puntos).</li>
+              </ul>
+              <div class="tcb-callout is-warning">
+                En 1 solo turno, cooperar es de ingenuos porque no existe un "mañana" para castigar la traición ni para cultivar confianza mutua.
+              </div>
+            </div>
+
+            <!-- Escenario B: Interacciones Repetidas -->
+            <div class="tcb-col is-iterated">
+              <div class="tcb-col-header">
+                <span class="tcb-icon" aria-hidden="true">🌱</span>
+                <div>
+                  <h4 class="tcb-col-title">2. En Encuentros Repetidos (La Vida Real y el Torneo)</h4>
+                  <span class="tcb-subtitle">La "Sombra del Futuro" y Selección Natural</span>
+                </div>
+              </div>
+              <div class="tcb-verdict is-coop">Ganador Evolutivo: COOPERACIÓN RECÍPROCA (Generoso)</div>
+              <p class="tcb-desc">
+                ¡Las matemáticas se invierten por completo cuando la relación se repite indefinidamente a lo largo del tiempo!
+              </p>
+              <ul class="tcb-list">
+                <li><strong>El flujo continuo de premios aplasta a la traición</strong>: Dos agentes amables ganan <em>+2 monedas en cada turno</em>, acumulando cientos de puntos a lo largo del tiempo.</li>
+                <li><strong>La trampa de la extinción de los traidores</strong>: Al principio devoran a los ingenuos. Pero cuando los ingenuos mueren, los traidores solo compiten entre sí y empatan en <strong>0 monedas</strong> (inanición biológica).</li>
+                <li><strong>El triunfo de los Generosos ante el Ruido</strong>: Con fallos casuales (ruido del 1% al 5%), el Ojo por Ojo tradicional colapsa en venganzas ciegas; el <em>Ojo por Ojo Generoso</em> perdona estocásticamente y restaura la prosperidad.</li>
+              </ul>
+              <div class="tcb-callout is-success">
+                En el tiempo repetido, la cooperación recíproca y el perdón no son ingenuidad moral: son la estrategia matemática más rentable del universo.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="theory-grid">
+          <!-- Tarjeta 1: La Condición Matemática de la Matriz -->
+          <article class="theory-card">
+            <div class="tcard-icon">⚖️</div>
+            <h3 class="tcard-title">La Condición Fundamental del Dilema</h3>
+            <p class="tcard-p">
+              Sean los pagos: <strong>T</strong> (Tentación por defraudar), <strong>R</strong> (Recompensa por cooperación mutua), <strong>P</strong> (Castigo por deserción mutua) y <strong>S</strong> (El timo del ingenuo).
+            </p>
+            <div class="math-callout">
+              <span class="math-formula"><em>T</em> &gt; <em>R</em> &gt; <em>P</em> &gt; <em>S</em> &emsp;y&emsp; 2<em>R</em> &gt; <em>T</em> + <em>S</em></span>
+            </div>
+            <p class="tcard-foot">
+              La primera desigualdad genera la tentación egoísta. La segunda garantiza que alternar traiciones mutuas no rinda más que cooperar permanentemente.
+            </p>
+          </article>
+
+          <!-- Tarjeta 2: El Equilibrio de Nash -->
+          <article class="theory-card">
+            <div class="tcard-icon">🧠</div>
+            <h3 class="tcard-title">El Equilibrio de Nash en 1 Turno</h3>
+            <p class="tcard-p">
+              En una interacción aislada sin memoria ni consecuencias:
+            </p>
+            <ul class="theory-bullets">
+              <li>Si tu rival coopera, ganarás más defraudando (<em>T</em> &gt; <em>R</em>).</li>
+              <li>Si tu rival defrauda, evitarás el timo defraudando tú también (<em>P</em> &gt; <em>S</em>).</li>
+            </ul>
+            <p class="tcard-foot">
+              En ambos casos, traicionar es la mejor respuesta unilateral. El estado (Defraudar, Defraudar) es el <strong>Equilibrio de Nash</strong>, a pesar de que el óptimo de Pareto es (Cooperar, Cooperar).
+            </p>
+          </article>
+
+          <!-- Tarjeta 3: La Dinámica de Poblaciones -->
+          <article class="theory-card">
+            <div class="tcard-icon">📉</div>
+            <h3 class="tcard-title">Por qué se Extinguen los Traidores</h3>
+            <p class="tcard-p">
+              En el simulador evolutivo, la dinámica sigue tres fases matemáticas inevitables:
+            </p>
+            <ol class="theory-steps">
+              <li><strong>Fase 1 (Auge inicial del Traidor)</strong>: Los tramposos devoran a los cooperadores ingenuos y crecen deprisa.</li>
+              <li><strong>Fase 2 (Colapso de Presas)</strong>: Los ingenuos mueren. Los traidores solo se topan entre sí o con Tit-for-Tat, recibiendo 0 puntos.</li>
+              <li><strong>Fase 3 (Dominación Recíproca)</strong>: Las estrategias que cooperan entre sí acumulan cientos de monedas y repueblan el sistema.</li>
+            </ol>
+          </article>
+
+          <!-- Tarjeta 4: La Sombra del Futuro y Robert Axelrod -->
+          <article class="theory-card">
+            <div class="tcard-icon">🏆</div>
+            <h3 class="tcard-title">El Torneo de Robert Axelrod (1984)</h3>
+            <p class="tcard-p">
+              Axelrod invitó a matemáticos, biólogos y economistas de todo el mundo a programar algoritmos para un torneo iterado. Contra pronóstico, la estrategia ganadora fue la más simple: <strong>Ojo por Ojo (Tit-for-Tat)</strong> de Anatol Rapoport, de solo 4 líneas de código.
+            </p>
+            <p class="tcard-foot">
+              Cuando el futuro es incierto o infinito (factor de descuento <em>δ</em> ≈ 1), el valor de mantener la confianza supera con creces la ganancia puntual de traicionar.
+            </p>
+          </article>
+
+          <!-- Tarjeta 5: Los 4 Rasgos de las Estrategias Ganadoras -->
+          <article class="theory-card">
+            <div class="tcard-icon">💡</div>
+            <h3 class="tcard-title">Los 4 Mandamientos del Éxito Algorítmico</h3>
+            <ol class="theory-steps">
+              <li><strong>Ser amable</strong>: Nunca ser el primero en traicionar.</li>
+              <li><strong>Ser represivo</strong>: Responder de inmediato a la deserción ajena para evitar abusos.</li>
+              <li><strong>Ser perdonador</strong>: Volver a cooperar de inmediato en cuanto el rival se rectifica.</li>
+              <li><strong>No ser envidioso</strong>: Buscar maximizar los puntos propios, no preocuparse por superar al rival en cada turno.</li>
+            </ol>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // TIPOS Y PERSONAJES DE LA AVENTURA
+    // =========================================================================
+    type Action = 'C' | 'D'; // C = Cooperar, D = Defraudar
+
+    interface Character {
+      id: string;
+      name: string;
+      avatar: string;
+      badge: string;
+      bio: string;
+      introDialogue: string;
+      roundsCount: number;
+      getAction: (historyUser: Action[], historyOpp: Action[]) => Action;
+      getDialogueReaction: (userAct: Action, oppAct: Action, roundIdx: number) => string;
+      getRecapText: (userScore: number, oppScore: number) => { title: string; desc: string };
+    }
+
+    const CHARACTERS: Character[] = [
+      // 1. Cooperador Ingenuo
+      {
+        id: 'cooperator',
+        name: 'El Cooperador Ingenuo',
+        avatar: '😇',
+        badge: 'Capítulo 1 de 6 · Confianza Ciega',
+        bio: 'Siempre coopera. Cree que todos los humanos son buenos y pondrá su moneda en cada ronda, sin importar si lo explotas.',
+        introDialogue: '¡Hola! Yo siempre pongo mi moneda para que ambos ganemos. ¡Confío en que tú harás lo mismo!',
+        roundsCount: 5,
+        getAction: () => 'C',
+        getDialogueReaction: (userAct) => {
+          return userAct === 'C'
+            ? '¡Qué alegría! Cooperamos juntos y los dos sumamos 2 monedas. ¡El mundo es maravilloso!'
+            : '¡Vaya! Te has llevado 3 monedas y yo he perdido 1... Bueno, seguro que fue un error sin querer. ¡Sigo confiando en ti!';
+        },
+        getRecapText: (userScore, oppScore) => {
+          if (userScore > oppScore) {
+            return {
+              title: 'Explotación del Ingenuo',
+              desc: 'Has ganado más monedas defraudando a quien siempre coopera. Pero en la vida real, si todos fueran tramposos, los cooperadores se extinguirían y nadie ganaría nada.'
+            };
+          }
+          return {
+            title: 'Cooperación Pura',
+            desc: 'Ambos habéis cooperado en cada ronda. El beneficio mutuo ha sido máximo y armonioso.'
+          };
+        }
+      },
+
+      // 2. Traidor Implacable
+      {
+        id: 'cheater',
+        name: 'El Traidor Implacable',
+        avatar: '😈',
+        badge: 'Capítulo 2 de 6 · Egoísmo Racional',
+        bio: 'Nunca coopera. Sabe que defraudar es la estrategia dominante en un juego sin memoria y se quedará con todo lo que pueda.',
+        introDialogue: 'La confianza es para los débiles. Yo nunca regalo una sola moneda. ¡A ver qué haces tú!',
+        roundsCount: 5,
+        getAction: () => 'D',
+        getDialogueReaction: (userAct) => {
+          return userAct === 'C'
+            ? '¡Jajaja! ¡Pardillo! Tú pones la moneda y yo me quedo con 3 monedas netas. ¡Gracias por el regalo!'
+            : 'Empate a cero. Ninguno de los dos gana nada. Es la frialdad del equilibrio de Nash en estado puro.';
+        },
+        getRecapText: (userScore, oppScore) => {
+          if (userScore === oppScore) {
+            return {
+              title: 'Bloqueo Mutuo',
+              desc: 'Aprendiste rápido a no dejarte timar. Cuando ambos defraudan, el resultado es 0 monedas: nadie pierde, pero nadie gana.'
+            };
+          }
+          return {
+            title: 'Tocado por la Traición',
+            desc: 'Intentaste cooperar con quien solo busca explotarte. En la teoría de juegos, cooperar con un traidor sistemático es la ruina absoluta.'
+          };
+        }
+      },
+
+      // 3. Ojo por Ojo (Tit-for-Tat)
+      {
+        id: 'tit-for-tat',
+        name: 'Ojo por Ojo (Tit-for-Tat)',
+        avatar: '⚖️',
+        badge: 'Capítulo 3 de 6 · Espejo Moral',
+        bio: 'Empieza cooperando. En adelante, copia exactamente lo que tú hiciste en la ronda anterior. Es amable, vengativo y perdonador.',
+        introDialogue: 'Empiezo con una sonrisa y una moneda. Lo que pase después depende única y exclusivamente de ti.',
+        roundsCount: 6,
+        getAction: (historyUser) => {
+          if (historyUser.length === 0) return 'C';
+          return historyUser[historyUser.length - 1]; // Repite la última jugada del usuario
+        },
+        getDialogueReaction: (userAct, oppAct) => {
+          if (userAct === 'C' && oppAct === 'C') {
+            return '¡Excelente! Ambos cooperamos y sumamos 2 monedas. Seguiré cooperando mientras tú lo hagas.';
+          }
+          if (userAct === 'D') {
+            return 'Has traicionado mi confianza. En el próximo turno te pagaré con la misma moneda.';
+          }
+          return 'Has vuelto a cooperar. Te perdono inmediatamente y vuelvo a confiar en ti.';
+        },
+        getRecapText: (userScore, oppScore) => {
+          if (userScore === oppScore && userScore >= 12) {
+            return {
+              title: 'La Alianza Perfecta',
+              desc: 'Has descubierto el secreto de Tit-for-Tat: cuando dos jugadores amables se encuentran, se desata una cooperación infinita y próspera.'
+            };
+          }
+          return {
+            title: 'El Ciclo de la Venganza',
+            desc: 'Al traicionar a Tit-for-Tat recibiste represalia inmediata. Sin embargo, en cuanto cooperas de nuevo, él no guarda rencor.'
+          };
+        }
+      },
+
+      // 4. El Rencoroso (Grudger)
+      {
+        id: 'grudger',
+        name: 'El Rencoroso (Friedman)',
+        avatar: '😠',
+        badge: 'Capítulo 4 de 6 · Cero Perdón',
+        bio: 'Empieza cooperando, pero si le traicionas tan solo UNA vez, te sentenciará a muerte y NUNCA volverá a cooperar contigo jamás.',
+        introDialogue: 'Creo en la lealtad absoluta. Confío en ti al 100%, pero si me traicionas una sola vez... se acabó para siempre.',
+        roundsCount: 6,
+        getAction: (historyUser) => {
+          // Si el usuario traicionó alguna vez, siempre 'D'
+          const hasBetrayed = historyUser.some((a) => a === 'D');
+          return hasBetrayed ? 'D' : 'C';
+        },
+        getDialogueReaction: (userAct, oppAct) => {
+          if (oppAct === 'D') {
+            return 'No me importa lo que hagas ahora. Me fallaste en una ronda anterior y nunca más volveré a cooperar contigo.';
+          }
+          return userAct === 'C'
+            ? 'Bien. La lealtad se mantiene intacta. Seguimos sumando.'
+            : '¡HAS ROTO NUESTRO PACTO! Acabas de sentenciarte. Nunca jamás volveré a cooperar contigo.';
+        },
+        getRecapText: (userScore, oppScore) => {
+          return {
+            title: 'La Fragilidad de la Confianza',
+            desc: 'Con El Rencoroso, una traición accidental o egoísta destruye todo el valor futuro acumulado. A diferencia de Tit-for-Tat, no tiene capacidad de perdón.'
+          };
+        }
+      },
+
+      // 5. El Detective (The Auditor)
+      {
+        id: 'detective',
+        name: 'El Detective',
+        avatar: '🕵️',
+        badge: 'Capítulo 5 de 6 · Test Psicológico',
+        bio: 'Juega una secuencia de prueba inicial: [Coopera, Defrauda, Coopera, Coopera]. Si le dejas engañarte, te explota sin piedad como el Traidor; si te defiendes, se convierte en Tit-for-Tat.',
+        introDialogue: 'Estoy evaluando tu perfil psicológico. Las primeras rondas son un test analítico...',
+        roundsCount: 7,
+        getAction: (historyUser, historyOpp) => {
+          const step = historyOpp.length;
+          // Secuencia fija inicial: C, D, C, C
+          if (step === 0) return 'C';
+          if (step === 1) return 'D';
+          if (step === 2) return 'C';
+          if (step === 3) return 'C';
+
+          // A partir del paso 4: ¿El usuario le devolvió el golpe en algún momento?
+          const userEverFoughtBack = historyUser.some((a) => a === 'D');
+          if (!userEverFoughtBack) {
+            return 'D'; // Lo considera un pardillo y lo explota
+          }
+          // Si el usuario se defendió, juega como Tit-for-Tat
+          return historyUser[historyUser.length - 1];
+        },
+        getDialogueReaction: (userAct, oppAct, roundIdx) => {
+          if (roundIdx === 1) {
+            return 'Te he traicionado a propósito para medir tu umbral de respuesta...';
+          }
+          if (roundIdx < 4) {
+            return 'Continuando la batería de pruebas diagnósticas...';
+          }
+          return userAct === 'C'
+            ? 'Has demostrado ser cooperativo pero firme. Podemos colaborar.'
+            : 'Percibo hostilidad. Me defenderé en consonancia.';
+        },
+        getRecapText: (userScore, oppScore) => {
+          return {
+            title: 'Diagnóstico Completado',
+            desc: 'El Detective es un algoritmo que explora activamente el entorno. Si detecta que no tomas represalias, te exprime; si detecta que sabes defenderte, coopera pacíficamente.'
+          };
+        }
+      },
+
+      // 6. El Rival Misterioso (Secreto / Aleatorio)
+      {
+        id: 'mystery-random',
+        name: 'El Rival Misterioso (¿¿¿???)',
+        avatar: '🎭',
+        badge: 'Capítulo 6 de 6 · Algoritmo Secreto e Impredecible',
+        bio: 'Su rostro e intenciones se ocultan tras una máscara dorada. No posee lealtad, rencor ni cálculo estratégico: lanza una moneda al aire en cada ronda (50% de probabilidad pura). ¿Puede una mente humana o una estrategia racional vencer frente al caos absoluto?',
+        introDialogue: '¿Intentas descifrar mi lógica? ¡Ni las matemáticas de Nash pueden anticipar una moneda en el aire!',
+        roundsCount: 8,
+        getAction: () => {
+          // Tirada estocástica pura (50% cooperar, 50% traicionar)
+          return Math.random() < 0.5 ? 'C' : 'D';
+        },
+        getDialogueReaction: (userAct, oppAct) => {
+          if (userAct === 'C' && oppAct === 'C') {
+            return '¡Vaya sincronía fortuita! La moneda cayó en cooperar y sumamos +2 cada uno. ¿Se repetirá?';
+          }
+          if (userAct === 'C' && oppAct === 'D') {
+            return '¡Salió cruz! Te traicioné sin ningún plan premeditado... ¡y me llevo +3 monedas por la cara!';
+          }
+          if (userAct === 'D' && oppAct === 'C') {
+            return '¡Moneda cara! Te regalé la oportunidad y me apuñalaste. ¡+3 monedas bien cobradas por ti!';
+          }
+          return '¡Doble traición! Caos en el tablero y 0 monedas para ambos. ¡El desorden reina en la prisión!';
+        },
+        getRecapText: (userScore, oppScore) => {
+          return {
+            title: 'El Duelo Contra el Azar',
+            desc: 'Enfrentarse a un agente aleatorio (Random) es la peor pesadilla de los algoritmos de reciprocidad como Tit-for-Tat. Cuando no existe consistencia, las represalias no corrigen al rival y los premios no inspiran lealtad. Este experimento demuestra por qué la certidumbre, la predictibilidad y la reputación son indispensables para que la cooperación florezca en cualquier sociedad.'
+          };
+        }
+      }
+    ];
+
+    // =========================================================================
+    // ESTADO DE LA AVENTURA
+    // =========================================================================
+    let currentChapterIdx = 0;
+    let roundIndex = 0;
+    let userScore = 0;
+    let oppScore = 0;
+    let userHistory: Action[] = [];
+    let oppHistory: Action[] = [];
+    let isRoundLocked = false;
+
+    // Elementos DOM de Aventura
+    const viewAdventure = document.getElementById('view-adventure');
+    const viewSandbox = document.getElementById('view-sandbox');
+    const tabBtnAdventure = document.getElementById('tab-btn-adventure');
+    const tabBtnSandbox = document.getElementById('tab-btn-sandbox');
+    const stepperTrack = document.getElementById('stepper-track');
+
+    const oppAvatar = document.getElementById('opp-avatar');
+    const oppName = document.getElementById('opp-name');
+    const oppBadge = document.getElementById('opp-badge');
+    const oppBio = document.getElementById('opp-bio');
+    const duelDialogue = document.getElementById('duel-dialogue');
+    const playerScoreEl = document.getElementById('player-score');
+    const oppScoreEl = document.getElementById('opp-score');
+    const oppScoreTag = document.getElementById('opp-score-tag');
+    const roundsCurrent = document.getElementById('rounds-current');
+    const roundsTotal = document.getElementById('rounds-total');
+    const rhPills = document.getElementById('rh-pills');
+
+    const btnCooperate = document.getElementById('btn-cooperate');
+    const btnDefect = document.getElementById('btn-defect');
+    const duelActionsBar = document.getElementById('duel-actions-bar');
+    const chapterRecap = document.getElementById('chapter-recap');
+    const recapTitle = document.getElementById('recap-title');
+    const recapDesc = document.getElementById('recap-desc');
+    const btnNextChapter = document.getElementById('btn-next-chapter');
+    const btnRetryChapter = document.getElementById('btn-retry-chapter');
+
+    // Celdas de la matriz de pagos
+    const pmCells = {
+      cc: document.getElementById('pm-cell-cc'),
+      cd: document.getElementById('pm-cell-cd'),
+      dc: document.getElementById('pm-cell-dc'),
+      dd: document.getElementById('pm-cell-dd'),
+    };
+
+    // =========================================================================
+    // SÍNTESIS DE AUDIO WEB API
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+    function getAudioContext(): AudioContext | null {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      } catch {
+        return null;
+      }
+    }
+
+    function playCoopSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, now); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08); // A5
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.11);
+    }
+
+    function playDefectSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now); // A3
+      osc.frequency.linearRampToValueAtTime(146.83, now + 0.12); // D3
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    }
+
+    function playWinFanfare() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const fanfare = [523.25, 659.25, 783.99, 1046.5];
+      fanfare.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + i * 0.1);
+        gain.gain.setValueAtTime(0.001, now + i * 0.1);
+        gain.gain.linearRampToValueAtTime(0.2, now + i * 0.1 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.1);
+        osc.stop(now + i * 0.1 + 0.32);
+      });
+    }
+
+    // =========================================================================
+    // CONFETTI EN CANVAS (FINAL DE CAPÍTULO)
+    // =========================================================================
+    let confettiAnimId: number | null = null;
+    function launchConfetti() {
+      const canvas = document.getElementById('fx-confetti-canvas') as HTMLCanvasElement | null;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width || 600;
+      canvas.height = rect.height || 280;
+
+      const colors = ['#38bdf8', '#3fe0b5', '#fbbf24', '#f43f5e', '#a855f7', '#4ade80'];
+      const particles = Array.from({ length: 80 }, () => ({
+        x: canvas.width * (0.3 + Math.random() * 0.4),
+        y: canvas.height * 0.6,
+        vx: (Math.random() - 0.5) * 11,
+        vy: -(Math.random() * 8 + 6),
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 6 + 4,
+        rotation: Math.random() * 360,
+        vRot: (Math.random() - 0.5) * 12,
+        alpha: 1,
+        decay: Math.random() * 0.012 + 0.008,
+      }));
+
+      if (confettiAnimId !== null) cancelAnimationFrame(confettiAnimId);
+
+      function step() {
+        if (!ctx || !canvas) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        for (const p of particles) {
+          if (p.alpha <= 0) continue;
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28;
+          p.vx *= 0.985;
+          p.rotation += p.vRot;
+          p.alpha -= p.decay;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+        if (alive) confettiAnimId = requestAnimationFrame(step);
+        else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiAnimId = null;
+        }
+      }
+      step();
+    }
+
+    // =========================================================================
+    // GESTIÓN DE CAPÍTULOS DE LA AVENTURA
+    // =========================================================================
+    function buildStepperUI() {
+      if (!stepperTrack) return;
+      stepperTrack.innerHTML = '';
+      CHARACTERS.forEach((char, idx) => {
+        const step = document.createElement('button');
+        step.type = 'button';
+        step.className = `step-node ${idx === currentChapterIdx ? 'is-active' : ''} ${idx < currentChapterIdx ? 'is-done' : ''}`;
+        step.title = `${char.name} (${char.badge})`;
+        step.innerHTML = `<span class="step-num">${idx + 1}</span><span class="step-avatar">${char.avatar}</span>`;
+        step.addEventListener('click', () => loadChapter(idx));
+        stepperTrack.appendChild(step);
+      });
+    }
+
+    function loadChapter(idx: number) {
+      currentChapterIdx = idx;
+      roundIndex = 0;
+      userScore = 0;
+      oppScore = 0;
+      userHistory = [];
+      oppHistory = [];
+      isRoundLocked = false;
+
+      const char = CHARACTERS[idx];
+      if (oppAvatar) oppAvatar.textContent = char.avatar;
+      if (oppName) oppName.textContent = char.name;
+      if (oppBadge) oppBadge.textContent = char.badge;
+      if (oppBio) oppBio.textContent = char.bio;
+      if (duelDialogue) duelDialogue.textContent = `"${char.introDialogue}"`;
+
+      if (playerScoreEl) playerScoreEl.textContent = '0';
+      if (oppScoreEl) oppScoreEl.textContent = '0';
+      if (oppScoreTag) oppScoreTag.textContent = char.name.split(' ')[1] || 'RIVAL';
+
+      if (roundsCurrent) roundsCurrent.textContent = '0';
+      if (roundsTotal) roundsTotal.textContent = String(char.roundsCount);
+
+      if (rhPills) rhPills.innerHTML = '';
+      clearMatrixHighlights();
+
+      if (duelActionsBar) duelActionsBar.style.display = 'flex';
+      if (chapterRecap) chapterRecap.style.display = 'none';
+
+      buildStepperUI();
+    }
+
+    function clearMatrixHighlights() {
+      Object.values(pmCells).forEach((cell) => cell?.classList.remove('is-active-quadrant'));
+    }
+
+    function playDuelRound(userAction: Action) {
+      if (isRoundLocked) return;
+      const char = CHARACTERS[currentChapterIdx];
+      if (roundIndex >= char.roundsCount) return;
+
+      isRoundLocked = true;
+      const oppAction = char.getAction(userHistory, oppHistory);
+
+      userHistory.push(userAction);
+      oppHistory.push(oppAction);
+
+      // Sonido de la acción
+      if (userAction === 'C') playCoopSound();
+      else playDefectSound();
+
+      // Cálculo de pagos
+      let userDelta = 0;
+      let oppDelta = 0;
+      let activeCellKey: 'cc' | 'cd' | 'dc' | 'dd' = 'cc';
+
+      if (userAction === 'C' && oppAction === 'C') {
+        userDelta = 2;
+        oppDelta = 2;
+        activeCellKey = 'cc';
+      } else if (userAction === 'C' && oppAction === 'D') {
+        userDelta = -1;
+        oppDelta = 3;
+        activeCellKey = 'cd';
+      } else if (userAction === 'D' && oppAction === 'C') {
+        userDelta = 3;
+        oppDelta = -1;
+        activeCellKey = 'dc';
+      } else {
+        userDelta = 0;
+        oppDelta = 0;
+        activeCellKey = 'dd';
+      }
+
+      userScore += userDelta;
+      oppScore += oppDelta;
+
+      // Actualizar UI
+      clearMatrixHighlights();
+      pmCells[activeCellKey]?.classList.add('is-active-quadrant');
+
+      if (playerScoreEl) playerScoreEl.textContent = String(userScore);
+      if (oppScoreEl) oppScoreEl.textContent = String(oppScore);
+
+      // Reacción de diálogo
+      const reaction = char.getDialogueReaction(userAction, oppAction, roundIndex);
+      if (duelDialogue) duelDialogue.innerHTML = `"${reaction}"`;
+
+      // Añadir píldora al historial visual
+      if (rhPills) {
+        const pill = document.createElement('div');
+        pill.className = `round-pill act-user-${userAction.toLowerCase()} act-opp-${oppAction.toLowerCase()}`;
+        pill.innerHTML = `
+          <span class="rp-round">R${roundIndex + 1}</span>
+          <span class="rp-badge is-u">${userAction === 'C' ? '🤝 Cooperaste' : '🗡️ Traicionaste'}</span>
+          <span class="rp-vs">vs</span>
+          <span class="rp-badge is-o">${oppAction === 'C' ? '🤝 Cooperó' : '🗡️ Traicionó'}</span>
+          <span class="rp-pts">${userDelta >= 0 ? `+${userDelta}` : userDelta} pts</span>
+        `;
+        rhPills.appendChild(pill);
+      }
+
+      roundIndex++;
+      if (roundsCurrent) roundsCurrent.textContent = String(roundIndex);
+
+      // Comprobar fin de capítulo
+      if (roundIndex >= char.roundsCount) {
+        window.setTimeout(() => {
+          finishChapter(char);
+        }, 900);
+      } else {
+        window.setTimeout(() => {
+          isRoundLocked = false;
+        }, 350);
+      }
+    }
+
+    function finishChapter(char: Character) {
+      if (duelActionsBar) duelActionsBar.style.display = 'none';
+      const recap = char.getRecapText(userScore, oppScore);
+
+      if (recapTitle) recapTitle.textContent = recap.title;
+      if (recapDesc) recapDesc.textContent = recap.desc;
+
+      playWinFanfare();
+      launchConfetti();
+
+      if (chapterRecap) chapterRecap.style.display = 'flex';
+      buildStepperUI();
+    }
+
+    // =========================================================================
+    // MODO 2: SIMULADOR EVOLUTIVO DE ROBERT AXELROD
+    // =========================================================================
+    interface Species {
+      id: string;
+      name: string;
+      avatar: string;
+      color: string;
+      count: number;
+      getAction: (historyMe: Action[], historyOther: Action[]) => Action;
+    }
+
+    const SPECIES_CONFIG: Omit<Species, 'count'>[] = [
+      {
+        id: 'tit-for-tat',
+        name: 'Ojo por Ojo',
+        avatar: '⚖️',
+        color: '#38bdf8',
+        getAction: (me, other) => (other.length === 0 ? 'C' : other[other.length - 1]),
+      },
+      {
+        id: 'cooperator',
+        name: 'Cooperador Puro',
+        avatar: '😇',
+        color: '#3fe0b5',
+        getAction: () => 'C',
+      },
+      {
+        id: 'cheater',
+        name: 'Traidor Implacable',
+        avatar: '😈',
+        color: '#f43f5e',
+        getAction: () => 'D',
+      },
+      {
+        id: 'grudger',
+        name: 'El Rencoroso',
+        avatar: '😠',
+        color: '#fbbf24',
+        getAction: (me, other) => (other.includes('D') ? 'D' : 'C'),
+      },
+      {
+        id: 'detective',
+        name: 'El Detective',
+        avatar: '🕵️',
+        color: '#a855f7',
+        getAction: (me, other) => {
+          const step = other.length;
+          if (step === 0) return 'C';
+          if (step === 1) return 'D';
+          if (step === 2) return 'C';
+          if (step === 3) return 'C';
+          return other.includes('D') ? other[other.length - 1] : 'D';
+        },
+      },
+      {
+        id: 'generous',
+        name: 'Ojo por Ojo Generoso',
+        avatar: '🌱',
+        color: '#4ade80',
+        getAction: (me, other) => {
+          if (other.length === 0) return 'C';
+          if (other[other.length - 1] === 'D') {
+            // Perdona con un 30% de probabilidad
+            return Math.random() < 0.3 ? 'C' : 'D';
+          }
+          return 'C';
+        },
+      },
+    ];
+
+    let population: { speciesId: string }[] = [];
+    let generation = 0;
+    let noisePct = 0;
+    let isAutoEvolving = false;
+    let autoEvolveTimer: number | null = null;
+
+    const sbGenCount = document.getElementById('sb-gen-count');
+    const sbPopCount = document.getElementById('sb-pop-count');
+    const popBarStacked = document.getElementById('pop-bar-stacked');
+    const censusGrid = document.getElementById('census-grid');
+    const noiseSlider = document.getElementById('noise-slider') as HTMLInputElement | null;
+    const noiseVal = document.getElementById('noise-val');
+    const btnSbStep = document.getElementById('btn-sb-step');
+    const btnSbPlay = document.getElementById('btn-sb-play');
+    const sbPlayText = document.getElementById('sb-play-text');
+    const btnSbReset = document.getElementById('btn-sb-reset');
+
+    function initSandbox() {
+      stopAutoEvolve();
+      generation = 0;
+      population = [];
+      const totalInitial = 120; // 20 agentes de cada especie
+      const perSpecies = Math.floor(totalInitial / SPECIES_CONFIG.length);
+
+      SPECIES_CONFIG.forEach((sp) => {
+        for (let i = 0; i < perSpecies; i++) {
+          population.push({ speciesId: sp.id });
+        }
+      });
+
+      renderSandboxUI();
+    }
+
+    function runOneGeneration() {
+      generation++;
+      const speciesMap = new Map(SPECIES_CONFIG.map((s) => [s.id, s]));
+
+      // 1. Cada agente juega con todos los demás un dilema de 10 rondas
+      const scores = new Array(population.length).fill(0);
+      const roundsPerMatch = 10;
+
+      for (let i = 0; i < population.length; i++) {
+        for (let j = i + 1; j < population.length; j++) {
+          const spA = speciesMap.get(population[i].speciesId)!;
+          const spB = speciesMap.get(population[j].speciesId)!;
+
+          const hA: Action[] = [];
+          const hB: Action[] = [];
+
+          for (let r = 0; r < roundsPerMatch; r++) {
+            let actA = spA.getAction(hA, hB);
+            let actB = spB.getAction(hB, hA);
+
+            // Simular ruido (malentendido en la comunicación)
+            if (noisePct > 0) {
+              if (Math.random() * 100 < noisePct) actA = actA === 'C' ? 'D' : 'C';
+              if (Math.random() * 100 < noisePct) actB = actB === 'C' ? 'D' : 'C';
+            }
+
+            hA.push(actA);
+            hB.push(actB);
+
+            if (actA === 'C' && actB === 'C') {
+              scores[i] += 2;
+              scores[j] += 2;
+            } else if (actA === 'C' && actB === 'D') {
+              scores[i] -= 1;
+              scores[j] += 3;
+            } else if (actA === 'D' && actB === 'C') {
+              scores[i] += 3;
+              scores[j] -= 1;
+            }
+          }
+        }
+      }
+
+      // 2. Selección natural: se eliminan los 15 con peor puntuación y se reproducen los 15 mejores
+      const indexed = population.map((agent, idx) => ({ ...agent, score: scores[idx] }));
+      indexed.sort((a, b) => b.score - a.score);
+
+      const turnover = 15;
+      const survivors = indexed.slice(0, indexed.length - turnover);
+      const topReproducers = indexed.slice(0, turnover);
+
+      // Nueva población
+      population = [
+        ...survivors.map((a) => ({ speciesId: a.speciesId })),
+        ...topReproducers.map((a) => ({ speciesId: a.speciesId })),
+      ];
+
+      renderSandboxUI();
+    }
+
+    function renderSandboxUI() {
+      if (sbGenCount) sbGenCount.textContent = String(generation);
+      if (sbPopCount) sbPopCount.textContent = `${population.length} agentes`;
+
+      // Contar especies vivas
+      const counts: Record<string, number> = {};
+      population.forEach((a) => {
+        counts[a.speciesId] = (counts[a.speciesId] || 0) + 1;
+      });
+
+      // Actualizar barra proporcional de población
+      if (popBarStacked) {
+        popBarStacked.innerHTML = '';
+        SPECIES_CONFIG.forEach((sp) => {
+          const c = counts[sp.id] || 0;
+          if (c === 0) return;
+          const pct = ((c / population.length) * 100).toFixed(1);
+          const seg = document.createElement('div');
+          seg.className = 'pop-seg';
+          seg.style.width = `${pct}%`;
+          seg.style.backgroundColor = sp.color;
+          seg.title = `${sp.name}: ${c} agentes (${pct}%)`;
+          popBarStacked.appendChild(seg);
+        });
+      }
+
+      // Rejilla de tarjetas censales
+      if (censusGrid) {
+        censusGrid.innerHTML = '';
+        SPECIES_CONFIG.forEach((sp) => {
+          const c = counts[sp.id] || 0;
+          const pct = ((c / population.length) * 100).toFixed(1);
+          const card = document.createElement('div');
+          card.className = `census-card ${c === 0 ? 'is-extinct' : ''}`;
+          card.style.borderColor = sp.color;
+          card.innerHTML = `
+            <div class="c-avatar">${sp.avatar}</div>
+            <div class="c-info">
+              <span class="c-name" style="color: ${sp.color}">${sp.name}</span>
+              <span class="c-count">${c} agentes (${pct}%)</span>
+            </div>
+            ${c === 0 ? '<span class="extinct-tag">EXTINTO</span>' : ''}
+          `;
+          censusGrid.appendChild(card);
+        });
+      }
+    }
+
+    function toggleAutoEvolve() {
+      if (isAutoEvolving) {
+        stopAutoEvolve();
+        return;
+      }
+      isAutoEvolving = true;
+      if (sbPlayText) sbPlayText.textContent = 'Pausar Simulación';
+      if (btnSbPlay) btnSbPlay.classList.add('is-running');
+
+      function loop() {
+        if (!isAutoEvolving) return;
+        runOneGeneration();
+        autoEvolveTimer = window.setTimeout(loop, 400);
+      }
+      loop();
+    }
+
+    function stopAutoEvolve() {
+      isAutoEvolving = false;
+      if (autoEvolveTimer !== null) {
+        clearTimeout(autoEvolveTimer);
+        autoEvolveTimer = null;
+      }
+      if (sbPlayText) sbPlayText.textContent = 'Auto-Evolución';
+      if (btnSbPlay) btnSbPlay.classList.remove('is-running');
+    }
+
+    // =========================================================================
+    // EVENT LISTENERS
+    // =========================================================================
+    if (tabBtnAdventure) {
+      tabBtnAdventure.addEventListener('click', () => {
+        tabBtnAdventure.classList.add('is-active');
+        tabBtnAdventure.setAttribute('aria-selected', 'true');
+        tabBtnSandbox?.classList.remove('is-active');
+        tabBtnSandbox?.setAttribute('aria-selected', 'false');
+
+        const pillAdv = tabBtnAdventure.querySelector('.mhc-status-pill');
+        if (pillAdv) {
+          pillAdv.textContent = 'JUGANDO AHORA';
+          pillAdv.className = 'mhc-status-pill is-current';
+        }
+        const pillSbx = tabBtnSandbox?.querySelector('.mhc-status-pill');
+        if (pillSbx) {
+          pillSbx.textContent = 'PROBAR TORNEO';
+          pillSbx.className = 'mhc-status-pill is-alt';
+        }
+
+        if (viewAdventure) viewAdventure.style.display = 'block';
+        if (viewSandbox) viewSandbox.style.display = 'none';
+        stopAutoEvolve();
+      });
+    }
+
+    if (tabBtnSandbox) {
+      tabBtnSandbox.addEventListener('click', () => {
+        tabBtnSandbox.classList.add('is-active');
+        tabBtnSandbox.setAttribute('aria-selected', 'true');
+        tabBtnAdventure?.classList.remove('is-active');
+        tabBtnAdventure?.setAttribute('aria-selected', 'false');
+
+        const pillAdv = tabBtnAdventure?.querySelector('.mhc-status-pill');
+        if (pillAdv) {
+          pillAdv.textContent = 'CAMBIAR A AVENTURA';
+          pillAdv.className = 'mhc-status-pill is-alt';
+        }
+        const pillSbx = tabBtnSandbox.querySelector('.mhc-status-pill');
+        if (pillSbx) {
+          pillSbx.textContent = 'JUGANDO AHORA';
+          pillSbx.className = 'mhc-status-pill is-current';
+        }
+
+        if (viewAdventure) viewAdventure.style.display = 'none';
+        if (viewSandbox) viewSandbox.style.display = 'block';
+        initSandbox();
+      });
+    }
+
+    if (btnCooperate) btnCooperate.addEventListener('click', () => playDuelRound('C'));
+    if (btnDefect) btnDefect.addEventListener('click', () => playDuelRound('D'));
+
+    if (btnNextChapter) {
+      btnNextChapter.addEventListener('click', () => {
+        const nextIdx = (currentChapterIdx + 1) % CHARACTERS.length;
+        loadChapter(nextIdx);
+      });
+    }
+
+    if (btnRetryChapter) {
+      btnRetryChapter.addEventListener('click', () => {
+        loadChapter(currentChapterIdx);
+      });
+    }
+
+    if (btnSbStep) btnSbStep.addEventListener('click', runOneGeneration);
+    if (btnSbPlay) btnSbPlay.addEventListener('click', toggleAutoEvolve);
+    if (btnSbReset) btnSbReset.addEventListener('click', initSandbox);
+
+    if (noiseSlider) {
+      noiseSlider.addEventListener('input', () => {
+        noisePct = parseInt(noiseSlider.value || '0', 10);
+        if (noiseVal) noiseVal.textContent = `${noisePct}%`;
+      });
+    }
+
+    // Arrancar Capítulo 1 de la Aventura
+    loadChapter(0);
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS DEL JUEGO EL DILEMA DEL PRISIONERO (MATH UNIVERSE GAMING)
+     ========================================================================== */
+
+  .dilemma-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg, #090e17);
+    color: var(--ink, #f1f5f9);
+  }
+
+  /* COCKPIT DE JUEGO PRINCIPAL */
+  .game-cockpit {
+    width: 100%;
+    padding: 0.75rem 1rem 1.25rem;
+    background: radial-gradient(circle at 50% 15%, rgba(255, 193, 77, 0.08), rgba(9, 14, 23, 0.98) 75%);
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  .cockpit-container {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  /* BARRA SUPERIOR */
+  .cockpit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .back-pill:hover {
+    color: #ffc14d;
+    border-color: #ffc14d;
+    background: rgba(255, 193, 77, 0.12);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--ink, #f8fafc);
+  }
+
+  .badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ffc14d;
+    background: rgba(255, 193, 77, 0.15);
+    border: 1px solid rgba(255, 193, 77, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  /* SELECTOR DE MODOS PRINCIPAL (GRAN VISIBILIDAD) */
+  .mode-selector-hub {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .mode-selector-hub {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mode-hub-card {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding: 0.85rem 1.1rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mode-hub-card:hover {
+    border-color: rgba(255, 193, 77, 0.4);
+    background: rgba(255, 193, 77, 0.05);
+    transform: translateY(-1px);
+  }
+
+  .mode-hub-card.is-active {
+    background: rgba(255, 193, 77, 0.1);
+    border-color: #ffc14d;
+    box-shadow: 0 4px 18px rgba(255, 193, 77, 0.18);
+  }
+
+  .mhc-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+  }
+
+  .mhc-mode-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--muted, #94a3b8);
+  }
+
+  .mode-hub-card.is-active .mhc-mode-tag {
+    color: #ffc14d;
+  }
+
+  .mhc-status-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  .mhc-status-pill.is-current {
+    background: #ffc14d;
+    color: #2b1800;
+  }
+
+  .mhc-status-pill.is-alt {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--muted, #94a3b8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .mhc-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .mhc-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .mhc-details {
+    flex: 1;
+  }
+
+  .mhc-title {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin-bottom: 0.2rem;
+  }
+
+  .mode-hub-card.is-active .mhc-title {
+    color: #ffc14d;
+  }
+
+  .mhc-desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  /* BANNER DIDÁCTICO DEL ECOSISTEMA (MODO 2) */
+  .sandbox-insight-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-left: 4px solid #38bdf8;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .sib-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .sib-body {
+    flex: 1;
+  }
+
+  .sib-title {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 0.25rem;
+  }
+
+  .sib-p {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  .sib-p em {
+    color: #ffc14d;
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* STEPPER DE CAPÍTULOS */
+  .chapters-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .stepper-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+  }
+
+  .stepper-track {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  :global(.step-node) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 0.2rem 0.6rem;
+    color: var(--muted, #94a3b8);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global(.step-node:hover) {
+    border-color: #ffc14d;
+    color: #ffc14d;
+  }
+
+  :global(.step-node.is-active) {
+    background: rgba(255, 193, 77, 0.15);
+    border-color: #ffc14d;
+    color: #ffc14d;
+    box-shadow: 0 0 10px rgba(255, 193, 77, 0.25);
+  }
+
+  :global(.step-node.is-done) {
+    opacity: 0.6;
+  }
+
+  /* ESCENARIO DE JUEGO (ARENA) */
+  .stage-arena {
+    width: 100%;
+    background: #0f1622;
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    border-radius: 0.85rem;
+    padding: 1.25rem 1rem;
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
+  }
+
+  .fx-confetti-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  /* PERFIL DEL OPONENTE */
+  .opponent-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+  }
+
+  .opp-avatar-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 193, 77, 0.15);
+    border: 2px solid #ffc14d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .opp-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .opp-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .opp-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .opp-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #ffc14d;
+    background: rgba(255, 193, 77, 0.12);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    padding: 0.12rem 0.45rem;
+    border-radius: 9999px;
+  }
+
+  .opp-bio {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* BOCADILLO DE DIÁLOGO */
+  .comic-speech-container {
+    display: flex;
+    margin: 0 auto;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  .comic-speech-bubble {
+    position: relative;
+    background: #151f2e;
+    border: 2px solid #ffc14d;
+    border-radius: 16px;
+    padding: 0.65rem 1.15rem;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    animation: floatBubble 4s ease-in-out infinite;
+  }
+
+  @keyframes floatBubble {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  .bubble-content {
+    font-size: 0.92rem;
+    font-weight: 600;
+    font-style: italic;
+    line-height: 1.4;
+    color: #fffae6;
+  }
+
+  /* ZONA DE DUELO: MARCADOR Y MATRIZ */
+  .duel-play-cluster {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 720px) {
+    .duel-play-cluster {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* MARCADOR DE MONEDAS */
+  .score-dock {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.85rem;
+  }
+
+  .score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .sc-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    font-family: var(--font-mono, monospace);
+  }
+
+  .sc-val {
+    font-size: 1.85rem;
+    font-weight: 900;
+    font-family: var(--font-mono, monospace);
+    color: #ffc14d;
+  }
+
+  .sc-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--muted, #94a3b8);
+    text-transform: uppercase;
+  }
+
+  .versus-tag {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--muted, #94a3b8);
+    font-family: var(--font-mono, monospace);
+  }
+
+  /* MATRIZ DE PAGOS COMPACTA */
+  .payoff-matrix-compact {
+    display: grid;
+    grid-template-columns: 0.9fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 0.5rem;
+  }
+
+  .pm-corner, .pm-col-head, .pm-row-head {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted, #94a3b8);
+    text-align: center;
+  }
+
+  .pm-cell {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 0.35rem 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    transition: all 0.25s ease;
+  }
+
+  .pm-title {
+    font-size: 0.58rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .pm-vals {
+    font-size: 0.85rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: #f8fafc;
+  }
+
+  .pm-cell.is-active-quadrant {
+    background: rgba(255, 193, 77, 0.2);
+    border-color: #ffc14d;
+    box-shadow: 0 0 12px rgba(255, 193, 77, 0.35);
+    transform: scale(1.03);
+  }
+
+  .pm-cell.is-active-quadrant .pm-vals {
+    color: #ffc14d;
+  }
+
+  /* HISTORIAL DE RONDAS RECIENTES */
+  .rounds-history-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .rh-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+  }
+
+  .rh-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    min-height: 32px;
+  }
+
+  :global(.round-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  :global(.round-pill .rp-round) {
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+  }
+
+  :global(.round-pill .rp-pts) {
+    font-family: var(--font-mono, monospace);
+    color: #ffc14d;
+    margin-left: 0.2rem;
+  }
+
+  :global(.round-pill.act-user-c) {
+    border-left: 3px solid #3fe0b5;
+  }
+
+  :global(.round-pill.act-user-d) {
+    border-left: 3px solid #f43f5e;
+  }
+
+  /* BOTONERA DE ACCIÓN */
+  .duel-actions-bar {
+    display: flex;
+    gap: 0.85rem;
+    width: 100%;
+  }
+
+  @media (max-width: 580px) {
+    .duel-actions-bar {
+      flex-direction: column;
+    }
+  }
+
+  .btn-action-duel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .btn-action-duel:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-duel-icon {
+    font-size: 1.5rem;
+  }
+
+  .btn-duel-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.15rem;
+  }
+
+  .bdt-main {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .bdt-sub {
+    font-size: 0.7rem;
+    opacity: 0.85;
+  }
+
+  .btn-cooperate {
+    background: #0d2820;
+    border-color: #3fe0b5;
+    color: #3fe0b5;
+  }
+
+  .btn-cooperate:hover {
+    background: #143d31;
+    box-shadow: 0 6px 20px rgba(63, 224, 181, 0.35);
+  }
+
+  .btn-defect {
+    background: #2d1217;
+    border-color: #f43f5e;
+    color: #fda4af;
+  }
+
+  .btn-defect:hover {
+    background: #421820;
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.35);
+  }
+
+  /* PANEL DE RECAPITULACIÓN DEL CAPÍTULO */
+  .chapter-recap-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid #ffc14d;
+    border-radius: 14px;
+    padding: 1.5rem;
+    gap: 0.85rem;
+    animation: recapPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes recapPop {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .recap-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0;
+    color: #ffc14d;
+  }
+
+  .recap-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 600px;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .recap-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-recap-next, .btn-recap-retry {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-recap-next {
+    background: #ffc14d;
+    color: #2b1800;
+    border: 1px solid #ffc14d;
+  }
+
+  .btn-recap-next:hover {
+    background: #ffd07a;
+  }
+
+  .btn-recap-retry {
+    background: transparent;
+    color: var(--ink, #f1f5f9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* ==========================================================================
+     MODO 2: SIMULADOR EVOLUTIVO DE AXELROD
+     ========================================================================== */
+  .sandbox-controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .sandbox-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sb-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    font-family: var(--font-mono, monospace);
+  }
+
+  .sb-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffc14d;
+  }
+
+  .noise-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .noise-control input[type="range"] {
+    width: 100px;
+    cursor: pointer;
+  }
+
+  .noise-val {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .sandbox-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .btn-sb-action {
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink, #f1f5f9);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-sb-action:hover {
+    border-color: #ffc14d;
+    color: #ffc14d;
+  }
+
+  .btn-sb-action.is-accent {
+    background: #ffc14d;
+    color: #2b1800;
+    border-color: #ffc14d;
+  }
+
+  .btn-sb-action.is-accent:hover {
+    background: #ffd07a;
+  }
+
+  .btn-sb-action.is-running {
+    background: #f43f5e;
+    border-color: #f43f5e;
+    color: #ffffff;
+  }
+
+  /* BARRA APILADA PROPORCIONAL */
+  .pop-bar-stacked {
+    width: 100%;
+    height: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.pop-seg) {
+    height: 100%;
+    transition: width 0.35s ease;
+  }
+
+  /* CENSO DE ESPECIES */
+  .census-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+
+  :global(.census-card) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1.5px solid;
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    position: relative;
+    transition: all 0.25s ease;
+  }
+
+  :global(.census-card.is-extinct) {
+    opacity: 0.35;
+    filter: grayscale(0.8);
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  :global(.c-avatar) {
+    font-size: 1.4rem;
+  }
+
+  :global(.c-info) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  :global(.c-name) {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  :global(.c-count) {
+    font-size: 0.72rem;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+  }
+
+  :global(.extinct-tag) {
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  /* SECCIÓN TEÓRICA */
+  .dilemma-theory-section {
+    max-width: 980px;
+    margin: 2rem auto;
+    padding: 0 1rem 3rem;
+  }
+
+  .theory-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #ffc14d;
+    letter-spacing: 0.08em;
+  }
+
+  .theory-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0.35rem 0 0.5rem;
+  }
+
+  .theory-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* GRAN BANNER COMPARATIVO TEÓRICO */
+  .theory-confrontation-banner {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1.5px solid rgba(255, 193, 77, 0.35);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .tcb-header {
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .tcb-pill {
+    display: inline-block;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #ffc14d;
+    background: rgba(255, 193, 77, 0.15);
+    border: 1px solid rgba(255, 193, 77, 0.3);
+    padding: 0.18rem 0.6rem;
+    border-radius: 9999px;
+    margin-bottom: 0.4rem;
+  }
+
+  .tcb-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  .tcb-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 800px) {
+    .tcb-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .tcb-col {
+    background: rgba(10, 16, 26, 0.7);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .tcb-col.is-single-shot {
+    border-top: 3px solid #f43f5e;
+  }
+
+  .tcb-col.is-iterated {
+    border-top: 3px solid #10b981;
+  }
+
+  .tcb-col-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .tcb-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .tcb-col-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+    margin: 0;
+  }
+
+  .tcb-subtitle {
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    display: block;
+  }
+
+  .tcb-verdict {
+    display: inline-block;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+  }
+
+  .tcb-verdict.is-defect {
+    background: rgba(244, 63, 94, 0.15);
+    color: #f43f5e;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+  }
+
+  .tcb-verdict.is-coop {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+  }
+
+  .tcb-desc {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--ink, #f8fafc);
+    margin-bottom: 0.65rem;
+  }
+
+  .tcb-list {
+    margin: 0 0 0.85rem 0;
+    padding-left: 1.15rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--muted, #cbd5e1);
+  }
+
+  .tcb-list li {
+    margin-bottom: 0.35rem;
+  }
+
+  .tcb-callout {
+    font-size: 0.76rem;
+    line-height: 1.4;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    margin-top: auto;
+  }
+
+  .tcb-callout.is-warning {
+    background: rgba(244, 63, 94, 0.1);
+    color: #fda4af;
+    border-left: 3px solid #f43f5e;
+  }
+
+  .tcb-callout.is-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #6ee7b7;
+    border-left: 3px solid #10b981;
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .theory-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .tcard-icon {
+    font-size: 1.35rem;
+  }
+
+  .tcard-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .tcard-p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .theory-steps, .theory-bullets {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
+    line-height: 1.45;
+  }
+
+  .math-callout {
+    background: rgba(255, 193, 77, 0.08);
+    border: 1px solid rgba(255, 193, 77, 0.25);
+    border-left: 4px solid #ffc14d;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    margin: 0.45rem 0;
+    text-align: center;
+  }
+
+  .math-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffc14d;
+    letter-spacing: 0.02em;
+  }
+
+  .tcard-foot {
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+    line-height: 1.4;
+  }
+
+  /* ==========================================================================
+     MODO CLARO (LIGHT THEME)
+     ========================================================================== */
+  :global([data-theme="light"]) .dilemma-page {
+    background: var(--bg, #fdfbf7);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .game-cockpit {
+    background: radial-gradient(circle at 50% 15%, rgba(255, 193, 77, 0.12), #f8fafc 75%);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .game-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .mode-hub-card:hover {
+    background: #fffdf5;
+    border-color: #f59e0b;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card.is-active {
+    background: #fffbeb;
+    border-color: #d97706;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.15);
+  }
+
+  :global([data-theme="light"]) .mhc-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .mode-hub-card.is-active .mhc-title {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .mhc-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .mhc-status-pill.is-alt {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .sandbox-insight-banner {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.3);
+    border-left-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .sib-title {
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .sib-p {
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .sib-p em {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .theory-confrontation-banner {
+    background: #ffffff;
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .tcb-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tcb-col {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .tcb-col-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tcb-subtitle {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .tcb-desc {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .tcb-list {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .tcb-callout.is-warning {
+    background: #fff1f2;
+    color: #9f1239;
+  }
+
+  :global([data-theme="light"]) .tcb-callout.is-success {
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .chapters-stepper {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .step-node {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .stage-arena {
+    background: #fffcf5;
+    border-color: rgba(255, 193, 77, 0.45);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .opponent-profile-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .opp-name {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .opp-bio {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .comic-speech-bubble {
+    background: #ffffff;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 18px rgba(245, 158, 11, 0.12);
+  }
+
+  :global([data-theme="light"]) .bubble-content {
+    color: #451a03;
+  }
+
+  :global([data-theme="light"]) .score-dock {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .sc-val {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .payoff-matrix-compact {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .pm-cell {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .pm-vals {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .pm-cell.is-active-quadrant {
+    background: #fef3c7;
+    border-color: #f59e0b;
+  }
+
+  :global([data-theme="light"]) .pm-cell.is-active-quadrant .pm-vals {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .round-pill {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .round-pill .rp-pts {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .btn-cooperate {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .btn-defect {
+    background: #fff1f2;
+    border-color: #f43f5e;
+    color: #9f1239;
+  }
+
+  :global([data-theme="light"]) .chapter-recap-panel {
+    background: #ffffff;
+    border-color: #f59e0b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .recap-title {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .recap-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .sandbox-controls-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .sb-val {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .btn-sb-action {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .census-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme="light"]) .theory-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .theory-subtitle {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .theory-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .tcard-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tcard-p,
+  :global([data-theme="light"]) .theory-steps,
+  :global([data-theme="light"]) .theory-bullets {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .tcard-foot {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .math-callout {
+    background: #fffbeb;
+    border-color: rgba(245, 158, 11, 0.3);
+    border-left-color: #d97706;
+  }
+
+  :global([data-theme="light"]) .math-formula {
+    color: #b45309;
+  }
+</style>

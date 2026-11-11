@@ -1,0 +1,2191 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Las Torres de Hanoi (Recursión & Algoritmos) | Math Universe"
+  description="Rompecabezas interactivo de las Torres de Hanoi. Aprende recursión computacional, optimización con potencias de 2 (2ⁿ - 1), código Gray y resuelve con IA paso a paso."
+>
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="hanoi-page" id="main-content">
+    <!-- COCKPIT DEL JUEGO -->
+    <section class="game-cockpit" id="escenario">
+      <div class="cockpit-container">
+        <!-- Barra Superior: Navegación, Título y Selector de Discos -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">Las Torres de Hanoi</h1>
+              <span class="badge-pill">Recursión 2<sup>n</sup> − 1</span>
+            </div>
+          </div>
+
+          <div class="header-right-actions">
+            <!-- Selector de Nivel / Discos -->
+            <div class="disks-selector-bar" role="group" aria-label="Seleccionar número de discos">
+              <span class="selector-label">Discos:</span>
+              <div class="selector-btns">
+                <button type="button" class="btn-n-disk is-active" data-n="3" title="3 discos: 7 movimientos mínimos">3 <span class="n-meta">(7)</span></button>
+                <button type="button" class="btn-n-disk" data-n="4" title="4 discos: 15 movimientos mínimos">4 <span class="n-meta">(15)</span></button>
+                <button type="button" class="btn-n-disk" data-n="5" title="5 discos: 31 movimientos mínimos">5 <span class="n-meta">(31)</span></button>
+                <button type="button" class="btn-n-disk" data-n="6" title="6 discos: 63 movimientos mínimos">6 <span class="n-meta">(63)</span></button>
+                <button type="button" class="btn-n-disk" data-n="7" title="7 discos: 127 movimientos mínimos">7 <span class="n-meta">(127)</span></button>
+                <button type="button" class="btn-n-disk" data-n="8" title="8 discos: 255 movimientos mínimos">8 <span class="n-meta">(255)</span></button>
+              </div>
+            </div>
+
+            <!-- Conmutador de Tema Claro / Oscuro Directo en el Juego -->
+            <button
+              type="button"
+              class="hanoi-theme-toggle"
+              data-theme-toggle
+              aria-label="Cambiar entre modo claro y modo oscuro"
+              title="Cambiar modo claro / modo oscuro"
+            >
+              <svg class="htt-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+              <svg class="htt-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>
+              </svg>
+              <span class="htt-text" data-theme-label>Tema</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Panel de Control y Métricas en Tiempo Real -->
+        <div class="metrics-bar">
+          <div class="metric-chip">
+            <span class="m-label">MOVIMIENTOS</span>
+            <span class="m-val"><span id="moves-current">0</span> <span class="m-sub">/ min <span id="moves-optimal">7</span></span></span>
+          </div>
+
+          <div class="metric-chip">
+            <span class="m-label">EFICIENCIA</span>
+            <span class="m-val" id="metric-efficiency">100%</span>
+          </div>
+
+          <div class="metric-chip">
+            <span class="m-label">TIEMPO</span>
+            <span class="m-val font-mono" id="metric-timer">00:00</span>
+          </div>
+
+          <div class="controls-cluster">
+            <button type="button" class="btn-ctrl" id="btn-undo" title="Deshacer último movimiento" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 7v6h6"></path>
+                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+              </svg>
+              <span>Deshacer</span>
+            </button>
+
+            <button type="button" class="btn-ctrl" id="btn-reset" title="Reiniciar partida">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+              </svg>
+              <span>Reiniciar</span>
+            </button>
+
+            <!-- Modo Auto-Solución Recursiva -->
+            <button type="button" class="btn-ctrl btn-solve" id="btn-auto-solve" title="Ver resolución óptima automática con algoritmo recursivo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span id="solve-btn-text">Auto-Solución IA</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alerta y Mensaje Didáctico Flotante -->
+        <div class="hanoi-guidance-bar" id="guidance-bar">
+          <span class="status-dot pulse"></span>
+          <span id="guidance-text">Toca o arrastra el disco superior de una vara hacia otra vara para moverlo. Nunca coloques un disco mayor sobre uno menor.</span>
+        </div>
+
+        <!-- ESCENARIO DE JUEGO HANOI (CLICK & DROP + DRAG & DROP ADAPTADO A MÓVIL) -->
+        <div class="stage-arena" id="stage-arena">
+          <!-- Canvas de Confetti para Victoria -->
+          <canvas id="fx-confetti-canvas" class="fx-confetti-canvas"></canvas>
+
+          <!-- Zona de las 3 Varas (Pegs) -->
+          <div class="towers-layout" id="towers-layout">
+            <!-- Torre A -->
+            <div class="tower-zone" id="tower-0" data-peg-index="0" role="region" aria-label="Vara A (Origen)">
+              <div class="tower-header">
+                <span class="peg-letter">A</span>
+                <span class="peg-name">ORIGEN</span>
+              </div>
+              <div class="peg-pole-wrap">
+                <div class="peg-pole"></div>
+                <div class="disks-stack" id="stack-0"></div>
+              </div>
+              <div class="peg-base"></div>
+            </div>
+
+            <!-- Torre B -->
+            <div class="tower-zone" id="tower-1" data-peg-index="1" role="region" aria-label="Vara B (Auxiliar)">
+              <div class="tower-header">
+                <span class="peg-letter">B</span>
+                <span class="peg-name">AUXILIAR</span>
+              </div>
+              <div class="peg-pole-wrap">
+                <div class="peg-pole"></div>
+                <div class="disks-stack" id="stack-1"></div>
+              </div>
+              <div class="peg-base"></div>
+            </div>
+
+            <!-- Torre C -->
+            <div class="tower-zone" id="tower-2" data-peg-index="2" role="region" aria-label="Vara C (Destino)">
+              <div class="tower-header">
+                <span class="peg-letter">C</span>
+                <span class="peg-name">DESTINO</span>
+              </div>
+              <div class="peg-pole-wrap">
+                <div class="peg-pole"></div>
+                <div class="disks-stack" id="stack-2"></div>
+              </div>
+              <div class="peg-base"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BANNER DE VICTORIA (MODAL GAMIFICADO) -->
+        <div class="victory-modal" id="victory-modal" style="display: none;">
+          <div class="modal-card">
+            <div class="modal-badge">&#127942; ¡TORRE COMPLETADA!</div>
+            <h2 class="modal-title">¡Objetivo alcanzado con éxito!</h2>
+            <p class="modal-desc" id="victory-summary">
+              Has trasladado todos los discos a la vara destino respetando las reglas de la recursión.
+            </p>
+
+            <div class="victory-stats-grid">
+              <div class="vstat">
+                <span class="vstat-num" id="vstat-moves">7</span>
+                <span class="vstat-label">Movimientos Realizados</span>
+              </div>
+              <div class="vstat">
+                <span class="vstat-num text-accent" id="vstat-optimal">7</span>
+                <span class="vstat-label">Mínimo Óptimo (2<sup>n</sup> − 1)</span>
+              </div>
+              <div class="vstat">
+                <span class="vstat-num text-cyan" id="vstat-time">00:14</span>
+                <span class="vstat-label">Tiempo Total</span>
+              </div>
+              <div class="vstat">
+                <span class="vstat-num" id="vstat-score">100%</span>
+                <span class="vstat-label">Grado de Optimización</span>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-modal-action is-primary" id="btn-next-level">
+                <span>Siguiente Nivel</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+              <button type="button" class="btn-modal-action is-secondary" id="btn-replay">
+                <span>Repetir Nivel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DIDÁCTICA: MATEMÁTICAS, RECURSIÓN Y CÓDIGO GRAY -->
+    <section class="hanoi-theory-section" id="teoria">
+      <div class="theory-container">
+        <header class="theory-header">
+          <span class="section-tag">FUNDAMENTOS MATEMÁTICOS & INFORMÁTICA TEÓRICA</span>
+          <h2 class="theory-title">La Anatomía Matemática de las Torres de Hanoi</h2>
+          <p class="theory-subtitle">
+            Inventado en 1883 por el matemático francés Édouard Lucas, este puzle es la piedra angular para comprender la recursión computacional, la inducción matemática y el crecimiento exponencial.
+          </p>
+        </header>
+
+        <div class="theory-grid">
+          <!-- Tarjeta 1: La Fórmula de Recurrencia -->
+          <article class="theory-card">
+            <div class="tcard-icon">⚡</div>
+            <h3 class="tcard-title">La Recurrencia <em>T</em>(<em>n</em>) = 2<em>T</em>(<em>n</em> − 1) + 1</h3>
+            <p class="tcard-p">
+              Para mover una torre de <em>n</em> discos desde la vara origen <strong>A</strong> a la vara destino <strong>C</strong> usando la auxiliar <strong>B</strong>:
+            </p>
+            <ol class="theory-steps">
+              <li>Mover los <em>n</em> − 1 discos superiores de <strong>A</strong> a <strong>B</strong> (<em>T</em>(<em>n</em> − 1) pasos).</li>
+              <li>Mover el disco más grande de <strong>A</strong> a <strong>C</strong> (1 paso).</li>
+              <li>Mover los <em>n</em> − 1 discos de <strong>B</strong> a <strong>C</strong> sobre el grande (<em>T</em>(<em>n</em> − 1) pasos).</li>
+            </ol>
+            <div class="math-callout">
+              <span class="math-formula"><em>T</em>(<em>n</em>) = 2<em>T</em>(<em>n</em> − 1) + 1 = 2<sup><em>n</em></sup> − 1</span>
+            </div>
+            <p class="tcard-foot">
+              Al sumar 1 a ambos lados: <em>T</em>(<em>n</em>) + 1 = 2(<em>T</em>(<em>n</em> − 1) + 1), una progresión geométrica de razón 2 que demuestra formalmente la cota mínima de movimientos.
+            </p>
+          </article>
+
+          <!-- Tarjeta 2: La Leyenda de Brahma y el Fin del Mundo -->
+          <article class="theory-card">
+            <div class="tcard-icon">🏛️</div>
+            <h3 class="tcard-title">El Templo de Brahma y los 64 Discos de Oro</h3>
+            <p class="tcard-p">
+              Según el mito ideado por Lucas, unos monjes en Benarés trasladan sin descanso una torre de 64 discos de oro puro entre tres agujas de diamante. Cuando completen el último movimiento, el templo se desmoronará y llegará el fin del cosmos.
+            </p>
+            <div class="stat-highlight">
+              <span class="hl-big">2<sup>64</sup> − 1 ≈ 18.446.744.073.709.551.615</span>
+              <span class="hl-sub">movimientos exactos</span>
+            </div>
+            <p class="tcard-foot">
+              A un ritmo constante de 1 movimiento por segundo sin fallar, tardarían más de <strong>584.000 millones de años</strong> (unas 42 veces la edad actual del Universo observable).
+            </p>
+          </article>
+
+          <!-- Tarjeta 3: Código Gray y Representación Binaria -->
+          <article class="theory-card">
+            <div class="tcard-icon">01</div>
+            <h3 class="tcard-title">Equivalencia con el Código Binario Reflejado</h3>
+            <p class="tcard-p">
+              Existe una biyección fascinante entre la secuencia óptima de Hanoi y el <strong>Código Gray</strong> de <em>n</em> bits:
+            </p>
+            <ul class="theory-bullets">
+              <li>En cada paso, el disco que debe moverse corresponde al <strong>bit que cambia de valor</strong>.</li>
+              <li>El disco más pequeño (1) se mueve en todos los turnos impares (1, 3, 5, 7…), siempre en la misma dirección cíclica.</li>
+              <li>En los turnos pares, solo existe <strong>un único movimiento legal posible</strong> que no involucra al disco pequeño.</li>
+            </ul>
+          </article>
+
+          <!-- Tarjeta 4: El Grafo de Estados y el Triángulo de Sierpinski -->
+          <article class="theory-card">
+            <div class="tcard-icon">📐</div>
+            <h3 class="tcard-title">Geometría Fractal: El Triángulo de Sierpinski</h3>
+            <p class="tcard-p">
+              Si representamos un grafo donde cada nodo es una configuración legal de los <em>n</em> discos y cada arista es un movimiento válido, el resultado para <em>n</em> discos es exactamente una aproximación finita del <strong>Triángulo fractal de Sierpinski</strong>.
+            </p>
+            <p class="tcard-p">
+              El camino de longitud mínima entre dos vértices extremos del triángulo corresponde de forma unívoca a la solución óptima del juego.
+            </p>
+          </article>
+        </div>
+
+        <!-- Calculadora de Potencias de 2 Interactiva -->
+        <div class="calc-powers-box">
+          <div class="calc-header">
+            <h3>Calculadora de Complejidad Temporal para <em>n</em> Discos</h3>
+            <p>Introduce cualquier número de discos para calcular el tiempo real de resolución a 1 movimiento por segundo:</p>
+          </div>
+          <div class="calc-row">
+            <div class="calc-input-wrap">
+              <label for="input-custom-n">Número de discos (<em>n</em>):</label>
+              <input type="number" id="input-custom-n" min="1" max="64" value="10" />
+            </div>
+            <div class="calc-results-wrap">
+              <div class="cres-item">
+                <span class="cres-label">Movimientos Mínimos (2<sup><em>n</em></sup> − 1):</span>
+                <span class="cres-val" id="calc-res-moves">1.023</span>
+              </div>
+              <div class="cres-item">
+                <span class="cres-label">Tiempo Estimado (1 mov/seg):</span>
+                <span class="cres-val text-accent" id="calc-res-time">17 minutos y 3 segundos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // ESTADO DEL JUEGO TORRES DE HANOI
+    // =========================================================================
+    let nDisks = 3;
+    let pegs: number[][] = [[], [], []]; // Array de arrays con los índices de disco (1 a N, 1 el más pequeño)
+    let moveCount = 0;
+    let selectedPegIndex: number | null = null;
+    let moveHistory: { from: number; to: number; disk: number }[] = [];
+    let isGameWon = false;
+    let isAutoSolving = false;
+    let autoSolveStepTimeout: number | null = null;
+
+    // Cronómetro
+    let timerInterval: number | null = null;
+    let secondsElapsed = 0;
+    let isTimerRunning = false;
+
+    // Colores vivos distintivos para discos (de menor a mayor)
+    const DISK_COLORS = [
+      { fill: '#38bdf8', stroke: '#7dd3fc', glow: 'rgba(56, 189, 248, 0.4)' }, // 1: Cyan
+      { fill: '#3fe0b5', stroke: '#6ee7b7', glow: 'rgba(63, 224, 181, 0.4)' }, // 2: Esmeralda
+      { fill: '#fbbf24', stroke: '#fde68a', glow: 'rgba(251, 191, 36, 0.4)' }, // 3: Ámbar
+      { fill: '#f43f5e', stroke: '#fda4af', glow: 'rgba(244, 63, 94, 0.4)' },  // 4: Coral / Rosa
+      { fill: '#a855f7', stroke: '#d8b4fe', glow: 'rgba(168, 85, 247, 0.4)' }, // 5: Púrpura
+      { fill: '#ec4899', stroke: '#fbcfe8', glow: 'rgba(236, 72, 153, 0.4)' }, // 6: Magenta
+      { fill: '#4ade80', stroke: '#bbf7d0', glow: 'rgba(74, 222, 128, 0.4)' }, // 7: Lima
+      { fill: '#60a5fa', stroke: '#bfdbfe', glow: 'rgba(96, 165, 250, 0.4)' }, // 8: Azul eléctrico
+    ];
+
+    // Elementos DOM
+    const stageArena = document.getElementById('stage-arena');
+    const movesCurrent = document.getElementById('moves-current');
+    const movesOptimal = document.getElementById('moves-optimal');
+    const metricEfficiency = document.getElementById('metric-efficiency');
+    const metricTimer = document.getElementById('metric-timer');
+    const btnUndo = document.getElementById('btn-undo') as HTMLButtonElement | null;
+    const btnReset = document.getElementById('btn-reset');
+    const btnAutoSolve = document.getElementById('btn-auto-solve');
+    const solveBtnText = document.getElementById('solve-btn-text');
+    const guidanceText = document.getElementById('guidance-text');
+    const victoryModal = document.getElementById('victory-modal');
+    const vstatMoves = document.getElementById('vstat-moves');
+    const vstatOptimal = document.getElementById('vstat-optimal');
+    const vstatTime = document.getElementById('vstat-time');
+    const vstatScore = document.getElementById('vstat-score');
+    const btnNextLevel = document.getElementById('btn-next-level');
+    const btnReplay = document.getElementById('btn-replay');
+
+    const towerZones = [
+      document.getElementById('tower-0'),
+      document.getElementById('tower-1'),
+      document.getElementById('tower-2'),
+    ] as (HTMLDivElement | null)[];
+
+    const diskStacks = [
+      document.getElementById('stack-0'),
+      document.getElementById('stack-1'),
+      document.getElementById('stack-2'),
+    ] as (HTMLDivElement | null)[];
+
+    const selectorButtons = Array.from(document.querySelectorAll('.btn-n-disk')) as HTMLButtonElement[];
+
+    // =========================================================================
+    // SÍNTESIS DE AUDIO WEB API
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+    function getAudioContext(): AudioContext | null {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      } catch {
+        return null;
+      }
+    }
+
+    function playDiskPickupSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.08);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.15, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playDiskDropSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.07);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playIllegalMoveSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.setValueAtTime(130, now + 0.08);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.17);
+    }
+
+    function playWinSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      notes.forEach((f, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + i * 0.1);
+        gain.gain.setValueAtTime(0.001, now + i * 0.1);
+        gain.gain.linearRampToValueAtTime(0.22, now + i * 0.1 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + (i === 3 ? 0.7 : 0.25));
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.1);
+        osc.stop(now + i * 0.1 + (i === 3 ? 0.75 : 0.28));
+      });
+    }
+
+    // =========================================================================
+    // CONFETTI EN CANVAS (VICTORIA)
+    // =========================================================================
+    let confettiAnimId: number | null = null;
+    function launchConfetti() {
+      const canvas = document.getElementById('fx-confetti-canvas') as HTMLCanvasElement | null;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width || 600;
+      canvas.height = rect.height || 300;
+
+      const colors = ['#38bdf8', '#3fe0b5', '#fbbf24', '#f43f5e', '#a855f7', '#4ade80'];
+      const particles = Array.from({ length: 90 }, () => ({
+        x: canvas.width * (0.2 + Math.random() * 0.6),
+        y: canvas.height * 0.75,
+        vx: (Math.random() - 0.5) * 12,
+        vy: -(Math.random() * 9 + 6),
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: Math.random() * 6 + 4,
+        rotation: Math.random() * 360,
+        vRot: (Math.random() - 0.5) * 12,
+        alpha: 1,
+        decay: Math.random() * 0.012 + 0.008,
+      }));
+
+      if (confettiAnimId !== null) cancelAnimationFrame(confettiAnimId);
+
+      function step() {
+        if (!ctx || !canvas) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        for (const p of particles) {
+          if (p.alpha <= 0) continue;
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28;
+          p.vx *= 0.985;
+          p.rotation += p.vRot;
+          p.alpha -= p.decay;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+        if (alive) confettiAnimId = requestAnimationFrame(step);
+        else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiAnimId = null;
+        }
+      }
+      step();
+    }
+
+    // =========================================================================
+    // CRONÓMETRO
+    // =========================================================================
+    function startTimerIfNeeded() {
+      if (isTimerRunning || isGameWon) return;
+      isTimerRunning = true;
+      timerInterval = window.setInterval(() => {
+        secondsElapsed++;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      isTimerRunning = false;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      secondsElapsed = 0;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      if (!metricTimer) return;
+      const m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const s = (secondsElapsed % 60).toString().padStart(2, '0');
+      metricTimer.textContent = `${m}:${s}`;
+    }
+
+    // =========================================================================
+    // INICIALIZACIÓN DE PARTIDA
+    // =========================================================================
+    function initGame(count: number) {
+      stopAutoSolve();
+      resetTimer();
+      nDisks = count;
+      moveCount = 0;
+      selectedPegIndex = null;
+      moveHistory = [];
+      isGameWon = false;
+
+      // Peg 0 tiene todos los discos ordenados (disco N abajo, disco 1 arriba)
+      pegs = [
+        Array.from({ length: nDisks }, (_, i) => nDisks - i), // [N, N-1, ..., 1]
+        [],
+        [],
+      ];
+
+      if (victoryModal) victoryModal.style.display = 'none';
+      if (stageArena) stageArena.classList.remove('fx-win');
+
+      const optimal = Math.pow(2, nDisks) - 1;
+      if (movesCurrent) movesCurrent.textContent = '0';
+      if (movesOptimal) movesOptimal.textContent = optimal.toLocaleString();
+      if (metricEfficiency) metricEfficiency.textContent = '100%';
+      if (btnUndo) btnUndo.disabled = true;
+
+      setGuidance(`Toca la <strong>Vara A</strong> para seleccionar el disco superior, luego toca <strong>B</strong> o <strong>C</strong> para depositarlo.`);
+      renderPegsDOM();
+    }
+
+    function setGuidance(html: string, isError: boolean = false) {
+      if (!guidanceText) return;
+      guidanceText.innerHTML = html;
+      guidanceText.className = isError ? 'text-danger' : '';
+    }
+
+    // =========================================================================
+    // RENDERIZADO VISUAL DEL ESTADO DE LAS TORRES
+    // =========================================================================
+    function renderPegsDOM() {
+      for (let pegIdx = 0; pegIdx < 3; pegIdx++) {
+        const stackEl = diskStacks[pegIdx];
+        const towerZone = towerZones[pegIdx];
+        if (!stackEl || !towerZone) continue;
+
+        stackEl.innerHTML = '';
+        const diskList = pegs[pegIdx];
+
+        // Estado seleccionado de la vara
+        if (selectedPegIndex === pegIdx) {
+          towerZone.classList.add('is-selected-source');
+        } else {
+          towerZone.classList.remove('is-selected-source');
+        }
+
+        diskList.forEach((diskSize, indexOnStack) => {
+          const isTopDisk = indexOnStack === diskList.length - 1;
+          const isLifted = isTopDisk && selectedPegIndex === pegIdx;
+
+          const diskEl = document.createElement('div');
+          diskEl.className = `hanoi-disk disk-size-${diskSize}`;
+          diskEl.setAttribute('data-disk-size', String(diskSize));
+          diskEl.setAttribute('data-peg-idx', String(pegIdx));
+
+          if (isLifted) diskEl.classList.add('is-lifted');
+          if (isTopDisk) diskEl.classList.add('is-top');
+
+          // Dimensiones calculadas para que sea completamente responsivo
+          // Anchura de 35% (disco 1) a 94% (disco N)
+          const minW = 34;
+          const maxW = 94;
+          const pct = nDisks > 1 ? minW + ((diskSize - 1) / (nDisks - 1)) * (maxW - minW) : 70;
+          diskEl.style.width = `${pct}%`;
+
+          // Colores de la paleta
+          const col = DISK_COLORS[(diskSize - 1) % DISK_COLORS.length];
+          diskEl.style.backgroundColor = col.fill;
+          diskEl.style.borderColor = col.stroke;
+          diskEl.style.boxShadow = `0 4px 14px ${col.glow}`;
+
+          diskEl.innerHTML = `<span class="disk-num">${diskSize}</span>`;
+
+          // Soporte directo de Drag & Drop para móvil y puntero
+          if (isTopDisk) {
+            setupDiskPointerEvents(diskEl, pegIdx, diskSize);
+          }
+
+          stackEl.appendChild(diskEl);
+        });
+      }
+    }
+
+    // =========================================================================
+    // MECÁNICA 1: CLICK & DROP (TOUCH & TAP AMIGABLE EN MÓVIL Y DESKTOP)
+    // =========================================================================
+    function handlePegClick(targetPegIdx: number) {
+      if (isAutoSolving || isGameWon) return;
+
+      // Si no hay ninguna vara seleccionada como origen:
+      if (selectedPegIndex === null) {
+        if (pegs[targetPegIdx].length === 0) {
+          setGuidance(`La <strong>Vara ${['A', 'B', 'C'][targetPegIdx]}</strong> está vacía. Elige una vara con discos.`);
+          return;
+        }
+        selectedPegIndex = targetPegIdx;
+        playDiskPickupSound();
+        const topDisk = pegs[targetPegIdx][pegs[targetPegIdx].length - 1];
+        setGuidance(`Has tomado el <strong>Disco ${topDisk}</strong> de la Vara ${['A', 'B', 'C'][targetPegIdx]}. Toca la vara donde deseas colocarlo.`);
+        renderPegsDOM();
+        return;
+      }
+
+      // Si el usuario toca la misma vara de origen: deseleccionar (soltar en su sitio)
+      if (selectedPegIndex === targetPegIdx) {
+        selectedPegIndex = null;
+        setGuidance(`Disco devuelto a su vara.`);
+        renderPegsDOM();
+        return;
+      }
+
+      // Intentar mover de selectedPegIndex a targetPegIdx
+      const fromPeg = selectedPegIndex;
+      const toPeg = targetPegIdx;
+      selectedPegIndex = null;
+
+      executeMoveIfLegal(fromPeg, toPeg);
+    }
+
+    // =========================================================================
+    // VALIDACIÓN Y EJECUCIÓN DE MOVIMIENTO
+    // =========================================================================
+    function executeMoveIfLegal(fromPeg: number, toPeg: number): boolean {
+      const sourceStack = pegs[fromPeg];
+      const targetStack = pegs[toPeg];
+
+      if (sourceStack.length === 0) {
+        renderPegsDOM();
+        return false;
+      }
+
+      const diskToMove = sourceStack[sourceStack.length - 1];
+      const targetTopDisk = targetStack.length > 0 ? targetStack[targetStack.length - 1] : Infinity;
+
+      // Regla de oro de Hanoi: nunca un disco mayor sobre uno menor
+      if (diskToMove > targetTopDisk) {
+        playIllegalMoveSound();
+        triggerIllegalShake(toPeg);
+        setGuidance(`¡Movimiento inválido! El <strong>Disco ${diskToMove}</strong> es mayor que el <strong>Disco ${targetTopDisk}</strong> de la Vara ${['A', 'B', 'C'][toPeg]}.`, true);
+        renderPegsDOM();
+        return false;
+      }
+
+      // Movimiento legal
+      sourceStack.pop();
+      targetStack.push(diskToMove);
+      moveCount++;
+      moveHistory.push({ from: fromPeg, to: toPeg, disk: diskToMove });
+
+      startTimerIfNeeded();
+      playDiskDropSound();
+
+      if (movesCurrent) movesCurrent.textContent = String(moveCount);
+      if (btnUndo) btnUndo.disabled = false;
+
+      // Calcular eficiencia respecto al óptimo teórico
+      const optimal = Math.pow(2, nDisks) - 1;
+      const efficiency = Math.max(10, Math.round((optimal / moveCount) * 100));
+      if (metricEfficiency) {
+        metricEfficiency.textContent = `${Math.min(100, efficiency)}%`;
+      }
+
+      setGuidance(`Movido <strong>Disco ${diskToMove}</strong> de ${['A', 'B', 'C'][fromPeg]} a ${['A', 'B', 'C'][toPeg]}.`);
+      renderPegsDOM();
+
+      // Comprobar victoria (todos los discos apilados en B o en C)
+      checkWinCondition();
+      return true;
+    }
+
+    function triggerIllegalShake(pegIdx: number) {
+      const tower = towerZones[pegIdx];
+      if (!tower) return;
+      tower.classList.remove('shake-error');
+      void tower.offsetWidth;
+      tower.classList.add('shake-error');
+    }
+
+    // =========================================================================
+    // MECÁNICA 2: DRAG & DROP NATIVO CON POINTER EVENTS (TOUCH Y RATÓN)
+    // =========================================================================
+    function setupDiskPointerEvents(diskEl: HTMLDivElement, pegIdx: number, diskSize: number) {
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      diskEl.addEventListener('pointerdown', (e) => {
+        if (isAutoSolving || isGameWon) return;
+        // Solo botón izquierdo del ratón o toque
+        if (e.button !== 0) return;
+
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        diskEl.setPointerCapture(e.pointerId);
+        diskEl.classList.add('is-dragging');
+        playDiskPickupSound();
+      });
+
+      diskEl.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        diskEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.04)`;
+        diskEl.style.zIndex = '50';
+      });
+
+      const finishDrag = (e: PointerEvent) => {
+        if (!isDragging) return;
+        isDragging = false;
+        diskEl.releasePointerCapture(e.pointerId);
+        diskEl.classList.remove('is-dragging');
+        diskEl.style.transform = '';
+        diskEl.style.zIndex = '';
+
+        // Detectar en qué vara cayó el disco según la coordenada X
+        const dropX = e.clientX;
+        let detectedPeg: number | null = null;
+
+        for (let i = 0; i < 3; i++) {
+          const zone = towerZones[i];
+          if (!zone) continue;
+          const rect = zone.getBoundingClientRect();
+          if (dropX >= rect.left && dropX <= rect.right) {
+            detectedPeg = i;
+            break;
+          }
+        }
+
+        if (detectedPeg !== null && detectedPeg !== pegIdx) {
+          executeMoveIfLegal(pegIdx, detectedPeg);
+        } else {
+          // Si soltó en la misma vara o fuera, tratamos como tap de selección o cancelación
+          if (Math.abs(e.clientX - startX) < 10 && Math.abs(e.clientY - startY) < 10) {
+            handlePegClick(pegIdx);
+          } else {
+            renderPegsDOM();
+          }
+        }
+      };
+
+      diskEl.addEventListener('pointerup', finishDrag);
+      diskEl.addEventListener('pointercancel', finishDrag);
+    }
+
+    // =========================================================================
+    // COMPROBACIÓN DE VICTORIA
+    // =========================================================================
+    function checkWinCondition() {
+      // Si la torre completa está en la Vara C (o Vara B alternativa)
+      if (pegs[2].length === nDisks || pegs[1].length === nDisks) {
+        isGameWon = true;
+        stopTimer();
+        playWinSound();
+        launchConfetti();
+
+        if (stageArena) stageArena.classList.add('fx-win');
+
+        const optimal = Math.pow(2, nDisks) - 1;
+        const isOptimal = moveCount === optimal;
+        const diff = moveCount - optimal;
+
+        if (vstatMoves) vstatMoves.textContent = String(moveCount);
+        if (vstatOptimal) vstatOptimal.textContent = String(optimal);
+        if (vstatTime && metricTimer) vstatTime.textContent = metricTimer.textContent;
+
+        const scorePct = Math.round((optimal / moveCount) * 100);
+        if (vstatScore) {
+          vstatScore.textContent = isOptimal ? '100% (Perfecto)' : `${scorePct}%`;
+        }
+
+        const summaryEl = document.getElementById('victory-summary');
+        if (summaryEl) {
+          summaryEl.innerHTML = isOptimal
+            ? `¡Extraordinario! Has alcanzado la <strong>perfección matemática</strong> resolviendo los <strong>${nDisks} discos en exactamente ${optimal} movimientos</strong>.`
+            : `¡Bien jugado! Has completado la torre en <strong>${moveCount} movimientos</strong> (+${diff} sobre el óptimo de ${optimal}). ¡Sigue practicando para alcanzar el récord mínimo!`;
+        }
+
+        if (victoryModal) victoryModal.style.display = 'flex';
+      }
+    }
+
+    // =========================================================================
+    // DESHACER MOVIMIENTO
+    // =========================================================================
+    function undoMove() {
+      if (isAutoSolving || moveHistory.length === 0) return;
+      const last = moveHistory.pop()!;
+      // Revertir: mover last.disk de to a from
+      const disk = pegs[last.to].pop();
+      if (disk !== undefined) {
+        pegs[last.from].push(disk);
+      }
+      moveCount = Math.max(0, moveCount - 1);
+      if (movesCurrent) movesCurrent.textContent = String(moveCount);
+      if (btnUndo) btnUndo.disabled = moveHistory.length === 0;
+
+      setGuidance(`Deshecho movimiento del Disco ${last.disk}.`);
+      renderPegsDOM();
+    }
+
+    // =========================================================================
+    // AUTO-SOLUCIONADOR RECURSIVO PASO A PASO
+    // =========================================================================
+    function generateHanoiSolution(n: number, from: number, to: number, aux: number): { from: number; to: number }[] {
+      const moves: { from: number; to: number }[] = [];
+      function solve(k: number, src: number, dst: number, tmp: number) {
+        if (k === 1) {
+          moves.push({ from: src, to: dst });
+          return;
+        }
+        solve(k - 1, src, tmp, dst);
+        moves.push({ from: src, to: dst });
+        solve(k - 1, tmp, dst, src);
+      }
+      solve(n, from, to, aux);
+      return moves;
+    }
+
+    function toggleAutoSolve() {
+      if (isAutoSolving) {
+        stopAutoSolve();
+        return;
+      }
+
+      // Reiniciar a estado inicial antes de auto-resolver
+      initGame(nDisks);
+      isAutoSolving = true;
+      if (solveBtnText) solveBtnText.textContent = 'Pausar Auto-Solución';
+      if (btnAutoSolve) btnAutoSolve.classList.add('is-running');
+
+      const solution = generateHanoiSolution(nDisks, 0, 2, 1);
+      let stepIdx = 0;
+
+      // Velocidad adaptativa según número de discos
+      const speedMs = nDisks <= 4 ? 480 : nDisks <= 6 ? 250 : 120;
+
+      function step() {
+        if (!isAutoSolving || stepIdx >= solution.length) {
+          stopAutoSolve();
+          return;
+        }
+
+        const move = solution[stepIdx];
+        executeMoveIfLegal(move.from, move.to);
+        stepIdx++;
+
+        if (stepIdx < solution.length) {
+          autoSolveStepTimeout = window.setTimeout(step, speedMs);
+        } else {
+          stopAutoSolve();
+        }
+      }
+
+      autoSolveStepTimeout = window.setTimeout(step, 400);
+    }
+
+    function stopAutoSolve() {
+      isAutoSolving = false;
+      if (autoSolveStepTimeout !== null) {
+        clearTimeout(autoSolveStepTimeout);
+        autoSolveStepTimeout = null;
+      }
+      if (solveBtnText) solveBtnText.textContent = 'Auto-Solución IA';
+      if (btnAutoSolve) btnAutoSolve.classList.remove('is-running');
+    }
+
+    // =========================================================================
+    // CALCULADORA TEÓRICA DE POTENCIAS DE 2
+    // =========================================================================
+    const inputCustomN = document.getElementById('input-custom-n') as HTMLInputElement | null;
+    const calcResMoves = document.getElementById('calc-res-moves');
+    const calcResTime = document.getElementById('calc-res-time');
+
+    function updateComplexityCalc() {
+      if (!inputCustomN || !calcResMoves || !calcResTime) return;
+      const n = Math.min(64, Math.max(1, parseInt(inputCustomN.value || '10', 10)));
+      
+      // Manejar números grandes con BigInt
+      const moves = (BigInt(1) << BigInt(n)) - BigInt(1);
+      calcResMoves.textContent = moves.toLocaleString();
+
+      // Cálculo de tiempo a 1 mov/seg
+      calcResTime.textContent = formatHanoiDuration(moves);
+    }
+
+    function formatHanoiDuration(secondsBig: bigint): string {
+      const min = BigInt(60);
+      const hour = min * BigInt(60);
+      const day = hour * BigInt(24);
+      const year = day * BigInt(365);
+
+      if (secondsBig < min) return `${secondsBig} segundos`;
+      if (secondsBig < hour) {
+        const m = secondsBig / min;
+        const s = secondsBig % min;
+        return `${m} min y ${s} s`;
+      }
+      if (secondsBig < day) {
+        const h = secondsBig / hour;
+        const m = (secondsBig % hour) / min;
+        return `${h} horas y ${m} min`;
+      }
+      if (secondsBig < year) {
+        const d = secondsBig / day;
+        return `${d.toLocaleString()} días`;
+      }
+      const y = secondsBig / year;
+      if (y > BigInt(1000000)) {
+        return `${(Number(y) / 1e9).toFixed(1)} mil millones de años`;
+      }
+      return `${y.toLocaleString()} años`;
+    }
+
+    if (inputCustomN) {
+      inputCustomN.addEventListener('input', updateComplexityCalc);
+      updateComplexityCalc();
+    }
+
+    // =========================================================================
+    // EVENT LISTENERS DE CONTROLES
+    // =========================================================================
+    // Selector de Nivel
+    selectorButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.getAttribute('data-n') || '3', 10);
+        if (n === nDisks) return;
+
+        selectorButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        initGame(n);
+      });
+    });
+
+    // Clics en las Varas (Click & Drop)
+    towerZones.forEach((zone, idx) => {
+      if (!zone) return;
+      zone.addEventListener('click', () => handlePegClick(idx));
+    });
+
+    if (btnUndo) btnUndo.addEventListener('click', undoMove);
+    if (btnReset) btnReset.addEventListener('click', () => initGame(nDisks));
+    if (btnAutoSolve) btnAutoSolve.addEventListener('click', toggleAutoSolve);
+
+    if (btnNextLevel) {
+      btnNextLevel.addEventListener('click', () => {
+        const nextN = Math.min(8, nDisks + 1);
+        selectorButtons.forEach((b) => {
+          const val = parseInt(b.getAttribute('data-n') || '0', 10);
+          b.classList.toggle('is-active', val === nextN);
+        });
+        initGame(nextN);
+      });
+    }
+
+    if (btnReplay) {
+      btnReplay.addEventListener('click', () => initGame(nDisks));
+    }
+
+    // Iniciar con 3 discos por defecto
+    initGame(3);
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS DEL JUEGO TORRES DE HANOI (MATH UNIVERSE CYBER-EMERALD ESTHETICS)
+     ========================================================================== */
+
+  .hanoi-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg, #090e17);
+    color: var(--ink, #f1f5f9);
+  }
+
+  /* COCKPIT DE JUEGO PRINCIPAL */
+  .game-cockpit {
+    width: 100%;
+    padding: 0.75rem 1rem 1.25rem;
+    background: radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08), rgba(9, 14, 23, 0.98) 75%);
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  :global([data-theme="light"]) .game-cockpit {
+    background: radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.08), #f8fafc 75%);
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .cockpit-container {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  /* BARRA SUPERIOR */
+  .cockpit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .back-pill:hover {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--ink, #f8fafc);
+  }
+
+  .badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  /* SELECTOR DE DISCOS */
+  .disks-selector-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(15, 23, 42, 0.65);
+    padding: 0.25rem 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .selector-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    margin-left: 0.3rem;
+  }
+
+  .selector-btns {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .btn-n-disk {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-n-disk .n-meta {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    margin-left: 2px;
+  }
+
+  .btn-n-disk:hover {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .btn-n-disk.is-active {
+    background: #38bdf8;
+    color: #032030;
+    border-color: #38bdf8;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.35);
+  }
+
+  /* PANEL DE MÉTRICAS */
+  .metrics-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem;
+  }
+
+  :global([data-theme="light"]) .metrics-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .metric-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .m-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.05em;
+  }
+
+  .m-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--ink, #f8fafc);
+  }
+
+  .m-sub {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted, #94a3b8);
+  }
+
+  .controls-cluster {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .btn-ctrl {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--ink, #f1f5f9);
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ctrl:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .btn-ctrl:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-ctrl.btn-solve {
+    background: rgba(63, 224, 181, 0.15);
+    border-color: rgba(63, 224, 181, 0.35);
+    color: #3fe0b5;
+  }
+
+  .btn-ctrl.btn-solve:hover {
+    background: rgba(63, 224, 181, 0.25);
+    border-color: #3fe0b5;
+  }
+
+  .btn-ctrl.btn-solve.is-running {
+    background: #f43f5e;
+    border-color: #f43f5e;
+    color: #ffffff;
+  }
+
+  /* BARRA DE GUÍA DIDÁCTICA */
+  .hanoi-guidance-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 8px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #38bdf8;
+    flex-shrink: 0;
+  }
+
+  .status-dot.pulse {
+    animation: blinkDot 1.4s infinite ease-in-out;
+  }
+
+  @keyframes blinkDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* ESCENARIO DE JUEGO (ARENA) */
+  .stage-arena {
+    width: 100%;
+    background: #081119;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 0.85rem;
+    padding: 1.25rem 0.85rem 1.5rem;
+    position: relative;
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  :global([data-theme="light"]) .stage-arena {
+    background: #f0f9ff;
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .fx-confetti-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .stage-arena.fx-win {
+    animation: stageWinGlow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes stageWinGlow {
+    0%, 100% { box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.7); }
+    50% { box-shadow: 0 0 45px rgba(56, 189, 248, 0.6), inset 0 0 50px rgba(63, 224, 181, 0.4); }
+  }
+
+  /* ESTRUCTURA DE LAS 3 TORRES */
+  .towers-layout {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 0.85rem;
+    min-height: 290px;
+    padding-top: 1rem;
+  }
+
+  .tower-zone {
+    flex: 1;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    border-radius: 12px;
+    padding: 0.5rem 0.25rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .tower-zone:hover {
+    background: rgba(56, 189, 248, 0.05);
+  }
+
+  .tower-zone.is-selected-source {
+    background: rgba(56, 189, 248, 0.12);
+    box-shadow: 0 0 0 2px #38bdf8;
+  }
+
+  .tower-zone.shake-error {
+    animation: towerShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  @keyframes towerShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  .tower-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    pointer-events: none;
+  }
+
+  .peg-letter {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .peg-name {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    letter-spacing: 0.08em;
+  }
+
+  /* VARA VERTICAL Y PILA DE DISCOS */
+  .peg-pole-wrap {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .peg-pole {
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 185px;
+    background: linear-gradient(to top, #1e293b, #475569);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .disks-stack {
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* BASE DE LA VARA */
+  .peg-base {
+    width: 90%;
+    height: 14px;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.5);
+    border-radius: 7px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    margin-top: 4px;
+    pointer-events: none;
+  }
+
+  /* DISCO HANOI */
+  .hanoi-disk {
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #032030;
+    cursor: grab;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    touch-action: none;
+  }
+
+  .hanoi-disk.is-top {
+    cursor: grab;
+  }
+
+  .hanoi-disk.is-lifted {
+    transform: translateY(-22px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.6) !important;
+    animation: diskBob 1.6s infinite ease-in-out;
+  }
+
+  @keyframes diskBob {
+    0%, 100% { transform: translateY(-22px) scale(1.03); }
+    50% { transform: translateY(-26px) scale(1.04); }
+  }
+
+  .hanoi-disk.is-dragging {
+    cursor: grabbing;
+    opacity: 0.95;
+    transition: none !important;
+  }
+
+  /* MODAL DE VICTORIA */
+  .victory-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+
+  .modal-card {
+    background: #0b1520;
+    border: 2px solid #38bdf8;
+    border-radius: 18px;
+    max-width: 500px;
+    width: 100%;
+    padding: 1.75rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes modalPop {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    letter-spacing: 0.05em;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .modal-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .victory-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .vstat {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.65rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .vstat-num {
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .vstat-label {
+    font-size: 0.65rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .btn-modal-action {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-modal-action.is-primary {
+    background: #38bdf8;
+    color: #032030;
+    border: 1px solid #38bdf8;
+  }
+
+  .btn-modal-action.is-primary:hover {
+    background: #7dd3fc;
+  }
+
+  .btn-modal-action.is-secondary {
+    background: transparent;
+    color: var(--ink, #f1f5f9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-modal-action.is-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* SECCIÓN TEÓRICA DIDÁCTICA */
+  .hanoi-theory-section {
+    max-width: 980px;
+    margin: 2rem auto;
+    padding: 0 1rem 3rem;
+  }
+
+  .theory-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.08em;
+  }
+
+  .theory-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0.35rem 0 0.5rem;
+  }
+
+  .theory-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted, #94a3b8);
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.25rem;
+  }
+
+  /* ACCIONES DERECHA EN CABECERA */
+  .header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .hanoi-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.32rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--ink, #f1f5f9);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .hanoi-theme-toggle:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  .hanoi-theme-toggle svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  :global(:root[data-theme='dark']) .htt-moon,
+  :root[data-theme='dark'] .htt-moon {
+    display: none;
+  }
+
+  :global(:root[data-theme='light']) .htt-sun,
+  :root[data-theme='light'] .htt-sun {
+    display: none;
+  }
+
+  /* BASE ESTILOS TARJETAS TEÓRICAS (MODO OSCURO PREDETERMINADO) */
+  .theory-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .tcard-icon {
+    font-size: 1.35rem;
+  }
+
+  .tcard-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .tcard-p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+  }
+
+  .theory-steps {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
+    line-height: 1.45;
+  }
+
+  .theory-bullets {
+    font-size: 0.82rem;
+    color: var(--muted, #94a3b8);
+    padding-left: 1.25rem;
+    margin: 0.25rem 0;
+    line-height: 1.45;
+  }
+
+  .math-callout {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    margin: 0.45rem 0;
+    text-align: center;
+  }
+
+  .math-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.02em;
+  }
+
+  .math-formula em,
+  .tcard-title em,
+  .tcard-p em,
+  .theory-steps em {
+    font-style: italic;
+    color: #7dd3fc;
+  }
+
+  .stat-highlight {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px dashed rgba(251, 191, 36, 0.35);
+    border-radius: 8px;
+    padding: 0.6rem 0.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0.45rem 0;
+    gap: 0.2rem;
+  }
+
+  .hl-big {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #fbbf24;
+    word-break: break-all;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.02em;
+  }
+
+  .hl-sub {
+    font-size: 0.68rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .tcard-foot {
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    margin-top: auto;
+    line-height: 1.4;
+  }
+
+  /* CALCULADORA DE POTENCIAS DE 2 */
+  .calc-powers-box {
+    margin-top: 1.75rem;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .calc-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .calc-header p {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .calc-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .calc-input-wrap label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+  }
+
+  .calc-input-wrap input {
+    background: #090e17;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    width: 140px;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .calc-results-wrap {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .cres-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .cres-label {
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    font-weight: 600;
+  }
+
+  .cres-val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .text-accent { color: #3fe0b5; }
+  .text-cyan { color: #38bdf8; }
+  .text-danger { color: #f43f5e; font-weight: 700; }
+
+  /* ==================================================== */
+  /* OVERRIDES PARA MODO CLARO (MÁXIMA LEGIBILIDAD)      */
+  /* ==================================================== */
+  :global([data-theme="light"]) .hanoi-page,
+  :root[data-theme='light'] .hanoi-page {
+    background: var(--bg, #fdfbf7);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .game-cockpit,
+  :root[data-theme='light'] .game-cockpit {
+    background: radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.09), #f8fafc 75%);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .game-title,
+  :root[data-theme='light'] .game-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .disks-selector-bar,
+  :root[data-theme='light'] .disks-selector-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .selector-label,
+  :root[data-theme='light'] .selector-label {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .btn-n-disk,
+  :root[data-theme='light'] .btn-n-disk {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .btn-n-disk:hover,
+  :root[data-theme='light'] .btn-n-disk:hover {
+    color: #0284c7;
+    background: #f0f9ff;
+  }
+
+  :global([data-theme="light"]) .btn-n-disk.is-active,
+  :root[data-theme='light'] .btn-n-disk.is-active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .hanoi-theme-toggle,
+  :root[data-theme='light'] .hanoi-theme-toggle {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .hanoi-theme-toggle:hover,
+  :root[data-theme='light'] .hanoi-theme-toggle:hover {
+    background: #f0f9ff;
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .metrics-bar,
+  :root[data-theme='light'] .metrics-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .m-val,
+  :root[data-theme='light'] .m-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .m-sub,
+  :root[data-theme='light'] .m-sub {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .btn-ctrl,
+  :root[data-theme='light'] .btn-ctrl {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .btn-ctrl:hover:not(:disabled),
+  :root[data-theme='light'] .btn-ctrl:hover:not(:disabled) {
+    background: #e2e8f0;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .hanoi-guidance-bar,
+  :root[data-theme='light'] .hanoi-guidance-bar {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .peg-pole,
+  :root[data-theme='light'] .peg-pole {
+    background: linear-gradient(to top, #94a3b8, #cbd5e1);
+    border-color: rgba(56, 189, 248, 0.6);
+  }
+
+  :global([data-theme="light"]) .peg-base,
+  :root[data-theme='light'] .peg-base {
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+
+  :global([data-theme="light"]) .theory-title,
+  :root[data-theme='light'] .theory-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .theory-subtitle,
+  :root[data-theme='light'] .theory-subtitle {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .theory-card,
+  :root[data-theme='light'] .theory-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .tcard-title,
+  :root[data-theme='light'] .tcard-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tcard-p,
+  :root[data-theme='light'] .tcard-p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .theory-steps,
+  :global([data-theme="light"]) .theory-bullets,
+  :root[data-theme='light'] .theory-steps,
+  :root[data-theme='light'] .theory-bullets {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .tcard-foot,
+  :root[data-theme='light'] .tcard-foot {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .math-callout,
+  :root[data-theme='light'] .math-callout {
+    background: #f0f9ff;
+    border-color: rgba(2, 132, 199, 0.25);
+    border-left-color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .math-formula,
+  :root[data-theme='light'] .math-formula {
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .math-formula em,
+  :global([data-theme="light"]) .tcard-title em,
+  :global([data-theme="light"]) .tcard-p em,
+  :global([data-theme="light"]) .theory-steps em,
+  :root[data-theme='light'] .math-formula em,
+  :root[data-theme='light'] .tcard-title em,
+  :root[data-theme='light'] .tcard-p em,
+  :root[data-theme='light'] .theory-steps em {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .stat-highlight,
+  :root[data-theme='light'] .stat-highlight {
+    background: #fffbeb;
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+
+  :global([data-theme="light"]) .hl-big,
+  :root[data-theme='light'] .hl-big {
+    color: #b45309;
+  }
+
+  :global([data-theme="light"]) .hl-sub,
+  :root[data-theme='light'] .hl-sub {
+    color: #78350f;
+  }
+
+  :global([data-theme="light"]) .calc-powers-box,
+  :root[data-theme='light'] .calc-powers-box {
+    background: #ffffff;
+    border-color: rgba(2, 132, 199, 0.25);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .calc-header h3,
+  :root[data-theme='light'] .calc-header h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .calc-header p,
+  :global([data-theme="light"]) .cres-label,
+  :global([data-theme="light"]) .calc-input-wrap label,
+  :root[data-theme='light'] .calc-header p,
+  :root[data-theme='light'] .cres-label,
+  :root[data-theme='light'] .calc-input-wrap label {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .cres-val,
+  :root[data-theme='light'] .cres-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .cres-val.text-accent,
+  :root[data-theme='light'] .cres-val.text-accent {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .calc-input-wrap input,
+  :root[data-theme='light'] .calc-input-wrap input {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .modal-card,
+  :root[data-theme='light'] .modal-card {
+    background: #ffffff;
+    border-color: #38bdf8;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  }
+
+  :global([data-theme="light"]) .modal-title,
+  :root[data-theme='light'] .modal-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .vstat,
+  :root[data-theme='light'] .vstat {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .vstat-num,
+  :root[data-theme='light'] .vstat-num {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .btn-modal-action.is-secondary,
+  :root[data-theme='light'] .btn-modal-action.is-secondary {
+    color: #334155;
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  /* RESPONSIVE MÓVIL */
+  @media (max-width: 640px) {
+    .cockpit-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .towers-layout {
+      min-height: 250px;
+      gap: 0.35rem;
+    }
+
+    .peg-pole {
+      height: 160px;
+    }
+
+    .hanoi-disk {
+      height: 18px;
+      font-size: 0.65rem;
+    }
+
+    .metrics-bar {
+      gap: 0.5rem;
+    }
+
+    .controls-cluster {
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 0.25rem;
+    }
+  }
+</style>

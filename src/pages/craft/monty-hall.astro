@@ -1,0 +1,2712 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="La Paradoja de Monty Hall (3 o N Puertas) | Math Universe"
+  description="Laboratorio interactivo y juego de la Paradoja de Monty Hall. Experimenta con 3, 5, 10 o 100 puertas, comprueba la ventaja del 2/3 y simula millones de partidas por Monte Carlo."
+>
+  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="monty-page" id="main-content">
+    <!-- COCKPIT DEL JUEGO (Diseñado para caber íntegramente en la pantalla de un portátil) -->
+    <section class="game-cockpit" id="escenario">
+      <div class="cockpit-container">
+        <!-- Barra Superior: Navegación, Título y Selector de N Puertas -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">La Paradoja de Monty Hall</h1>
+              <span class="badge-pill">Teorema de Bayes</span>
+            </div>
+          </div>
+
+          <!-- Selector de Número de Puertas (N Puertas: 3, 5, 10) -->
+          <div class="doors-selector-bar" role="group" aria-label="Seleccionar número de puertas">
+            <span class="selector-label">Puertas:</span>
+            <div class="selector-btns">
+              <button type="button" class="btn-n-door is-active" data-n="3" title="Modo clásico: 3 puertas">3 <span class="n-prob">(67%)</span></button>
+              <button type="button" class="btn-n-door" data-n="5" title="5 puertas: Monty abre 3 cabras">5 <span class="n-prob">(80%)</span></button>
+              <button type="button" class="btn-n-door" data-n="10" title="10 puertas: Monty abre 8 cabras">10 <span class="n-prob">(90%)</span></button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Barra del Presentador con Bocadillo Flotante de Cómic -->
+        <div class="host-stage-bar" id="host-stage-bar">
+          <div class="marquee-status">
+            <span class="status-dot pulse"></span>
+            <span class="status-phase" id="phase-badge">PASO 1: ELIGE UNA PUERTA</span>
+            <span class="status-hint" id="status-hint">Probabilidad inicial: 1 de 3 (33.3%)</span>
+          </div>
+
+          <!-- Bocadillo Flotante de Cómic (Comic Speech Bubble) -->
+          <div class="comic-speech-container" id="comic-speech-container">
+            <div class="host-badge">
+              <span class="host-avatar">&#127897;&#65039;</span>
+              <span class="host-name">Monty</span>
+            </div>
+            <div class="comic-speech-bubble" id="comic-speech-bubble">
+              <span class="bubble-arrow" aria-hidden="true"></span>
+              <div class="bubble-content" id="bubble-content">
+                ¡Bienvenido al concurso! Haz clic en cualquiera de las 3 puertas para elegir tu candidata.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Escenario de Puertas Vectoriales Estilizadas -->
+        <div class="stage-arena" id="stage-arena">
+          <!-- Canvas para efectos gamificados de Confetti de victoria -->
+          <canvas id="fx-confetti-canvas" class="fx-confetti-canvas"></canvas>
+
+          <div class="doors-deck" id="doors-deck" data-count="3">
+            <!-- Se generan dinámicamente con SVG vectoriales idénticos al arte de Math Universe -->
+          </div>
+        </div>
+
+        <!-- Barra de Acciones y Decisiones del Concurso -->
+        <div class="action-cockpit">
+          <!-- Botonera Paso 2: Decisión (Mantener vs Cambiar) -->
+          <div class="decision-cluster" id="decision-cluster" style="display: none;">
+            <button type="button" class="btn-action btn-stay" id="btn-stay">
+              <div class="btn-icon-tag">&#128274;</div>
+              <div class="btn-texts">
+                <span class="btn-main" id="stay-label">MANTENER MI PUERTA</span>
+                <span class="btn-sub" id="stay-sub">Quedarte con tu elección inicial (P = 33.3%)</span>
+              </div>
+            </button>
+
+            <button type="button" class="btn-action btn-switch" id="btn-switch">
+              <div class="btn-icon-tag">&#9889;</div>
+              <div class="btn-texts">
+                <span class="btn-main" id="switch-label">CAMBIAR A LA PUERTA RESTANTE</span>
+                <span class="btn-sub" id="switch-sub">¡Cambiar a la otra puerta! (P = 66.7%)</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Botonera Paso 3: Fin de Ronda / Jugar de nuevo -->
+          <div class="gameover-cluster" id="gameover-cluster" style="display: none;">
+            <div class="round-outcome" id="round-outcome"></div>
+            <button type="button" class="btn-play-next" id="btn-play-next">
+              <span>Jugar Otra Ronda</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Marcador Compacto de la Sesión en Vivo -->
+        <div class="session-dock">
+          <div class="dock-title">
+            <span>HISTORIAL DE TU SESIÓN (<span id="dock-door-mode">3 Puertas</span>)</span>
+            <button type="button" class="btn-reset-dock" id="btn-reset-session" title="Reiniciar marcador">Reiniciar</button>
+          </div>
+
+          <div class="dock-cards">
+            <!-- Estrategia Cambiar -->
+            <div class="dock-card is-switch">
+              <div class="dc-row">
+                <span class="dc-name">AL CAMBIAR DE PUERTA</span>
+                <span class="dc-exp" id="dock-switch-exp">Teórico: 66.7%</span>
+              </div>
+              <div class="dc-row dc-mid">
+                <span class="dc-pct" id="dock-switch-pct">0%</span>
+                <span class="dc-counts" id="dock-switch-counts">0 victorias / 0 rondas</span>
+              </div>
+              <div class="dc-track">
+                <div class="dc-fill is-switch" id="dock-switch-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Estrategia Mantener -->
+            <div class="dock-card is-stay">
+              <div class="dc-row">
+                <span class="dc-name">AL MANTENER TU PUERTA</span>
+                <span class="dc-exp" id="dock-stay-exp">Teórico: 33.3%</span>
+              </div>
+              <div class="dc-row dc-mid">
+                <span class="dc-pct" id="dock-stay-pct">0%</span>
+                <span class="dc-counts" id="dock-stay-counts">0 victorias / 0 rondas</span>
+              </div>
+              <div class="dc-track">
+                <div class="dc-fill is-stay" id="dock-stay-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: SIMULADOR MASIVO DE MONTE CARLO -->
+    <section class="deep-section" id="monte-carlo">
+      <div class="section-container">
+        <div class="section-heading">
+          <span class="heading-tag">EXPERIMENTACIÓN COMPUTACIONAL</span>
+          <h2>Simulador de Monte Carlo: La Ley de los Grandes Números</h2>
+          <p class="heading-desc">
+            Comprueba cómo converge la frecuencia empírica hacia la probabilidad exacta al simular miles de partidas en milisegundos con el número de puertas seleccionado:
+          </p>
+        </div>
+
+        <div class="sim-grid">
+          <!-- Columna de Métricas y Controles -->
+          <div class="sim-controls-pane">
+            <div class="sim-btns-group">
+              <button type="button" class="btn-sim-run" data-sim="100">+100 Partidas</button>
+              <button type="button" class="btn-sim-run" data-sim="1000">+1.000 Partidas</button>
+              <button type="button" class="btn-sim-run is-highlight" data-sim="10000">+10.000 Partidas</button>
+              <button type="button" class="btn-sim-reset" id="btn-sim-reset">Borrar Simulación</button>
+            </div>
+
+            <div class="sim-metrics">
+              <div class="metric-card is-switch">
+                <div class="mc-head">
+                  <span class="mc-label">ÉXITO AL CAMBIAR</span>
+                  <span class="mc-target" id="sim-target-switch">Meta: 66.7%</span>
+                </div>
+                <div class="mc-value" id="sim-switch-pct">0.0%</div>
+                <div class="mc-sub" id="sim-switch-counts">0 victorias de 0 partidas</div>
+                <div class="mc-track">
+                  <div class="mc-fill is-switch" id="sim-switch-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="metric-card is-stay">
+                <div class="mc-head">
+                  <span class="mc-label">ÉXITO AL MANTENER</span>
+                  <span class="mc-target" id="sim-target-stay">Meta: 33.3%</span>
+                </div>
+                <div class="mc-value" id="sim-stay-pct">0.0%</div>
+                <div class="mc-sub" id="sim-stay-counts">0 victorias de 0 partidas</div>
+                <div class="mc-track">
+                  <div class="mc-fill is-stay" id="sim-stay-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="sim-total-tag">
+                <span>Total partidas acumuladas:</span>
+                <strong id="sim-total-runs">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna de la Gráfica de Convergencia -->
+          <div class="sim-chart-pane">
+            <div class="chart-top">
+              <span class="chart-title">Convergencia en Tiempo Real</span>
+              <div class="chart-legend">
+                <span class="leg-item is-switch"><span class="leg-dot"></span> Cambiar</span>
+                <span class="leg-item is-stay"><span class="leg-dot"></span> Mantener</span>
+              </div>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="monty-canvas" width="600" height="300" aria-label="Gráfica de convergencia de Monte Carlo"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3: EXPLICACIÓN MATEMÁTICA -->
+    <section class="deep-section is-theory" id="teoria-matematica">
+      <div class="section-container">
+        <div class="section-heading">
+          <span class="heading-tag">RIGOR MATEMÁTICO</span>
+          <h2>¿Por qué nuestro cerebro se resiste a aceptar la verdad?</h2>
+          <p class="heading-desc">
+            Cuando la columna de Marilyn vos Savant publicó esta solución en 1990 en la revista <em>Parade</em>, casi mil doctores en matemáticas y física le escribieron cartas asegurando que estaba equivocada y que la probabilidad era del 50%. Estaban equivocados:
+          </p>
+        </div>
+
+        <div class="theory-cards-grid">
+          <!-- Tarjeta 1: La explicación intuitiva de Marilyn vos Savant (N puertas) -->
+          <div class="theory-card">
+            <div class="th-badge">LA DEMOSTRACIÓN VISUAL DEFINITIVA</div>
+            <h3>1. El Argumento de las 100 Puertas</h3>
+            <p>
+              Imagina el concurso no con 3 puertas, sino con <strong>100 puertas</strong>.
+            </p>
+            <ul class="th-list">
+              <li>Eliges una puerta al azar (por ejemplo, la Puerta 42). Tu probabilidad de haber acertado es minúscula: <strong>1 de 100 (1%)</strong>.</li>
+              <li>La probabilidad de que el coche esté en cualquiera de las otras 99 puertas restantes es colosal: <strong>99 de 100 (99%)</strong>.</li>
+              <li>Monty Hall entra en acción, abre 98 puertas mostrando 98 cabras, y deja intactas únicamente tu Puerta 42 y la Puerta 87.</li>
+            </ul>
+            <p class="th-highlight">
+              Monty <strong>NO abre puertas al azar</strong>: sabe perfectamente dónde está el coche y se ve forzado a esquivarlo. Toda la probabilidad concentrada del 99% que residía en las otras 99 puertas se colapsa directamente en la Puerta 87. ¿Cambias? ¡Evidentemente!
+            </p>
+          </div>
+
+          <!-- Tarjeta 2: La Demostración por Bayes -->
+          <div class="theory-card">
+            <div class="th-badge">PROBABILIDAD CONDICIONADA</div>
+            <h3>2. Demostración Formal por el Teorema de Bayes</h3>
+            <p>
+              Sean <em>C</em><sub>1</sub>, <em>C</em><sub>2</sub>, <em>C</em><sub>3</sub> los sucesos de que el coche se encuentre en la puerta 1, 2 o 3 con probabilidad inicial <em>P</em>(<em>C<sub>i</sub></em>) = 1/3.
+            </p>
+            <p>
+              Supón que eliges la Puerta 1 y Monty abre la Puerta 3 (suceso <em>M</em><sub>3</sub>). Por el Teorema de Bayes:
+            </p>
+            <div class="bayes-box">
+              <div class="bb-formula">
+                <em>P</em>(<em>C</em><sub>2</sub> | <em>M</em><sub>3</sub>) = [ <em>P</em>(<em>M</em><sub>3</sub> | <em>C</em><sub>2</sub>) &middot; <em>P</em>(<em>C</em><sub>2</sub>) ] / <em>P</em>(<em>M</em><sub>3</sub>)
+              </div>
+              <div class="bb-steps">
+                <div>&bull; Si el coche está en la puerta 2: Monty está forzado a abrir la 3 &rarr; <em>P</em>(<em>M</em><sub>3</sub> | <em>C</em><sub>2</sub>) = <strong>1</strong>.</div>
+                <div>&bull; Si el coche está en la puerta 1: Monty puede abrir la 2 o la 3 &rarr; <em>P</em>(<em>M</em><sub>3</sub> | <em>C</em><sub>1</sub>) = <strong>1/2</strong>.</div>
+                <div>&bull; Probabilidad total del suceso de Monty: <em>P</em>(<em>M</em><sub>3</sub>) = (1/2 &middot; 1/3) + (1 &middot; 1/3) = <strong>1/2</strong>.</div>
+              </div>
+              <div class="bb-result">
+                <em>P</em>(<em>C</em><sub>2</sub> | <em>M</em><sub>3</sub>) = (1 &middot; 1/3) / (1/2) = <strong>2/3 (66.67%)</strong> &nbsp;&blacksquare;
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  (() => {
+    // =========================================================================
+    // ASSETS VECTORIALES SVG PUROS EN EL ESTILO ICÓNICO DE MATH UNIVERSE
+    // =========================================================================
+
+    // Coche deportivo estilizado en vector puro
+    function getCarSVGContent(): string {
+      return `
+        <g class="prize-art is-car" transform="translate(14, 45)">
+          <circle cx="40" cy="35" r="38" fill="#facc15" opacity="0.2" />
+          
+          <!-- Carrocería deportiva -->
+          <path d="M 6 42 Q 14 20 38 18 L 56 18 Q 72 26 76 42 Z" fill="#3fe0b5" stroke="#091412" stroke-width="1.5" />
+          <!-- Cabina / Parabrisas -->
+          <path d="M 24 26 L 36 21 L 52 21 L 58 26 Z" fill="#091412" />
+          
+          <!-- Rueda trasera -->
+          <circle cx="22" cy="46" r="10" fill="#091412" stroke="#3fe0b5" stroke-width="2.5" />
+          <circle cx="22" cy="46" r="4" fill="#3fe0b5" />
+          
+          <!-- Rueda delantera -->
+          <circle cx="60" cy="46" r="10" fill="#091412" stroke="#3fe0b5" stroke-width="2.5" />
+          <circle cx="60" cy="46" r="4" fill="#3fe0b5" />
+          
+          <!-- Faro delantero con destello -->
+          <circle cx="73" cy="38" r="3" fill="#fef08a" />
+          <polygon points="73,36 82,34 82,42" fill="#fef08a" opacity="0.6" />
+          
+          <!-- Rótulo del premio -->
+          <text x="40" y="74" fill="#facc15" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">¡EL COCHE!</text>
+        </g>
+      `;
+    }
+
+    // Cabrita graciosa estilizada en vector puro
+    function getGoatSVGContent(): string {
+      return `
+        <g class="prize-art is-goat" transform="translate(14, 42)">
+          <!-- Cuernos espiralados -->
+          <path d="M 32 30 C 26 14 16 12 12 18 C 10 21 16 23 24 30" fill="none" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M 48 30 C 54 14 64 12 68 18 C 70 21 64 23 56 30" fill="none" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" />
+          
+          <!-- Cabeza -->
+          <polygon points="40,65 24,34 56,34" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" />
+          
+          <!-- Orejas caídas -->
+          <ellipse cx="18" cy="35" rx="8" ry="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" transform="rotate(-25 18 35)" />
+          <ellipse cx="62" cy="35" rx="8" ry="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" transform="rotate(25 62 35)" />
+          
+          <!-- Ojos saltones cómicos -->
+          <circle cx="30" cy="40" r="4.5" fill="#fef08a" stroke="#78350f" stroke-width="1" />
+          <ellipse cx="30" cy="40" rx="3" ry="1.2" fill="#1e293b" />
+          <circle cx="50" cy="40" r="4.5" fill="#fef08a" stroke="#78350f" stroke-width="1" />
+          <ellipse cx="50" cy="40" rx="3" ry="1.2" fill="#1e293b" />
+          
+          <!-- Hocico y barbita -->
+          <ellipse cx="40" cy="58" rx="6" ry="3.5" fill="#fbcfe8" />
+          <path d="M 37 65 L 40 73 L 43 65 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+          
+          <!-- Brizna de hierba / flor en la boca -->
+          <path d="M 42 60 Q 56 56 64 64" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" />
+          <circle cx="64" cy="64" r="3" fill="#facc15" />
+          
+          <!-- Rótulo del premio -->
+          <text x="40" y="80" fill="#94a3b8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">CABRA</text>
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // ESTADO DEL JUEGO
+    // =========================================================================
+    let totalDoors = 3; // 3, 5, 10, 50, 100
+    let currentPhase: 'pick' | 'decision' | 'revealing_player' | 'gameover' = 'pick';
+    let carDoorIndex = 0;
+    let chosenDoorIndex = -1;
+    let remainingDoorIndex = -1; // La otra puerta que Monty NO abre
+    let finalDoorIndex = -1;
+
+    // Estadísticas de sesión
+    const sessionHistory: Record<number, { switchWins: number; switchTotal: number; stayWins: number; stayTotal: number }> = {
+      3: { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 },
+      5: { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 },
+      10: { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 },
+      50: { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 },
+      100: { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 },
+    };
+
+    // Referencias UI
+    const stageArena = document.getElementById('stage-arena');
+    const doorsDeck = document.getElementById('doors-deck');
+    const comicSpeechContainer = document.getElementById('comic-speech-container');
+    const bubbleContent = document.getElementById('bubble-content');
+    const phaseBadge = document.getElementById('phase-badge');
+    const statusHint = document.getElementById('status-hint');
+    const decisionCluster = document.getElementById('decision-cluster');
+    const gameoverCluster = document.getElementById('gameover-cluster');
+    const roundOutcome = document.getElementById('round-outcome');
+    const btnStay = document.getElementById('btn-stay');
+    const btnSwitch = document.getElementById('btn-switch');
+    const stayLabel = document.getElementById('stay-label');
+    const staySub = document.getElementById('stay-sub');
+    const switchLabel = document.getElementById('switch-label');
+    const switchSub = document.getElementById('switch-sub');
+    const btnPlayNext = document.getElementById('btn-play-next');
+    const btnResetSession = document.getElementById('btn-reset-session');
+    const dockDoorMode = document.getElementById('dock-door-mode');
+
+    // Elementos del Dock de Estadísticas
+    const dockSwitchExp = document.getElementById('dock-switch-exp');
+    const dockSwitchPct = document.getElementById('dock-switch-pct');
+    const dockSwitchCounts = document.getElementById('dock-switch-counts');
+    const dockSwitchFill = document.getElementById('dock-switch-fill');
+    const dockStayExp = document.getElementById('dock-stay-exp');
+    const dockStayPct = document.getElementById('dock-stay-pct');
+    const dockStayCounts = document.getElementById('dock-stay-counts');
+    const dockStayFill = document.getElementById('dock-stay-fill');
+
+    const selectorButtons = Array.from(document.querySelectorAll('.btn-n-door')) as HTMLButtonElement[];
+
+    // =========================================================================
+    // SÍNTESIS DE AUDIO WEB NATIVA (SIN ARCHIVOS EXTERNOS NI DEPENDENCIAS)
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+    function getAudioContext(): AudioContext | null {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      } catch {
+        return null;
+      }
+    }
+
+    function playWinSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const fanfare = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      fanfare.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+        gain.gain.setValueAtTime(0.001, now + idx * 0.1);
+        gain.gain.linearRampToValueAtTime(0.22, now + idx * 0.1 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + (idx === 3 ? 0.7 : 0.25));
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.1);
+        osc.stop(now + idx * 0.1 + (idx === 3 ? 0.75 : 0.28));
+      });
+    }
+
+    function playLossSound() {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const notes = [349.23, 329.63, 311.13, 261.63]; // F4, E4, Eb4, C4
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = 'sawtooth';
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(900, now + idx * 0.16);
+
+        const startTime = now + idx * 0.16;
+        const dur = idx === 3 ? 0.5 : 0.14;
+        osc.frequency.setValueAtTime(freq, startTime);
+        if (idx === 3) {
+          osc.frequency.exponentialRampToValueAtTime(170, startTime + dur);
+        }
+
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.linearRampToValueAtTime(0.18, startTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + dur + 0.05);
+      });
+    }
+
+    // =========================================================================
+    // CONFETTI EN CANVAS (GAMIFICACIÓN EN VICTORIA)
+    // =========================================================================
+    let confettiAnimId: number | null = null;
+    function launchConfetti() {
+      const canvas = document.getElementById('fx-confetti-canvas') as HTMLCanvasElement | null;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width || 600;
+      canvas.height = rect.height || 260;
+
+      interface Particle {
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        color: string;
+        size: number;
+        rotation: number;
+        vRot: number;
+        alpha: number;
+        decay: number;
+      }
+
+      const colors = ['#3fe0b5', '#38bdf8', '#fbbf24', '#f43f5e', '#a855f7', '#4ade80'];
+      const particles: Particle[] = [];
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width * (0.25 + Math.random() * 0.5),
+          y: canvas.height * 0.65,
+          vx: (Math.random() - 0.5) * 11,
+          vy: -(Math.random() * 8 + 6),
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 6 + 4,
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 12,
+          alpha: 1,
+          decay: Math.random() * 0.012 + 0.008,
+        });
+      }
+
+      if (confettiAnimId !== null) cancelAnimationFrame(confettiAnimId);
+
+      function step() {
+        if (!ctx || !canvas) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        for (const p of particles) {
+          if (p.alpha <= 0) continue;
+          alive = true;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28;
+          p.vx *= 0.985;
+          p.rotation += p.vRot;
+          p.alpha -= p.decay;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        }
+        if (alive) {
+          confettiAnimId = requestAnimationFrame(step);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiAnimId = null;
+        }
+      }
+      step();
+    }
+
+    // =========================================================================
+    // BOCADILLO DE CÓMIC DEL PRESENTADOR (PERMANECE 5s SIN ENTORPECER CLICS)
+    // =========================================================================
+    let bubbleTimer: number | null = null;
+    function showHostBubble(html: string, durationMs: number = 5000) {
+      if (bubbleContent) {
+        bubbleContent.innerHTML = html;
+      }
+      if (comicSpeechContainer) {
+        comicSpeechContainer.classList.remove('is-hiding');
+        comicSpeechContainer.classList.add('is-visible');
+        comicSpeechContainer.classList.remove('pop-in');
+        void comicSpeechContainer.offsetWidth; // trigger reflow
+        comicSpeechContainer.classList.add('pop-in');
+      }
+
+      if (bubbleTimer !== null) {
+        window.clearTimeout(bubbleTimer);
+        bubbleTimer = null;
+      }
+
+      if (durationMs > 0) {
+        bubbleTimer = window.setTimeout(() => {
+          if (comicSpeechContainer) {
+            comicSpeechContainer.classList.add('is-hiding');
+          }
+        }, durationMs);
+      }
+    }
+
+    // =========================================================================
+    // RENDERIZADO DEL ESCENARIO DE PUERTAS
+    // =========================================================================
+    function getDoorHeight(count: number): number {
+      if (count === 3) return 230;
+      if (count === 5) return 180;
+      return 140;
+    }
+
+    function buildDoorsDOM(count: number) {
+      if (!doorsDeck) return;
+      doorsDeck.setAttribute('data-count', String(count));
+      doorsDeck.innerHTML = '';
+      const h = getDoorHeight(count);
+
+      for (let i = 0; i < count; i++) {
+        const doorNum = i + 1;
+        const doorCard = document.createElement('div');
+        doorCard.className = 'door-card';
+        doorCard.id = `door-card-${i}`;
+        doorCard.setAttribute('data-door-idx', String(i));
+
+        // SVG Vectorial robusto con atributos nativos y estilos directos
+        doorCard.innerHTML = `
+          <div class="door-header-pill">
+            <span class="d-num">PUERTA ${doorNum}</span>
+            <span class="d-badge" id="badge-${i}"></span>
+          </div>
+
+          <button
+            type="button"
+            class="door-svg-btn"
+            id="door-btn-${i}"
+            aria-label="Elegir Puerta ${doorNum}"
+            title="Haz clic para seleccionar la Puerta ${doorNum}"
+          >
+            <svg
+              viewBox="-30 0 170 200"
+              class="door-svg-asset"
+              width="100%"
+              height="${h}"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <!-- Marco fijo de la puerta (fondo camerino) -->
+              <rect x="8" y="8" width="94" height="184" rx="8" fill="#091412" stroke="#3fe0b5" stroke-width="2" class="svg-door-frame" />
+              <!-- Borde punteado interior del marco -->
+              <rect x="14" y="14" width="82" height="172" rx="5" fill="none" stroke="#3fe0b5" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.45" class="svg-door-dashed" />
+
+              <!-- Interior del premio (Coche o Cabra) -->
+              <g class="svg-door-interior" id="interior-${i}"></g>
+
+              <!-- Hoja de la puerta abierta en perspectiva 3D (oculta por defecto) -->
+              <g class="svg-wing-group" id="wing-${i}" style="display: none;">
+                <polygon points="8,8 -24,24 -24,166 8,192" fill="#163830" stroke="#3fe0b5" stroke-width="2" class="svg-wing-leaf" />
+                <rect x="-20" y="34" width="22" height="52" rx="2" fill="#0d1b18" stroke="#3fe0b5" stroke-width="1" opacity="0.4" class="svg-wing-panel" />
+                <rect x="-20" y="96" width="22" height="58" rx="2" fill="#0d1b18" stroke="#3fe0b5" stroke-width="1" opacity="0.4" class="svg-wing-panel" />
+                <circle cx="-6" cy="125" r="2.5" fill="#3fe0b5" class="svg-handle-dot" />
+                <text x="55" y="38" fill="#3fe0b5" font-family="monospace" font-size="16" font-weight="bold" class="svg-prob-badge" id="prob-badge-${i}" text-anchor="middle"></text>
+              </g>
+
+              <!-- Hoja de la puerta cerrada (visible por defecto) -->
+              <g class="svg-leaf-group" id="leaf-${i}">
+                <!-- Panel base de la hoja -->
+                <rect x="8" y="8" width="94" height="184" rx="6" fill="#132b26" stroke="#3fe0b5" stroke-width="2" id="leaf-rect-${i}" class="svg-leaf-base" />
+                
+                <!-- Recuadro superior con el número de la puerta -->
+                <rect x="18" y="18" width="74" height="70" rx="4" fill="#0d1b18" stroke="#3fe0b5" stroke-width="1.2" opacity="0.65" class="svg-panel-top" />
+                <text x="55" y="63" fill="#3fe0b5" font-family="monospace" font-size="28" font-weight="bold" class="svg-door-number" text-anchor="middle">${doorNum}</text>
+                
+                <!-- Recuadro inferior con la manilla circular -->
+                <rect x="18" y="96" width="74" height="84" rx="4" fill="#0d1b18" stroke="#3fe0b5" stroke-width="1.2" opacity="0.65" class="svg-panel-bottom" />
+                <circle cx="76" cy="138" r="6" fill="#3fe0b5" class="svg-handle-circle" />
+                <line x1="76" y1="138" x2="66" y2="138" stroke="#3fe0b5" stroke-width="3" stroke-linecap="round" class="svg-handle-stem" />
+              </g>
+            </svg>
+          </button>
+        `;
+
+        const btn = doorCard.querySelector('.door-svg-btn') as HTMLButtonElement;
+        btn.addEventListener('click', () => onDoorClicked(i));
+
+        doorsDeck.appendChild(doorCard);
+      }
+    }
+
+    // =========================================================================
+    // INICIAR NUEVA RONDA
+    // =========================================================================
+    function startNewRound() {
+      currentPhase = 'pick';
+      carDoorIndex = Math.floor(Math.random() * totalDoors);
+      chosenDoorIndex = -1;
+      remainingDoorIndex = -1;
+      finalDoorIndex = -1;
+
+      // Limpiar efectos de pantalla de la ronda anterior
+      if (stageArena) {
+        stageArena.classList.remove('fx-win', 'fx-loss');
+      }
+
+      // Ocultar botones
+      if (decisionCluster) decisionCluster.style.display = 'none';
+      if (gameoverCluster) gameoverCluster.style.display = 'none';
+
+      // Resetear visualmente cada puerta
+      for (let i = 0; i < totalDoors; i++) {
+        const card = document.getElementById(`door-card-${i}`);
+        const leaf = document.getElementById(`leaf-${i}`);
+        const leafRect = document.getElementById(`leaf-rect-${i}`);
+        const wing = document.getElementById(`wing-${i}`);
+        const interior = document.getElementById(`interior-${i}`);
+        const badge = document.getElementById(`badge-${i}`);
+        const probBadge = document.getElementById(`prob-badge-${i}`);
+        const btn = document.getElementById(`door-btn-${i}`) as HTMLButtonElement | null;
+
+        if (card) {
+          card.className = 'door-card';
+          card.classList.remove('is-open', 'is-chosen', 'is-available-switch', 'is-winner', 'is-loser', 'is-revealed-goat', 'is-revealed-car');
+        }
+        if (leaf) {
+          leaf.style.display = 'inline';
+        }
+        if (leafRect) {
+          leafRect.setAttribute('stroke', '#3fe0b5');
+          leafRect.setAttribute('stroke-width', '2');
+          leafRect.setAttribute('fill', '#132b26');
+        }
+        if (wing) {
+          wing.style.display = 'none';
+        }
+        if (interior) interior.innerHTML = '';
+        if (badge) {
+          badge.textContent = '';
+          badge.className = 'd-badge';
+        }
+        if (probBadge) probBadge.textContent = '';
+        if (btn) {
+          btn.disabled = false;
+          btn.title = `Elegir Puerta ${i + 1}`;
+        }
+      }
+
+      // Marquee y Bocadillo en Paso 1
+      if (phaseBadge) phaseBadge.textContent = 'PASO 1: ELIGE UNA PUERTA';
+      const initProb = ((1 / totalDoors) * 100).toFixed(1);
+      if (statusHint) statusHint.textContent = `Probabilidad inicial: 1 de ${totalDoors} (${initProb}%)`;
+      showHostBubble(
+        `Hay <strong>${totalDoors} puertas</strong> en el concurso. Solo una oculta el <strong>coche</strong>; las otras tienen cabras. ¡Haz clic en tu candidata!`,
+        5000
+      );
+
+      updateDockUI();
+    }
+
+    // =========================================================================
+    // MANEJO DE CLIC EN UNA PUERTA
+    // =========================================================================
+    function onDoorClicked(doorIdx: number) {
+      if (currentPhase === 'pick') {
+        onPlayerPickInitial(doorIdx);
+        return;
+      }
+
+      if (currentPhase === 'decision') {
+        if (doorIdx === chosenDoorIndex) {
+          resolveChoice(false); // Mantener
+        } else if (doorIdx === remainingDoorIndex) {
+          resolveChoice(true); // Cambiar
+        }
+      }
+    }
+
+    // =========================================================================
+    // PASO 1: ELECCIÓN INICIAL Y ACCIÓN DE MONTY HALL
+    // =========================================================================
+    function onPlayerPickInitial(doorIdx: number) {
+      chosenDoorIndex = doorIdx;
+      currentPhase = 'decision';
+
+      // Marcar visualmente la puerta elegida
+      const card = document.getElementById(`door-card-${doorIdx}`);
+      const badge = document.getElementById(`badge-${doorIdx}`);
+      const leafRect = document.getElementById(`leaf-rect-${doorIdx}`);
+      if (card) card.classList.add('is-chosen');
+      if (leafRect) {
+        leafRect.setAttribute('stroke', '#38bdf8');
+        leafRect.setAttribute('stroke-width', '3');
+        leafRect.setAttribute('fill', '#0c2838');
+      }
+      if (badge) {
+        badge.textContent = 'TU ELECCIÓN';
+        badge.classList.add('is-chosen-tag');
+      }
+
+      // Determinar qué puertas abre Monty (nunca abre la elegida ni el coche)
+      const otherGoats: number[] = [];
+      for (let i = 0; i < totalDoors; i++) {
+        if (i !== doorIdx && i !== carDoorIndex) {
+          otherGoats.push(i);
+        }
+      }
+
+      let goatsToOpen: number[] = [];
+      if (doorIdx === carDoorIndex) {
+        const shuffled = [...otherGoats].sort(() => Math.random() - 0.5);
+        remainingDoorIndex = shuffled.pop()!;
+        goatsToOpen = shuffled;
+      } else {
+        remainingDoorIndex = carDoorIndex;
+        goatsToOpen = otherGoats;
+      }
+
+      const nGoats = goatsToOpen.length;
+      // Bocadillo de cómic flotante durante 5 segundos
+      showHostBubble(
+        `¡Buena elección! Has seleccionado la <strong>Puerta ${doorIdx + 1}</strong>.<br/>El presentador abrirá ${nGoats === 1 ? 'otra puerta con una cabra' : `${nGoats} puertas con cabras`} para hacértelo más fácil...`,
+        5000
+      );
+
+      // Apertura de las cabras reveladas
+      goatsToOpen.forEach((goatIdx, idx) => {
+        window.setTimeout(() => {
+          openDoorVisual(goatIdx, 'goat');
+          const gCard = document.getElementById(`door-card-${goatIdx}`);
+          const gBadge = document.getElementById(`badge-${goatIdx}`);
+          if (gCard) gCard.classList.add('is-revealed-goat');
+          if (gBadge) {
+            gBadge.textContent = 'CABRA';
+            gBadge.classList.add('is-goat-tag');
+          }
+        }, idx * 120);
+      });
+
+      // Habilitar de inmediato la fase de decisión para que el usuario pueda clicar otra puerta de inmediato si tiene prisa
+      setupDecisionPhase();
+    }
+
+    // Abre visualmente una puerta con animación fluida 3D
+    function openDoorVisual(idx: number, type: 'car' | 'goat') {
+      const card = document.getElementById(`door-card-${idx}`);
+      const wing = document.getElementById(`wing-${idx}`);
+      const interior = document.getElementById(`interior-${idx}`);
+      const probBadge = document.getElementById(`prob-badge-${idx}`);
+
+      if (interior) {
+        interior.innerHTML = type === 'car' ? getCarSVGContent() : getGoatSVGContent();
+      }
+      if (probBadge && type === 'car') {
+        const switchProb = (((totalDoors - 1) / totalDoors) * 100).toFixed(0);
+        probBadge.textContent = `${switchProb}%`;
+      }
+      if (wing) {
+        wing.style.display = 'inline';
+      }
+
+      // Activa la clase is-open que dispara la transición CSS fluida
+      if (card) {
+        card.classList.add('is-open');
+      }
+    }
+
+    // Configuración del Paso 2: Decisión (Mantener vs Cambiar)
+    function setupDecisionPhase() {
+      const switchProb = (((totalDoors - 1) / totalDoors) * 100).toFixed(1);
+      const stayProb = ((1 / totalDoors) * 100).toFixed(1);
+
+      if (phaseBadge) phaseBadge.textContent = 'PASO 2: ¿CAMBIAR O MANTENER?';
+      if (statusHint) statusHint.textContent = `¿Cambiar al ${switchProb}% o quedarte con el ${stayProb}%?`;
+
+      if (stayLabel) stayLabel.textContent = `MANTENER PUERTA ${chosenDoorIndex + 1}`;
+      if (staySub) staySub.textContent = `Tu elección inicial (P = ${stayProb}%)`;
+      if (switchLabel) switchLabel.textContent = `CAMBIAR A PUERTA ${remainingDoorIndex + 1}`;
+      if (switchSub) switchSub.textContent = `¡Cambiar a la otra puerta! (P = ${switchProb}%)`;
+
+      // Habilitar clics en las dos únicas puertas activas
+      const chosenBtn = document.getElementById(`door-btn-${chosenDoorIndex}`) as HTMLButtonElement | null;
+      const remainingBtn = document.getElementById(`door-btn-${remainingDoorIndex}`) as HTMLButtonElement | null;
+      if (chosenBtn) {
+        chosenBtn.disabled = false;
+        chosenBtn.title = 'Haz clic aquí para MANTENER tu puerta';
+      }
+      if (remainingBtn) {
+        remainingBtn.disabled = false;
+        remainingBtn.title = 'Haz clic aquí para CAMBIAR a esta puerta';
+        const remCard = document.getElementById(`door-card-${remainingDoorIndex}`);
+        const remLeafRect = document.getElementById(`leaf-rect-${remainingDoorIndex}`);
+        if (remCard) remCard.classList.add('is-available-switch');
+        if (remLeafRect) {
+          remLeafRect.setAttribute('stroke', '#3fe0b5');
+          remLeafRect.setAttribute('stroke-width', '3');
+        }
+      }
+
+      if (decisionCluster) decisionCluster.style.display = 'flex';
+    }
+
+    // =========================================================================
+    // PASO 3: RESOLVER ELECCIÓN FINAL
+    // =========================================================================
+    function resolveChoice(didSwitch: boolean) {
+      if (currentPhase !== 'decision') return;
+      currentPhase = 'revealing_player';
+      finalDoorIndex = didSwitch ? remainingDoorIndex : chosenDoorIndex;
+
+      if (decisionCluster) decisionCluster.style.display = 'none';
+
+      // Bloquear botones de las puertas
+      for (let i = 0; i < totalDoors; i++) {
+        const btn = document.getElementById(`door-btn-${i}`) as HTMLButtonElement | null;
+        if (btn) btn.disabled = true;
+      }
+
+      const isWin = finalDoorIndex === carDoorIndex;
+
+      // Actualizar marcador
+      const hist = sessionHistory[totalDoors];
+      if (didSwitch) {
+        hist.switchTotal++;
+        if (isWin) hist.switchWins++;
+      } else {
+        hist.stayTotal++;
+        if (isWin) hist.stayWins++;
+      }
+
+      if (phaseBadge) phaseBadge.textContent = 'PASO 3: REVELANDO TU PUERTA...';
+
+      // Abrir ÚNICAMENTE la puerta del jugador
+      window.setTimeout(() => {
+        openDoorVisual(finalDoorIndex, isWin ? 'car' : 'goat');
+        const finalCard = document.getElementById(`door-card-${finalDoorIndex}`);
+        const finalBadge = document.getElementById(`badge-${finalDoorIndex}`);
+
+        if (finalCard) {
+          finalCard.classList.remove('is-available-switch');
+          finalCard.classList.add(isWin ? 'is-winner' : 'is-loser');
+        }
+        if (finalBadge) {
+          finalBadge.textContent = isWin ? '¡TU COCHE!' : 'CABRA';
+          finalBadge.className = `d-badge ${isWin ? 'is-win-tag' : 'is-lose-tag'}`;
+        }
+
+        // Si perdió, abrir la del coche tras 500ms para confirmar dónde estaba
+        if (!isWin) {
+          window.setTimeout(() => {
+            openDoorVisual(carDoorIndex, 'car');
+            const carCard = document.getElementById(`door-card-${carDoorIndex}`);
+            const carBadge = document.getElementById(`badge-${carDoorIndex}`);
+            if (carCard) carCard.classList.add('is-revealed-car');
+            if (carBadge) {
+              carBadge.textContent = 'ERA EL COCHE';
+              carBadge.className = 'd-badge is-car-hint-tag';
+            }
+          }, 500);
+        }
+
+        // Efectos gamificados de victoria o derrota
+        if (isWin) {
+          playWinSound();
+          launchConfetti();
+          if (stageArena) {
+            stageArena.classList.remove('fx-loss', 'fx-win');
+            void stageArena.offsetWidth;
+            stageArena.classList.add('fx-win');
+          }
+        } else {
+          playLossSound();
+          if (stageArena) {
+            stageArena.classList.remove('fx-win', 'fx-loss');
+            void stageArena.offsetWidth;
+            stageArena.classList.add('fx-loss');
+          }
+        }
+
+        currentPhase = 'gameover';
+        finishRoundUI(isWin, didSwitch);
+        updateDockUI();
+      }, 250);
+    }
+
+    function finishRoundUI(isWin: boolean, didSwitch: boolean) {
+      if (phaseBadge) phaseBadge.textContent = 'FIN DE LA RONDA';
+      const switchProbStr = (((totalDoors - 1) / totalDoors) * 100).toFixed(1);
+      const stayProbStr = ((1 / totalDoors) * 100).toFixed(1);
+
+      if (roundOutcome) {
+        roundOutcome.innerHTML = isWin
+          ? `<span class="outcome-badge is-win">&#127942; ¡ENHORABUENA! ¡HAS GANADO EL COCHE!</span>`
+          : `<span class="outcome-badge is-lose">&#128016; ¡VAYA! TE HA TOCADO LA CABRA. Confía en la probabilidad.</span>`;
+      }
+
+      if (isWin) {
+        showHostBubble(
+          didSwitch
+            ? `<strong>¡Victoria rotunda!</strong> Cambiaste a la Puerta ${finalDoorIndex + 1} y la probabilidad del <strong>${switchProbStr}%</strong> premió tu lógica.`
+            : `<strong>¡Ganaste el coche!</strong> Decidiste no cambiar y acertaste en ese <strong>${stayProbStr}%</strong> de probabilidad inicial.`,
+          5000
+        );
+      } else {
+        showHostBubble(
+          didSwitch
+            ? `<strong>¡Vaya! Te ha tocado la cabra. Confía en la probabilidad.</strong> Cambiar gana el <strong>${switchProbStr}%</strong> de las veces a largo plazo. ¡A seguir probando!`
+            : `<strong>¡Vaya! Te ha tocado la cabra. Confía en la probabilidad.</strong> Al mantener tu puerta te aferraste al <strong>${stayProbStr}%</strong>. ¡El coche estaba en la Puerta ${carDoorIndex + 1}!`,
+          5000
+        );
+      }
+
+      if (gameoverCluster) gameoverCluster.style.display = 'flex';
+    }
+
+    // =========================================================================
+    // ACTUALIZACIÓN DEL MARCADOR EN VIVO
+    // =========================================================================
+    function updateDockUI() {
+      const hist = sessionHistory[totalDoors];
+      const switchExp = (((totalDoors - 1) / totalDoors) * 100).toFixed(1);
+      const stayExp = ((1 / totalDoors) * 100).toFixed(1);
+
+      if (dockDoorMode) dockDoorMode.textContent = `${totalDoors} Puertas`;
+      if (dockSwitchExp) dockSwitchExp.textContent = `Teórico: ${switchExp}%`;
+      if (dockStayExp) dockStayExp.textContent = `Teórico: ${stayExp}%`;
+
+      const sPct = hist.switchTotal > 0 ? ((hist.switchWins / hist.switchTotal) * 100).toFixed(1) : '0';
+      if (dockSwitchPct) dockSwitchPct.textContent = `${sPct}%`;
+      if (dockSwitchCounts) dockSwitchCounts.textContent = `${hist.switchWins} victorias / ${hist.switchTotal} rondas`;
+      if (dockSwitchFill) dockSwitchFill.style.width = `${sPct}%`;
+
+      const mPct = hist.stayTotal > 0 ? ((hist.stayWins / hist.stayTotal) * 100).toFixed(1) : '0';
+      if (dockStayPct) dockStayPct.textContent = `${mPct}%`;
+      if (dockStayCounts) dockStayCounts.textContent = `${hist.stayWins} victorias / ${hist.stayTotal} rondas`;
+      if (dockStayFill) dockStayFill.style.width = `${mPct}%`;
+
+      const simTargetSwitch = document.getElementById('sim-target-switch');
+      const simTargetStay = document.getElementById('sim-target-stay');
+      if (simTargetSwitch) simTargetSwitch.textContent = `Meta: ${switchExp}%`;
+      if (simTargetStay) simTargetStay.textContent = `Meta: ${stayExp}%`;
+    }
+
+    // Selector de N puertas
+    selectorButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const n = parseInt(btn.getAttribute('data-n') || '3', 10);
+        if (n === totalDoors) return;
+
+        selectorButtons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        totalDoors = n;
+        buildDoorsDOM(totalDoors);
+        startNewRound();
+      });
+    });
+
+    if (btnStay) btnStay.addEventListener('click', () => resolveChoice(false));
+    if (btnSwitch) btnSwitch.addEventListener('click', () => resolveChoice(true));
+    if (btnPlayNext) btnPlayNext.addEventListener('click', () => startNewRound());
+
+    if (btnResetSession) {
+      btnResetSession.addEventListener('click', () => {
+        sessionHistory[totalDoors] = { switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 };
+        updateDockUI();
+      });
+    }
+
+    // =========================================================================
+    // SIMULADOR MONTE CARLO Y CANVAS
+    // =========================================================================
+    let simTotalCount = 0;
+    let simSwitchWinCount = 0;
+    let simStayWinCount = 0;
+    const chartHistory: { runs: number; switchRate: number; stayRate: number }[] = [];
+
+    const simSwitchPct = document.getElementById('sim-switch-pct');
+    const simSwitchCounts = document.getElementById('sim-switch-counts');
+    const simSwitchBar = document.getElementById('sim-switch-bar');
+    const simStayPct = document.getElementById('sim-stay-pct');
+    const simStayCounts = document.getElementById('sim-stay-counts');
+    const simStayBar = document.getElementById('sim-stay-bar');
+    const simTotalRuns = document.getElementById('sim-total-runs');
+    const btnSimReset = document.getElementById('btn-sim-reset');
+    const canvas = document.getElementById('monty-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+
+    function runMonteCarlo(batch: number) {
+      for (let i = 0; i < batch; i++) {
+        simTotalCount++;
+        const car = Math.floor(Math.random() * totalDoors);
+        const pick = Math.floor(Math.random() * totalDoors);
+
+        if (pick === car) {
+          simStayWinCount++;
+        } else {
+          simSwitchWinCount++;
+        }
+      }
+
+      const switchRate = (simSwitchWinCount / simTotalCount) * 100;
+      const stayRate = (simStayWinCount / simTotalCount) * 100;
+
+      chartHistory.push({ runs: simTotalCount, switchRate, stayRate });
+      if (chartHistory.length > 80) {
+        chartHistory.shift();
+      }
+
+      if (simSwitchPct) simSwitchPct.textContent = `${switchRate.toFixed(2)}%`;
+      if (simSwitchCounts) simSwitchCounts.textContent = `${simSwitchWinCount.toLocaleString()} victorias de ${simTotalCount.toLocaleString()}`;
+      if (simSwitchBar) simSwitchBar.style.width = `${switchRate}%`;
+
+      if (simStayPct) simStayPct.textContent = `${stayRate.toFixed(2)}%`;
+      if (simStayCounts) simStayCounts.textContent = `${simStayWinCount.toLocaleString()} victorias de ${simTotalCount.toLocaleString()}`;
+      if (simStayBar) simStayBar.style.width = `${stayRate}%`;
+
+      if (simTotalRuns) simTotalRuns.textContent = simTotalCount.toLocaleString();
+
+      drawConvergenceChart();
+    }
+
+    function resetSimulation() {
+      simTotalCount = 0;
+      simSwitchWinCount = 0;
+      simStayWinCount = 0;
+      chartHistory.length = 0;
+
+      if (simSwitchPct) simSwitchPct.textContent = '0.0%';
+      if (simSwitchCounts) simSwitchCounts.textContent = '0 victorias de 0 partidas';
+      if (simSwitchBar) simSwitchBar.style.width = '0%';
+
+      if (simStayPct) simStayPct.textContent = '0.0%';
+      if (simStayCounts) simStayCounts.textContent = '0 victorias de 0 partidas';
+      if (simStayBar) simStayBar.style.width = '0%';
+
+      if (simTotalRuns) simTotalRuns.textContent = '0';
+
+      drawConvergenceChart();
+    }
+
+    function drawConvergenceChart() {
+      if (!ctx || !canvas) return;
+      const w = canvas.width;
+      const h = canvas.height;
+      const padL = 45;
+      const padR = 20;
+      const padT = 25;
+      const padB = 30;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const gridColor = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)';
+      const textColor = isLight ? '#64748b' : '#94a3b8';
+
+      ctx.lineWidth = 1;
+      ctx.font = '10px monospace';
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'right';
+
+      [0, 25, 50, 75, 100].forEach((pct) => {
+        const y = padT + plotH - (pct / 100) * plotH;
+        ctx.strokeStyle = gridColor;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+        ctx.fillText(`${pct}%`, padL - 8, y + 3);
+      });
+
+      const expectedSwitchPct = ((totalDoors - 1) / totalDoors) * 100;
+      const expectedY = padT + plotH - (expectedSwitchPct / 100) * plotH;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(63, 224, 181, 0.5)';
+      ctx.beginPath();
+      ctx.moveTo(padL, expectedY);
+      ctx.lineTo(w - padR, expectedY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (chartHistory.length < 2) {
+        ctx.textAlign = 'center';
+        ctx.fillStyle = textColor;
+        ctx.font = '12px sans-serif';
+        ctx.fillText('Pulsa los botones de arriba para simular partidas masivas', padL + plotW / 2, padT + plotH / 2);
+        return;
+      }
+
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#3fe0b5';
+      ctx.beginPath();
+      chartHistory.forEach((pt, i) => {
+        const x = padL + (i / (chartHistory.length - 1)) * plotW;
+        const y = padT + plotH - (pt.switchRate / 100) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#fb7185';
+      ctx.beginPath();
+      chartHistory.forEach((pt, i) => {
+        const x = padL + (i / (chartHistory.length - 1)) * plotW;
+        const y = padT + plotH - (pt.stayRate / 100) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    const simButtons = Array.from(document.querySelectorAll('.btn-sim-run')) as HTMLButtonElement[];
+    simButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const count = parseInt(btn.getAttribute('data-sim') || '100', 10);
+        runMonteCarlo(count);
+      });
+    });
+
+    if (btnSimReset) btnSimReset.addEventListener('click', resetSimulation);
+
+    // Arrancar con 3 puertas
+    buildDoorsDOM(3);
+    startNewRound();
+    drawConvergenceChart();
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS DEL JUEGO MONTY HALL (ESTÉTICA VECTORIAL PRECISA DE MATH UNIVERSE)
+     ========================================================================== */
+
+  .monty-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg, #090e17);
+    color: var(--ink, #f1f5f9);
+  }
+
+  /* COCKPIT DE JUEGO PRINCIPAL */
+  .game-cockpit {
+    width: 100%;
+    padding: 0.75rem 1rem 1.25rem;
+    background: radial-gradient(circle at 50% 15%, rgba(63, 224, 181, 0.08), rgba(9, 14, 23, 0.98) 75%);
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  :global([data-theme="light"]) .game-cockpit {
+    background: radial-gradient(circle at 50% 15%, rgba(63, 224, 181, 0.08), #f8fafc 75%);
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .cockpit-container {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  /* BARRA SUPERIOR */
+  .cockpit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted, #94a3b8);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .back-pill:hover {
+    color: #3fe0b5;
+    border-color: #3fe0b5;
+    background: rgba(63, 224, 181, 0.12);
+  }
+
+  :global([data-theme="light"]) .back-pill {
+    background: #f1f5f9;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--ink, #f8fafc);
+  }
+
+  :global([data-theme="light"]) .game-title {
+    color: #0f172a;
+  }
+
+  .badge-pill {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #3fe0b5;
+    background: rgba(63, 224, 181, 0.15);
+    border: 1px solid rgba(63, 224, 181, 0.3);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+  }
+
+  /* SELECTOR DE PUERTAS */
+  .doors-selector-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(15, 23, 42, 0.65);
+    padding: 0.25rem 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :global([data-theme="light"]) .doors-selector-bar {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .selector-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+    margin-left: 0.3rem;
+  }
+
+  .selector-btns {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .btn-n-door {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted, #94a3b8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-n-door .n-prob {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    margin-left: 2px;
+  }
+
+  .btn-n-door:hover {
+    color: #3fe0b5;
+    background: rgba(63, 224, 181, 0.1);
+  }
+
+  .btn-n-door.is-active {
+    background: #3fe0b5;
+    color: #052e25;
+    border-color: #3fe0b5;
+    box-shadow: 0 2px 8px rgba(63, 224, 181, 0.35);
+  }
+
+  /* BARRA DEL PRESENTADOR Y BOCADILLO DE CÓMIC FLOTANTE */
+  .host-stage-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .marquee-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3fe0b5;
+  }
+
+  .status-dot.pulse {
+    animation: blink 1.4s infinite ease-in-out;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .status-phase {
+    color: #3fe0b5;
+    letter-spacing: 0.05em;
+  }
+
+  .status-hint {
+    margin-left: auto;
+    color: var(--muted, #94a3b8);
+    font-weight: 500;
+  }
+
+  .comic-speech-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 auto;
+    max-width: 680px;
+    width: 100%;
+    pointer-events: none; /* Asegura que no obstaculice clics a las puertas ni botones */
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .comic-speech-container.is-hiding {
+    opacity: 0.15;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  .comic-speech-container.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .comic-speech-container.pop-in {
+    animation: comicPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes comicPop {
+    0% { transform: scale(0.88); opacity: 0; }
+    70% { transform: scale(1.03); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .host-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #0f231e;
+    border: 2px solid #3fe0b5;
+    border-radius: 12px;
+    padding: 0.35rem 0.65rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(63, 224, 181, 0.2);
+    flex-shrink: 0;
+  }
+
+  .host-avatar {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .host-name {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #3fe0b5;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .comic-speech-bubble {
+    position: relative;
+    background: #0d1e1a;
+    border: 2px solid #3fe0b5;
+    border-radius: 18px;
+    padding: 0.6rem 1.15rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 15px rgba(63, 224, 181, 0.15);
+    flex: 1;
+    animation: bubbleFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes bubbleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  .comic-speech-bubble .bubble-arrow {
+    position: absolute;
+    left: -11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 12px solid #3fe0b5;
+  }
+
+  .comic-speech-bubble .bubble-arrow::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: -6px;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 9px solid #0d1e1a;
+  }
+
+  .bubble-content {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #f1f5f9;
+  }
+
+  .bubble-content strong {
+    color: #3fe0b5;
+    font-weight: 700;
+  }
+
+  :global([data-theme="light"]) .host-badge {
+    background: #e6fffa;
+    border-color: #0d9488;
+  }
+
+  :global([data-theme="light"]) .host-name {
+    color: #0d9488;
+  }
+
+  :global([data-theme="light"]) .comic-speech-bubble {
+    background: #ffffff;
+    border-color: #0d9488;
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.12);
+  }
+
+  :global([data-theme="light"]) .comic-speech-bubble .bubble-arrow {
+    border-right-color: #0d9488;
+  }
+
+  :global([data-theme="light"]) .comic-speech-bubble .bubble-arrow::after {
+    border-right-color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .bubble-content {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .bubble-content strong {
+    color: #0d9488;
+  }
+
+  /* ESCENARIO DE PUERTAS Y EFECTOS GAMIFICADOS */
+  .stage-arena {
+    width: 100%;
+    background: #0d1b18;
+    border: 1px solid rgba(63, 224, 181, 0.25);
+    border-radius: 0.85rem;
+    padding: 1.25rem 1rem;
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .fx-confetti-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+  }
+
+  /* EFECTOS DE PANTALLA EN VICTORIA Y DERROTA */
+  .stage-arena.fx-win {
+    animation: arenaWinPulse 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes arenaWinPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(63, 224, 181, 0.8), inset 0 0 45px rgba(63, 224, 181, 0.5);
+      border-color: #3fe0b5;
+    }
+    40% {
+      box-shadow: 0 0 45px rgba(63, 224, 181, 0.65), inset 0 0 65px rgba(63, 224, 181, 0.45);
+      border-color: #3fe0b5;
+    }
+    100% {
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+      border-color: rgba(63, 224, 181, 0.25);
+    }
+  }
+
+  .stage-arena.fx-loss {
+    animation: arenaLossShake 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  @keyframes arenaLossShake {
+    0%, 100% {
+      transform: translate3d(0, 0, 0);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+      border-color: rgba(63, 224, 181, 0.25);
+    }
+    15%, 45%, 75% {
+      transform: translate3d(-6px, 0, 0);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), inset 0 0 45px rgba(239, 68, 68, 0.4);
+      border-color: #ef4444;
+    }
+    30%, 60%, 90% {
+      transform: translate3d(6px, 0, 0);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.4), inset 0 0 35px rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+    }
+  }
+
+  :global([data-theme="light"]) .stage-arena {
+    background: #f0fdf4;
+    border-color: rgba(13, 148, 136, 0.3);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .doors-deck {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    min-height: 250px;
+  }
+
+  /* Modos de grid para N puertas */
+  .doors-deck[data-count="3"] :global(.door-card) {
+    flex: 0 0 170px;
+    max-width: 190px;
+  }
+
+  .doors-deck[data-count="5"] :global(.door-card) {
+    flex: 0 0 130px;
+    max-width: 140px;
+  }
+
+  .doors-deck[data-count="10"] :global(.door-card) {
+    flex: 0 0 95px;
+    max-width: 105px;
+  }
+
+  .doors-deck[data-count="50"] :global(.door-card),
+  .doors-deck[data-count="100"] :global(.door-card) {
+    flex: 0 0 65px;
+    max-width: 70px;
+  }
+
+  /* TARJETA DE PUERTA */
+  :global(.door-card) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    transition: transform 0.2s ease, filter 0.25s ease;
+  }
+
+  :global(.door-header-pill) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 32px;
+    justify-content: flex-end;
+    font-family: var(--font-mono, monospace);
+  }
+
+  :global(.d-num) {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #3fe0b5;
+    letter-spacing: 0.05em;
+  }
+
+  :global([data-theme="light"] .d-num) {
+    color: #0f766e;
+  }
+
+  :global(.d-badge) {
+    font-size: 0.62rem;
+    font-weight: 800;
+    border-radius: 4px;
+    padding: 0.08rem 0.35rem;
+    height: 15px;
+    line-height: 15px;
+  }
+
+  :global(.is-chosen-tag) {
+    background: #38bdf8;
+    color: #082f49;
+  }
+
+  :global(.is-goat-tag) {
+    background: #475569;
+    color: #f1f5f9;
+  }
+
+  :global(.is-win-tag) {
+    background: #22c55e;
+    color: #052e16;
+  }
+
+  :global(.is-lose-tag) {
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  :global(.is-car-hint-tag) {
+    background: #f59e0b;
+    color: #451a03;
+  }
+
+  /* BOTÓN INTERACTIVO DEL SVG */
+  :global(.door-svg-btn) {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+    outline: none;
+    transition: transform 0.2s cubic-bezier(0.2, 0.85, 0.2, 1);
+  }
+
+  :global(.door-svg-btn:hover:not(:disabled)) {
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  :global(.door-svg-btn:hover:not(:disabled) .svg-leaf-base) {
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 8px rgba(63, 224, 181, 0.5));
+  }
+
+  :global(.door-svg-asset) {
+    width: 100%;
+    height: 230px;
+    display: block;
+  }
+
+  .doors-deck[data-count="5"] :global(.door-svg-asset) {
+    height: 180px;
+  }
+
+  .doors-deck[data-count="10"] :global(.door-svg-asset) {
+    height: 140px;
+  }
+
+  .doors-deck[data-count="50"] :global(.door-svg-asset),
+  .doors-deck[data-count="100"] :global(.door-svg-asset) {
+    height: 85px;
+  }
+
+  /* ESTILO VECTORIAL DE LAS PUERTAS (ESTILO MATH CRAFT EXACTO) */
+  :global(.svg-door-frame) {
+    fill: #091412;
+    stroke: #3fe0b5;
+    stroke-width: 1.8;
+  }
+
+  :global([data-theme="light"] .svg-door-frame) {
+    fill: #ffffff;
+    stroke: #0d9488;
+  }
+
+  :global(.svg-door-dashed) {
+    fill: none;
+    stroke: #3fe0b5;
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+    opacity: 0.45;
+  }
+
+  :global([data-theme="light"] .svg-door-dashed) {
+    stroke: #0d9488;
+    opacity: 0.5;
+  }
+
+  /* Hoja cerrada y animación fluida de apertura batiente (60 FPS) */
+  :global(.svg-leaf-group) {
+    transform-origin: 8px 100px;
+    transform-box: fill-box;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+    opacity: 1;
+  }
+
+  :global(.door-card.is-open .svg-leaf-group) {
+    transform: scaleX(0.08) skewY(14deg) translateX(-18px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.svg-leaf-base) {
+    fill: #132b26;
+    stroke: #3fe0b5;
+    stroke-width: 2;
+    transition: all 0.25s ease;
+  }
+
+  :global([data-theme="light"] .svg-leaf-base) {
+    fill: #ccfbf1;
+    stroke: #0d9488;
+  }
+
+  :global(.svg-panel-top),
+  :global(.svg-panel-bottom) {
+    fill: #0d1b18;
+    stroke: #3fe0b5;
+    stroke-width: 1.2;
+    opacity: 0.65;
+  }
+
+  :global([data-theme="light"] .svg-panel-top),
+  :global([data-theme="light"] .svg-panel-bottom) {
+    fill: #e6fffa;
+    stroke: #0d9488;
+    opacity: 0.85;
+  }
+
+  :global(.svg-door-number) {
+    fill: #3fe0b5;
+    font-family: var(--font-mono, monospace);
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  :global([data-theme="light"] .svg-door-number) {
+    fill: #0f766e;
+  }
+
+  :global(.svg-handle-circle) {
+    fill: #3fe0b5;
+  }
+
+  :global([data-theme="light"] .svg-handle-circle) {
+    fill: #0d9488;
+  }
+
+  :global(.svg-handle-stem) {
+    stroke: #3fe0b5;
+    stroke-linecap: round;
+  }
+
+  :global([data-theme="light"] .svg-handle-stem) {
+    stroke: #0d9488;
+  }
+
+  /* Hoja abierta en perspectiva (Wing con fade-in sincronizado) */
+  :global(.svg-wing-group) {
+    opacity: 0;
+    transition: opacity 0.35s ease 0.3s;
+  }
+
+  :global(.door-card.is-open .svg-wing-group) {
+    opacity: 1;
+  }
+
+  :global(.svg-wing-leaf) {
+    fill: #163830;
+    stroke: #3fe0b5;
+    stroke-width: 2;
+  }
+
+  :global([data-theme="light"] .svg-wing-leaf) {
+    fill: #99f6e4;
+    stroke: #0d9488;
+  }
+
+  :global(.svg-wing-panel) {
+    fill: #0d1b18;
+    stroke: #3fe0b5;
+    stroke-width: 1;
+    opacity: 0.4;
+  }
+
+  :global([data-theme="light"] .svg-wing-panel) {
+    fill: #ccfbf1;
+    stroke: #0d9488;
+  }
+
+  :global(.svg-handle-dot) {
+    fill: #3fe0b5;
+  }
+
+  :global(.svg-prob-badge) {
+    fill: #3fe0b5;
+    font-family: var(--font-mono, monospace);
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  /* Interior y revelación con zoom suave */
+  :global(.svg-door-interior) {
+    opacity: 0;
+    transform-origin: center center;
+    transition: opacity 0.4s ease 0.15s, transform 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.25) 0.15s;
+    transform: scale(0.85);
+  }
+
+  :global(.door-card.is-open .svg-door-interior) {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ESTILOS DE LOS ASSETS INTERIORES (COCHE Y CABRA) */
+  :global(.car-body-path) {
+    fill: #3fe0b5;
+  }
+
+  :global([data-theme="light"] .car-body-path) {
+    fill: #0d9488;
+  }
+
+  :global(.car-glass-path) {
+    fill: #091412;
+  }
+
+  :global([data-theme="light"] .car-glass-path) {
+    fill: #f0fdfa;
+  }
+
+  :global(.car-wheel-rim) {
+    fill: #091412;
+    stroke: #3fe0b5;
+    stroke-width: 2.5;
+  }
+
+  :global([data-theme="light"] .car-wheel-rim) {
+    fill: #ffffff;
+    stroke: #0d9488;
+  }
+
+  :global(.car-wheel-hub) {
+    fill: #3fe0b5;
+  }
+
+  :global([data-theme="light"] .car-wheel-hub) {
+    fill: #0d9488;
+  }
+
+  :global(.goat-horn) {
+    stroke: #d97706;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+  }
+
+  :global(.goat-head) {
+    fill: #f8fafc;
+    stroke: #94a3b8;
+    stroke-width: 1.5;
+  }
+
+  :global(.goat-ear) {
+    fill: #f1f5f9;
+    stroke: #94a3b8;
+    stroke-width: 1;
+  }
+
+  :global(.goat-eye-white) {
+    fill: #fef08a;
+    stroke: #78350f;
+    stroke-width: 1;
+  }
+
+  :global(.goat-eye-pupil) {
+    fill: #1e293b;
+  }
+
+  :global(.goat-muzzle) {
+    fill: #fbcfe8;
+  }
+
+  :global(.goat-beard) {
+    fill: #e2e8f0;
+  }
+
+  :global(.prize-title-text) {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  :global(.prize-title-text.is-gold) {
+    fill: #fbbf24;
+    text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+  }
+
+  :global(.prize-title-text.is-slate) {
+    fill: #94a3b8;
+  }
+
+  /* ESTADOS DINÁMICOS DE LAS PUERTAS */
+  :global(.door-card.is-chosen .svg-leaf-base) {
+    stroke: #38bdf8;
+    stroke-width: 3;
+    fill: #0c2838;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.7));
+  }
+
+  :global(.door-card.is-available-switch .svg-leaf-base) {
+    stroke: #3fe0b5;
+    stroke-width: 3;
+    animation: pulseSwitch 1s infinite alternate ease-in-out;
+  }
+
+  @keyframes pulseSwitch {
+    0% { filter: drop-shadow(0 0 4px rgba(63, 224, 181, 0.4)); }
+    100% { filter: drop-shadow(0 0 16px rgba(63, 224, 181, 0.9)); }
+  }
+
+  :global(.door-card.is-winner .svg-door-frame) {
+    stroke: #22c55e;
+    filter: drop-shadow(0 0 14px rgba(34, 197, 94, 0.7));
+  }
+
+  :global(.door-card.is-loser .svg-door-frame) {
+    stroke: #ef4444;
+  }
+
+  /* BARRA DE ACCIÓN Y DECISIÓN */
+  .action-cockpit {
+    min-height: 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .decision-cluster {
+    display: flex;
+    gap: 0.85rem;
+    width: 100%;
+    max-width: 680px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    flex: 1;
+    min-width: 240px;
+    padding: 0.75rem 1rem;
+    border-radius: 0.65rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    transition: all 0.25s ease;
+  }
+
+  .btn-icon-tag {
+    font-size: 1.4rem;
+  }
+
+  .btn-texts {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.15rem;
+  }
+
+  .btn-main {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-sub {
+    font-size: 0.72rem;
+    opacity: 0.85;
+  }
+
+  .btn-stay {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid #ef4444;
+    color: #fca5a5;
+  }
+
+  .btn-stay:hover {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+  }
+
+  .btn-switch {
+    background: rgba(63, 224, 181, 0.12);
+    border: 2px solid #3fe0b5;
+    color: #3fe0b5;
+  }
+
+  .btn-switch:hover {
+    background: #3fe0b5;
+    color: #052e25;
+    box-shadow: 0 6px 20px rgba(63, 224, 181, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* BOTÓN SIGUIENTE RONDA */
+  .gameover-cluster {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 680px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.65rem;
+    padding: 0.5rem 0.85rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  :global([data-theme="light"]) .gameover-cluster {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .outcome-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+
+  .outcome-badge.is-win {
+    color: #34d399;
+  }
+
+  .outcome-badge.is-lose {
+    color: #fb7185;
+  }
+
+  .btn-play-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #3fe0b5;
+    color: #052e25;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-next:hover {
+    background: #5ef3ca;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(63, 224, 181, 0.35);
+  }
+
+  /* MARCADOR COMPACTO DE LA SESIÓN */
+  .session-dock {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  :global([data-theme="light"]) .session-dock {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .dock-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.45rem;
+  }
+
+  .btn-reset-dock {
+    background: transparent;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 4px;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.68rem;
+    color: var(--muted, #94a3b8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-reset-dock:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .dock-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .dock-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  :global([data-theme="light"]) .dock-card {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .dc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dc-name {
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .dock-card.is-switch .dc-name { color: #3fe0b5; }
+  .dock-card.is-stay .dc-name { color: #fb7185; }
+
+  .dc-exp {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .dc-mid {
+    align-items: baseline;
+  }
+
+  .dc-pct {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--ink, #f1f5f9);
+  }
+
+  :global([data-theme="light"]) .dc-pct {
+    color: #0f172a;
+  }
+
+  .dc-counts {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .dc-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  :global([data-theme="light"]) .dc-track {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .dc-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+
+  .dc-fill.is-switch { background: #3fe0b5; }
+  .dc-fill.is-stay { background: #fb7185; }
+
+  /* ==========================================================================
+     SIMULADOR MONTE CARLO Y TEORÍA
+     ========================================================================== */
+  .deep-section {
+    padding: 2.5rem 1rem;
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  .deep-section.is-theory {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  :global([data-theme="light"]) .deep-section.is-theory {
+    background: #f8fafc;
+  }
+
+  .section-container {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .heading-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #3fe0b5;
+    letter-spacing: 0.08em;
+  }
+
+  .section-heading h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink, #f8fafc);
+  }
+
+  :global([data-theme="light"]) .section-heading h2 {
+    color: #0f172a;
+  }
+
+  .heading-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--muted, #94a3b8);
+    margin: 0;
+    max-width: 800px;
+  }
+
+  /* SIMULADOR */
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .sim-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sim-controls-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sim-btns-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-sim-run {
+    flex: 1;
+    min-width: 100px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-sim-run:hover {
+    color: #3fe0b5;
+    border-color: #3fe0b5;
+    background: rgba(63, 224, 181, 0.1);
+  }
+
+  .btn-sim-run.is-highlight {
+    background: rgba(63, 224, 181, 0.15);
+    border-color: #3fe0b5;
+    color: #3fe0b5;
+  }
+
+  :global([data-theme="light"]) .btn-sim-run {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #334155;
+  }
+
+  .btn-sim-reset {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    color: var(--muted, #94a3b8);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .btn-sim-reset:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .sim-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .metric-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.65rem;
+    padding: 0.85rem;
+  }
+
+  :global([data-theme="light"]) .metric-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .mc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .mc-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .metric-card.is-switch .mc-label { color: #3fe0b5; }
+  .metric-card.is-stay .mc-label { color: #fb7185; }
+
+  .mc-target {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .mc-value {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ink, #f1f5f9);
+  }
+
+  :global([data-theme="light"]) .mc-value {
+    color: #0f172a;
+  }
+
+  .mc-sub {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.35rem;
+  }
+
+  .mc-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  :global([data-theme="light"]) .mc-track {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .mc-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+
+  .mc-fill.is-switch { background: #3fe0b5; }
+  .mc-fill.is-stay { background: #fb7185; }
+
+  .sim-total-tag {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  :global([data-theme="light"]) .sim-total-tag {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  /* GRÁFICA */
+  .sim-chart-pane {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  :global([data-theme="light"]) .sim-chart-pane {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .chart-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chart-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--ink, #f1f5f9);
+  }
+
+  :global([data-theme="light"]) .chart-title {
+    color: #0f172a;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 0.75rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .leg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .leg-item.is-switch { color: #3fe0b5; }
+  .leg-item.is-switch .leg-dot { background: #3fe0b5; }
+  .leg-item.is-stay { color: #fb7185; }
+  .leg-item.is-stay .leg-dot { background: #fb7185; }
+
+  .canvas-wrap {
+    width: 100%;
+    position: relative;
+  }
+
+  #monty-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0.4rem;
+  }
+
+  /* TEORÍA Y DEMOSTRACIÓN */
+  .theory-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .theory-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .theory-card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  :global([data-theme="light"]) .theory-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .th-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #3fe0b5;
+    letter-spacing: 0.06em;
+  }
+
+  .theory-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink, #f1f5f9);
+  }
+
+  :global([data-theme="light"]) .theory-card h3 {
+    color: #0f172a;
+  }
+
+  .theory-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  :global([data-theme="light"]) .theory-card p {
+    color: #334155;
+  }
+
+  .th-list {
+    margin: 0.25rem 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+
+  :global([data-theme="light"]) .th-list {
+    color: #334155;
+  }
+
+  .th-highlight {
+    background: rgba(63, 224, 181, 0.1);
+    border-left: 3px solid #3fe0b5;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 0.4rem 0.4rem 0;
+  }
+
+  /* CAJA BAYES */
+  .bayes-box {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.5rem;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  :global([data-theme="light"]) .bayes-box {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .bb-formula {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    text-align: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .bb-formula {
+    color: #0284c7;
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .bb-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    line-height: 1.45;
+  }
+
+  :global([data-theme="light"]) .bb-steps {
+    color: #475569;
+  }
+
+  .bb-result {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #34d399;
+    text-align: center;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .bb-result {
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+</style>

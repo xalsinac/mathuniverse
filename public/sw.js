@@ -1,12 +1,24 @@
 // Service Worker para Math Universe (PWA)
 // Diseñado con política anti-caché obsoleta: NETWORK-FIRST para que la web siempre esté al día.
 
-const SW_VERSION = 'v1.0.0';
+const SW_VERSION = 'v1.1.0';
 const CACHE_NAME = `math-universe-${SW_VERSION}`;
 
-// 1. Instalación: forzar activación inmediata (no esperar a que se cierren pestañas antiguas)
+const PRECACHE_ASSETS = [
+  '/',
+  '/calc',
+  '/manifest-calc.webmanifest',
+  '/favicon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+];
+
+// 1. Instalación: forzar activación inmediata y precachear shell de la calculadora PWA
 self.addEventListener('install', (event) => {
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS).catch(() => {}))
+  );
 });
 
 // 2. Activación: reclamar control de clientes inmediatamente y purgar cualquier caché vieja

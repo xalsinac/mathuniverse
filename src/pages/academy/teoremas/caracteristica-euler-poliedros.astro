@@ -850,46 +850,46 @@ const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-07');
         vertices: (() => {
           const s = 0.85;
           const ip = 1 / phi;
-          const v: [number, number, number][] = [];
-          // 8 vértices del cubo base: (±1, ±1, ±1)
-          for (const x of [-1, 1]) {
-            for (const y of [-1, 1]) {
-              for (const z of [-1, 1]) {
-                v.push([x * s, y * s, z * s]);
-              }
-            }
-          }
-          // 12 vértices en los 3 planos coordenados ortogonales
-          for (const s1 of [-1, 1]) {
-            for (const s2 of [-1, 1]) {
-              v.push([0, s1 * ip * s, s2 * phi * s]);
-            }
-          }
-          for (const s1 of [-1, 1]) {
-            for (const s2 of [-1, 1]) {
-              v.push([s1 * ip * s, s2 * phi * s, 0]);
-            }
-          }
-          for (const s1 of [-1, 1]) {
-            for (const s2 of [-1, 1]) {
-              v.push([s2 * phi * s, 0, s1 * ip * s]);
-            }
-          }
-          return v;
+          return [
+            // 8 vértices del cubo base (±1, ±1, ±1)
+            [-s, -s, -s], // 0
+            [-s, -s,  s], // 1
+            [-s,  s, -s], // 2
+            [-s,  s,  s], // 3
+            [ s, -s, -s], // 4
+            [ s, -s,  s], // 5
+            [ s,  s, -s], // 6
+            [ s,  s,  s], // 7
+            // 4 vértices en plano YZ (0, ±1/φ, ±φ)
+            [0, -ip * s, -phi * s], // 8
+            [0, -ip * s,  phi * s], // 9
+            [0,  ip * s, -phi * s], // 10
+            [0,  ip * s,  phi * s], // 11
+            // 4 vértices en plano XY (±1/φ, ±φ, 0)
+            [-ip * s, -phi * s, 0], // 12
+            [-ip * s,  phi * s, 0], // 13
+            [ ip * s, -phi * s, 0], // 14
+            [ ip * s,  phi * s, 0], // 15
+            // 4 vértices en plano XZ (±φ, 0, ±1/φ)
+            [-phi * s, 0, -ip * s], // 16
+            [-phi * s, 0,  ip * s], // 17
+            [ phi * s, 0, -ip * s], // 18
+            [ phi * s, 0,  ip * s]  // 19
+          ];
         })(),
         faces: [
           [0, 8, 4, 14, 12],
-          [0, 8, 10, 2, 16],
-          [0, 12, 1, 18, 16],
-          [1, 9, 5, 14, 12],
-          [1, 9, 11, 3, 18],
-          [2, 10, 6, 15, 13],
-          [2, 13, 3, 18, 16],
+          [0, 16, 2, 10, 8],
+          [0, 12, 1, 17, 16],
+          [1, 12, 14, 5, 9],
+          [1, 9, 11, 3, 17],
+          [2, 13, 15, 6, 10],
+          [2, 16, 17, 3, 13],
           [3, 11, 7, 15, 13],
-          [4, 8, 10, 6, 17],
-          [4, 14, 5, 19, 17],
-          [5, 9, 11, 7, 19],
-          [6, 15, 7, 19, 17]
+          [4, 8, 10, 6, 18],
+          [4, 18, 19, 5, 14],
+          [5, 19, 7, 11, 9],
+          [6, 15, 7, 19, 18]
         ]
       },
       icosahedron: {
