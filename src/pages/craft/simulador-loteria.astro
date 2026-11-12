@@ -1,0 +1,1347 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Simulador de Lotería Española (Euromillones, Primitiva y El Gordo) | Math Universe"
+  description="Simula miles de sorteos reales de Euromillones, La Primitiva y El Gordo. Visualiza tus ganancias, pérdidas, categorías de premio y por qué la esperanza matemática negativa hace inevitable perder a largo plazo."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Probabilidad" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="lotto-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA DEL COCKPIT -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">Simulador de Lotería Española</h1>
+              <span class="badge-pill">Esperanza Matemática</span>
+            </div>
+          </div>
+
+          <div class="game-selector" role="group" aria-label="Seleccionar lotería">
+            <button type="button" class="lotto-tab is-active" data-game="euromillones">
+              <span class="tab-name">Euromillones</span>
+              <span class="tab-sub">2,50 € · 1/139,8M</span>
+            </button>
+            <button type="button" class="lotto-tab" data-game="primitiva">
+              <span class="tab-name">La Primitiva</span>
+              <span class="tab-sub">1,00 € · 1/139,8M</span>
+            </button>
+            <button type="button" class="lotto-tab" data-game="gordo">
+              <span class="tab-name">El Gordo</span>
+              <span class="tab-sub">1,50 € · 1/31,6M</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- GRID DE 3 COLUMNAS EN PC (BOLETO | CONTROLES + GRÁFICA | TABLA VISIBLE SIN SCROLL) -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: BOLETO + ÚLTIMO BOMBO -->
+          <div class="col-ticket">
+            <div class="panel-card ticket-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker" id="ticket-kicker">Tu Boleto · 5 números + 2 estrellas</span>
+                  <h2 class="panel-title">Elige tu combinación</h2>
+                </div>
+                <button type="button" class="btn-mini" id="btn-random-ticket">Al azar</button>
+              </div>
+
+              <div class="selected-summary" id="selected-summary"></div>
+
+              <div class="number-grid" id="main-grid" aria-label="Cuadrícula de números principales"></div>
+
+              <div class="bonus-section">
+                <div class="bonus-label" id="bonus-label">Estrellas (elige 2)</div>
+                <div class="bonus-grid" id="bonus-grid" aria-label="Cuadrícula de estrellas o reintegro"></div>
+              </div>
+            </div>
+
+            <div class="panel-card draw-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Resultado del último bombo</span>
+                  <h2 class="panel-title" id="draw-status-title">Pulsa «Jugar» para iniciar</h2>
+                </div>
+              </div>
+              <div class="draw-balls-row" id="draw-balls-row">
+                <span class="empty-draw-msg">Sin sorteos todavía.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: CONTROLES + KPIS + GRÁFICA -->
+          <div class="col-center">
+            <div class="panel-card controls-card">
+              <div class="sim-buttons">
+                <button type="button" class="sim-btn primary" id="btn-play-1">1 sorteo</button>
+                <button type="button" class="sim-btn" id="btn-play-100">100 (~1 año)</button>
+                <button type="button" class="sim-btn" id="btn-play-1000">1.000 (~10 años)</button>
+                <button type="button" class="sim-btn" id="btn-play-10000">10.000 (~100 años)</button>
+                <button type="button" class="sim-btn gold" id="btn-play-jackpot">Hasta el 1er Premio (Turbo)</button>
+                <button type="button" class="sim-btn ghost" id="btn-reset">Reiniciar</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Sorteos jugados</span>
+                <span class="kpi-val" id="kpi-draws">0</span>
+                <span class="kpi-sub" id="kpi-years">0,0 años jugando</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Dinero gastado</span>
+                <span class="kpi-val spent" id="kpi-spent">0,00 €</span>
+                <span class="kpi-sub" id="kpi-cost-per">2,50 € / sorteo</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Premios ganados</span>
+                <span class="kpi-val pos" id="kpi-won">0,00 €</span>
+                <span class="kpi-sub" id="kpi-hits">0 sorteos premiados</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Balance neto</span>
+                <span class="kpi-val" id="kpi-net">0,00 €</span>
+                <span class="kpi-sub" id="kpi-rtp">Retorno real: —</span>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Evolución temporal</span>
+                  <h2 class="panel-title">Balance Neto Acumulado (€)</h2>
+                </div>
+                <span class="best-prize-pill" id="best-prize-pill">Mejor: Ninguno</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="balance-canvas" width="680" height="235" aria-label="Gráfica del balance neto acumulado"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: DESGLOSE COMPLETO DE PROBABILIDADES Y PREMIOS -->
+          <div class="col-table">
+            <div class="panel-card table-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Probabilidades y aciertos</span>
+                  <h2 class="panel-title">Categorías de Premio</h2>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="prizes-table">
+                  <thead>
+                    <tr>
+                      <th>Categoría</th>
+                      <th>Prob.</th>
+                      <th>Premio</th>
+                      <th>Aciertos</th>
+                      <th>Ganado</th>
+                    </tr>
+                  </thead>
+                  <tbody id="prizes-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA: LA MATEMÁTICA DE LA LOTERÍA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Explicación Matemática</span>
+          <h2>¿Por qué casi siempre pierdes dinero aunque juegues miles de veces?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. Combinatoria</div>
+            <h3>El tamaño astronómico del espacio muestral</h3>
+            <p>
+              En <strong>Euromillones</strong> debes acertar 5 números de 50 sin importar el orden y 2 estrellas de 12. El número total de boletos posibles es:
+            </p>
+            <div class="formula-box">
+              C(50, 5) × C(12, 2) = 2.118.760 × 66 = 139.838.160
+            </div>
+            <p>
+              Si compraras <strong>1 boleto cada segundo</strong> sin parar ni para dormir, tardarías <strong>4,4 años</strong> en cubrir todas las combinaciones.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. Esperanza Matemática</div>
+            <h3>El motor invisible que vacía la hucha</h3>
+            <p>
+              La <strong>esperanza matemática</strong> <code class="inline-code">E[X]</code> mide la ganancia media por apuesta a largo plazo. En las loterías españolas, alrededor del <strong>50%–55%</strong> de lo recaudado se reparte en premios y el resto va a impuestos y gestión:
+            </p>
+            <div class="formula-box">
+              E[Ganancia] = ∑ (p<sub>i</sub> · Premio<sub>i</sub>) − Coste ≈ −0,50 · Coste
+            </div>
+            <p>
+              En Euromillones, cada boleto de <strong>2,50 €</strong> tiene una esperanza aproximada de <strong>−1,25 €</strong>. Por la <strong>Ley de los Grandes Números</strong>, cuantos más sorteos juegas, más se pega tu pérdida media a esa pendiente negativa.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Mitos Frecuentes</div>
+            <h3>¿Sirve jugar siempre los mismos números?</h3>
+            <p>
+              <strong>No aumenta tu probabilidad.</strong> Las bolas no tienen memoria: cada sorteo es un suceso independiente. Que el número <code class="inline-code">17</code> lleve 30 sorteos sin salir no hace que «le toque» salir hoy.
+            </p>
+            <p>
+              Si quieres entender rigurosamente por qué el promedio converge a la esperanza negativa cuando <code class="inline-code">n → ∞</code>, explora la lección de Math Academy:
+            </p>
+            <a href="/academy/probabilidad/ley-grandes-numeros-tcl" class="academy-inline-link">
+              Ir a Math Academy: Ley de los Grandes Números y TCL →
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .lotto-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1420px;
+    margin: 0 auto;
+  }
+
+  /* CABECERA */
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #d97706;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.38);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #fbbf24;
+  }
+
+  .game-selector {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .lotto-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.45rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+
+  .lotto-tab:hover {
+    border-color: #f59e0b;
+  }
+
+  .lotto-tab.is-active {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: #f59e0b;
+    color: var(--ink-strong);
+    box-shadow: 0 4px 14px -6px rgba(245, 158, 11, 0.35);
+  }
+
+  .tab-name {
+    font-weight: 700;
+    font-size: 0.86rem;
+  }
+
+  .tab-sub {
+    font-family: var(--mono);
+    font-size: 0.69rem;
+    color: var(--muted);
+  }
+
+  /* LAYOUT 3 COLUMNAS EN PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(305px, 345px) 1fr minmax(350px, 410px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(300px, 355px) 1fr;
+    }
+    .col-table {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-center {
+      order: 1;
+    }
+    .col-ticket {
+      order: 2;
+    }
+    .col-table {
+      order: 3;
+    }
+    .game-selector {
+      width: 100%;
+    }
+    .lotto-tab {
+      padding: 0.45rem 0.55rem;
+    }
+  }
+
+  .col-ticket,
+  .col-center,
+  .col-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .btn-mini {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.36rem 0.72rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--accent-ink);
+    cursor: pointer;
+  }
+
+  /* BOLAS Y BOLETO */
+  .selected-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.36rem;
+    margin-bottom: 0.75rem;
+    min-height: 32px;
+    align-items: center;
+  }
+
+  .ball-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 800;
+    background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb);
+    color: #ffffff;
+    box-shadow: 0 3px 8px -2px rgba(37, 99, 235, 0.45);
+  }
+
+  .ball-chip.star {
+    background: radial-gradient(circle at 30% 30%, #fde68a, #d97706);
+    color: #1c1917;
+    box-shadow: 0 3px 8px -2px rgba(217, 119, 6, 0.4);
+  }
+
+  .ball-chip.matched {
+    background: radial-gradient(circle at 30% 30%, #6ee7b7, #059669);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.55);
+  }
+
+  .ball-chip.miss {
+    background: var(--bg-sunken);
+    color: var(--ink-soft);
+    border: 1px solid var(--line-strong);
+    box-shadow: none;
+  }
+
+  .number-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 0.26rem;
+  }
+
+  @media (max-width: 780px) {
+    .number-grid {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+  }
+
+  .num-cell {
+    aspect-ratio: 1;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    padding: 0;
+  }
+
+  .num-cell:hover {
+    border-color: var(--accent);
+  }
+
+  .num-cell.selected {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    border-color: #60a5fa;
+    color: #ffffff;
+    font-weight: 800;
+    transform: scale(1.06);
+    box-shadow:
+      0 0 14px rgba(56, 189, 248, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .bonus-section {
+    margin-top: 0.8rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .bonus-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 0.45rem;
+  }
+
+  .bonus-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.3rem;
+  }
+
+  .bonus-cell {
+    padding: 0.38rem 0;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .bonus-cell.selected {
+    background: linear-gradient(135deg, #fde68a, #f59e0b);
+    border-color: #fbbf24;
+    color: #1c1917;
+    font-weight: 800;
+    transform: scale(1.06);
+    box-shadow:
+      0 0 14px rgba(245, 158, 11, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .draw-balls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    min-height: 34px;
+  }
+
+  .empty-draw-msg {
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  /* CONTROLES DE SIMULACIÓN */
+  .sim-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  @media (max-width: 560px) {
+    .sim-buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sim-btn {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.62rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-sunken);
+    color: var(--ink-strong);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    text-align: center;
+  }
+
+  .sim-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .sim-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .sim-btn.gold {
+    grid-column: span 2;
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  :root[data-theme='dark'] .sim-btn.gold {
+    color: #fbbf24;
+  }
+
+  .sim-btn.gold.running {
+    background: #e11d48;
+    border-color: #e11d48;
+    color: #ffffff;
+  }
+
+  .sim-btn.ghost {
+    color: var(--muted);
+  }
+
+  /* KPIS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  .kpi-val.neg { color: #dc2626; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+  :root[data-theme='dark'] .kpi-val.neg { color: #f87171; }
+
+  .kpi-sub {
+    display: block;
+    font-size: 0.71rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .best-prize-pill {
+    font-family: var(--mono);
+    font-size: 0.71rem;
+    font-weight: 700;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  :root[data-theme='dark'] .best-prize-pill {
+    color: #34d399;
+  }
+
+  .canvas-wrap {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* TABLA COMPACTA SIN SCROLL EN PC */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .prizes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  .prizes-table th,
+  .prizes-table td {
+    padding: 0.36rem 0.42rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .prizes-table th {
+    font-family: var(--mono);
+    font-size: 0.67rem;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .prizes-table td {
+    color: var(--ink);
+    font-family: var(--mono);
+  }
+
+  .prizes-table tr.has-hits {
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .prizes-table tr.has-hits td:first-child {
+    color: #059669;
+    font-weight: 700;
+  }
+
+  :root[data-theme='dark'] .prizes-table tr.has-hits td:first-child {
+    color: #34d399;
+  }
+
+  /* SECCIÓN EDUCATIVA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.84rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+
+  .academy-inline-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.25rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #d97706;
+    text-decoration: none;
+  }
+
+  :root[data-theme='dark'] .academy-inline-link {
+    color: #fbbf24;
+  }
+
+  .academy-inline-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  type PrizeTier = {
+    id: string;
+    label: string;
+    oddsInv: number;
+    prize: number;
+  };
+
+  type LottoConfig = {
+    name: string;
+    cost: number;
+    drawsPerYear: number;
+    mainMax: number;
+    mainPick: number;
+    bonusMin: number;
+    bonusMax: number;
+    bonusPick: number;
+    bonusName: string;
+    tiers: PrizeTier[];
+  };
+
+  const GAMES: Record<string, LottoConfig> = {
+    euromillones: {
+      name: 'Euromillones',
+      cost: 2.5,
+      drawsPerYear: 104,
+      mainMax: 50,
+      mainPick: 5,
+      bonusMin: 1,
+      bonusMax: 12,
+      bonusPick: 2,
+      bonusName: 'Estrellas',
+      tiers: [
+        { id: '5+2', label: '5+2 (1ª)', oddsInv: 139838160, prize: 50000000 },
+        { id: '5+1', label: '5+1 (2ª)', oddsInv: 6991908, prize: 300000 },
+        { id: '5+0', label: '5+0 (3ª)', oddsInv: 3107515, prize: 25000 },
+        { id: '4+2', label: '4+2 (4ª)', oddsInv: 621503, prize: 1500 },
+        { id: '4+1', label: '4+1 (5ª)', oddsInv: 31075, prize: 120 },
+        { id: '3+2', label: '3+2 (6ª)', oddsInv: 14125, prize: 60 },
+        { id: '4+0', label: '4+0 (7ª)', oddsInv: 13811, prize: 40 },
+        { id: '2+2', label: '2+2 (8ª)', oddsInv: 985, prize: 15 },
+        { id: '3+1', label: '3+1 (9ª)', oddsInv: 706, prize: 11 },
+        { id: '3+0', label: '3+0 (10ª)', oddsInv: 314, prize: 9 },
+        { id: '1+2', label: '1+2 (11ª)', oddsInv: 188, prize: 7 },
+        { id: '2+1', label: '2+1 (12ª)', oddsInv: 49, prize: 5.5 },
+        { id: '2+0', label: '2+0 (13ª)', oddsInv: 22, prize: 4 },
+      ],
+    },
+    primitiva: {
+      name: 'La Primitiva',
+      cost: 1.0,
+      drawsPerYear: 104,
+      mainMax: 49,
+      mainPick: 6,
+      bonusMin: 0,
+      bonusMax: 9,
+      bonusPick: 1,
+      bonusName: 'Reintegro',
+      tiers: [
+        { id: '6+R', label: '6+R (Esp.)', oddsInv: 139838160, prize: 15000000 },
+        { id: '6+0', label: '6 (1ª)', oddsInv: 15537573, prize: 1500000 },
+        { id: '5+C', label: '5+C (2ª)', oddsInv: 2330636, prize: 25000 },
+        { id: '5', label: '5 (3ª)', oddsInv: 55491, prize: 2000 },
+        { id: '4', label: '4 (4ª)', oddsInv: 1032, prize: 60 },
+        { id: '3', label: '3 (5ª)', oddsInv: 57, prize: 8 },
+        { id: 'R', label: 'Reintegro', oddsInv: 10, prize: 1 },
+      ],
+    },
+    gordo: {
+      name: 'El Gordo',
+      cost: 1.5,
+      drawsPerYear: 52,
+      mainMax: 54,
+      mainPick: 5,
+      bonusMin: 0,
+      bonusMax: 9,
+      bonusPick: 1,
+      bonusName: 'Número Clave',
+      tiers: [
+        { id: '5+1', label: '5+1 (1ª)', oddsInv: 31625100, prize: 10000000 },
+        { id: '5+0', label: '5+0 (2ª)', oddsInv: 3513900, prize: 150000 },
+        { id: '4+1', label: '4+1 (3ª)', oddsInv: 129082, prize: 1500 },
+        { id: '4+0', label: '4+0 (4ª)', oddsInv: 14342, prize: 150 },
+        { id: '3+1', label: '3+1 (5ª)', oddsInv: 2689, prize: 35 },
+        { id: '3+0', label: '3+0 (6ª)', oddsInv: 299, prize: 15 },
+        { id: '2+1', label: '2+1 (7ª)', oddsInv: 172, prize: 6 },
+        { id: '2+0', label: '2+0 (8ª)', oddsInv: 19, prize: 3 },
+        { id: 'R', label: 'Reintegro', oddsInv: 10, prize: 1.5 },
+      ],
+    },
+  };
+
+  let currentGameKey = 'euromillones';
+  let userMain: number[] = [];
+  let userBonus: number[] = [];
+
+  let totalDraws = 0;
+  let totalSpent = 0;
+  let totalWon = 0;
+  let totalWinningDraws = 0;
+  let bestPrize = 0;
+  let bestPrizeLabel = 'Ninguno';
+  let tierHits: Record<string, number> = {};
+  let balanceHistory: number[] = [0];
+  let turboRaf: number | null = null;
+
+  const mainGrid = document.getElementById('main-grid')!;
+  const bonusGrid = document.getElementById('bonus-grid')!;
+  const selectedSummary = document.getElementById('selected-summary')!;
+  const ticketKicker = document.getElementById('ticket-kicker')!;
+  const bonusLabel = document.getElementById('bonus-label')!;
+  const drawBallsRow = document.getElementById('draw-balls-row')!;
+  const drawStatusTitle = document.getElementById('draw-status-title')!;
+  const prizesTbody = document.getElementById('prizes-tbody')!;
+  const balanceCanvas = document.getElementById('balance-canvas') as HTMLCanvasElement;
+
+  const kpiDraws = document.getElementById('kpi-draws')!;
+  const kpiYears = document.getElementById('kpi-years')!;
+  const kpiSpent = document.getElementById('kpi-spent')!;
+  const kpiCostPer = document.getElementById('kpi-cost-per')!;
+  const kpiWon = document.getElementById('kpi-won')!;
+  const kpiHits = document.getElementById('kpi-hits')!;
+  const kpiNet = document.getElementById('kpi-net')!;
+  const kpiRtp = document.getElementById('kpi-rtp')!;
+  const bestPrizePill = document.getElementById('best-prize-pill')!;
+  const btnJackpot = document.getElementById('btn-play-jackpot')!;
+
+  const fmtEur = (v: number) =>
+    v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  const fmtInt = (v: number) => v.toLocaleString('es-ES');
+  const fmtCompactEur = (v: number) => {
+    if (v >= 1_000_000) return `${v / 1_000_000}M €`;
+    if (v >= 1_000) return `${v / 1_000}k €`;
+    return fmtEur(v);
+  };
+
+  function pickRandomUnique(min: number, max: number, count: number): number[] {
+    const pool: number[] = [];
+    for (let i = min; i <= max; i++) pool.push(i);
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, count).sort((a, b) => a - b);
+  }
+
+  function randomizeTicket() {
+    const cfg = GAMES[currentGameKey];
+    userMain = pickRandomUnique(1, cfg.mainMax, cfg.mainPick);
+    userBonus = pickRandomUnique(cfg.bonusMin, cfg.bonusMax, cfg.bonusPick);
+    renderTicketUI();
+  }
+
+  function renderTicketUI() {
+    const cfg = GAMES[currentGameKey];
+    ticketKicker.textContent = `Tu Boleto · ${cfg.mainPick} números + ${cfg.bonusPick} ${cfg.bonusName.toLowerCase()}`;
+    bonusLabel.textContent = `${cfg.bonusName} (elige ${cfg.bonusPick})`;
+
+    selectedSummary.innerHTML =
+      userMain.map((n) => `<span class="ball-chip">${n}</span>`).join('') +
+      userBonus.map((b) => `<span class="ball-chip star">${b}</span>`).join('');
+
+    mainGrid.innerHTML = '';
+    for (let i = 1; i <= cfg.mainMax; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'num-cell' + (userMain.includes(i) ? ' selected' : '');
+      btn.textContent = String(i);
+      btn.addEventListener('click', () => {
+        if (userMain.includes(i)) {
+          if (userMain.length > 1) userMain = userMain.filter((x) => x !== i);
+        } else if (userMain.length < cfg.mainPick) {
+          userMain = [...userMain, i].sort((a, b) => a - b);
+        } else {
+          userMain = [...userMain.slice(1), i].sort((a, b) => a - b);
+        }
+        renderTicketUI();
+      });
+      mainGrid.appendChild(btn);
+    }
+
+    bonusGrid.innerHTML = '';
+    for (let i = cfg.bonusMin; i <= cfg.bonusMax; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bonus-cell' + (userBonus.includes(i) ? ' selected' : '');
+      btn.textContent = String(i);
+      btn.addEventListener('click', () => {
+        if (userBonus.includes(i)) {
+          if (userBonus.length > 1) userBonus = userBonus.filter((x) => x !== i);
+        } else if (userBonus.length < cfg.bonusPick) {
+          userBonus = [...userBonus, i].sort((a, b) => a - b);
+        } else {
+          userBonus = [...userBonus.slice(1), i].sort((a, b) => a - b);
+        }
+        renderTicketUI();
+      });
+      bonusGrid.appendChild(btn);
+    }
+  }
+
+  function evaluatePhysicalDraw(): { drawnMain: number[]; drawnBonus: number[]; tier: PrizeTier | null } {
+    const cfg = GAMES[currentGameKey];
+    const drawnMain = pickRandomUnique(1, cfg.mainMax, cfg.mainPick);
+    const drawnBonus = pickRandomUnique(cfg.bonusMin, cfg.bonusMax, cfg.bonusPick);
+
+    const mainHits = drawnMain.filter((x) => userMain.includes(x)).length;
+    const bonusHits = drawnBonus.filter((x) => userBonus.includes(x)).length;
+
+    let tierId: string | null = null;
+    if (currentGameKey === 'euromillones') {
+      const key = `${mainHits}+${bonusHits}`;
+      if (cfg.tiers.some((t) => t.id === key)) tierId = key;
+    } else if (currentGameKey === 'primitiva') {
+      if (mainHits === 6 && bonusHits === 1) tierId = '6+R';
+      else if (mainHits === 6) tierId = '6+0';
+      else if (mainHits === 5 && Math.random() < 1 / 43) tierId = '5+C';
+      else if (mainHits === 5) tierId = '5';
+      else if (mainHits === 4) tierId = '4';
+      else if (mainHits === 3) tierId = '3';
+      else if (bonusHits === 1) tierId = 'R';
+    } else if (currentGameKey === 'gordo') {
+      if (mainHits >= 2) {
+        const key = `${mainHits}+${bonusHits}`;
+        if (cfg.tiers.some((t) => t.id === key)) tierId = key;
+      } else if (bonusHits === 1) {
+        tierId = 'R';
+      }
+    }
+
+    const tier = tierId ? cfg.tiers.find((t) => t.id === tierId) || null : null;
+    return { drawnMain, drawnBonus, tier };
+  }
+
+  function sampleTierFast(cfg: LottoConfig): PrizeTier | null {
+    const r = Math.random();
+    let cum = 0;
+    for (const t of cfg.tiers) {
+      cum += 1 / t.oddsInv;
+      if (r < cum) return t;
+    }
+    return null;
+  }
+
+  function recordOutcome(tier: PrizeTier | null, cfg: LottoConfig) {
+    totalDraws++;
+    totalSpent += cfg.cost;
+    if (tier) {
+      totalWon += tier.prize;
+      totalWinningDraws++;
+      tierHits[tier.id] = (tierHits[tier.id] || 0) + 1;
+      if (tier.prize > bestPrize) {
+        bestPrize = tier.prize;
+        bestPrizeLabel = `${tier.label} (${fmtCompactEur(tier.prize)})`;
+      }
+    }
+  }
+
+  function renderDrawBalls(drawnMain: number[], drawnBonus: number[], tier: PrizeTier | null) {
+    drawBallsRow.innerHTML =
+      drawnMain
+        .map((n) => {
+          const hit = userMain.includes(n);
+          return `<span class="ball-chip ${hit ? 'matched' : 'miss'}">${n}</span>`;
+        })
+        .join('') +
+      drawnBonus
+        .map((b) => {
+          const hit = userBonus.includes(b);
+          return `<span class="ball-chip ${hit ? 'matched' : 'star'}">${b}</span>`;
+        })
+        .join('');
+
+    drawStatusTitle.textContent = tier
+      ? `¡Premio! ${tier.label} → +${fmtEur(tier.prize)}`
+      : 'Sin premio en este sorteo';
+  }
+
+  function renderStats() {
+    const cfg = GAMES[currentGameKey];
+    const net = totalWon - totalSpent;
+    const years = totalDraws / cfg.drawsPerYear;
+    const rtp = totalSpent > 0 ? (totalWon / totalSpent) * 100 : 0;
+
+    kpiDraws.textContent = fmtInt(totalDraws);
+    kpiYears.textContent = `${years.toFixed(1)} años jugando`;
+    kpiSpent.textContent = fmtEur(totalSpent);
+    kpiCostPer.textContent = `${fmtEur(cfg.cost)} / sorteo`;
+    kpiWon.textContent = fmtEur(totalWon);
+    kpiHits.textContent = `${fmtInt(totalWinningDraws)} sorteos premiados`;
+
+    kpiNet.textContent = (net >= 0 ? '+' : '') + fmtEur(net);
+    kpiNet.className = 'kpi-val ' + (net >= 0 ? 'pos' : 'neg');
+    kpiRtp.textContent = totalSpent > 0 ? `Retorno real: ${rtp.toFixed(1)}%` : 'Retorno real: —';
+    bestPrizePill.textContent = `Mejor: ${bestPrizeLabel}`;
+
+    prizesTbody.innerHTML = cfg.tiers
+      .map((t) => {
+        const hits = tierHits[t.id] || 0;
+        const won = hits * t.prize;
+        return `
+          <tr class="${hits > 0 ? 'has-hits' : ''}">
+            <td>${t.label}</td>
+            <td>1/${fmtInt(t.oddsInv)}</td>
+            <td>${fmtCompactEur(t.prize)}</td>
+            <td>${fmtInt(hits)}</td>
+            <td>${fmtEur(won)}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    drawBalanceChart();
+  }
+
+  function drawBalanceChart() {
+    const ctx = balanceCanvas.getContext('2d');
+    if (!ctx) return;
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const w = balanceCanvas.width;
+    const h = balanceCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 68;
+    const padR = 18;
+    const padT = 18;
+    const padB = 26;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const minVal = Math.min(0, ...balanceHistory);
+    const maxVal = Math.max(10, ...balanceHistory);
+    const span = Math.max(10, maxVal - minVal);
+
+    const toX = (i: number) => padL + (i / Math.max(1, balanceHistory.length - 1)) * plotW;
+    const toY = (v: number) => padT + ((maxVal - v) / span) * plotH;
+
+    // Línea 0 €
+    const y0 = toY(0);
+    ctx.strokeStyle = isLight ? 'rgba(20, 21, 26, 0.28)' : 'rgba(148, 163, 184, 0.35)';
+    ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(padL, y0);
+    ctx.lineTo(w - padR, y0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = isLight ? '#626573' : '#94a3b8';
+    ctx.font = '11px monospace';
+    ctx.fillText('0 €', 10, y0 + 4);
+    ctx.fillText(Math.round(minVal).toLocaleString('es-ES') + ' €', 8, h - padB);
+
+    if (balanceHistory.length < 2) return;
+
+    const lastVal = balanceHistory[balanceHistory.length - 1];
+    ctx.strokeStyle = lastVal >= 0 ? (isLight ? '#059669' : '#34d399') : (isLight ? '#dc2626' : '#f87171');
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    for (let i = 0; i < balanceHistory.length; i++) {
+      const px = toX(i);
+      const py = toY(balanceHistory[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  function pushHistoryPoint() {
+    const net = totalWon - totalSpent;
+    balanceHistory.push(net);
+    if (balanceHistory.length > 260) {
+      balanceHistory = balanceHistory.filter((_, idx) => idx % 2 === 0 || idx === balanceHistory.length - 1);
+    }
+  }
+
+  function playBatch(count: number) {
+    const cfg = GAMES[currentGameKey];
+    if (count === 1) {
+      const res = evaluatePhysicalDraw();
+      recordOutcome(res.tier, cfg);
+      pushHistoryPoint();
+      renderDrawBalls(res.drawnMain, res.drawnBonus, res.tier);
+      renderStats();
+      return;
+    }
+
+    const stepHistory = Math.max(1, Math.floor(count / 40));
+    let lastTier: PrizeTier | null = null;
+    for (let i = 0; i < count; i++) {
+      const t = sampleTierFast(cfg);
+      if (t) lastTier = t;
+      recordOutcome(t, cfg);
+      if (i % stepHistory === 0 || i === count - 1) {
+        pushHistoryPoint();
+      }
+    }
+    const visual = evaluatePhysicalDraw();
+    renderDrawBalls(visual.drawnMain, visual.drawnBonus, lastTier);
+    renderStats();
+  }
+
+  function stopTurbo() {
+    if (turboRaf !== null) {
+      cancelAnimationFrame(turboRaf);
+      turboRaf = null;
+    }
+    btnJackpot.classList.remove('running');
+    btnJackpot.textContent = 'Hasta el 1er Premio (Turbo)';
+  }
+
+  function toggleTurbo() {
+    if (turboRaf !== null) {
+      stopTurbo();
+      return;
+    }
+    btnJackpot.classList.add('running');
+    btnJackpot.textContent = 'Pausar búsqueda';
+    const cfg = GAMES[currentGameKey];
+    const jackpotId = cfg.tiers[0].id;
+
+    const tick = () => {
+      let wonJackpot = false;
+      const batchPerFrame = 25000;
+      for (let i = 0; i < batchPerFrame; i++) {
+        const t = sampleTierFast(cfg);
+        recordOutcome(t, cfg);
+        if (t && t.id === jackpotId) {
+          wonJackpot = true;
+          break;
+        }
+      }
+      pushHistoryPoint();
+      renderStats();
+      if (wonJackpot) {
+        stopTurbo();
+        drawStatusTitle.textContent = `¡POR FIN! 1er Premio tras ${fmtInt(totalDraws)} sorteos`;
+      } else {
+        turboRaf = requestAnimationFrame(tick);
+      }
+    };
+    turboRaf = requestAnimationFrame(tick);
+  }
+
+  function resetAll() {
+    stopTurbo();
+    totalDraws = 0;
+    totalSpent = 0;
+    totalWon = 0;
+    totalWinningDraws = 0;
+    bestPrize = 0;
+    bestPrizeLabel = 'Ninguno';
+    tierHits = {};
+    balanceHistory = [0];
+    drawBallsRow.innerHTML = '<span class="empty-draw-msg">Sin sorteos todavía.</span>';
+    drawStatusTitle.textContent = 'Pulsa «Jugar» para iniciar';
+    renderStats();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.lotto-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.lotto-tab').forEach((t) => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      currentGameKey = tab.dataset.game || 'euromillones';
+      randomizeTicket();
+      resetAll();
+    });
+  });
+
+  document.getElementById('btn-random-ticket')?.addEventListener('click', randomizeTicket);
+  document.getElementById('btn-play-1')?.addEventListener('click', () => playBatch(1));
+  document.getElementById('btn-play-100')?.addEventListener('click', () => playBatch(100));
+  document.getElementById('btn-play-1000')?.addEventListener('click', () => playBatch(1000));
+  document.getElementById('btn-play-10000')?.addEventListener('click', () => playBatch(10000));
+  btnJackpot.addEventListener('click', toggleTurbo);
+  document.getElementById('btn-reset')?.addEventListener('click', resetAll);
+
+  // Redibujar gráfica al cambiar entre modo claro y oscuro
+  new MutationObserver(() => drawBalanceChart()).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  randomizeTicket();
+  resetAll();
+</script>
