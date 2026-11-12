@@ -168,23 +168,15 @@ import MathGlyph from './MathGlyph.astro';
     };
 
     tiles.forEach((tile) => {
-      // 1 Clic: selecciona y muestra la información a la izquierda
+      // 1.er Clic: selecciona y muestra la información; 2.º Clic (sobre el ya activo): abre la aplicación
       tile.addEventListener('click', () => {
         const id = tile.dataset.resource;
         if (!id) return;
         if (id !== activeId) {
           selectResource(id);
+        } else {
+          openResource(tile);
         }
-      });
-
-      // Doble Clic: entra directamente en la aplicación (además de seleccionarla)
-      tile.addEventListener('dblclick', (ev) => {
-        ev.preventDefault();
-        const id = tile.dataset.resource;
-        if (id && id !== activeId) {
-          selectResource(id);
-        }
-        openResource(tile);
       });
 
       // Reacción táctil 3D (inclinación suave + brillo dinámico al mover el puntero sobre el icono)
