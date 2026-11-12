@@ -1,0 +1,719 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-weierstrass')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-lhopital');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-00');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN TOPOLÓGICA -->
+  <section class="lesson-section" id="intuicion-montana">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición Topológica: La Cordillera en una Isla Cerrada</h2>
+
+    <p class="lead-paragraph">
+      Imagina que recorres un sendero continuo de montaña dentro de una reserva natural perfectamente acotada —desde la puerta oeste <code class="inline-code">a</code> hasta la puerta este <code class="inline-code">b</code>, incluyendo ambas puertas—. Sin importar cuántas subidas y bajadas tenga la ruta, <strong>es imposible que no exista un punto más alto (la cima absoluta) y un punto más bajo (el valle absoluto)</strong>.
+    </p>
+
+    <div class="mountain-visual-card">
+      <div class="mtn-badge">GARANTÍA DE COMPACIDAD EN [a, b]</div>
+      <svg viewBox="0 0 680 185" class="mtn-svg" aria-label="Función continua en intervalo cerrado alcanzando máximo y mínimo absolutos">
+        <line x1="50" y1="150" x2="630" y2="150" stroke="currentColor" stroke-width="1.4" opacity="0.3" />
+        <line x1="110" y1="22" x2="110" y2="155" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4 4" />
+        <line x1="570" y1="22" x2="570" y2="155" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="4 4" />
+
+        <line x1="90" y1="36" x2="590" y2="36" stroke="#10b981" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.6" />
+        <line x1="90" y1="128" x2="590" y2="128" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.6" />
+
+        <path d="M 110 95 C 165 65, 200 128, 250 128 C 310 128, 355 36, 420 36 C 480 36, 515 105, 570 72" fill="none" stroke="#c084fc" stroke-width="3.2" stroke-linecap="round" />
+
+        <circle cx="110" cy="95" r="5" fill="#c084fc" />
+        <circle cx="570" cy="72" r="5" fill="#c084fc" />
+        <text x="110" y="168" text-anchor="middle" class="svg-lbl">a</text>
+        <text x="570" y="168" text-anchor="middle" class="svg-lbl">b</text>
+
+        <circle cx="250" cy="128" r="6" fill="#38bdf8" />
+        <text x="250" y="168" text-anchor="middle" class="svg-lbl cyan">d (mín)</text>
+        <text x="72" y="132" text-anchor="end" class="svg-lbl cyan">m</text>
+
+        <circle cx="420" cy="36" r="6" fill="#10b981" />
+        <text x="420" y="168" text-anchor="middle" class="svg-lbl green">c (máx)</text>
+        <text x="72" y="40" text-anchor="end" class="svg-lbl green">M</text>
+
+        <text x="340" y="20" text-anchor="middle" class="svg-note">Toda función continua en [a, b] queda encerrada entre m y M, y toca ambos</text>
+      </svg>
+    </div>
+
+    <div class="history-context-box">
+      <div class="h-icon">🏛️</div>
+      <div class="h-body">
+        <h4>Karl Weierstrass y la Tríada Clásica de Continuidad (~1861)</h4>
+        <p>
+          El matemático alemán <strong>Karl Weierstrass</strong> —considerado el padre del análisis moderno por aritmetizar el cálculo mediante épsilon-delta— demostró que la intuición visual no basta para probar que existe un máximo: si faltan los bordes del intervalo o hay un salto, la cima puede desaparecer al infinito o convertirse en un objetivo inalcanzable.
+        </p>
+        <p>
+          Con este teorema se completa la gran <strong>tríada de teoremas clásicos sobre intervalos cerrados</strong> junto al <strong>Teorema de Bolzano</strong> (existencia de ceros) y los <strong>Teoremas de Rolle y Lagrange</strong> (existencia de tangentes).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: ENUNCIADO FORMAL Y LA TRÍADA -->
+  <section class="lesson-section" id="enunciado-formal">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Enunciado Formal y la Tríada Clásica de Continuidad</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE WEIERSTRASS (EXTREMOS ABSOLUTOS)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>
+        Sea <code class="inline-code">f: [a, b] ⟶ ℝ</code> una función <strong>continua</strong> en un intervalo <strong>cerrado y acotado</strong> <code class="inline-code">[a, b]</code>. Entonces:
+      </p>
+      <ol class="hyp-list">
+        <li><span class="hyp-pill">1</span> <code class="inline-code">f</code> está <strong>acotada</strong> superior e inferiormente en <code class="inline-code">[a, b]</code>.</li>
+        <li><span class="hyp-pill">2</span> <code class="inline-code">f</code> <strong>alcanza</strong> su máximo absoluto <code class="inline-code">M</code> y su mínimo absoluto <code class="inline-code">m</code> dentro de <code class="inline-code">[a, b]</code>:</li>
+      </ol>
+      <div class="formula-display-banner">
+        <div class="weier-eq">
+          ∃ c, d ∈ [a, b] &nbsp;tales que&nbsp; <span class="eq-cyan">f(d)</span> ≤ f(x) ≤ <span class="eq-green">f(c)</span> &nbsp;∀ x ∈ [a, b]
+        </div>
+      </div>
+      <p class="thm-note">
+        <strong>Matiz clave en exámenes:</strong> El teorema <strong>NO exige derivabilidad</strong> (funciona perfectamente para funciones con picos como <code class="inline-code">f(x) = |x|</code>), y los extremos absolutos pueden alcanzarse tanto en el interior como en los <strong>bordes <code class="inline-code">a</code> o <code class="inline-code">b</code></strong>.
+      </p>
+    </div>
+
+    <div class="triad-grid">
+      <div class="triad-card">
+        <div class="tri-tag cyan">1. BOLZANO</div>
+        <h4>Existencia de Raíces</h4>
+        <p>Continua en <code class="inline-code">[a, b]</code> + cambio de signo <code class="inline-code">f(a)·f(b) &lt; 0</code> ⇒ existe al menos un corte <code class="inline-code">f(c) = 0</code>.</p>
+      </div>
+      <div class="triad-card">
+        <div class="tri-tag green">2. WEIERSTRASS</div>
+        <h4>Existencia de Extremos</h4>
+        <p>Continua en <code class="inline-code">[a, b]</code> ⇒ alcanza máximo <code class="inline-code">M</code> y mínimo <code class="inline-code">m</code> absolutos. La imagen es <code class="inline-code">[m, M]</code>.</p>
+      </div>
+      <div class="triad-card">
+        <div class="tri-tag purple">3. ROLLE / LAGRANGE</div>
+        <h4>Existencia de Tangentes</h4>
+        <p>Continua en <code class="inline-code">[a, b]</code> y derivable en <code class="inline-code">(a, b)</code> ⇒ relaciona los valores extremos con <code class="inline-code">f′(c) = 0</code> o la tasa media.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: DEMOSTRACIÓN RIGUROSA -->
+  <section class="lesson-section" id="demostracion-formal">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Demostración Rigurosa en Dos Etapas (Bolzano-Weierstrass)</h2>
+
+    <p>
+      La prueba formal de Weierstrass utiliza la <strong>completitud de ℝ</strong> a través del <em>Teorema de Bolzano-Weierstrass</em> (toda sucesión acotada en <code class="inline-code">ℝ</code> posee una subsucesión convergente) y del axioma del supremo:
+    </p>
+
+    <div class="proof-box">
+      <div class="proof-header">ETAPA A · DEMOSTRAR QUE f ESTÁ ACOTADA EN [a, b]</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Reducción al absurdo:</strong> Supongamos que <code class="inline-code">f</code> <em>no</em> está acotada superiormente en <code class="inline-code">[a, b]</code>. Entonces, para cada número natural <code class="inline-code">n ∈ ℕ</code>, podemos elegir un punto <code class="inline-code">xₙ ∈ [a, b]</code> tal que <code class="inline-code">f(xₙ) &gt; n</code>.
+        </li>
+        <li>
+          <strong>Compacidad de <code class="inline-code">[a, b]</code>:</strong> La sucesión <code class="inline-code">(xₙ)</code> está acotada porque <code class="inline-code">a ≤ xₙ ≤ b</code>. Por el Teorema de Bolzano-Weierstrass, existe una subsucesión <code class="inline-code">(x<sub>nₖ</sub>)</code> que converge a un punto límite <code class="inline-code">x*</code>. Como <code class="inline-code">[a, b]</code> es <strong>cerrado</strong>, necesariamente <code class="inline-code">x* ∈ [a, b]</code>.
+        </li>
+        <li>
+          <strong>Contradicción por continuidad:</strong> Como <code class="inline-code">f</code> es continua en <code class="inline-code">x*</code>, debe cumplirse <code class="inline-code">lim<sub>k→∞</sub> f(x<sub>nₖ</sub>) = f(x*)</code> (un número real finito). Pero por construcción <code class="inline-code">f(x<sub>nₖ</sub>) &gt; nₖ → +∞</code>. ¡Absurdo! Luego <code class="inline-code">f</code> está acotada superiormente.
+        </li>
+      </ol>
+    </div>
+
+    <div class="proof-box is-purple">
+      <div class="proof-header purple">ETAPA B · DEMOSTRAR QUE EL SUPREMO SE ALCANZA</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Existencia del supremo <code class="inline-code">M</code>:</strong> Como el conjunto imagen <code class="inline-code">f([a, b])</code> es no vacío y acotado superiormente, por el axioma del supremo existe <code class="inline-code">M = sup f([a, b]) ∈ ℝ</code>.
+        </li>
+        <li>
+          <strong>Sucesión aproximante:</strong> Para cada <code class="inline-code">n ∈ ℕ</code>, <code class="inline-code">M − 1/n</code> ya no es cota superior, así que existe <code class="inline-code">yₙ ∈ [a, b]</code> con <code class="inline-code">M − 1/n &lt; f(yₙ) ≤ M</code>.
+        </li>
+        <li>
+          <strong>Paso al límite:</strong> De nuevo, por Bolzano-Weierstrass extraemos una subsucesión <code class="inline-code">y<sub>nₖ</sub> → c ∈ [a, b]</code>. Por la regla del sándwich, <code class="inline-code">f(y<sub>nₖ</sub>) → M</code>, y por continuidad de <code class="inline-code">f</code> en <code class="inline-code">c</code>, <code class="inline-code">f(y<sub>nₖ</sub>) → f(c)</code>. Por unicidad del límite, <strong><code class="inline-code">f(c) = M</code></strong>. (Análogamente para el mínimo <code class="inline-code">m</code> aplicando el resultado a <code class="inline-code">−f</code>). &nbsp;∎
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DE CONTRAEJEMPLOS -->
+  <section class="lesson-section" id="laboratorio-contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Selector de Contraejemplos</h2>
+
+    <p>
+      ¿Qué ocurre cuando violamos <strong>una sola</strong> de las hipótesis de Weierstrass? Selecciona cada escenario para observar cómo desaparece el máximo absoluto (a veces porque la función explota a <code class="inline-code">+∞</code> y otras porque existe un techo o <em>supremo</em> al que puedes acercarte todo lo que quieras sin llegar jamás):
+    </p>
+
+    <div class="weier-lab-shell">
+      <div class="lab-mode-tabs" role="tablist" aria-label="Selector de contraejemplos de Weierstrass">
+        <button type="button" class="lab-tab is-active" data-w-case="valid" role="tab" aria-selected="true">
+          ✓ Caso Válido: [a, b] + Continua
+        </button>
+        <button type="button" class="lab-tab" data-w-case="open" role="tab" aria-selected="false">
+          ✗ Romper Cerrado: Intervalo Abierto (0, 4)
+        </button>
+        <button type="button" class="lab-tab" data-w-case="jump" role="tab" aria-selected="false">
+          ✗ Romper Continuidad: Salto / Agujero
+        </button>
+        <button type="button" class="lab-tab" data-w-case="asymptote" role="tab" aria-selected="false">
+          ✗ Romper Continuidad: Asíntota Vertical
+        </button>
+        <button type="button" class="lab-tab" data-w-case="unbounded" role="tab" aria-selected="false">
+          ✗ Romper Acotación: [0, +∞)
+        </button>
+      </div>
+
+      <div class="lab-sliders">
+        <label class="lab-slider-item">
+          <span>Explorar punto móvil <code class="inline-code">x</code>: <strong id="w-x-lbl">2.00</strong></span>
+          <input type="range" id="sl-w-x" min="0.05" max="3.95" step="0.02" value="2.00" />
+        </label>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="weier-lab-canvas" aria-label="Visualizador interactivo de contraejemplos del Teorema de Weierstrass"></canvas>
+      </div>
+
+      <div class="lab-diagnosis-box is-ok" id="w-diagnosis">
+        <strong id="w-diag-title">Todas las hipótesis se cumplen:</strong>
+        <span id="w-diag-text">En el cerrado [0, 4], f(x) = −0.5(x−2.2)² + 3.2 alcanza máximo absoluto M = 3.20 en x = 2.20 y mínimo m = 0.78 en x = 0.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: MÉTODO PRÁCTICO DE OPTIMIZACIÓN EN [a, b] -->
+  <section class="lesson-section" id="algoritmo-optimizacion">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Protocolo de Examen: Cómo Hallar Extremos Absolutos en <code class="inline-code">[a, b]</code></h2>
+
+    <div class="algo-card">
+      <p>
+        Cuando un problema de Selectividad (PAU) te pida el <strong>máximo y mínimo absolutos</strong> de una función continua <code class="inline-code">f</code> en un intervalo cerrado <code class="inline-code">[a, b]</code>, el Teorema de Weierstrass garantiza que existen. Solo pueden esconderse en tres tipos de puntos candidatos:
+      </p>
+      <ol class="algo-steps">
+        <li><strong>Puntos críticos interiores:</strong> resuelve <code class="inline-code">f′(x) = 0</code> y quédate únicamente con las soluciones que pertenezcan a <code class="inline-code">(a, b)</code>.</li>
+        <li><strong>Puntos angulosos (no derivables):</strong> puntos interiores donde <code class="inline-code">f</code> sea continua pero no exista <code class="inline-code">f′(x)</code> (picos, cambios de rama en valor absoluto o funciones a trozos).</li>
+        <li><strong>Los bordes del intervalo:</strong> evalúa obligatoriamente <code class="inline-code">f(a)</code> y <code class="inline-code">f(b)</code>.</li>
+      </ol>
+      <div class="algo-example">
+        <strong>Ejemplo rápido:</strong> Halla los extremos absolutos de <code class="inline-code">f(x) = x³ − 3x + 1</code> en <code class="inline-code">[−2, 3]</code>.
+        <br />
+        • <code class="inline-code">f′(x) = 3x² − 3 = 0  ⟹  x = −1, x = 1</code> (ambos dentro de <code class="inline-code">(−2, 3)</code>).
+        <br />
+        • Evaluamos los 4 candidatos: <code class="inline-code">f(−2) = −1</code>, <code class="inline-code">f(−1) = 3</code>, <code class="inline-code">f(1) = −1</code>, <code class="inline-code">f(3) = 19</code>.
+        <br />
+        • Conclusión: <strong>Mínimo absoluto <code class="inline-code">m = −1</code></strong> (alcanzado en <code class="inline-code">x = −2</code> y <code class="inline-code">x = 1</code>) y <strong>Máximo absoluto <code class="inline-code">M = 19</code></strong> (¡en el borde <code class="inline-code">x = 3</code>, no en <code class="inline-code">x = −1</code>!).
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: APLICACIONES Y RETOS -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Aplicaciones Reales y Comprobación Práctica</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">ECONOMÍA E INGENIERÍA</div>
+        <h4>Optimización en Recintos Cerrados</h4>
+        <p>
+          Antes de lanzar un algoritmo numérico para minimizar el coste de producción o maximizar la resistencia de una viga sujeta a límites físicos <code class="inline-code">[x_min, x_max]</code>, Weierstrass garantiza que la solución óptima realmente existe.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">INTELIGENCIA ARTIFICIAL</div>
+        <h4>Regularización en Redes Neuronales</h4>
+        <p>
+          La función de pérdida sin restricciones podría descender indefinidamente hacia pesos infinitos (<code class="inline-code">‖w‖ → ∞</code>). Añadir regularización L2 (<code class="inline-code">λ‖w‖²</code>) confina la búsqueda a una bola cerrada y acotada donde Weierstrass asegura la existencia de un mínimo global.
+        </p>
+      </article>
+    </div>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Hipótesis):</strong> ¿Alcanza <code class="inline-code">f(x) = 1/x</code> máximo absoluto en el intervalo <code class="inline-code">(0, 1]</code>?
+        </p>
+        <div class="quiz-options" data-quiz="w1">
+          <button type="button" class="quiz-opt" data-correct="false">Sí, en x = 1 vale 1</button>
+          <button type="button" class="quiz-opt" data-correct="true">No, crece a +∞ cuando x → 0⁺ (intervalo abierto en 0)</button>
+        </div>
+        <p class="quiz-feedback" id="fb-w1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Derivabilidad):</strong> ¿Tiene <code class="inline-code">f(x) = |x − 2|</code> mínimo absoluto en <code class="inline-code">[0, 5]</code> aunque no sea derivable en <code class="inline-code">x = 2</code>?
+        </p>
+        <div class="quiz-options" data-quiz="w2">
+          <button type="button" class="quiz-opt" data-correct="true">Sí, Weierstrass solo exige continuidad: m = 0 en x = 2</button>
+          <button type="button" class="quiz-opt" data-correct="false">No, porque f′(2) no existe</button>
+        </div>
+        <p class="quiz-feedback" id="fb-w2" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 3 (Extremos en bordes):</strong> Para <code class="inline-code">f(x) = x² − 2x</code> en <code class="inline-code">[0, 4]</code>, ¿dónde alcanza el máximo absoluto?
+        </p>
+        <div class="quiz-options" data-quiz="w3">
+          <button type="button" class="quiz-opt" data-correct="false">En x = 1 (vértice de la parábola)</button>
+          <button type="button" class="quiz-opt" data-correct="true">En x = 4 (borde derecho, f(4) = 8)</button>
+          <button type="button" class="quiz-opt" data-correct="false">No tiene máximo absoluto</button>
+        </div>
+        <p class="quiz-feedback" id="fb-w3" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .mountain-visual-card,
+  .triad-card,
+  .weier-lab-shell,
+  .algo-card,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .mountain-visual-card { margin: 1.25rem 0; }
+  .mtn-svg { width: 100%; height: auto; display: block; color: var(--ink-strong, #f8fafc); }
+  .svg-lbl { font-family: var(--mono, monospace); font-size: 12px; font-weight: 700; fill: var(--ink-strong, #f8fafc); }
+  .svg-lbl.cyan { fill: #38bdf8; }
+  .svg-lbl.green { fill: #10b981; }
+  .svg-note { font-family: var(--mono, monospace); font-size: 10.5px; fill: var(--muted, #94a3b8); }
+
+  .history-context-box {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.06);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    margin: 1.25rem 0;
+  }
+  .h-icon { font-size: 1.8rem; line-height: 1; }
+  .h-body h4 { margin: 0 0 0.45rem; color: #fbbf24; }
+  .h-body p { margin: 0 0 0.5rem; font-size: 0.91rem; line-height: 1.55; }
+  .h-body p:last-child { margin-bottom: 0; }
+
+  .theorem-box-highlight {
+    background: rgba(16, 185, 129, 0.07);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+
+  .mtn-badge, .thm-tag, .tri-tag, .proof-header, .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+  .tri-tag.cyan, .app-tag { color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); }
+  .tri-tag.purple, .proof-header.purple { color: #c084fc; background: rgba(192, 132, 252, 0.12); border-color: rgba(192, 132, 252, 0.3); }
+
+  .hyp-list { list-style: none; padding: 0; margin: 0.75rem 0 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .hyp-pill {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    margin-right: 0.35rem;
+  }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.85rem;
+  }
+  :global([data-theme="light"]) .formula-display-banner { background: #f8fafc; border-color: rgba(15, 23, 42, 0.1); }
+  .weier-eq { font-family: var(--mono, monospace); font-size: 1.05rem; font-weight: 800; text-align: center; }
+  .eq-cyan { color: #38bdf8; }
+  .eq-green { color: #10b981; }
+  .thm-note { margin: 0; font-size: 0.88rem; color: var(--ink-soft, #cbd5e1); }
+
+  .triad-grid, .apps-grid, .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+  .triad-card h4, .app-card h4 { margin: 0 0 0.45rem; font-size: 0.96rem; }
+  .triad-card p, .app-card p { margin: 0; font-size: 0.86rem; line-height: 1.5; color: var(--ink-soft, #cbd5e1); }
+
+  .proof-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.3rem;
+    margin: 1.25rem 0;
+  }
+  .proof-box.is-purple {
+    background: rgba(192, 132, 252, 0.05);
+    border-color: rgba(192, 132, 252, 0.3);
+  }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .proof-steps li { font-size: 0.9rem; line-height: 1.55; }
+
+  /* LAB */
+  .weier-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 0.9rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.42rem 0.75rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.73rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(192, 132, 252, 0.2); border-color: #c084fc; color: #e9d5ff; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #6b21a8; }
+
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #c084fc; cursor: pointer; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 320px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #weier-lab-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-diagnosis-box {
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+  .lab-diagnosis-box.is-ok { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #a7f3d0; }
+  .lab-diagnosis-box.is-broken { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: #fecdd3; }
+  :global([data-theme="light"]) .lab-diagnosis-box.is-ok { color: #065f46; }
+  :global([data-theme="light"]) .lab-diagnosis-box.is-broken { color: #9f1239; }
+
+  .algo-steps { margin: 0.75rem 0 1rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.9rem; line-height: 1.55; }
+  .algo-example {
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('weier-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slX = document.getElementById('sl-w-x') as HTMLInputElement | null;
+    const lblX = document.getElementById('w-x-lbl');
+    const diagBox = document.getElementById('w-diagnosis');
+    const diagTitle = document.getElementById('w-diag-title');
+    const diagText = document.getElementById('w-diag-text');
+    const tabs = document.querySelectorAll<HTMLButtonElement>('[data-w-case]');
+
+    type CaseId = 'valid' | 'open' | 'jump' | 'asymptote' | 'unbounded';
+    let currentCase: CaseId = 'valid';
+    let probeX = 2.0;
+
+    const CASE_INFO: Record<CaseId, { ok: boolean; title: string; text: string }> = {
+      valid: {
+        ok: true,
+        title: 'Todas las hipótesis se cumplen:',
+        text: 'En el cerrado [0, 4], f(x) = −0.5(x−2.2)² + 3.2 alcanza máximo absoluto M = 3.20 en x = 2.20 y mínimo m = 0.78 en x = 0.',
+      },
+      open: {
+        ok: false,
+        title: 'Falla el intervalo cerrado (0, 4):',
+        text: 'f(x) = x es continua y está acotada por 4, pero el punto (4, 4) está excluido (círculo hueco). Para cualquier x < 4 que elijas, siempre existe (x+4)/2 más alto: ¡NO hay máximo!',
+      },
+      jump: {
+        ok: false,
+        title: 'Falla la continuidad (discontinuidad evitable/salto):',
+        text: 'Al acercarse a x = 2 la función tiende a 3.5, pero justo en x = 2 cae a f(2) = 1.0. El techo 3.5 nunca se alcanza: ¡NO hay máximo absoluto!',
+      },
+      asymptote: {
+        ok: false,
+        title: 'Falla la continuidad (asíntota vertical en x = 2):',
+        text: 'f(x) = 0.35 / (x−2)² es continua salvo en x = 2, donde crece sin límite hacia +∞. Ni siquiera está acotada superiormente.',
+      },
+      unbounded: {
+        ok: false,
+        title: 'Falla la acotación del dominio [0, +∞):',
+        text: 'f(x) = 3·(1 − e^(−0.75x)) es continua y acotada por y = 3, pero como el dominio es infinito nunca alcanza el valor 3: ¡NO hay máximo absoluto!',
+      },
+    };
+
+    function evalCase(c: CaseId, x: number): number {
+      if (c === 'valid') return -0.5 * Math.pow(x - 2.2, 2) + 3.2;
+      if (c === 'open') return x;
+      if (c === 'jump') {
+        if (Math.abs(x - 2.0) < 0.025) return 1.0;
+        return x < 2.0 ? 0.5 + 1.5 * x : 2.5 - 0.5 * (x - 2.0);
+      }
+      if (c === 'asymptote') return 0.35 / Math.max(0.02, Math.pow(x - 2.0, 2));
+      return 3.0 * (1 - Math.exp(-0.75 * x));
+    }
+
+    function drawWeierLab() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = 44, padR = 28, padT = 26, padB = 34;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+      const xMin = -0.3, xMax = currentCase === 'unbounded' ? 6.0 : 4.3;
+      const yMin = -0.2, yMax = 4.5;
+
+      const toPx = (x: number, y: number) => ({
+        x: padL + ((x - xMin) / (xMax - xMin)) * plotW,
+        y: padT + plotH - ((y - yMin) / (yMax - yMin)) * plotH,
+      });
+
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.22)' : 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 1.3;
+      const y0 = toPx(0, 0).y;
+      const x0 = toPx(0, 0).x;
+      ctx.beginPath(); ctx.moveTo(padL, y0); ctx.lineTo(w - padR, y0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x0, padT); ctx.lineTo(x0, padT + plotH); ctx.stroke();
+
+      if (currentCase === 'asymptote') {
+        const ax = toPx(2, 0).x;
+        ctx.strokeStyle = '#f43f5e';
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(ax, padT); ctx.lineTo(ax, y0); ctx.stroke();
+        ctx.setLineDash([]);
+      } else if (currentCase === 'unbounded') {
+        const ay = toPx(0, 3.0).y;
+        ctx.strokeStyle = '#fbbf24';
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(x0, ay); ctx.lineTo(w - padR, ay); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('Supremo y = 3 (inalcanzable)', x0 + 10, ay - 6);
+      }
+
+      const domMax = currentCase === 'unbounded' ? 5.8 : 4.0;
+      ctx.strokeStyle = currentCase === 'valid' ? '#10b981' : '#38bdf8';
+      ctx.lineWidth = 2.8;
+
+      const drawSegment = (sA: number, sB: number) => {
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= 160; i++) {
+          const x = sA + (i / 160) * (sB - sA);
+          const y = evalCase(currentCase, x);
+          if (!Number.isFinite(y) || y > yMax + 0.3) { started = false; continue; }
+          const pt = toPx(x, y);
+          if (!started) { ctx.moveTo(pt.x, pt.y); started = true; }
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+      };
+
+      if (currentCase === 'jump' || currentCase === 'asymptote') {
+        drawSegment(0, 1.96);
+        drawSegment(2.04, 4.0);
+      } else {
+        drawSegment(0, domMax);
+      }
+
+      const drawPoint = (px: number, py: number, color: string, hollow = false) => {
+        const pt = toPx(px, py);
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 5.5, 0, Math.PI * 2);
+        if (hollow) {
+          ctx.fillStyle = isLight ? '#f8fafc' : '#0b1020';
+          ctx.fill();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+      };
+
+      if (currentCase === 'valid') {
+        drawPoint(0, evalCase('valid', 0), '#38bdf8', false);
+        drawPoint(4, evalCase('valid', 4), '#10b981', false);
+        drawPoint(2.2, 3.2, '#fbbf24', false);
+      } else if (currentCase === 'open') {
+        drawPoint(0, 0, '#f43f5e', true);
+        drawPoint(4, 4, '#f43f5e', true);
+      } else if (currentCase === 'jump') {
+        drawPoint(2, 3.5, '#f43f5e', true);
+        drawPoint(2, 1.0, '#f43f5e', false);
+      }
+
+      const pX = currentCase === 'unbounded' ? probeX * 1.4 : probeX;
+      const pY = Math.min(yMax, evalCase(currentCase, pX));
+      drawPoint(pX, pY, '#c084fc', false);
+
+      ctx.font = 'bold 12px monospace';
+      ctx.fillStyle = '#c084fc';
+      const pScreen = toPx(pX, pY);
+      ctx.fillText(`f(${pX.toFixed(2)})=${evalCase(currentCase, pX).toFixed(2)}`, Math.min(w - 135, pScreen.x + 8), Math.max(22, pScreen.y - 10));
+
+      const info = CASE_INFO[currentCase];
+      if (diagBox && diagTitle && diagText) {
+        diagBox.className = `lab-diagnosis-box ${info.ok ? 'is-ok' : 'is-broken'}`;
+        diagTitle.textContent = info.title + ' ';
+        diagText.textContent = info.text;
+      }
+
+      ctx.restore();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        currentCase = (tab.getAttribute('data-w-case') as CaseId) || 'valid';
+        drawWeierLab();
+      });
+    });
+
+    slX?.addEventListener('input', (e) => {
+      probeX = parseFloat((e.target as HTMLInputElement).value);
+      if (lblX) lblX.textContent = probeX.toFixed(2);
+      drawWeierLab();
+    });
+
+    window.addEventListener('resize', drawWeierLab);
+    new MutationObserver(drawWeierLab).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawWeierLab();
+
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      w1: {
+        ok: 'Correcto: en (0, 1] falta el extremo izquierdo 0, y cerca de él 1/x crece hacia +∞.',
+        ko: 'El intervalo (0, 1] no es cerrado en 0 y la función se dispara a +∞ al acercarse a 0⁺.',
+      },
+      w2: {
+        ok: 'Exacto: Weierstrass no exige derivabilidad, solo continuidad en [0, 5]. El mínimo absoluto es m = 0 en el pico x = 2.',
+        ko: 'Cuidado: la derivabilidad es necesaria para Rolle/Lagrange, pero NO para Weierstrass. Basta con que sea continua.',
+      },
+      w3: {
+        ok: 'Correcto: f′(x) = 2x − 2 = 0 da el mínimo en x = 1 (f(1)=−1), mientras que en los bordes f(0)=0 y f(4)=8. El máximo está en x = 4.',
+        ko: 'En x = 1 hay un mínimo (f(1) = −1). En [0, 4], el mayor valor se alcanza en el borde derecho x = 4 donde f(4) = 8.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

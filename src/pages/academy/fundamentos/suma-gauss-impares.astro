@@ -1,0 +1,608 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-suma-gauss')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-palomar');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: ANÉCDOTA HISTÓRICA Y EMPAREJAMIENTO -->
+  <section class="lesson-section" id="historia-gauss">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Joven Gauss y el Secreto de la Simetría</h2>
+
+    <p class="lead-paragraph">
+      Cuenta la historia que hacia 1785, en una escuela rural de Brunswick, un maestro cansado mandó a sus alumnos sumar todos los números enteros del <code class="inline-code">1</code> al <code class="inline-code">100</code> para tenerlos ocupados media hora. Apenas unos segundos después, un niño de ocho años llamado <strong>Carl Friedrich Gauss</strong> dejó su pizarra sobre el escritorio con una sola cifra escrita: <code class="inline-code">5050</code>.
+    </p>
+
+    <div class="gauss-pair-card">
+      <div class="gauss-badge">LA IDEA GENIAL · ARCOS DE EMPAREJAMIENTO SIMÉTRICO</div>
+      <svg viewBox="0 0 680 150" class="gauss-svg" aria-label="Emparejamiento simétrico de Gauss sumando extremos 1+100, 2+99, 3+98">
+        <!-- Arcos superiores -->
+        <path d="M 65 95 C 65 20, 615 20, 615 95" fill="none" stroke="#38bdf8" stroke-width="2.2" />
+        <path d="M 135 95 C 135 42, 545 42, 545 95" fill="none" stroke="#c084fc" stroke-width="2" />
+        <path d="M 205 95 C 205 62, 475 62, 475 95" fill="none" stroke="#10b981" stroke-width="2" />
+
+        <text x="340" y="28" text-anchor="middle" class="svg-lbl cyan">1 + 100 = 101</text>
+        <text x="340" y="52" text-anchor="middle" class="svg-lbl purple">2 + 99 = 101</text>
+        <text x="340" y="74" text-anchor="middle" class="svg-lbl green">3 + 98 = 101</text>
+
+        <!-- Números -->
+        <text x="65" y="118" text-anchor="middle" class="svg-num">1</text>
+        <text x="135" y="118" text-anchor="middle" class="svg-num">2</text>
+        <text x="205" y="118" text-anchor="middle" class="svg-num">3</text>
+        <text x="340" y="118" text-anchor="middle" class="svg-note">· · ·   50 parejas idénticas   · · ·</text>
+        <text x="475" y="118" text-anchor="middle" class="svg-num">98</text>
+        <text x="545" y="118" text-anchor="middle" class="svg-num">99</text>
+        <text x="615" y="118" text-anchor="middle" class="svg-num">100</text>
+      </svg>
+      <p class="gauss-caption">
+        En lugar de sumar secuencialmente, Gauss dobló la lista por la mitad: <code class="inline-code">1 + 100 = 101</code>, <code class="inline-code">2 + 99 = 101</code>, …, <code class="inline-code">50 + 51 = 101</code>. Cincuenta parejas de <code class="inline-code">101</code> dan exactamente <code class="inline-code">50 × 101 = 5050</code>.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: TRES DEMOSTRACIONES EQUIVALENTES -->
+  <section class="lesson-section" id="tres-demostraciones">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Tres Demostraciones Equivalentes para la Suma de Gauss</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">SUMA DE LOS PRIMEROS n NATURALES (NÚMEROS TRIANGULARES)</div>
+      <div class="formula-display-banner">
+        <div class="gauss-eq">
+          T<sub>n</sub> = 1 + 2 + 3 + … + n = <span class="frac"><span class="num">n · (n + 1)</span><span class="den">2</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="three-proofs-grid">
+      <article class="proof-card">
+        <div class="p-tag cyan">PRUEBA 1 · EMPAREJAMIENTO SIMÉTRICO</div>
+        <h4>Sumar la lista al derecho y al revés</h4>
+        <p>Escribimos <code class="inline-code">S</code> dos veces, la segunda en orden inverso, y sumamos columna a columna:</p>
+        <div class="align-sum-box">
+          <div>&nbsp;&nbsp;S = 1 + &nbsp;2 &nbsp;+ … + (n−1) + n</div>
+          <div>+ S = n + (n−1) + … + &nbsp;2 &nbsp;+ 1</div>
+          <div class="sum-line">2S = (n+1) + (n+1) + … + (n+1)</div>
+        </div>
+        <p>Como hay <code class="inline-code">n</code> columnas idénticas de valor <code class="inline-code">n+1</code>, obtenemos <code class="inline-code">2S = n(n+1)</code>, luego <code class="inline-code">S = n(n+1)/2</code>. &nbsp;∎</p>
+      </article>
+
+      <article class="proof-card">
+        <div class="p-tag purple">PRUEBA 2 · RECTÁNGULO ESCALONADO</div>
+        <h4>Duplicar la escalera de bloques</h4>
+        <p>
+          Representa cada número <code class="inline-code">k</code> como una fila de <code class="inline-code">k</code> cuadrados unidad. Esto forma una <strong>escalera triangular</strong> de área <code class="inline-code">S</code>.
+        </p>
+        <p>
+          Si tomas una <strong>copia idéntica</strong> de la escalera, la giras <code class="inline-code">180°</code> y la encajas sobre la primera, las piezas completan sin huecos un <strong>rectángulo sólido de dimensiones <code class="inline-code">n × (n + 1)</code></strong>. Por tanto, el área de una sola escalera es la mitad: <code class="inline-code">n(n+1)/2</code>. &nbsp;∎
+        </p>
+      </article>
+
+      <article class="proof-card">
+        <div class="p-tag green">PRUEBA 3 · INDUCCIÓN MATEMÁTICA</div>
+        <h4>El efecto dominó formal</h4>
+        <p><strong>1. Caso base (<code class="inline-code">n = 1</code>):</strong> <code class="inline-code">1 = 1·(1+1)/2 = 1</code>. Se cumple.</p>
+        <p><strong>2. Hipótesis (<code class="inline-code">n = k</code>):</strong> Suponemos cierto <code class="inline-code">1 + … + k = k(k+1)/2</code>.</p>
+        <p><strong>3. Paso (<code class="inline-code">n = k+1</code>):</strong> Sumamos el término siguiente <code class="inline-code">k+1</code>:</p>
+        <div class="mini-eq">k(k+1)/2 + (k+1) = (k+1)·(k/2 + 1) = (k+1)(k+2)/2 &nbsp;∎</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: SUMA DE LOS PRIMEROS IMPARES -->
+  <section class="lesson-section" id="suma-impares">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. La Suma de los Primeros Impares (<code class="inline-code">n²</code>) mediante Escuadras</h2>
+
+    <p>
+      Los pitagóricos descubrieron un hecho asombroso al construir cuadrados con piedras (<em>gnómones</em>): si empiezas con <code class="inline-code">1</code> bloque y añades alrededor escuadras en forma de <strong>L</strong>, cada nueva escuadra necesita exactamente el siguiente número impar (<code class="inline-code">3, 5, 7, 9, …</code>) para mantener la forma de un cuadrado perfecto!
+    </p>
+
+    <div class="theorem-box-highlight is-gold">
+      <div class="thm-tag gold">SUMA DE LOS PRIMEROS n IMPARES</div>
+      <div class="formula-display-banner">
+        <div class="gauss-eq">
+          ∑<sub>k=1</sub><sup>n</sup> (2k − 1) = 1 + 3 + 5 + … + (2n − 1) = <span class="eq-gold">n²</span>
+        </div>
+      </div>
+      <p class="odd-algebra-note">
+        <strong>Comprobación algebraica directa con Gauss:</strong> <code class="inline-code">∑<sub>k=1</sub><sup>n</sup> (2k − 1) = 2·∑k − ∑1 = 2·[n(n+1)/2] − n = n² + n − n = n²</code>. &nbsp;∎
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DE BLOQUES -->
+  <section class="lesson-section" id="laboratorio-bloques">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Apilador Visual de Bloques</h2>
+
+    <p>
+      Ajusta el valor de <code class="inline-code">n</code> y alterna entre los dos constructores geométricos: duplica la escalera de Gauss para formar el rectángulo <code class="inline-code">n × (n + 1)</code>, o apila escuadras impares para construir el cuadrado perfecto <code class="inline-code">n × n</code>.
+    </p>
+
+    <div class="blocks-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist">
+          <button type="button" class="lab-tab is-active" data-b-mode="gauss" role="tab" aria-selected="true">
+            Escalera de Gauss → n × (n + 1)
+          </button>
+          <button type="button" class="lab-tab" data-b-mode="odd" role="tab" aria-selected="false">
+            Escuadras Impares → n × n
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Tamaño <code class="inline-code">n</code>: <strong id="blk-n-lbl">6</strong></span>
+            <input type="range" id="sl-blk-n" min="1" max="12" step="1" value="6" />
+          </label>
+          <label class="lab-slider-item" id="wrap-duplicate-toggle">
+            <span class="chk-row">
+              <input type="checkbox" id="chk-dup-stairs" checked />
+              <span>Duplicar y encajar segunda escalera (×2)</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="blocks-lab-canvas" aria-label="Apilador visual interactivo de la Suma de Gauss y escuadras impares"></canvas>
+      </div>
+
+      <div class="lab-readout-grid">
+        <div class="readout-pill">
+          <span class="ro-label">Última fila / escuadra añadida</span>
+          <span class="ro-val cyan" id="ro-blk-last">6 bloques</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Dimensiones de la figura</span>
+          <span class="ro-val purple" id="ro-blk-dim">6 × 7 = 42</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Suma exacta</span>
+          <span class="ro-val green" id="ro-blk-sum">21</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: CONEXIONES Y APLICACIONES -->
+  <section class="lesson-section" id="conexiones-aplicaciones">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Conexiones Sorprendentes y Aplicaciones</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">GEOMETRÍA NUMÉRICA</div>
+        <h4>Dos Triangulares Consecutivos = Un Cuadrado</h4>
+        <p>
+          Si sumas dos números triangulares seguidos obtienes siempre un cuadrado perfecto: <code class="inline-code">T<sub>n−1</sub> + T<sub>n</sub> = (n−1)n/2 + n(n+1)/2 = n²</code>. Visualmente es cortar un cuadrado <code class="inline-code">n × n</code> por su diagonal!
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">TEOREMA DE NICÓMACO</div>
+        <h4>La Suma de los Cubos es el Cuadrado de Gauss</h4>
+        <p>
+          Una de las identidades más bellas de la aritmética: <code class="inline-code">1³ + 2³ + … + n³ = (1 + 2 + … + n)² = [n(n+1)/2]²</code>. Por ejemplo, <code class="inline-code">1³+2³+3³ = 36 = 6²</code>.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">INFORMÁTICA Y REDES</div>
+        <h4>Apretones de Manos y Complejidad O(n²)</h4>
+        <p>
+          En una red con <code class="inline-code">n</code> servidores conectados todos con todos, o en un torneo de liga a una vuelta, el número total de enlaces o partidos es <code class="inline-code">1 + 2 + … + (n−1) = n(n−1)/2</code>. Es también el coste exacto de algoritmos como <em>Bubble Sort</em>.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: COMPROBACIÓN PRÁCTICA -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Comprobación Práctica</h2>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Liga deportiva):</strong> En una liga de ajedrez con <code class="inline-code">12 jugadores</code> donde todos juegan una partida contra todos, ¿cuántas partidas se disputan en total?
+        </p>
+        <div class="quiz-options" data-quiz="g1">
+          <button type="button" class="quiz-opt" data-correct="false">144</button>
+          <button type="button" class="quiz-opt" data-correct="true">66</button>
+          <button type="button" class="quiz-opt" data-correct="false">78</button>
+        </div>
+        <p class="quiz-feedback" id="fb-g1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Impares):</strong> ¿Cuánto vale la suma <code class="inline-code">1 + 3 + 5 + … + 39</code> (los primeros 20 números impares)?
+        </p>
+        <div class="quiz-options" data-quiz="g2">
+          <button type="button" class="quiz-opt" data-correct="false">200</button>
+          <button type="button" class="quiz-opt" data-correct="true">400</button>
+          <button type="button" class="quiz-opt" data-correct="false">780</button>
+        </div>
+        <p class="quiz-feedback" id="fb-g2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .gauss-pair-card,
+  .proof-card,
+  .blocks-lab-shell,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .gauss-badge, .thm-tag, .p-tag, .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+  .p-tag.purple { color: #c084fc; background: rgba(192, 132, 252, 0.12); border-color: rgba(192, 132, 252, 0.3); }
+  .p-tag.green { color: #10b981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); }
+  .thm-tag.gold { color: #fbbf24; background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.3); }
+
+  .gauss-svg { width: 100%; height: auto; display: block; margin: 0.35rem 0 0.65rem; }
+  .svg-lbl { font-family: var(--mono, monospace); font-size: 11.5px; font-weight: 700; }
+  .svg-lbl.cyan { fill: #38bdf8; }
+  .svg-lbl.purple { fill: #c084fc; }
+  .svg-lbl.green { fill: #10b981; }
+  .svg-num { font-family: var(--mono, monospace); font-size: 14px; font-weight: 800; fill: var(--ink-strong, #f8fafc); }
+  .svg-note { font-family: var(--mono, monospace); font-size: 11px; fill: var(--muted, #94a3b8); }
+  .gauss-caption { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--ink-soft, #cbd5e1); }
+
+  .theorem-box-highlight {
+    background: rgba(56, 189, 248, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 1.3rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight.is-gold {
+    background: rgba(251, 191, 36, 0.07);
+    border-color: rgba(251, 191, 36, 0.35);
+  }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global([data-theme="light"]) .formula-display-banner { background: #f8fafc; border-color: rgba(15, 23, 42, 0.1); }
+  .gauss-eq {
+    font-family: var(--mono, monospace);
+    font-size: 1.15rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .eq-gold { color: #fbbf24; font-size: 1.3rem; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .frac .num { border-bottom: 2px solid currentColor; padding: 0 0.35rem 0.12rem; color: #38bdf8; }
+  .frac .den { padding: 0.12rem 0.35rem 0; color: #c084fc; }
+  .odd-algebra-note { margin: 0.85rem 0 0; font-size: 0.88rem; color: var(--ink-soft, #cbd5e1); }
+
+  .three-proofs-grid, .apps-grid, .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+  .proof-card h4, .app-card h4 { margin: 0 0 0.5rem; font-size: 0.96rem; }
+  .proof-card p, .app-card p { font-size: 0.86rem; line-height: 1.55; margin: 0 0 0.55rem; color: var(--ink-soft, #cbd5e1); }
+  .proof-card p:last-child, .app-card p:last-child { margin-bottom: 0; }
+
+  .align-sum-box {
+    font-family: var(--mono, monospace);
+    font-size: 0.78rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45);
+    margin: 0.45rem 0 0.6rem;
+    line-height: 1.5;
+  }
+  :global([data-theme="light"]) .align-sum-box { background: #f1f5f9; }
+  .sum-line { border-top: 1px solid rgba(148, 163, 184, 0.4); margin-top: 0.2rem; padding-top: 0.2rem; color: #38bdf8; font-weight: 700; }
+
+  .mini-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #10b981;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    display: inline-block;
+    word-break: break-word;
+  }
+
+  /* LAB */
+  .blocks-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #bae6fd; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #0369a1; }
+
+  .lab-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; align-items: center; }
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; }
+  .chk-row { display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; font-weight: 600; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 340px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #blocks-lab-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-readout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 0.65rem; }
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+  .ro-label { font-family: var(--mono, monospace); font-size: 0.69rem; color: var(--muted, #94a3b8); }
+  .ro-val { font-family: var(--mono, monospace); font-size: 1rem; font-weight: 800; }
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.purple { color: #c084fc; }
+  .ro-val.green { color: #10b981; }
+
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('blocks-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slN = document.getElementById('sl-blk-n') as HTMLInputElement | null;
+    const lblN = document.getElementById('blk-n-lbl');
+    const chkDup = document.getElementById('chk-dup-stairs') as HTMLInputElement | null;
+    const wrapDup = document.getElementById('wrap-duplicate-toggle');
+    const roLast = document.getElementById('ro-blk-last');
+    const roDim = document.getElementById('ro-blk-dim');
+    const roSum = document.getElementById('ro-blk-sum');
+    const tabs = document.querySelectorAll<HTMLButtonElement>('[data-b-mode]');
+
+    let bMode: 'gauss' | 'odd' = 'gauss';
+    let nVal = 6;
+    let showDup = true;
+
+    const ODD_COLORS = ['#38bdf8', '#10b981', '#c084fc', '#fbbf24', '#f43f5e', '#60a5fa'];
+
+    function drawBlocks() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      if (bMode === 'gauss') {
+        const cols = showDup ? nVal + 1 : nVal;
+        const rows = nVal;
+        const cell = Math.min((w - 64) / Math.max(1, cols), (h - 56) / Math.max(1, rows), 42);
+        const startX = (w - cols * cell) / 2;
+        const startY = (h - rows * cell) / 2;
+
+        for (let r = 0; r < rows; r++) {
+          const count = r + 1;
+          for (let c = 0; c < cols; c++) {
+            const x = startX + c * cell;
+            const y = startY + r * cell;
+            if (c < count) {
+              // Escalera original (cyan)
+              ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+              ctx.strokeStyle = '#38bdf8';
+              ctx.lineWidth = 1.4;
+              ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+              ctx.strokeRect(x + 1, y + 1, cell - 2, cell - 2);
+            } else if (showDup) {
+              // Segunda escalera rotada 180° (violeta)
+              ctx.fillStyle = 'rgba(192, 132, 252, 0.32)';
+              ctx.strokeStyle = '#c084fc';
+              ctx.lineWidth = 1.4;
+              ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+              ctx.strokeRect(x + 1, y + 1, cell - 2, cell - 2);
+            }
+          }
+        }
+
+        // Etiquetas de dimensiones
+        ctx.font = 'bold 12px monospace';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.fillText(showDup ? `Base = n + 1 = ${nVal + 1}` : `Base = n = ${nVal}`, w / 2, startY + rows * cell + 18);
+        ctx.fillText(`Altura = n = ${nVal}`, w / 2, startY - 10);
+
+        const sumGauss = (nVal * (nVal + 1)) / 2;
+        if (roLast) roLast.textContent = `${nVal} bloques`;
+        if (roDim) roDim.textContent = showDup ? `${nVal} × ${nVal + 1} = ${nVal * (nVal + 1)}` : `Escalera ${nVal}`;
+        if (roSum) roSum.textContent = `${sumGauss}`;
+      } else {
+        // Escuadras impares: cuadrado n x n
+        const cell = Math.min((w - 64) / nVal, (h - 56) / nVal, 44);
+        const startX = (w - nVal * cell) / 2;
+        const startY = (h - nVal * cell) / 2;
+
+        for (let r = 0; r < nVal; r++) {
+          for (let c = 0; c < nVal; c++) {
+            const layer = Math.max(r, c); // Escuadra k = layer + 1
+            const col = ODD_COLORS[layer % ODD_COLORS.length];
+            const x = startX + c * cell;
+            const y = startY + r * cell;
+            ctx.fillStyle = col + '44';
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 1.4;
+            ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+            ctx.strokeRect(x + 1, y + 1, cell - 2, cell - 2);
+          }
+        }
+
+        ctx.font = 'bold 12px monospace';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Cuadrado perfecto ${nVal} × ${nVal} = ${nVal * nVal}`, w / 2, startY + nVal * cell + 18);
+
+        if (roLast) roLast.textContent = `2(${nVal}) − 1 = ${2 * nVal - 1}`;
+        if (roDim) roDim.textContent = `${nVal} × ${nVal}`;
+        if (roSum) roSum.textContent = `${nVal * nVal}`;
+      }
+
+      ctx.restore();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        bMode = (tab.getAttribute('data-b-mode') as 'gauss' | 'odd') || 'gauss';
+        if (wrapDup) wrapDup.hidden = bMode !== 'gauss';
+        drawBlocks();
+      });
+    });
+
+    slN?.addEventListener('input', (e) => {
+      nVal = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblN) lblN.textContent = String(nVal);
+      drawBlocks();
+    });
+
+    chkDup?.addEventListener('change', (e) => {
+      showDup = (e.target as HTMLInputElement).checked;
+      drawBlocks();
+    });
+
+    window.addEventListener('resize', drawBlocks);
+    new MutationObserver(drawBlocks).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawBlocks();
+
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      g1: {
+        ok: 'Correcto: El primero juega 11 partidas, el segundo 10 nuevas… Suma de 1 a 11 = 11·12/2 = 66 partidas.',
+        ko: 'Cada jugador juega contra los otros 11 sin repetir: 11 + 10 + … + 1 = 11·12 / 2 = 66 partidas.',
+      },
+      g2: {
+        ok: 'Correcto: La suma de los primeros n = 20 impares es exactamente n² = 20² = 400.',
+        ko: 'Recuerda la fórmula de las escuadras: sumar los primeros n = 20 impares da n² = 20² = 400.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

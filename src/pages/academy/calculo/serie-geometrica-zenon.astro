@@ -1,0 +1,681 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-serie-geometrica')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-05');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-lhopital');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: LA PARADOJA DE ZENÓN -->
+  <section class="lesson-section" id="paradoja-zenon">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. La Paradoja de Zenón: ¿Puede Terminar un Viaje de Infinitos Pasos?</h2>
+
+    <p class="lead-paragraph">
+      En el siglo V a.C., el filósofo griego <strong>Zenón de Elea</strong> planteó un desafío que desconcertó al mundo durante más de dos milenios: para recorrer una distancia de <code class="inline-code">1 metro</code>, primero debes recorrer la mitad (<code class="inline-code">1/2 m</code>), luego la mitad de lo que falta (<code class="inline-code">1/4 m</code>), después la mitad restante (<code class="inline-code">1/8 m</code>), y así hasta el infinito.
+    </p>
+
+    <div class="zenon-hero-card">
+      <div class="zenon-badge">LA DICOTOMÍA DE ZENÓN</div>
+      <svg viewBox="0 0 680 120" class="zenon-svg" aria-label="Segmento unidad dividido sucesivamente en 1/2, 1/4, 1/8, 1/16">
+        <rect x="30" y="38" width="620" height="34" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+        <rect x="30" y="38" width="310" height="34" rx="5" fill="rgba(56, 189, 248, 0.28)" stroke="#38bdf8" stroke-width="1.8" />
+        <rect x="340" y="38" width="155" height="34" fill="rgba(16, 185, 129, 0.28)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="495" y="38" width="77.5" height="34" fill="rgba(192, 132, 252, 0.28)" stroke="#c084fc" stroke-width="1.8" />
+        <rect x="572.5" y="38" width="38.75" height="34" fill="rgba(251, 191, 36, 0.28)" stroke="#fbbf24" stroke-width="1.8" />
+        <rect x="611.25" y="38" width="19.37" height="34" fill="rgba(244, 63, 94, 0.35)" stroke="#f43f5e" stroke-width="1.5" />
+
+        <text x="185" y="60" text-anchor="middle" class="svg-lbl cyan">1/2</text>
+        <text x="417" y="60" text-anchor="middle" class="svg-lbl green">1/4</text>
+        <text x="534" y="60" text-anchor="middle" class="svg-lbl purple">1/8</text>
+        <text x="592" y="60" text-anchor="middle" class="svg-lbl gold">1/16</text>
+
+        <text x="30" y="96" class="svg-note">0</text>
+        <text x="340" y="96" text-anchor="middle" class="svg-note">0.5</text>
+        <text x="650" y="96" text-anchor="end" class="svg-note">1.0 (Meta)</text>
+        <text x="340" y="22" text-anchor="middle" class="svg-note">1/2 + 1/4 + 1/8 + 1/16 + 1/32 + … = 1</text>
+      </svg>
+      <p class="zenon-caption">
+        Zenón concluía que el movimiento era imposible porque nadie puede completar infinitas tareas. La matemática moderna demuestra lo contrario: <strong>la suma de infinitos términos puede converger a un número finito exacto</strong> si disminuyen lo suficientemente rápido.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: DEFINICIÓN FORMAL Y DEMOSTRACIÓN -->
+  <section class="lesson-section" id="demostracion-algebraica">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Enunciado Formal y Demostración Algebraica</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">SERIE GEOMÉTRICA INFINITA</div>
+      <h3>Criterio de Convergencia y Suma Exacta</h3>
+      <p>
+        Sea <code class="inline-code">a ≠ 0</code> el primer término y <code class="inline-code">r ∈ ℝ</code> la <strong>razón</strong> de una progresión geométrica. La serie infinita <code class="inline-code">∑<sub>n=0</sub><sup>∞</sup> a·rⁿ = a + a·r + a·r² + a·r³ + …</code> cumple:
+      </p>
+      <div class="formula-display-banner">
+        <div class="geo-sum-eq">
+          <div class="eq-main">Si <span class="eq-green">|r| &lt; 1</span>: &nbsp; ∑ a·rⁿ = <span class="frac"><span class="num">a</span><span class="den">1 − r</span></span></div>
+          <div class="eq-sub">Si <span class="eq-red">|r| ≥ 1</span>: &nbsp; la serie <strong>diverge</strong> (no tiene suma finita).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN TELESCÓPICA EN 4 PASOS</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Definimos la suma parcial finita <code class="inline-code">S<sub>N</sub></code>:</strong> Sumamos los primeros <code class="inline-code">N</code> términos:
+          <div class="proof-eq">S<sub>N</sub> = a + a·r + a·r² + … + a·r<sup>N−1</sup></div>
+        </li>
+        <li>
+          <strong>Multiplicamos toda la ecuación por la razón <code class="inline-code">r</code>:</strong>
+          <div class="proof-eq">r · S<sub>N</sub> = a·r + a·r² + a·r³ + … + a·r<sup>N</sup></div>
+        </li>
+        <li>
+          <strong>Restamos ambas ecuaciones (efecto dominó telescópico):</strong> Casi todos los términos intermedios se anulan entre sí, dejando solo el primero y el último:
+          <div class="proof-eq">S<sub>N</sub> − r·S<sub>N</sub> = a − a·r<sup>N</sup>  ⟹  S<sub>N</sub>·(1 − r) = a·(1 − r<sup>N</sup>)  ⟹  S<sub>N</sub> = a · (1 − r<sup>N</sup>) / (1 − r)</div>
+        </li>
+        <li>
+          <strong>Tomamos el límite cuando <code class="inline-code">N → ∞</code>:</strong> Si <code class="inline-code">|r| &lt; 1</code>, entonces <code class="inline-code">r<sup>N</sup> → 0</code> exponencialmente rápido, por lo que:
+          <div class="proof-eq">lim<sub>N→∞</sub> S<sub>N</sub> = a · (1 − 0) / (1 − r) = a / (1 − r) &nbsp;∎</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-serie">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Interactivo: Cuadrado Unidad y Convergencia</h2>
+
+    <p>
+      Cambia entre el <strong>Cuadrado Unidad de Zenón</strong> (donde puedes añadir los términos uno a uno) y la <strong>Gráfica de Sumas Parciales</strong> (donde puedes experimentar con razones positivas, negativas oscilantes o divergentes como <code class="inline-code">|r| ≥ 1</code>).
+    </p>
+
+    <div class="series-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist">
+          <button type="button" class="lab-tab is-active" data-s-mode="square" role="tab" aria-selected="true">
+            Cuadrado Unidad (r = 1/2)
+          </button>
+          <button type="button" class="lab-tab" data-s-mode="chart" role="tab" aria-selected="false">
+            Gráfica de Convergencia (Cualquier r)
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Número de términos <code class="inline-code">N</code>: <strong id="ser-n-lbl">6</strong></span>
+            <input type="range" id="sl-ser-n" min="1" max="14" step="1" value="6" />
+          </label>
+          <label class="lab-slider-item" id="wrap-slider-r" hidden>
+            <span>Razón <code class="inline-code">r</code>: <strong id="ser-r-lbl">0.50</strong></span>
+            <input type="range" id="sl-ser-r" min="-1.10" max="1.10" step="0.05" value="0.50" />
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="series-lab-canvas" aria-label="Laboratorio interactivo de la serie geométrica"></canvas>
+      </div>
+
+      <div class="lab-readout-grid">
+        <div class="readout-pill">
+          <span class="ro-label">Último término añadido</span>
+          <span class="ro-val cyan" id="ro-last-term">1/64</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Suma parcial S<sub>N</sub></span>
+          <span class="ro-val green" id="ro-partial-sum">0.984375</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Límite teórico 1 / (1 − r)</span>
+          <span class="ro-val gold" id="ro-limit-val">1.000000</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: DEMOSTRACIÓN VISUAL 1/3 Y CONTRAEJEMPLO ARMÓNICO -->
+  <section class="lesson-section" id="contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Joya Visual (<code class="inline-code">r = 1/4</code>) y el Contraejemplo de la Serie Armónica</h2>
+
+    <div class="visual-and-ce-grid">
+      <div class="visual-third-card">
+        <div class="v-tag">PRUEBA SIN PALABRAS · r = 1/4</div>
+        <h4>Por qué <code class="inline-code">1/4 + 1/16 + 1/64 + … = 1/3</code></h4>
+        <svg viewBox="0 0 220 220" class="third-svg" aria-label="Cuadrado unidad demostrando que 1/4 + 1/16 + 1/64... = 1/3">
+          <!-- Nivel 1: 4 cuartos. Azul (izq-arriba), Gris, Gris, Verde (abajo-der) -->
+          <rect x="10" y="10" width="100" height="100" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.5" />
+          <rect x="110" y="10" width="100" height="100" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="1" />
+          <rect x="10" y="110" width="100" height="100" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="1" />
+          <!-- Nivel 2 dentro de (110,110)-(210,210) -->
+          <rect x="110" y="110" width="50" height="50" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.3" />
+          <rect x="160" y="110" width="50" height="50" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="1" />
+          <rect x="110" y="160" width="50" height="50" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="1" />
+          <!-- Nivel 3 dentro de (160,160)-(210,210) -->
+          <rect x="160" y="160" width="25" height="25" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.2" />
+          <rect x="185" y="160" width="25" height="25" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="0.8" />
+          <rect x="160" y="185" width="25" height="25" fill="rgba(148, 163, 184, 0.14)" stroke="#64748b" stroke-width="0.8" />
+          <!-- Nivel 4 -->
+          <rect x="185" y="185" width="12.5" height="12.5" fill="rgba(56, 189, 248, 0.45)" stroke="#38bdf8" stroke-width="1" />
+          <text x="60" y="65" text-anchor="middle" class="svg-lbl cyan">1/4</text>
+          <text x="135" y="140" text-anchor="middle" class="svg-lbl cyan">1/16</text>
+        </svg>
+        <p>
+          En cada cuadrante L invertido, las 3 piezas en forma de L tienen exactamente el mismo tamaño (1 azul por cada 2 grises). Así que la región azul ocupa exactamente <strong>1/3 del cuadrado total</strong>.
+        </p>
+      </div>
+
+      <div class="ce-harmonic-card">
+        <div class="ce-tag">CONTRAEJEMPLO FUNDAMENTAL · SERIE ARMÓNICA</div>
+        <h4>¡Que el término general tienda a 0 NO garantiza convergencia!</h4>
+        <p>
+          Podría parecer que cualquier suma infinita cuyos sumandos tiendan a cero debería estabilizarse. Sin embargo, la <strong>Serie Armónica</strong> lo desmiente rotundamente:
+        </p>
+        <div class="mini-eq red">1 + 1/2 + 1/3 + 1/4 + 1/5 + 1/6 + 1/7 + 1/8 + … = +∞</div>
+        <p>
+          <strong>Demostración de Nicole Oresme (~1350):</strong> Agrupamos términos en potencias de 2 y los acotamos por abajo:
+        </p>
+        <ul class="oresme-list">
+          <li><code class="inline-code">1/3 + 1/4 &gt; 1/4 + 1/4 = <strong>1/2</strong></code></li>
+          <li><code class="inline-code">1/5 + 1/6 + 1/7 + 1/8 &gt; 4 · (1/8) = <strong>1/2</strong></code></li>
+          <li>Cada bloque siguiente supera <code class="inline-code">1/2</code>, luego la suma crece como <code class="inline-code">1 + 1/2 + 1/2 + 1/2 + … → +∞</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: APLICACIONES REALES -->
+  <section class="lesson-section" id="aplicaciones-reales">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Aplicaciones en Física, Economía y Fractales</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">FÍSICA · REBOTES INFINITOS</div>
+        <h4>Una Pelota Rebota Infinitas Veces en Tiempo Finito</h4>
+        <p>
+          Si dejas caer una pelota desde <code class="inline-code">1 m</code> y en cada bote recupera un <code class="inline-code">80%</code> de su altura (<code class="inline-code">r = 0,8</code>), realizará teóricamente <strong>infinitos botes</strong>, pero la distancia total recorrida es finita (<code class="inline-code">1 + 2·(0,8 / 0,2) = 9 m</code>) y el tiempo total hasta detenerse también es finito.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">ECONOMÍA · FINANZAS</div>
+        <h4>El Multiplicador Monetario y Rentas Perpetuas</h4>
+        <p>
+          Si un banco central inyecta <code class="inline-code">A</code> euros y los bancos prestan el <code class="inline-code">90%</code> de cada depósito (<code class="inline-code">r = 0,9</code>), la masa monetaria total generada en la economía sigue una serie geométrica: <code class="inline-code">A / (1 − 0,9) = 10·A</code>.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">FRACTALES · KOCH</div>
+        <h4>Perímetro Infinito en Área Finita</h4>
+        <p>
+          En el <strong>Copo de Nieve de Koch</strong>, en cada paso el perímetro se multiplica por <code class="inline-code">4/3 &gt; 1</code> (diverge a <code class="inline-code">∞</code>), mientras que el área añadida sigue una serie geométrica de razón <code class="inline-code">r = 4/9 &lt; 1</code>, convergiendo exactamente a <code class="inline-code">8/5</code> del triángulo original.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: COMPROBACIÓN PRÁCTICA -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Comprobación Práctica</h2>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Decimales periódicos):</strong> El número <code class="inline-code">0,9999…</code> puede escribirse como la serie geométrica <code class="inline-code">0,9 + 0,09 + 0,009 + …</code> (<code class="inline-code">a = 0,9, r = 0,1</code>). ¿Cuál es su valor exacto?
+        </p>
+        <div class="quiz-options" data-quiz="sg1">
+          <button type="button" class="quiz-opt" data-correct="false">Ligeramente menor que 1</button>
+          <button type="button" class="quiz-opt" data-correct="true">Exactamente 1</button>
+          <button type="button" class="quiz-opt" data-correct="false">10/9</button>
+        </div>
+        <p class="quiz-feedback" id="fb-sg1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Razón negativa):</strong> ¿A qué valor converge la serie alternada <code class="inline-code">1 − 1/2 + 1/4 − 1/8 + 1/16 − …</code>?
+        </p>
+        <div class="quiz-options" data-quiz="sg2">
+          <button type="button" class="quiz-opt" data-correct="false">1/2</button>
+          <button type="button" class="quiz-opt" data-correct="true">2/3</button>
+          <button type="button" class="quiz-opt" data-correct="false">Diverge</button>
+        </div>
+        <p class="quiz-feedback" id="fb-sg2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .zenon-hero-card,
+  .series-lab-shell,
+  .visual-third-card,
+  .ce-harmonic-card,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .zenon-badge,
+  .thm-tag,
+  .proof-header,
+  .v-tag,
+  .ce-tag,
+  .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+  .v-tag, .app-tag { color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); }
+  .ce-tag { color: #f43f5e; background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); }
+
+  .zenon-svg { width: 100%; height: auto; display: block; margin: 0.25rem 0 0.7rem; }
+  .third-svg { width: 200px; max-width: 100%; height: auto; display: block; margin: 0.5rem auto 0.85rem; }
+
+  .svg-lbl { font-family: var(--mono, monospace); font-size: 12px; font-weight: 700; }
+  .svg-lbl.cyan { fill: #38bdf8; }
+  .svg-lbl.green { fill: #10b981; }
+  .svg-lbl.purple { fill: #c084fc; }
+  .svg-lbl.gold { fill: #fbbf24; }
+  .svg-note { font-family: var(--mono, monospace); font-size: 11px; fill: var(--muted, #94a3b8); }
+  .zenon-caption { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--ink-soft, #cbd5e1); }
+
+  .theorem-box-highlight {
+    background: rgba(16, 185, 129, 0.07);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0.85rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global([data-theme="light"]) .formula-display-banner { background: #f8fafc; border-color: rgba(15, 23, 42, 0.1); }
+
+  .geo-sum-eq { text-align: center; font-family: var(--mono, monospace); display: flex; flex-direction: column; gap: 0.5rem; }
+  .eq-main { font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+  .eq-green { color: #10b981; }
+  .eq-red { color: #f43f5e; }
+  .eq-sub { font-size: 0.86rem; color: var(--muted, #94a3b8); }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .frac .num { border-bottom: 2px solid currentColor; padding: 0 0.35rem 0.12rem; color: #38bdf8; }
+  .frac .den { padding: 0.12rem 0.35rem 0; color: #10b981; }
+
+  .proof-box {
+    background: rgba(56, 189, 248, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 1.35rem;
+    margin: 1.35rem 0;
+  }
+  .proof-box .proof-header { color: #38bdf8; background: rgba(56, 189, 248, 0.14); border-color: rgba(56, 189, 248, 0.35); }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .proof-steps li { font-size: 0.91rem; line-height: 1.55; }
+  .proof-eq, .mini-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #38bdf8;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.08);
+    display: inline-block;
+  }
+  .mini-eq.red { color: #fda4af; background: rgba(244, 63, 94, 0.12); margin: 0.45rem 0; }
+  :global([data-theme="light"]) .mini-eq.red { color: #be123c; }
+
+  /* LAB */
+  .series-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #047857; }
+
+  .lab-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.9rem; }
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #10b981; cursor: pointer; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 330px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #series-lab-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-readout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.65rem; }
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+  .ro-label { font-family: var(--mono, monospace); font-size: 0.69rem; color: var(--muted, #94a3b8); }
+  .ro-val { font-family: var(--mono, monospace); font-size: 1rem; font-weight: 800; }
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.green { color: #10b981; }
+  .ro-val.gold { color: #fbbf24; }
+
+  .visual-and-ce-grid,
+  .apps-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+
+  .visual-third-card h4, .ce-harmonic-card h4, .app-card h4 { margin: 0 0 0.55rem; font-size: 0.98rem; }
+  .visual-third-card p, .ce-harmonic-card p, .app-card p { font-size: 0.87rem; line-height: 1.55; margin: 0 0 0.5rem; color: var(--ink-soft, #cbd5e1); }
+  .ce-harmonic-card { border-color: rgba(244, 63, 94, 0.3); }
+  .oresme-list { margin: 0.4rem 0 0; padding-left: 1.2rem; font-size: 0.85rem; line-height: 1.55; color: var(--ink-soft, #cbd5e1); }
+
+  /* QUIZ */
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('series-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slN = document.getElementById('sl-ser-n') as HTMLInputElement | null;
+    const slR = document.getElementById('sl-ser-r') as HTMLInputElement | null;
+    const wrapR = document.getElementById('wrap-slider-r');
+    const lblN = document.getElementById('ser-n-lbl');
+    const lblR = document.getElementById('ser-r-lbl');
+    const roLast = document.getElementById('ro-last-term');
+    const roPartial = document.getElementById('ro-partial-sum');
+    const roLimit = document.getElementById('ro-limit-val');
+    const modeTabs = document.querySelectorAll<HTMLButtonElement>('[data-s-mode]');
+
+    let sMode: 'square' | 'chart' = 'square';
+    let numTerms = 6;
+    let ratioR = 0.5;
+
+    const COLORS = ['#38bdf8', '#10b981', '#c084fc', '#fbbf24', '#f43f5e', '#60a5fa', '#34d399', '#e879f9'];
+
+    function drawSeriesLab() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const activeR = sMode === 'square' ? 0.5 : ratioR;
+      const sums: number[] = [];
+      let acc = 0;
+      let lastTerm = 0;
+      for (let i = 0; i < numTerms; i++) {
+        const term = (sMode === 'square' ? 0.5 : 1) * Math.pow(activeR, i);
+        lastTerm = term;
+        acc += term;
+        sums.push(acc);
+      }
+
+      if (roLast) {
+        roLast.textContent = sMode === 'square' ? `1/${Math.pow(2, numTerms)}` : lastTerm.toFixed(4);
+      }
+      if (roPartial) roPartial.textContent = acc.toFixed(6);
+      if (roLimit) {
+        if (sMode === 'square') {
+          roLimit.textContent = '1.000000';
+        } else if (Math.abs(activeR) < 0.999) {
+          roLimit.textContent = (1 / (1 - activeR)).toFixed(6);
+        } else {
+          roLimit.textContent = 'Diverge (∄ límite)';
+        }
+      }
+
+      if (sMode === 'square') {
+        const size = Math.min(w - 48, h - 40);
+        const sx = (w - size) / 2;
+        const sy = (h - size) / 2;
+
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.25)' : 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(sx, sy, size, size);
+
+        let rx = sx, ry = sy, rw = size, rh = size;
+        for (let i = 0; i < numTerms; i++) {
+          const col = COLORS[i % COLORS.length];
+          let bx = rx, by = ry, bw = rw, bh = rh;
+          if (i % 2 === 0) {
+            bw = rw / 2;
+            rx += bw;
+            rw -= bw;
+          } else {
+            bh = rh / 2;
+            ry += bh;
+            rh -= bh;
+          }
+          ctx.fillStyle = col + '44';
+          ctx.fillRect(bx, by, bw, bh);
+          ctx.strokeStyle = col;
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(bx, by, bw, bh);
+
+          if (bw > 34 && bh > 22) {
+            ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+            ctx.font = 'bold 12px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`1/${Math.pow(2, i + 1)}`, bx + bw / 2, by + bh / 2);
+          }
+        }
+      } else {
+        // Gráfica de sumas parciales
+        const padL = 50, padR = 24, padT = 24, padB = 34;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
+
+        const hasLim = Math.abs(activeR) < 0.999;
+        const limVal = hasLim ? 1 / (1 - activeR) : 0;
+        let minY = Math.min(0, ...sums, limVal);
+        let maxY = Math.max(1.5, ...sums, limVal);
+        if (maxY - minY < 1) { maxY += 0.5; minY -= 0.5; }
+        const spanY = maxY - minY;
+
+        const toPx = (idx: number, val: number) => ({
+          x: padL + (numTerms === 1 ? plotW / 2 : (idx / (numTerms - 1)) * plotW),
+          y: padT + plotH - ((val - minY) / spanY) * plotH,
+        });
+
+        // Eje Y=0
+        const yZero = toPx(0, 0).y;
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.2)' : 'rgba(255, 255, 255, 0.18)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(padL, yZero); ctx.lineTo(w - padR, yZero); ctx.stroke();
+
+        // Línea de límite si converge
+        if (hasLim) {
+          const yLim = toPx(0, limVal).y;
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([5, 4]);
+          ctx.beginPath(); ctx.moveTo(padL, yLim); ctx.lineTo(w - padR, yLim); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = 'bold 11px monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(`Límite = ${limVal.toFixed(3)}`, padL + 6, yLim - 6);
+        }
+
+        // Polilínea de sumas parciales
+        ctx.strokeStyle = hasLim ? '#10b981' : '#f43f5e';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        sums.forEach((s, i) => {
+          const pt = toPx(i, s);
+          if (i === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+
+        sums.forEach((s, i) => {
+          const pt = toPx(i, s);
+          ctx.fillStyle = hasLim ? '#38bdf8' : '#f43f5e';
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      ctx.restore();
+    }
+
+    modeTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        modeTabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        sMode = (tab.getAttribute('data-s-mode') as 'square' | 'chart') || 'square';
+        if (wrapR) wrapR.hidden = sMode === 'square';
+        drawSeriesLab();
+      });
+    });
+
+    slN?.addEventListener('input', (e) => {
+      numTerms = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblN) lblN.textContent = String(numTerms);
+      drawSeriesLab();
+    });
+
+    slR?.addEventListener('input', (e) => {
+      ratioR = parseFloat((e.target as HTMLInputElement).value);
+      if (lblR) lblR.textContent = ratioR.toFixed(2);
+      drawSeriesLab();
+    });
+
+    window.addEventListener('resize', drawSeriesLab);
+    new MutationObserver(drawSeriesLab).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawSeriesLab();
+
+    // QUIZ
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      sg1: {
+        ok: 'Correcto: S = a / (1 − r) = 0,9 / (1 − 0,1) = 0,9 / 0,9 = 1 exactamente.',
+        ko: 'Aplica la fórmula S = a / (1 − r) con a = 0,9 y r = 0,1: 0,9 / 0,9 = 1.',
+      },
+      sg2: {
+        ok: 'Correcto: Aquí a = 1 y r = −1/2. Por tanto S = 1 / (1 − (−1/2)) = 1 / (3/2) = 2/3.',
+        ko: 'Como r = −1/2 cumple |r| < 1, converge a 1 / (1 − (−1/2)) = 1 / 1,5 = 2/3.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

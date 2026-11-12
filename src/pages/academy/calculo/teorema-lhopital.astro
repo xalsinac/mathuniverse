@@ -1,0 +1,638 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-lhopital')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-serie-geometrica');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-weierstrass');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN -->
+  <section class="lesson-section" id="intuicion-carrera">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición: Una Carrera Hacia el Cero</h2>
+
+    <p class="lead-paragraph">
+      Cuando un límite adopta la forma <code class="inline-code">0 / 0</code>, no significa que valga <code class="inline-code">0</code>, ni <code class="inline-code">1</code>, ni <code class="inline-code">∞</code>. Significa que <strong>dos funciones están llegando al cero al mismo tiempo</strong>, y el resultado final depende únicamente de <em>la velocidad relativa</em> con la que cruzan la meta: sus derivadas <code class="inline-code">f′(a)</code> y <code class="inline-code">g′(a)</code>.
+    </p>
+
+    <div class="history-context-box">
+      <div class="h-icon">📜</div>
+      <div class="h-body">
+        <h4>El Acuerdo de 1696 entre Bernoulli y el Marqués de L’Hôpital</h4>
+        <p>
+          La regla lleva el nombre del matemático francés <strong>Guillaume de l’Hôpital</strong> porque la publicó en 1696 en <em>Analyse des Infiniment Petits</em>, el primer libro de texto de cálculo diferencial de la historia.
+        </p>
+        <p>
+          Sin embargo, el verdadero descubridor del teorema fue su maestro suizo <strong>Johann Bernoulli</strong>, quien había firmado un contrato con el marqués enviándole sus descubrimientos matemáticos a cambio de una pensión económica.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: ENUNCIADO FORMAL Y 4 CONDICIONES -->
+  <section class="lesson-section" id="enunciado-formal">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Enunciado Formal y las 4 Hipótesis Obligatorias</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE L’HÔPITAL (0/0 E ∞/∞)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>
+        Sean <code class="inline-code">f</code> y <code class="inline-code">g</code> dos funciones derivables en un entorno reducido <code class="inline-code">(a − δ, a + δ) \ {'{a}'}</code> (o para <code class="inline-code">x → ±∞</code>) que satisfacen simultáneamente estas cuatro condiciones:
+      </p>
+      <ol class="hyp-list">
+        <li><span class="hyp-pill">H1</span> <strong>Indeterminación previa:</strong> <code class="inline-code">lim<sub>x→a</sub> f(x) = 0</code> y <code class="inline-code">lim<sub>x→a</sub> g(x) = 0</code> (o bien ambos límites son <code class="inline-code">±∞</code>).</li>
+        <li><span class="hyp-pill">H2</span> <strong>Derivabilidad local:</strong> <code class="inline-code">f</code> y <code class="inline-code">g</code> son derivables cerca de <code class="inline-code">a</code>.</li>
+        <li><span class="hyp-pill">H3</span> <strong>Denominador no nulo:</strong> <code class="inline-code">g′(x) ≠ 0</code> en ese entorno perforado alrededor de <code class="inline-code">a</code>.</li>
+        <li><span class="hyp-pill">H4</span> <strong>Existencia del límite derivado:</strong> Existe <code class="inline-code">lim<sub>x→a</sub> f′(x)/g′(x) = L</code> (finito o <code class="inline-code">±∞</code>).</li>
+      </ol>
+      <div class="formula-display-banner">
+        <div class="lhop-eq">
+          Entonces: &nbsp; lim<sub>x→a</sub> <span class="frac"><span class="num">f(x)</span><span class="den">g(x)</span></span>
+          <span class="eq-op">=</span>
+          lim<sub>x→a</sub> <span class="frac"><span class="num">f′(x)</span><span class="den">g′(x)</span></span>
+          <span class="eq-op">=</span>
+          <span class="l-badge">L</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: DEMOSTRACIÓN POR CAUCHY -->
+  <section class="lesson-section" id="demostracion-cauchy">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Demostración Rigurosa mediante el Valor Medio de Cauchy</h2>
+
+    <p>
+      ¿Por qué podemos sustituir las funciones por sus derivadas? La demostración rigurosa para el caso <code class="inline-code">0 / 0</code> se apoya en el <strong>Teorema del Valor Medio Generalizado de Cauchy</strong>:
+    </p>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN PASO A PASO (CASO 0 / 0)</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Extensión por continuidad en <code class="inline-code">x = a</code>:</strong> Como <code class="inline-code">lim<sub>x→a</sub> f(x) = lim<sub>x→a</sub> g(x) = 0</code>, definimos <code class="inline-code">f(a) = 0</code> y <code class="inline-code">g(a) = 0</code> para que ambas funciones sean continuas en <code class="inline-code">a</code> y derivables en el abierto entre <code class="inline-code">a</code> y cualquier <code class="inline-code">x</code> cercano.
+        </li>
+        <li>
+          <strong>Aplicamos el Teorema del Valor Medio de Cauchy en <code class="inline-code">[a, x]</code>:</strong> Existe un punto intermedio <code class="inline-code">c</code> estrictamente entre <code class="inline-code">a</code> y <code class="inline-code">x</code> tal que:
+          <div class="proof-eq">[f(x) − f(a)] · g′(c) = [g(x) − g(a)] · f′(c)</div>
+        </li>
+        <li>
+          <strong>Sustituimos <code class="inline-code">f(a) = g(a) = 0</code> y dividimos (usando <code class="inline-code">g′(c) ≠ 0</code>):</strong>
+          <div class="proof-eq">f(x) / g(x) = f′(c) / g′(c)</div>
+        </li>
+        <li>
+          <strong>Paso al límite (<code class="inline-code">x → a</code>):</strong> Como <code class="inline-code">c</code> está atrapado entre <code class="inline-code">a</code> y <code class="inline-code">x</code>, por el Teorema del Sándwich cuando <code class="inline-code">x → a</code> necesariamente <code class="inline-code">c → a</code>. Por tanto, si existe <code class="inline-code">lim<sub>c→a</sub> f′(c)/g′(c) = L</code>:
+          <div class="proof-eq">lim<sub>x→a</sub> f(x) / g(x) = lim<sub>c→a</sub> f′(c) / g′(c) = L &nbsp;∎</div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="linearization-note">
+      <strong>Interpretación geométrica (Linealización local):</strong> Si <code class="inline-code">f</code> y <code class="inline-code">g</code> son derivables en <code class="inline-code">a</code> con <code class="inline-code">f(a)=g(a)=0</code>, cerca de <code class="inline-code">a</code> se comportan casi como sus rectas tangentes: <code class="inline-code">f(x) ≈ f′(a)·(x − a)</code> y <code class="inline-code">g(x) ≈ g′(a)·(x − a)</code>. Al dividir, el factor común <code class="inline-code">(x − a)</code> se cancela dejando exactamente <code class="inline-code">f′(a) / g′(a)</code>.
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO: LUPA DE ZOOM INFINITO -->
+  <section class="lesson-section" id="laboratorio-lhopital">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: La Lupa de Zoom Infinito</h2>
+
+    <p>
+      Elige dos curvas que se cruzan en el origen <code class="inline-code">(0, 0)</code> y aumenta el <strong>Zoom de la Lupa</strong> desde <code class="inline-code">1×</code> hasta <code class="inline-code">80×</code>. Observa cómo las curvas (trazo sólido) se enderezan progresivamente hasta fundirse con sus <strong>rectas tangentes</strong> (trazo discontinuo) de pendientes <code class="inline-code">f′(0)</code> y <code class="inline-code">g′(0)</code>.
+    </p>
+
+    <div class="lhop-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist">
+          <button type="button" class="lab-tab is-active" data-pair="sin2x" role="tab" aria-selected="true">
+            sen(2x) / x  (L = 2)
+          </button>
+          <button type="button" class="lab-tab" data-pair="exp" role="tab" aria-selected="false">
+            (e³ˣ − 1) / ln(1+2x)  (L = 1.5)
+          </button>
+          <button type="button" class="lab-tab" data-pair="cos2" role="tab" aria-selected="false">
+            (1 − cos x) / x²  (Orden 2, L = 0.5)
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Aumento de la Lupa sobre <code class="inline-code">(0, 0)</code>: <strong id="zoom-lbl">1×</strong></span>
+            <input type="range" id="sl-lhop-zoom" min="1" max="80" step="1" value="1" />
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="lhop-lab-canvas" aria-label="Lupa de zoom infinito sobre dos curvas en el origen"></canvas>
+      </div>
+
+      <div class="lab-readout-grid">
+        <div class="readout-pill">
+          <span class="ro-label">Semiancho de la ventana (x)</span>
+          <span class="ro-val cyan" id="ro-x-span">±2.000</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Cociente real f(x)/g(x) en el borde</span>
+          <span class="ro-val purple" id="ro-ratio-now">−0.378</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Límite exacto (f′ / g′)</span>
+          <span class="ro-val green" id="ro-exact-lim">2.000</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: CONTRAEJEMPLOS -->
+  <section class="lesson-section" id="contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Contraejemplos: Cuándo NO Puede Aplicarse L’Hôpital</h2>
+
+    <div class="ce-grid">
+      <article class="ce-card">
+        <div class="ce-tag">TRAMPA 1 · FALLA H1 (NO HAY 0/0 NI ∞/∞)</div>
+        <h4>Derivar cuando el límite ya era directo</h4>
+        <p>
+          Considera <code class="inline-code">lim<sub>x→0</sub> cos(x) / (x + 1)</code>. Al sustituir <code class="inline-code">x = 0</code> da <code class="inline-code">1 / 1 = <strong>1</strong></code> directamente.
+        </p>
+        <div class="mini-eq red">Error fatal: derivar daría (−sen 0) / 1 = 0 ≠ 1</div>
+        <p>Si no existe indeterminación <code class="inline-code">0/0</code> o <code class="inline-code">∞/∞</code>, la regla es completamente falsa.</p>
+      </article>
+
+      <article class="ce-card">
+        <div class="ce-tag">TRAMPA 2 · FALLA H4 (OSCILACIÓN DE DERIVADAS)</div>
+        <h4>El límite original existe, pero el derivado NO</h4>
+        <p>
+          Observa <code class="inline-code">lim<sub>x→∞</sub> (x + sen x) / x</code>. Dividiendo por <code class="inline-code">x</code> vale <code class="inline-code">1 + (sen x)/x → <strong>1</strong></code>.
+        </p>
+        <div class="mini-eq red">Derivando: (1 + cos x) / 1  (oscila entre 0 y 2, ¡no existe!)</div>
+        <p>Que no exista <code class="inline-code">lim f′/g′</code> NO significa que no exista <code class="inline-code">lim f/g</code>: solo indica que L’Hôpital no es aplicable.</p>
+      </article>
+
+      <article class="ce-card">
+        <div class="ce-tag">TRAMPA 3 · BUCLE INFINITO EN RAÍCES</div>
+        <h4>Cuando derivar devuelve al punto de partida</h4>
+        <p>
+          En <code class="inline-code">lim<sub>x→∞</sub> x / √(x² + 1)</code> (forma <code class="inline-code">∞/∞</code>), la primera derivada da <code class="inline-code">√(x² + 1) / x</code> y la segunda devuelve exactamente <code class="inline-code">x / √(x² + 1)</code>.
+        </p>
+        <p>Solución real: dividir numerador y denominador por <code class="inline-code">x</code> para obtener <code class="inline-code">1</code> al instante.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: CONVERSIÓN DE INDETERMINACIONES Y RETOS -->
+  <section class="lesson-section" id="aplicaciones-reto">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Conversión de Otras Indeterminaciones y Comprobación Práctica</h2>
+
+    <div class="conv-box">
+      <p>
+        L’Hôpital solo admite <code class="inline-code">0/0</code> o <code class="inline-code">∞/∞</code>, pero cualquier otra indeterminación se transforma fácilmente:
+      </p>
+      <ul class="conv-list">
+        <li><strong>Producto <code class="inline-code">0 · ∞</code>:</strong> reescribe <code class="inline-code">f · g</code> como <code class="inline-code">f / (1/g)</code>.</li>
+        <li><strong>Potencias <code class="inline-code">1^∞, 0^0, ∞^0</code>:</strong> toma logaritmos (<code class="inline-code">L = lim f<sup>g</sup> ⟹ ln L = lim g · ln f</code>).</li>
+      </ul>
+    </div>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Doble L’Hôpital):</strong> Calcula <code class="inline-code">lim<sub>x→0</sub> (1 − cos x) / x²</code> aplicando L’Hôpital sucesivamente.
+        </p>
+        <div class="quiz-options" data-quiz="lh1">
+          <button type="button" class="quiz-opt" data-correct="false">0</button>
+          <button type="button" class="quiz-opt" data-correct="true">1/2</button>
+          <button type="button" class="quiz-opt" data-correct="false">1</button>
+        </div>
+        <p class="quiz-feedback" id="fb-lh1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Regla de oro):</strong> Si <code class="inline-code">lim<sub>x→2</sub> f(x) = 3</code> y <code class="inline-code">lim<sub>x→2</sub> g(x) = 0</code>, ¿puedes aplicar L’Hôpital a <code class="inline-code">f(x)/g(x)</code>?
+        </p>
+        <div class="quiz-options" data-quiz="lh2">
+          <button type="button" class="quiz-opt" data-correct="false">Sí, derivando f y g</button>
+          <button type="button" class="quiz-opt" data-correct="true">No, porque es 3/0 (no es 0/0 ni ∞/∞)</button>
+        </div>
+        <p class="quiz-feedback" id="fb-lh2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .history-context-box {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.06);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    margin: 1.25rem 0;
+  }
+  .h-icon { font-size: 1.8rem; line-height: 1; }
+  .h-body h4 { margin: 0 0 0.45rem; color: #fbbf24; }
+  .h-body p { margin: 0 0 0.5rem; font-size: 0.91rem; line-height: 1.55; }
+  .h-body p:last-child { margin-bottom: 0; }
+
+  .theorem-box-highlight {
+    background: rgba(16, 185, 129, 0.07);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+
+  .thm-tag, .proof-header, .ce-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+  .ce-tag { color: #f43f5e; background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); }
+
+  .hyp-list { list-style: none; padding: 0; margin: 0.75rem 0 1rem; display: flex; flex-direction: column; gap: 0.55rem; }
+  .hyp-list li { font-size: 0.9rem; line-height: 1.5; }
+  .hyp-pill {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.12rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    margin-right: 0.35rem;
+  }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global([data-theme="light"]) .formula-display-banner { background: #f8fafc; border-color: rgba(15, 23, 42, 0.1); }
+
+  .lhop-eq {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-family: var(--mono, monospace);
+    font-size: 1.05rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .frac .num { border-bottom: 2px solid currentColor; padding: 0 0.35rem 0.12rem; color: #38bdf8; }
+  .frac .den { padding: 0.12rem 0.35rem 0; color: #c084fc; }
+  .eq-op { color: var(--muted, #94a3b8); }
+  .l-badge { padding: 0.2rem 0.6rem; border-radius: 6px; background: rgba(16, 185, 129, 0.18); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+  .proof-box {
+    background: rgba(56, 189, 248, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 1.35rem;
+    margin: 1.35rem 0;
+  }
+  .proof-box .proof-header { color: #38bdf8; background: rgba(56, 189, 248, 0.14); border-color: rgba(56, 189, 248, 0.35); }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .proof-steps li { font-size: 0.91rem; line-height: 1.55; }
+  .proof-eq, .mini-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #38bdf8;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.08);
+    display: inline-block;
+  }
+  .mini-eq.red { color: #fda4af; background: rgba(244, 63, 94, 0.12); margin: 0.45rem 0; }
+  :global([data-theme="light"]) .mini-eq.red { color: #be123c; }
+
+  .linearization-note, .conv-box {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .conv-list { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+
+  /* LAB */
+  .lhop-lab-shell, .ce-card, .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .lhop-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #047857; }
+
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #10b981; cursor: pointer; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 330px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #lhop-lab-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-readout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 0.65rem; }
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+  .ro-label { font-family: var(--mono, monospace); font-size: 0.69rem; color: var(--muted, #94a3b8); }
+  .ro-val { font-family: var(--mono, monospace); font-size: 1rem; font-weight: 800; }
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.purple { color: #c084fc; }
+  .ro-val.green { color: #10b981; }
+
+  .ce-grid, .quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 1rem; margin: 1.35rem 0; }
+  .ce-card { border-color: rgba(244, 63, 94, 0.3); }
+  .ce-card h4 { margin: 0 0 0.5rem; font-size: 0.96rem; }
+  .ce-card p { font-size: 0.86rem; line-height: 1.5; margin: 0 0 0.5rem; color: var(--ink-soft, #cbd5e1); }
+  .ce-card p:last-child { margin-bottom: 0; }
+
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('lhop-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slZoom = document.getElementById('sl-lhop-zoom') as HTMLInputElement | null;
+    const zoomLbl = document.getElementById('zoom-lbl');
+    const roXSpan = document.getElementById('ro-x-span');
+    const roRatioNow = document.getElementById('ro-ratio-now');
+    const roExactLim = document.getElementById('ro-exact-lim');
+    const tabs = document.querySelectorAll<HTMLButtonElement>('[data-pair]');
+
+    interface PairDef {
+      f: (x: number) => number;
+      g: (x: number) => number;
+      tf: (x: number) => number;
+      tg: (x: number) => number;
+      fName: string;
+      gName: string;
+      limit: number;
+    }
+
+    const PAIRS: Record<string, PairDef> = {
+      sin2x: {
+        f: (x) => Math.sin(2 * x),
+        g: (x) => x,
+        tf: (x) => 2 * x,
+        tg: (x) => x,
+        fName: 'f(x)=sen(2x)',
+        gName: 'g(x)=x',
+        limit: 2.0,
+      },
+      exp: {
+        f: (x) => Math.exp(3 * x) - 1,
+        g: (x) => Math.log(1 + 2 * x),
+        tf: (x) => 3 * x,
+        tg: (x) => 2 * x,
+        fName: 'f(x)=e^(3x)-1',
+        gName: 'g(x)=ln(1+2x)',
+        limit: 1.5,
+      },
+      cos2: {
+        f: (x) => 1 - Math.cos(x),
+        g: (x) => x * x,
+        tf: (x) => 0.5 * x * x, // Aproximación cuadrática de orden 2
+        tg: (x) => x * x,
+        fName: 'f(x)=1-cos(x)',
+        gName: 'g(x)=x²',
+        limit: 0.5,
+      },
+    };
+
+    let currentPair = 'sin2x';
+    let zoomFactor = 1;
+
+    function drawLhopital() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const pair = PAIRS[currentPair];
+      // Escala exponencial suave de lupa: 1x -> ±2.0, 80x -> ±0.025
+      const halfSpan = 2.0 / zoomFactor;
+      const xMin = -halfSpan;
+      const xMax = halfSpan;
+      const yScaleSpan = currentPair === 'cos2' ? halfSpan * halfSpan * 1.4 : halfSpan * 2.4;
+
+      const toPx = (x: number, y: number) => ({
+        x: ((x - xMin) / (xMax - xMin)) * w,
+        y: h / 2 - (y / yScaleSpan) * (h * 0.44),
+      });
+
+      // Ejes
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.2)' : 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
+
+      // Dibujar tangentes (discontinuas)
+      const drawCurve = (fn: (x: number) => number, color: string, width: number, dashed = false) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.setLineDash(dashed ? [6, 4] : []);
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= 160; i++) {
+          const x = xMin + (i / 160) * (xMax - xMin);
+          const y = fn(x);
+          if (!Number.isFinite(y) || Math.abs(y) > yScaleSpan * 4) {
+            started = false;
+            continue;
+          }
+          const pt = toPx(x, y);
+          if (!started) { ctx.moveTo(pt.x, pt.y); started = true; }
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      };
+
+      drawCurve(pair.tf, 'rgba(56, 189, 248, 0.45)', 1.8, true);
+      drawCurve(pair.tg, 'rgba(192, 132, 252, 0.45)', 1.8, true);
+      drawCurve(pair.f, '#38bdf8', 2.8, false);
+      drawCurve(pair.g, '#c084fc', 2.8, false);
+
+      // Punto origen (0,0)
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath(); ctx.arc(w / 2, h / 2, 5, 0, Math.PI * 2); ctx.fill();
+
+      // Leyenda superior
+      ctx.font = 'bold 12px monospace';
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText(`— ${pair.fName}`, 14, 22);
+      ctx.fillStyle = '#c084fc';
+      ctx.fillText(`— ${pair.gName}`, 14, 40);
+      ctx.fillStyle = isLight ? '#475569' : '#94a3b8';
+      ctx.fillText('-- Linealización tangente', 14, 58);
+
+      // Lectura en el borde derecho x = halfSpan * 0.6
+      const sampleX = halfSpan * 0.6;
+      const ratioVal = pair.f(sampleX) / pair.g(sampleX);
+      if (roXSpan) roXSpan.textContent = `±${halfSpan.toFixed(3)}`;
+      if (roRatioNow) roRatioNow.textContent = Number.isFinite(ratioVal) ? ratioVal.toFixed(4) : '—';
+      if (roExactLim) roExactLim.textContent = pair.limit.toFixed(3);
+
+      ctx.restore();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        currentPair = tab.getAttribute('data-pair') || 'sin2x';
+        drawLhopital();
+      });
+    });
+
+    slZoom?.addEventListener('input', (e) => {
+      zoomFactor = parseInt((e.target as HTMLInputElement).value, 10);
+      if (zoomLbl) zoomLbl.textContent = `${zoomFactor}×`;
+      drawLhopital();
+    });
+
+    window.addEventListener('resize', drawLhopital);
+    new MutationObserver(drawLhopital).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawLhopital();
+
+    // QUIZ
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      lh1: {
+        ok: 'Correcto: 1.ª derivada → (sen x)/(2x) (sigue 0/0); 2.ª derivada → (cos x)/2 → cos(0)/2 = 1/2.',
+        ko: 'Al derivar una vez queda (sen x)/(2x), que sigue siendo 0/0. Derivando una segunda vez: (cos x)/2 → 1/2.',
+      },
+      lh2: {
+        ok: 'Exacto: 3/0 no es una indeterminación de tipo L’Hôpital (0/0 o ∞/∞); es una discontinuidad infinita con límites laterales ±∞.',
+        ko: '¡Cuidado! L’Hôpital solo puede aplicarse si el límite tiene forma 0/0 o ∞/∞. Aquí el numerador tiende a 3 ≠ 0.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

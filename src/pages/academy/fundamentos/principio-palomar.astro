@@ -1,0 +1,546 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-palomar')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-suma-gauss');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-03');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN E HISTORIA -->
+  <section class="lesson-section" id="intuicion-palomar">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición: Lo Inevitable Cuando Sobran Elementos</h2>
+
+    <p class="lead-paragraph">
+      Si tienes <code class="inline-code">10 palomas</code> y solo <code class="inline-code">9 casillas</code> en un palomar, no importa lo ingenioso que seas repartiéndolas: <strong>al menos una casilla tendrá que albergar 2 o más palomas</strong>. Aunque parezca una verdad de Perogrullo, este principio es una de las armas más poderosas de la combinatoria, la teoría de números y la informática teórica.
+    </p>
+
+    <div class="history-context-box">
+      <div class="h-icon">🏛️</div>
+      <div class="h-body">
+        <h4>Dirichlet y el <em>Schubfachprinzip</em> (Principio de los Cajones, 1834)</h4>
+        <p>
+          El matemático alemán <strong>Johann Peter Gustav Lejeune Dirichlet</strong> formuló formalmente este principio en 1834 bajo el nombre de <em>Schubfachprinzip</em> («principio de los cajones») para demostrar resultados profundos sobre aproximación diofántica de números irracionales.
+        </p>
+        <p>
+          Su fuerza reside en que demuestra la <strong>existencia pura</strong> de un objeto o coincidencia sin necesidad de construirlo explícitamente.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: FORMALIZACIÓN Y DEMOSTRACIÓN -->
+  <section class="lesson-section" id="demostracion-absurdo">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Formalización y Demostración por Reducción al Absurdo</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">PRINCIPIO DEL PALOMAR (FORMA SIMPLE Y GENERALIZADA)</div>
+      <h3>Enunciado Matemático</h3>
+      <p>
+        Sea <code class="inline-code">f: A ⟶ B</code> una función entre dos conjuntos finitos con <code class="inline-code">|A| = n</code> elementos y <code class="inline-code">|B| = m</code> casillas:
+      </p>
+      <ul class="pal-list">
+        <li><strong>Versión simple:</strong> Si <code class="inline-code">n &gt; m</code>, entonces <code class="inline-code">f</code> <strong>no puede ser inyectiva</strong>; es decir, existe algún <code class="inline-code">b ∈ B</code> con al menos <code class="inline-code">2</code> preimágenes en <code class="inline-code">A</code>.</li>
+        <li><strong>Versión generalizada (fuerte):</strong> Para cualesquiera <code class="inline-code">n, m ≥ 1</code>, existe al menos una casilla que recibe como mínimo <code class="inline-code">⌈n / m⌉</code> elementos (donde <code class="inline-code">⌈x⌉</code> es la función techo).</li>
+      </ul>
+    </div>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN RIGUROSA POR REDUCCIÓN AL ABSURDO</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Negamos la tesis (suponemos que no hay colisión):</strong> Supongamos por absurdo que ninguna casilla recibe <code class="inline-code">k = ⌈n / m⌉</code> o más elementos. Como la cantidad de elementos en cada casilla es un entero, cada una de las <code class="inline-code">m</code> casillas tendría como máximo <code class="inline-code">k − 1</code> elementos.
+        </li>
+        <li>
+          <strong>Acotamos la suma total:</strong> Sumando las capacidades de todas las <code class="inline-code">m</code> casillas, el número total de elementos asignados sería a lo sumo:
+          <div class="proof-eq">Total ≤ m · (⌈n / m⌉ − 1)</div>
+        </li>
+        <li>
+          <strong>Propiedad de la función techo:</strong> Por definición de techo, <code class="inline-code">⌈n / m⌉ &lt; (n / m) + 1</code>, lo que implica <code class="inline-code">⌈n / m⌉ − 1 &lt; n / m</code>. Multiplicando por <code class="inline-code">m &gt; 0</code>:
+          <div class="proof-eq">Total ≤ m · (⌈n / m⌉ − 1) &lt; m · (n / m) = n</div>
+        </li>
+        <li>
+          <strong>Contradicción:</strong> Habríamos asignado estrictamente menos de <code class="inline-code">n</code> elementos, contradiciendo que <code class="inline-code">|A| = n</code>. Luego alguna casilla contiene al menos <code class="inline-code">⌈n / m⌉</code> elementos. (En particular, si <code class="inline-code">n &gt; m</code>, entonces <code class="inline-code">⌈n / m⌉ ≥ 2</code>). &nbsp;∎
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-palomar">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Interactivo: Simulador de Colisiones Inevitables</h2>
+
+    <p>
+      Ajusta el número de <strong>elementos (<code class="inline-code">n</code>)</strong> y de <strong>casillas (<code class="inline-code">m</code>)</strong>. En el modo <strong>Reparto Óptimo</strong> el simulador intenta evitar colisiones repartiendo de forma perfectamente equilibrada; observa cómo en cuanto <code class="inline-code">n &gt; m</code> es matemáticamente imposible impedir que alguna casilla se ilumine en rojo.
+    </p>
+
+    <div class="pal-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs">
+          <button type="button" class="lab-tab is-active" id="btn-mode-optimal">
+            Reparto Óptimo (Anti-colisión)
+          </button>
+          <button type="button" class="lab-tab" id="btn-mode-random">
+            Reparto Aleatorio
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Elementos / Palomas (<code class="inline-code">n</code>): <strong id="pal-n-lbl">7</strong></span>
+            <input type="range" id="sl-pal-n" min="1" max="20" step="1" value="7" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Casillas / Nidos (<code class="inline-code">m</code>): <strong id="pal-m-lbl">6</strong></span>
+            <input type="range" id="sl-pal-m" min="2" max="10" step="1" value="6" />
+          </label>
+        </div>
+      </div>
+
+      <div class="boxes-arena" id="boxes-arena" aria-live="polite"></div>
+
+      <div class="lab-status-bar is-collision" id="pal-status-bar">
+        <span id="pal-status-text">n = 7 &gt; m = 6  ⇒  Colisión inevitable: cota garantizada ⌈7/6⌉ = 2 elementos en al menos 1 casilla.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: TRES CONSECUENCIAS PROFUNDAS -->
+  <section class="lesson-section" id="consecuencias-profundas">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Tres Consecuencias Profundas en Matemáticas</h2>
+
+    <div class="deep-grid">
+      <article class="deep-card">
+        <div class="d-tag cyan">1. TEORÍA DE NÚMEROS</div>
+        <h4>Diferencia Divisible por <code class="inline-code">m</code></h4>
+        <p>
+          <strong>Teorema:</strong> Dados <code class="inline-code">m + 1</code> números enteros cualesquiera, siempre existen al menos dos cuya diferencia es múltiplo exacto de <code class="inline-code">m</code>.
+        </p>
+        <p>
+          <strong>Prueba:</strong> Al dividir cada número entre <code class="inline-code">m</code>, solo hay <code class="inline-code">m</code> restos posibles (<code class="inline-code">0, 1, …, m − 1</code>). Como tenemos <code class="inline-code">m + 1</code> números (palomas) y <code class="inline-code">m</code> restos (casillas), dos números <code class="inline-code">a, b</code> comparten el mismo resto. Por tanto <code class="inline-code">a − b</code> tiene resto <code class="inline-code">0</code> módulo <code class="inline-code">m</code>. &nbsp;∎
+        </p>
+      </article>
+
+      <article class="deep-card">
+        <div class="d-tag purple">2. TEORÍA DE GRAFOS</div>
+        <h4>Pares de Vértices con Igual Grado</h4>
+        <p>
+          <strong>Teorema:</strong> En cualquier grafo simple con <code class="inline-code">n ≥ 2</code> vértices (por ejemplo, una fiesta de <code class="inline-code">n</code> personas), siempre hay al menos dos vértices con el mismo grado (mismo número de amigos).
+        </p>
+        <p>
+          <strong>Prueba:</strong> Los grados posibles van de <code class="inline-code">0</code> a <code class="inline-code">n − 1</code> (<code class="inline-code">n</code> valores). Pero no pueden existir a la vez alguien aislado (<code class="inline-code">0</code>) y alguien amigo de todos (<code class="inline-code">n − 1</code>). Así que solo hay <code class="inline-code">n − 1</code> casillas válidas para <code class="inline-code">n</code> personas. &nbsp;∎
+        </p>
+      </article>
+
+      <article class="deep-card">
+        <div class="d-tag green">3. TEOREMA DE ERDŐS–SZEKERES (1935)</div>
+        <h4>Subsucesiones Monótonas Inevitables</h4>
+        <p>
+          <strong>Teorema:</strong> Toda sucesión de <code class="inline-code">r·s + 1</code> números reales distintos contiene una subsucesión creciente de longitud <code class="inline-code">r + 1</code> o una decreciente de longitud <code class="inline-code">s + 1</code>.
+        </p>
+        <p>
+          <strong>Prueba:</strong> Si fallaran ambas, cada término <code class="inline-code">aₖ</code> tendría longitud máxima creciente <code class="inline-code">iₖ ∈ {'{1,…,r}'}</code> y decreciente <code class="inline-code">dₖ ∈ {'{1,…,s}'}</code>. Hay <code class="inline-code">r·s</code> pares posibles <code class="inline-code">(iₖ, dₖ)</code> para <code class="inline-code">r·s + 1</code> elementos: dos comparten el mismo par, ¡imposible porque si <code class="inline-code">aⱼ &lt; aₖ</code> entonces <code class="inline-code">iₖ ≥ iⱼ + 1</code>, y si <code class="inline-code">aⱼ &gt; aₖ</code> entonces <code class="inline-code">dₖ ≥ dⱼ + 1</code>! &nbsp;∎
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: APLICACIONES Y CURIOSIDADES -->
+  <section class="lesson-section" id="aplicaciones-cotidianas">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Aplicaciones en la Vida Real e Informática</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">INFORMÁTICA · COMPRESIÓN</div>
+        <h4>Por qué NO Existe un Compresor Universal sin Pérdida</h4>
+        <p>
+          Hay más archivos distintos de longitud hasta <code class="inline-code">N</code> bits que archivos estrictamente más cortos. Por el Principio del Palomar, ningún algoritmo (ZIP, PNG, FLAC) puede comprimir <em>todos</em> los archivos reduciendo su tamaño sin provocar colisiones que impidan descomprimirlos.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">CIUDAD Y BIOLOGÍA</div>
+        <h4>Dos Personas con Exactamente los Mismos Cabellos</h4>
+        <p>
+          Un ser humano tiene como máximo unos <code class="inline-code">150.000</code> cabellos (o hasta <code class="inline-code">500.000</code> en el extremo teórico). En una ciudad como Madrid o Barcelona (más de <code class="inline-code">1,6 millones</code> de habitantes), es matemáticamente seguro que hay miles de personas con el número exacto de cabellos idéntico.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: COMPROBACIÓN PRÁCTICA -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Comprobación Práctica</h2>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Calcetines a oscuras):</strong> En un cajón hay calcetines azules, rojos y verdes mezclados. ¿Cuántos debes sacar a ciegas como mínimo para estar 100% seguro de tener un par del mismo color?
+        </p>
+        <div class="quiz-options" data-quiz="p1">
+          <button type="button" class="quiz-opt" data-correct="false">3</button>
+          <button type="button" class="quiz-opt" data-correct="true">4</button>
+          <button type="button" class="quiz-opt" data-correct="false">6</button>
+        </div>
+        <p class="quiz-feedback" id="fb-p1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Palomar fuerte):</strong> Si repartes <code class="inline-code">25 alumnos</code> en <code class="inline-code">4 aulas</code>, ¿cuál es el mínimo número de alumnos garantizado en al menos una aula?
+        </p>
+        <div class="quiz-options" data-quiz="p2">
+          <button type="button" class="quiz-opt" data-correct="false">6 alumnos</button>
+          <button type="button" class="quiz-opt" data-correct="true">7 alumnos</button>
+          <button type="button" class="quiz-opt" data-correct="false">8 alumnos</button>
+        </div>
+        <p class="quiz-feedback" id="fb-p2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .history-context-box {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.06);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    margin: 1.25rem 0;
+  }
+  .h-icon { font-size: 1.8rem; line-height: 1; }
+  .h-body h4 { margin: 0 0 0.45rem; color: #fbbf24; }
+  .h-body p { margin: 0 0 0.5rem; font-size: 0.91rem; line-height: 1.55; }
+  .h-body p:last-child { margin-bottom: 0; }
+
+  .theorem-box-highlight {
+    background: rgba(56, 189, 248, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+  .pal-list { margin: 0.5rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.92rem; line-height: 1.55; }
+
+  .thm-tag, .proof-header, .d-tag, .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+  .d-tag.purple { color: #c084fc; background: rgba(192, 132, 252, 0.12); border-color: rgba(192, 132, 252, 0.3); }
+  .d-tag.green, .proof-header { color: #10b981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); }
+
+  .proof-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.35rem;
+    margin: 1.35rem 0;
+  }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .proof-steps li { font-size: 0.91rem; line-height: 1.55; }
+  .proof-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #10b981;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    display: inline-block;
+  }
+
+  /* LAB PALOMAR */
+  .pal-lab-shell, .deep-card, .app-card, .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .pal-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #bae6fd; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #0369a1; }
+
+  .lab-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.9rem; }
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #38bdf8; cursor: pointer; }
+
+  .boxes-arena {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .boxes-arena { background: #f8fafc; }
+
+  :global(.pal-box) {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 9px;
+    padding: 0.6rem;
+    min-height: 92px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    transition: all 0.2s ease;
+  }
+  :global([data-theme="light"] .pal-box) { background: #ffffff; border-color: rgba(15, 23, 42, 0.14); }
+  :global(.pal-box.has-collision) {
+    background: rgba(244, 63, 94, 0.12);
+    border-color: #f43f5e;
+    box-shadow: 0 0 14px rgba(244, 63, 94, 0.2);
+  }
+  :global(.pal-box-head) {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--muted, #94a3b8);
+  }
+  :global(.pal-box.has-collision .pal-box-head) { color: #fb7185; }
+  :global(.pal-dots) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.32rem;
+    align-items: center;
+  }
+  :global(.pal-dot) {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+  }
+  :global(.pal-box.has-collision .pal-dot) {
+    background: #f43f5e;
+    box-shadow: 0 0 6px rgba(244, 63, 94, 0.65);
+  }
+
+  .lab-status-bar {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .lab-status-bar.is-collision { background: rgba(244, 63, 94, 0.14); border: 1px solid rgba(244, 63, 94, 0.35); color: #fda4af; }
+  .lab-status-bar.is-safe { background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+  :global([data-theme="light"]) .lab-status-bar.is-collision { color: #be123c; }
+  :global([data-theme="light"]) .lab-status-bar.is-safe { color: #047857; }
+
+  .deep-grid, .apps-grid, .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+  .deep-card h4, .app-card h4 { margin: 0 0 0.5rem; font-size: 0.96rem; }
+  .deep-card p, .app-card p { font-size: 0.86rem; line-height: 1.55; margin: 0 0 0.5rem; color: var(--ink-soft, #cbd5e1); }
+  .deep-card p:last-child, .app-card p:last-child { margin-bottom: 0; }
+
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const arena = document.getElementById('boxes-arena');
+    const slN = document.getElementById('sl-pal-n') as HTMLInputElement | null;
+    const slM = document.getElementById('sl-pal-m') as HTMLInputElement | null;
+    const lblN = document.getElementById('pal-n-lbl');
+    const lblM = document.getElementById('pal-m-lbl');
+    const statusBar = document.getElementById('pal-status-bar');
+    const statusText = document.getElementById('pal-status-text');
+    const btnOpt = document.getElementById('btn-mode-optimal');
+    const btnRand = document.getElementById('btn-mode-random');
+
+    let n = 7;
+    let m = 6;
+    let mode: 'optimal' | 'random' = 'optimal';
+
+    function renderPalomar() {
+      if (!arena) return;
+      const counts = new Array(m).fill(0);
+      if (mode === 'optimal') {
+        for (let i = 0; i < n; i++) counts[i % m]++;
+      } else {
+        for (let i = 0; i < n; i++) counts[Math.floor(Math.random() * m)]++;
+      }
+
+      const ceilVal = Math.ceil(n / m);
+      const maxInBox = Math.max(...counts);
+      let anyCollision = false;
+
+      arena.replaceChildren();
+      counts.forEach((cnt, idx) => {
+        const isColliding = cnt >= 2;
+        if (isColliding) anyCollision = true;
+
+        const box = document.createElement('div');
+        box.className = `pal-box ${isColliding ? 'has-collision' : ''}`;
+
+        const head = document.createElement('div');
+        head.className = 'pal-box-head';
+        head.innerHTML = `<span>Casilla ${idx + 1}</span><span>${cnt}</span>`;
+
+        const dots = document.createElement('div');
+        dots.className = 'pal-dots';
+        for (let d = 0; d < cnt; d++) {
+          const dot = document.createElement('span');
+          dot.className = 'pal-dot';
+          dots.appendChild(dot);
+        }
+
+        box.append(head, dots);
+        arena.appendChild(box);
+      });
+
+      if (statusBar && statusText) {
+        if (n > m) {
+          statusBar.className = 'lab-status-bar is-collision';
+          statusText.textContent = `n = ${n} > m = ${m}  ⇒  Colisión inevitable: cota garantizada ⌈${n}/${m}⌉ = ${ceilVal} (máximo observado: ${maxInBox}).`;
+        } else if (anyCollision) {
+          statusBar.className = 'lab-status-bar is-collision';
+          statusText.textContent = `n = ${n} ≤ m = ${m}, pero el reparto aleatorio provocó una colisión de ${maxInBox} elementos.`;
+        } else {
+          statusBar.className = 'lab-status-bar is-safe';
+          statusText.textContent = `n = ${n} ≤ m = ${m}  ⇒  Sin colisiones: cabe como máximo 1 elemento por casilla.`;
+        }
+      }
+    }
+
+    btnOpt?.addEventListener('click', () => {
+      mode = 'optimal';
+      btnOpt.classList.add('is-active');
+      btnRand?.classList.remove('is-active');
+      renderPalomar();
+    });
+
+    btnRand?.addEventListener('click', () => {
+      mode = 'random';
+      btnRand.classList.add('is-active');
+      btnOpt?.classList.remove('is-active');
+      renderPalomar();
+    });
+
+    slN?.addEventListener('input', (e) => {
+      n = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblN) lblN.textContent = String(n);
+      renderPalomar();
+    });
+
+    slM?.addEventListener('input', (e) => {
+      m = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblM) lblM.textContent = String(m);
+      renderPalomar();
+    });
+
+    renderPalomar();
+
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      p1: {
+        ok: 'Correcto: Hay m = 3 colores (casillas). Con 3 calcetines podrían salir los 3 distintos; con el 4.º es imposible no repetir.',
+        ko: 'Con 3 calcetines podrías sacar 1 azul, 1 rojo y 1 verde. Necesitas n = m + 1 = 4 para garantizar pareja.',
+      },
+      p2: {
+        ok: 'Correcto: Por el Palomar Fuerte, ⌈25 / 4⌉ = ⌈6,25⌉ = 7 alumnos como mínimo en al menos un aula.',
+        ko: 'Si hubiera como máximo 6 por aula solo cabrían 4 × 6 = 24 alumnos. El alumno 25 obliga a que haya al menos 7 en una.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

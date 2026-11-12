@@ -1,0 +1,733 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-cauchy-schwarz')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-seno-coseno');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-01');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN FÍSICA Y GEOMÉTRICA -->
+  <section class="lesson-section" id="intuicion-camino">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición Geométrica: El Camino Recto y la Sombra</h2>
+
+    <p class="lead-paragraph">
+      Detrás de dos de los nombres más imponentes del análisis y el álgebra —<strong>Augustin-Louis Cauchy</strong> y <strong>Hermann Schwarz</strong>— se esconde una idea tan elemental que cualquier persona comprende al caminar: <strong>la línea recta es el camino más corto</strong>, y la sombra de un objeto jamás puede ser más larga que el objeto mismo.
+    </p>
+
+    <div class="intuition-grid">
+      <div class="intu-card">
+        <div class="intu-badge purple">DESIGUALDAD TRIANGULAR</div>
+        <svg viewBox="0 0 280 155" class="intu-svg" aria-label="Triángulo vectorial de u, v y u+v">
+          <line x1="35" y1="120" x2="145" y2="35" stroke="#38bdf8" stroke-width="2.6" />
+          <line x1="145" y1="35" x2="245" y2="120" stroke="#c084fc" stroke-width="2.6" />
+          <line x1="35" y1="120" x2="245" y2="120" stroke="#10b981" stroke-width="3" />
+          <circle cx="35" cy="120" r="4" fill="#fbbf24" />
+          <circle cx="145" cy="35" r="4" fill="#fbbf24" />
+          <circle cx="245" cy="120" r="4" fill="#fbbf24" />
+          <text x="80" y="68" class="svg-lbl cyan">u</text>
+          <text x="202" y="68" class="svg-lbl purple">v</text>
+          <text x="140" y="138" text-anchor="middle" class="svg-lbl green">u + v</text>
+          <text x="140" y="18" text-anchor="middle" class="svg-note">|u + v| ≤ |u| + |v|</text>
+        </svg>
+        <p class="intu-caption">
+          Ir de salida a meta dando un rodeo por <code class="inline-code">u</code> y <code class="inline-code">v</code> siempre recorre una distancia mayor o igual que ir en línea recta por <code class="inline-code">u + v</code>.
+        </p>
+      </div>
+
+      <div class="intu-card">
+        <div class="intu-badge cyan">CAUCHY-SCHWARZ (PROYECCIÓN)</div>
+        <svg viewBox="0 0 280 155" class="intu-svg" aria-label="Proyección ortogonal de u sobre v">
+          <line x1="35" y1="115" x2="250" y2="115" stroke="#c084fc" stroke-width="2.6" />
+          <line x1="35" y1="115" x2="165" y2="38" stroke="#38bdf8" stroke-width="2.6" />
+          <line x1="165" y1="38" x2="165" y2="115" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="4 3" />
+          <line x1="35" y1="115" x2="165" y2="115" stroke="#fbbf24" stroke-width="3.6" />
+          <rect x="155" y="105" width="10" height="10" fill="none" stroke="#94a3b8" stroke-width="1.3" />
+          <text x="92" y="66" class="svg-lbl cyan">u</text>
+          <text x="215" y="133" class="svg-lbl purple">v</text>
+          <text x="100" y="133" text-anchor="middle" class="svg-lbl gold">|u|·|cos θ| ≤ |u|</text>
+          <text x="140" y="18" text-anchor="middle" class="svg-note">|u · v| ≤ |u| · |v|</text>
+        </svg>
+        <p class="intu-caption">
+          El producto escalar mide «cuánto colaboran» dos vectores. Como la proyección de <code class="inline-code">u</code> sobre <code class="inline-code">v</code> nunca supera <code class="inline-code">|u|</code>, su producto jamás supera <code class="inline-code">|u|·|v|</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: ENUNCIADOS FORMALES -->
+  <section class="lesson-section" id="enunciados-formales">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Enunciados Formales (Vectorial y Algebraico)</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">DESIGUALDAD DE CAUCHY-SCHWARZ (1821 / 1885)</div>
+      <h3>Enunciado en <code class="inline-code">ℝⁿ</code></h3>
+      <p>
+        Para cualesquiera vectores <code class="inline-code">u = (u₁, …, uₙ)</code> y <code class="inline-code">v = (v₁, …, vₙ)</code> en un espacio euclídeo real, se cumple:
+      </p>
+      <div class="formula-display-banner">
+        <div class="cs-eq-stack">
+          <div><span class="eq-cyan">|u · v|</span> ≤ <span class="eq-purple">|u| · |v|</span></div>
+          <div class="eq-sub">(∑ uᵢ·vᵢ)² ≤ (∑ uᵢ²) · (∑ vᵢ²)</div>
+        </div>
+      </div>
+      <p class="eq-condition">
+        <strong>Condición de igualdad:</strong> Se alcanza la igualdad (<code class="inline-code">|u · v| = |u|·|v|</code>) <strong>si y solo si</strong> los vectores son linealmente dependientes (es decir, <code class="inline-code">u = λ·v</code> o alguno es nulo).
+      </p>
+    </div>
+
+    <div class="theorem-box-highlight is-green">
+      <div class="thm-tag green">DESIGUALDAD TRIANGULAR</div>
+      <h3>Enunciado Vectorial y Métrico</h3>
+      <p>
+        Para cualesquiera vectores <code class="inline-code">u, v ∈ ℝⁿ</code>, la norma de la suma nunca supera la suma de las normas:
+      </p>
+      <div class="formula-display-banner">
+        <div class="cs-eq-stack">
+          <div><span class="eq-green">|u + v|</span> ≤ <span class="eq-cyan">|u|</span> + <span class="eq-purple">|v|</span></div>
+          <div class="eq-sub">Desigualdad inversa:  | |u| − |v| | ≤ |u − v|</div>
+        </div>
+      </div>
+      <p class="eq-condition">
+        <strong>Condición de igualdad:</strong> <code class="inline-code">|u + v| = |u| + |v|</code> <strong>si y solo si</strong> <code class="inline-code">u</code> y <code class="inline-code">v</code> tienen la <strong>misma dirección y el mismo sentido</strong> (<code class="inline-code">θ = 0°</code>, o alguno es nulo).
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: DEMOSTRACIÓN ELEGANTE SIN TRIGONOMETRÍA -->
+  <section class="lesson-section" id="demostracion-formal">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Demostración Rigurosa sin Trigonometría (El Discriminante)</h2>
+
+    <p>
+      En 2D podríamos pensar «es obvio porque <code class="inline-code">u·v = |u||v|cos θ</code> y <code class="inline-code">|cos θ| ≤ 1</code>». Pero ¿cómo demostrarlo en <code class="inline-code">ℝ⁴</code>, <code class="inline-code">ℝ¹⁰⁰</code> o con funciones donde no podemos dibujar un ángulo? <strong>Construyendo una parábola que nunca puede ser negativa:</strong>
+    </p>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN ALGEBRAICA EN 4 PASOS (VÁLIDA EN CUALQUIER DIMENSIÓN)</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Definimos un polinomio cuadrático en <code class="inline-code">t ∈ ℝ</code>:</strong> Si <code class="inline-code">v = 0</code>, ambos lados valen <code class="inline-code">0</code> y se cumple trivialmente. Si <code class="inline-code">v ≠ 0</code>, consideramos el cuadrado de la longitud del vector <code class="inline-code">u + t·v</code>:
+          <div class="proof-eq">P(t) = |u + t·v|² = (u + t·v) · (u + t·v) ≥ 0 &nbsp;(para todo t ∈ ℝ)</div>
+        </li>
+        <li>
+          <strong>Expandimos el producto escalar:</strong> Agrupando potencias de <code class="inline-code">t</code> obtenemos una parábola <code class="inline-code">a·t² + b·t + c ≥ 0</code>:
+          <div class="proof-eq">P(t) = |v|²·t² + 2·(u · v)·t + |u|² ≥ 0</div>
+        </li>
+        <li>
+          <strong>Condición del discriminante (<code class="inline-code">Δ ≤ 0</code>):</strong> Como <code class="inline-code">P(t) ≥ 0</code> para todo <code class="inline-code">t</code> real y <code class="inline-code">|v|² &gt; 0</code>, la parábola no puede cortar al eje horizontal en dos puntos distintos; a lo sumo puede ser tangente. Por tanto, su discriminante <code class="inline-code">b² − 4ac</code> debe ser menor o igual que cero:
+          <div class="proof-eq">Δ = 4·(u · v)² − 4·|v|²·|u|² ≤ 0  ⟹  (u · v)² ≤ |u|²·|v|²  ⟹  |u · v| ≤ |u|·|v| &nbsp;∎</div>
+        </li>
+        <li>
+          <strong>Deducción inmediata de la Desigualdad Triangular:</strong> Expandimos <code class="inline-code">|u + v|²</code> y acotamos el término cruzado usando Cauchy-Schwarz:
+          <div class="proof-eq">|u + v|² = |u|² + 2(u · v) + |v|² ≤ |u|² + 2|u|·|v| + |v|² = (|u| + |v|)²  ⟹  |u + v| ≤ |u| + |v| &nbsp;∎</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-vectores">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Vectores y Parábola del Discriminante</h2>
+
+    <p>
+      Explora en tiempo real cómo cambian las desigualdades al variar <code class="inline-code">|u|</code>, <code class="inline-code">|v|</code> y el ángulo <code class="inline-code">θ</code>. Cambia a la pestaña <strong>Parábola P(t)</strong> para ver físicamente cómo el polinomio de la demostración toca el eje <code class="inline-code">0</code> únicamente cuando los vectores son colineales (<code class="inline-code">0°</code> o <code class="inline-code">180°</code>).
+    </p>
+
+    <div class="cs-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist">
+          <button type="button" class="lab-tab is-active" data-cs-mode="vectors" role="tab" aria-selected="true">
+            Vectores y Triángulo
+          </button>
+          <button type="button" class="lab-tab" data-cs-mode="parabola" role="tab" aria-selected="false">
+            Parábola P(t) = |u + t·v|²
+          </button>
+          <div class="quick-angles">
+            <button type="button" class="q-ang-btn" data-ang="0">θ = 0°</button>
+            <button type="button" class="q-ang-btn" data-ang="90">θ = 90°</button>
+            <button type="button" class="q-ang-btn" data-ang="180">θ = 180°</button>
+          </div>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Norma <code class="inline-code">|u|</code>: <strong id="cs-u-lbl">4.0</strong></span>
+            <input type="range" id="sl-cs-u" min="1.5" max="6.0" step="0.1" value="4.0" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Norma <code class="inline-code">|v|</code>: <strong id="cs-v-lbl">3.0</strong></span>
+            <input type="range" id="sl-cs-v" min="1.5" max="6.0" step="0.1" value="3.0" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Ángulo <code class="inline-code">θ</code>: <strong id="cs-ang-lbl">55°</strong></span>
+            <input type="range" id="sl-cs-ang" min="0" max="180" step="1" value="55" />
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="cs-lab-canvas" aria-label="Laboratorio interactivo de Cauchy-Schwarz y Desigualdad Triangular"></canvas>
+      </div>
+
+      <div class="lab-readout-grid">
+        <div class="readout-pill">
+          <span class="ro-label">Cauchy-Schwarz: |u·v| ≤ |u|·|v|</span>
+          <span class="ro-val cyan" id="ro-cs-ineq">6.88 ≤ 12.00</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Triangular: |u+v| ≤ |u|+|v|</span>
+          <span class="ro-val green" id="ro-tri-ineq">6.22 ≤ 7.00</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Discriminante Δ / 4</span>
+          <span class="ro-val gold" id="ro-disc">−96.6</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: CONTRAEJEMPLOS Y CASOS TRAMPA -->
+  <section class="lesson-section" id="contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Matices Finos y Contraejemplos</h2>
+
+    <div class="ce-grid">
+      <article class="ce-card">
+        <div class="ce-tag">MATIZ 1 · θ = 180°</div>
+        <h4>Igualdad en Cauchy-Schwarz ≠ Igualdad Triangular</h4>
+        <p>
+          Cuando <code class="inline-code">θ = 180°</code> (vectores opuestos, por ejemplo <code class="inline-code">u = (4, 0)</code> y <code class="inline-code">v = (−3, 0)</code>), Cauchy-Schwarz alcanza la igualdad exacta: <code class="inline-code">|u·v| = 12 = |u|·|v|</code>.
+        </p>
+        <p>
+          Sin embargo, la Desigualdad Triangular es <strong>estrictamente menor</strong>: <code class="inline-code">|u + v| = 1 &lt; 4 + 3 = 7</code>. La igualdad triangular exige <code class="inline-code">u · v = +|u|·|v|</code> (mismo sentido, <code class="inline-code">θ = 0°</code>).
+        </p>
+      </article>
+
+      <article class="ce-card">
+        <div class="ce-tag">CONTRAEJEMPLO 2 · ESPACIOS NO EUCLÍDEOS</div>
+        <h4>¿Qué pasa si |u · v| supera a |u|·|v|?</h4>
+        <p>
+          En la Relatividad Especial de Einstein, el espacio-tiempo de Minkowski usa la métrica <code class="inline-code">ds² = c²dt² − dx²</code> (con un signo menos). En ese espacio pseudo-euclídeo, Cauchy-Schwarz <strong>se invierte</strong> para vectores temporales (desigualdad triangular inversa de los gemelos).
+        </p>
+        <p>
+          Por eso, en estadística o ciencia de datos, si alguna matriz de covarianzas produjera una correlación <code class="inline-code">|r| &gt; 1</code>, indica inmediatamente un error de cálculo o datos corruptos.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: APLICACIONES Y RETOS -->
+  <section class="lesson-section" id="aplicaciones-reto">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Aplicaciones Científicas, Estadística e IA</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">ESTADÍSTICA · PEARSON</div>
+        <h4>Por qué la Correlación Siempre está entre −1 y +1</h4>
+        <p>
+          El coeficiente de correlación lineal de Pearson <code class="inline-code">r = ∑(xᵢ−x̄)(yᵢ−ȳ) / √(∑(xᵢ−x̄)² ∑(yᵢ−ȳ)²)</code> es literalmente el cociente de Cauchy-Schwarz. Que <code class="inline-code">|r| ≤ 1</code> siempre está blindado matemáticamente por esta desigualdad.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">INTELIGENCIA ARTIFICIAL · LLMs</div>
+        <h4>Similitud del Coseno en Embeddings</h4>
+        <p>
+          Los modelos de lenguaje y buscadores semánticos representan palabras o documentos como vectores en <code class="inline-code">ℝ¹⁵³⁶</code>. Miden si dos textos significan lo mismo calculando <code class="inline-code">cos θ = (u · v) / (|u|·|v|)</code>, garantizado entre <code class="inline-code">−1</code> y <code class="inline-code">1</code> gracias a Cauchy-Schwarz.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">FÍSICA CUÁNTICA · HEISENBERG</div>
+        <h4>El Principio de Incertidumbre</h4>
+        <p>
+          La célebre relación <code class="inline-code">Δx · Δp ≥ ℏ / 2</code> —que impide conocer con precisión infinita posición y momento de una partícula— no es una limitación de los microscopios: se demuestra aplicando exactamente la <strong>Desigualdad de Cauchy-Schwarz</strong> en el espacio de Hilbert de estados cuánticos.
+        </p>
+      </article>
+    </div>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Cauchy-Schwarz):</strong> Si <code class="inline-code">|u| = 5</code> y <code class="inline-code">|v| = 4</code>, ¿puede ser <code class="inline-code">u · v = 22</code> en un espacio euclídeo?
+        </p>
+        <div class="quiz-options" data-quiz="cs1">
+          <button type="button" class="quiz-opt" data-correct="false">Sí, si el ángulo es agudo</button>
+          <button type="button" class="quiz-opt" data-correct="true">No, el máximo posible es 20</button>
+          <button type="button" class="quiz-opt" data-correct="false">Solo en dimensión 3 o superior</button>
+        </div>
+        <p class="quiz-feedback" id="fb-cs1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Triangular):</strong> Si <code class="inline-code">|u| = 7</code> y <code class="inline-code">|v| = 3</code>, ¿entre qué valores mínimo y máximo puede estar <code class="inline-code">|u + v|</code>?
+        </p>
+        <div class="quiz-options" data-quiz="cs2">
+          <button type="button" class="quiz-opt" data-correct="false">Entre 0 y 10</button>
+          <button type="button" class="quiz-opt" data-correct="true">Entre 4 y 10</button>
+          <button type="button" class="quiz-opt" data-correct="false">Entre 3 y 7</button>
+        </div>
+        <p class="quiz-feedback" id="fb-cs2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .intuition-grid,
+  .ce-grid,
+  .apps-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+
+  .intu-card,
+  .cs-lab-shell,
+  .ce-card,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .intu-badge,
+  .thm-tag,
+  .proof-header,
+  .ce-tag,
+  .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #c084fc;
+    background: rgba(192, 132, 252, 0.12);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+
+  .intu-badge.cyan, .app-tag { color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); }
+  .thm-tag.green, .proof-header { color: #10b981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); }
+  .ce-tag { color: #f43f5e; background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); }
+
+  .intu-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0.25rem 0 0.6rem;
+  }
+
+  .svg-lbl { font-family: var(--mono, monospace); font-size: 12px; font-weight: 700; }
+  .svg-lbl.cyan { fill: #38bdf8; }
+  .svg-lbl.purple { fill: #c084fc; }
+  .svg-lbl.green { fill: #10b981; }
+  .svg-lbl.gold { fill: #fbbf24; }
+  .svg-note { font-family: var(--mono, monospace); font-size: 11px; fill: var(--muted, #94a3b8); }
+
+  .intu-caption, .ce-card p, .app-card p {
+    font-size: 0.87rem;
+    line-height: 1.55;
+    margin: 0 0 0.5rem;
+    color: var(--ink-soft, #cbd5e1);
+  }
+  .intu-caption:last-child, .ce-card p:last-child, .app-card p:last-child { margin-bottom: 0; }
+
+  .theorem-box-highlight {
+    background: rgba(192, 132, 252, 0.07);
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+  .theorem-box-highlight.is-green {
+    background: rgba(16, 185, 129, 0.07);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin: 0.9rem 0;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global([data-theme="light"]) .formula-display-banner { background: #f8fafc; border-color: rgba(15, 23, 42, 0.1); }
+
+  .cs-eq-stack {
+    text-align: center;
+    font-family: var(--mono, monospace);
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .eq-cyan { color: #38bdf8; }
+  .eq-purple { color: #c084fc; }
+  .eq-green { color: #10b981; }
+  .eq-sub { font-size: 0.84rem; color: var(--muted, #94a3b8); font-weight: 600; }
+  .eq-condition { margin: 0; font-size: 0.9rem; }
+
+  .proof-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.35rem;
+    margin: 1.35rem 0;
+  }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .proof-steps li { font-size: 0.91rem; line-height: 1.55; }
+  .proof-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #10b981;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    display: inline-block;
+  }
+
+  /* LAB */
+  .cs-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .lab-tab, .q-ang-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(192, 132, 252, 0.2); border-color: #c084fc; color: #e9d5ff; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #6b21a8; }
+  .quick-angles { display: flex; gap: 0.35rem; margin-left: auto; }
+  .q-ang-btn { padding: 0.35rem 0.65rem; color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); }
+  .q-ang-btn:hover { background: rgba(251, 191, 36, 0.15); }
+
+  .lab-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 0.9rem; }
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #c084fc; cursor: pointer; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 330px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #cs-lab-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-readout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 0.65rem; }
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .ro-label { font-family: var(--mono, monospace); font-size: 0.69rem; color: var(--muted, #94a3b8); }
+  .ro-val { font-family: var(--mono, monospace); font-size: 1rem; font-weight: 800; }
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.green { color: #10b981; }
+  .ro-val.gold { color: #fbbf24; }
+
+  .ce-card h4, .app-card h4 { margin: 0 0 0.5rem; font-size: 0.98rem; }
+  .ce-card { border-color: rgba(244, 63, 94, 0.28); }
+
+  /* QUIZ */
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('cs-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slU = document.getElementById('sl-cs-u') as HTMLInputElement | null;
+    const slV = document.getElementById('sl-cs-v') as HTMLInputElement | null;
+    const slAng = document.getElementById('sl-cs-ang') as HTMLInputElement | null;
+    const lblU = document.getElementById('cs-u-lbl');
+    const lblV = document.getElementById('cs-v-lbl');
+    const lblAng = document.getElementById('cs-ang-lbl');
+
+    const roCS = document.getElementById('ro-cs-ineq');
+    const roTri = document.getElementById('ro-tri-ineq');
+    const roDisc = document.getElementById('ro-disc');
+
+    const modeTabs = document.querySelectorAll<HTMLButtonElement>('[data-cs-mode]');
+    const quickAngBtns = document.querySelectorAll<HTMLButtonElement>('[data-ang]');
+
+    let mode: 'vectors' | 'parabola' = 'vectors';
+    let normU = 4.0;
+    let normV = 3.0;
+    let angleDeg = 55;
+
+    function drawArrow(c: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, width = 2.8) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy);
+      if (len < 2) return;
+      const ux = dx / len, uy = dy / len;
+      c.strokeStyle = color;
+      c.fillStyle = color;
+      c.lineWidth = width;
+      c.beginPath();
+      c.moveTo(x1, y1);
+      c.lineTo(x2, y2);
+      c.stroke();
+
+      const head = 9;
+      c.beginPath();
+      c.moveTo(x2, y2);
+      c.lineTo(x2 - ux * head + uy * (head * 0.45), y2 - uy * head - ux * (head * 0.45));
+      c.lineTo(x2 - ux * head - uy * (head * 0.45), y2 - uy * head + ux * (head * 0.45));
+      c.closePath();
+      c.fill();
+    }
+
+    function drawCSLab() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const theta = (angleDeg * Math.PI) / 180;
+      const dotUV = normU * normV * Math.cos(theta);
+      const prodNorms = normU * normV;
+      const normSum = Math.sqrt(Math.max(0, normU * normU + normV * normV + 2 * dotUV));
+      const sumNorms = normU + normV;
+      const discQuarter = dotUV * dotUV - (normU * normU) * (normV * normV);
+
+      if (roCS) roCS.textContent = `${Math.abs(dotUV).toFixed(2)} ≤ ${prodNorms.toFixed(2)}`;
+      if (roTri) roTri.textContent = `${normSum.toFixed(2)} ≤ ${sumNorms.toFixed(2)}`;
+      if (roDisc) roDisc.textContent = discQuarter.toFixed(1);
+
+      if (mode === 'vectors') {
+        const sc = Math.min(w, h) * 0.036;
+        const origin = { x: w * 0.36, y: h * 0.68 };
+        const ux = normU, uy = 0;
+        const vx = normV * Math.cos(theta), vy = normV * Math.sin(theta);
+
+        const pO = origin;
+        const pU = { x: origin.x + ux * sc, y: origin.y - uy * sc };
+        const pUV = { x: pU.x + vx * sc, y: pU.y - vy * sc };
+
+        // Triángulo sombreado
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+        ctx.beginPath();
+        ctx.moveTo(pO.x, pO.y); ctx.lineTo(pU.x, pU.y); ctx.lineTo(pUV.x, pUV.y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Proyección de v sobre la dirección de u (si ángulo != 90)
+        drawArrow(ctx, pO.x, pO.y, pU.x, pU.y, '#38bdf8', 3);
+        drawArrow(ctx, pU.x, pU.y, pUV.x, pUV.y, '#c084fc', 3);
+        drawArrow(ctx, pO.x, pO.y, pUV.x, pUV.y, '#10b981', 3.2);
+
+        ctx.font = 'bold 13px monospace';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText(`u (|u|=${normU.toFixed(1)})`, (pO.x + pU.x) / 2 - 20, pO.y + 20);
+        ctx.fillStyle = '#c084fc';
+        ctx.fillText(`v (|v|=${normV.toFixed(1)})`, (pU.x + pUV.x) / 2 + 10, (pU.y + pUV.y) / 2 - 8);
+        ctx.fillStyle = '#10b981';
+        ctx.fillText(`u+v (${normSum.toFixed(2)})`, (pO.x + pUV.x) / 2 - 42, (pO.y + pUV.y) / 2 - 12);
+      } else {
+        // Graficar P(t) = |v|^2 t^2 + 2(u·v)t + |u|^2
+        const tMin = -2.5, tMax = 2.5;
+        const yMax = Math.max(25, normU * normU + normV * normV * 4 + 2 * Math.abs(dotUV) * 2);
+        const padL = 44, padR = 24, padT = 24, padB = 34;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
+
+        const toPx = (t: number, y: number) => ({
+          x: padL + ((t - tMin) / (tMax - tMin)) * plotW,
+          y: padT + plotH - (y / yMax) * plotH,
+        });
+
+        // Ejes
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.25)' : 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.5;
+        const axisY0 = toPx(0, 0).y;
+        const axisX0 = toPx(0, 0).x;
+        ctx.beginPath(); ctx.moveTo(padL, axisY0); ctx.lineTo(w - padR, axisY0); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(axisX0, padT); ctx.lineTo(axisX0, axisY0); ctx.stroke();
+
+        // Curva de la parábola
+        ctx.strokeStyle = Math.abs(discQuarter) < 0.2 ? '#10b981' : '#38bdf8';
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let i = 0; i <= 140; i++) {
+          const t = tMin + (i / 140) * (tMax - tMin);
+          const y = normV * normV * t * t + 2 * dotUV * t + normU * normU;
+          const pt = toPx(t, y);
+          if (i === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+
+        // Vértice mínimo de la parábola
+        const tVert = -dotUV / (normV * normV);
+        const yVert = normU * normU - (dotUV * dotUV) / (normV * normV);
+        const vPt = toPx(tVert, Math.max(0, yVert));
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(vPt.x, vPt.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = 'bold 12px monospace';
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+        ctx.fillText(`Mínimo P(t) = ${Math.max(0, yVert).toFixed(2)} ≥ 0`, padL + 10, padT + 14);
+      }
+
+      ctx.restore();
+    }
+
+    modeTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        modeTabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        mode = (tab.getAttribute('data-cs-mode') as 'vectors' | 'parabola') || 'vectors';
+        drawCSLab();
+      });
+    });
+
+    quickAngBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        angleDeg = parseInt(btn.getAttribute('data-ang') || '55', 10);
+        if (slAng) slAng.value = String(angleDeg);
+        if (lblAng) lblAng.textContent = `${angleDeg}°`;
+        drawCSLab();
+      });
+    });
+
+    slU?.addEventListener('input', (e) => {
+      normU = parseFloat((e.target as HTMLInputElement).value);
+      if (lblU) lblU.textContent = normU.toFixed(1);
+      drawCSLab();
+    });
+    slV?.addEventListener('input', (e) => {
+      normV = parseFloat((e.target as HTMLInputElement).value);
+      if (lblV) lblV.textContent = normV.toFixed(1);
+      drawCSLab();
+    });
+    slAng?.addEventListener('input', (e) => {
+      angleDeg = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblAng) lblAng.textContent = `${angleDeg}°`;
+      drawCSLab();
+    });
+
+    window.addEventListener('resize', drawCSLab);
+    new MutationObserver(drawCSLab).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawCSLab();
+
+    // QUIZ
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      cs1: {
+        ok: 'Correcto: Por Cauchy-Schwarz, |u · v| ≤ |u|·|v| = 5·4 = 20. Un valor de 22 es imposible en un espacio euclídeo.',
+        ko: 'Recuerda Cauchy-Schwarz: |u · v| nunca puede superar a |u|·|v| = 5·4 = 20.',
+      },
+      cs2: {
+        ok: 'Correcto: Por la desigualdad triangular directa e inversa, ||u|−|v|| = 4 ≤ |u+v| ≤ |u|+|v| = 10.',
+        ko: 'El máximo se da a 0° (7 + 3 = 10) y el mínimo a 180° (7 − 3 = 4). Por tanto está entre 4 y 10.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

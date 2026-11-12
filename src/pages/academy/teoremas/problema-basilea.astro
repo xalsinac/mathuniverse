@@ -1,0 +1,1173 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-basilea')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-06');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-07');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL ENIGMA DE BASILEA -->
+  <section class="lesson-section" id="enigma-basilea">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Enigma de Basilea (1644–1735)</h2>
+
+    <p class="lead-paragraph">
+      En 1644, el matemático italiano <strong>Pietro Mengoli</strong> lanzó a la comunidad científica un desafío en apariencia inocente: calcular el valor exacto de la suma infinita de los inversos de los cuadrados de todos los números naturales.
+    </p>
+
+    <div class="basel-monument-card">
+      <div class="monument-badge">EL PROBLEMA DE BASILEA</div>
+      <div class="math-display-eq basel-giant-eq">
+        ∑<sub>n=1</sub><sup>∞</sup> <span class="frac-inline">1 / n²</span> = 1 + <span class="frac-inline">1/4</span> + <span class="frac-inline">1/9</span> + <span class="frac-inline">1/16</span> + <span class="frac-inline">1/25</span> + … = <span class="highlight-pi">π² / 6</span>
+      </div>
+      <p class="monument-desc">
+        Durante <strong>91 años</strong>, las mentes más brillantes de Europa —incluidos Wallis, Leibniz, Stirling y los hermanos Jakob y Johann Bernoulli de la Universidad de <strong>Basilea</strong> (de ahí el nombre del problema)— intentaron hallar su valor cerrado sin éxito.
+      </p>
+    </div>
+
+    <div class="context-grid">
+      <div class="context-card">
+        <div class="context-tag">¿Por qué converge?</div>
+        <h4>Comparación con una serie telescópica</h4>
+        <p>
+          A diferencia de la serie armónica <code class="inline-code">∑ 1/n</code> (que diverge al infinito), los términos <code class="inline-code">1/n²</code> decrecen lo bastante rápido como para converger. De hecho, Jakob Bernoulli demostró que la suma es menor que <code class="inline-code">2</code> comparándola con:
+        </p>
+        <div class="mini-formula">
+          1 + ∑<sub>n=2</sub><sup>∞</sup> 1 / [n(n − 1)] = 1 + 1 = 2
+        </div>
+      </div>
+
+      <div class="context-card">
+        <div class="context-tag">¿Por qué es tan difícil?</div>
+        <h4>Convergencia desesperadamente lenta</h4>
+        <p>
+          Sumar términos a mano apenas sirve para intuir el límite: con <code class="inline-code">10</code> términos se obtiene <code class="inline-code">1.5497…</code> y con <code class="inline-code">100</code> términos apenas <code class="inline-code">1.6349…</code>. Para acertar solo las <strong>tres primeras cifras decimales</strong> hacen falta más de <code class="inline-code">1000</code> sumandos.
+        </p>
+        <div class="mini-formula">
+          π² / 6 ≈ 1.6449340668482264…
+        </div>
+      </div>
+    </div>
+
+    <p>
+      En <strong>1735</strong>, un joven <strong>Leonhard Euler</strong> de 28 años —formado precisamente en Basilea bajo la tutela de Johann Bernoulli— dejó atónita a toda Europa al anunciar que la suma valía exactamente <code class="inline-code">π²/6</code>. ¿Qué tenía que ver el número <strong>π</strong>, nacido de la geometría del círculo, con una suma aritmética de fracciones enteras?
+    </p>
+  </section>
+
+  <!-- SECCIÓN 2: LA DEMOSTRACIÓN DE EULER -->
+  <section class="lesson-section" id="demostracion-euler">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Audacia de Euler: Factorizar sin(x)/x como un Polinomio Infinito</h2>
+
+    <p class="lead-paragraph">
+      La idea maestra de Euler consistió en mirar la función <code class="inline-code">f(x) = sin(x)/x</code> desde <strong>dos perspectivas completamente distintas</strong>: como una serie de potencias infinita (Taylor) y como un producto infinito construido a partir de sus raíces.
+    </p>
+
+    <div class="proof-steps-container">
+      <!-- PASO 1 -->
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 1</span>
+          <h4>La serie de Taylor de sin(x)/x</h4>
+        </div>
+        <p>
+          Partimos del desarrollo de Maclaurin bien conocido del seno alrededor de <code class="inline-code">x = 0</code>:
+        </p>
+        <div class="step-eq">
+          sin(x) = x − x³/3! + x⁵/5! − x⁷/7! + … = x − x³/6 + x⁵/120 − x⁷/5040 + …
+        </div>
+        <p>
+          Para <code class="inline-code">x ≠ 0</code>, dividimos ambos miembros entre <code class="inline-code">x</code> (y definimos su valor en <code class="inline-code">x = 0</code> como <code class="inline-code">1</code>, que es su límite):
+        </p>
+        <div class="step-eq accent-cyan">
+          sin(x)/x = 1 − <span class="hl-target">x²/6</span> + x⁴/120 − x⁶/5040 + …
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 2</span>
+          <h4>De polinomios finitos al producto infinito</h4>
+        </div>
+        <p>
+          Si un polinomio finito <code class="inline-code">P(x)</code> cumple <code class="inline-code">P(0) = 1</code> y tiene raíces no nulas <code class="inline-code">r₁, r₂, …, r<sub>k</sub></code>, siempre se puede factorizar como:
+        </p>
+        <div class="step-eq">
+          P(x) = (1 − x/r₁)(1 − x/r₂)…(1 − x/r<sub>k</sub>)
+        </div>
+        <p>
+          Euler dio un salto audaz: aplicó esta misma idea a <code class="inline-code">sin(x)/x</code>, que también vale <code class="inline-code">1</code> en <code class="inline-code">x = 0</code> y cuyos ceros son exactamente los múltiplos no nulos de π: <code class="inline-code">x = ±π, ±2π, ±3π, …</code>
+        </p>
+        <div class="step-eq">
+          sin(x)/x = (1 − x/π)(1 + x/π)(1 − x/(2π))(1 + x/(2π))(1 − x/(3π))(1 + x/(3π))…
+        </div>
+        <p>
+          Agrupando cada pareja simétrica <code class="inline-code">(1 − x/(nπ))(1 + x/(nπ)) = 1 − x²/(n²π²)</code> mediante diferencia de cuadrados:
+        </p>
+        <div class="step-eq accent-purple">
+          sin(x)/x = (1 − x²/π²)(1 − x²/(4π²))(1 − x²/(9π²))… = ∏<sub>n=1</sub><sup>∞</sup> (1 − x²/(n²π²))
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 3</span>
+          <h4>Igualar el coeficiente de x²</h4>
+        </div>
+        <p>
+          Si expandimos el producto infinito como si fuera un polinomio gigante, ¿cómo se forma el término en <code class="inline-code">x²</code>? Solo eligiendo <code class="inline-code">−x²/(n²π²)</code> en exactamente <strong>un</strong> paréntesis y <code class="inline-code">1</code> en todos los demás:
+        </p>
+        <div class="step-eq">
+          Coeficiente de x² en el producto = − (1/π²) · (1 + 1/4 + 1/9 + 1/16 + …) = − (1/π²) · ∑<sub>n=1</sub><sup>∞</sup> 1/n²
+        </div>
+        <p>
+          Por el Paso 1, sabemos que el coeficiente de <code class="inline-code">x²</code> en la serie de Taylor de <code class="inline-code">sin(x)/x</code> es exactamente <code class="inline-code">−1/6</code>. Igualando ambos coeficientes:
+        </p>
+        <div class="step-eq accent-emerald">
+          − (1/π²) · ∑<sub>n=1</sub><sup>∞</sup> 1/n² = − 1/6 &nbsp;&nbsp;⟹&nbsp;&nbsp; ∑<sub>n=1</sub><sup>∞</sup> 1/n² = π²/6 &nbsp;∎
+        </div>
+      </div>
+    </div>
+
+    <div class="rigor-callout">
+      <div class="rigor-icon">Nota de rigor histórico (Weierstrass, 1876)</div>
+      <p>
+        Los contemporáneos de Euler objetaron con razón que un producto infinito de raíces no determina una función de forma única: por ejemplo, <code class="inline-code">e<sup>x</sup> · sin(x)/x</code> tiene exactamente las mismas raíces que <code class="inline-code">sin(x)/x</code>, pero distinto desarrollo de Taylor. Euler perfeccionó la prueba en 1741 y, más de un siglo después, el <strong>Teorema de Factorización de Weierstrass</strong> demostró rigurosamente que la factorización de <code class="inline-code">sin(x)/x</code> empleada por Euler era completamente exacta.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-basilea">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Interactivo: Sumas Parciales y Ceros de sin(x)/x</h2>
+
+    <p class="lead-paragraph">
+      Explora las dos piezas visuales de la demostración: comprueba lo despacio que se acercan las sumas parciales a <code class="inline-code">π²/6</code> y observa cómo el polinomio de Taylor y el producto parcial de Euler reproducen los ceros de <code class="inline-code">sin(x)/x</code>.
+    </p>
+
+    <!-- PANEL A: COMPARADOR DE SUMAS PARCIALES -->
+    <div class="lab-card">
+      <div class="lab-header">
+        <div>
+          <span class="lab-kicker">Experimento 1</span>
+          <h3>Comparador de Sumas Parciales S<sub>N</sub> frente a π²/6</h3>
+        </div>
+        <div class="quick-n-group" role="group" aria-label="Valores rápidos de N">
+          <button type="button" class="quick-btn" data-n="1">N = 1</button>
+          <button type="button" class="quick-btn" data-n="5">N = 5</button>
+          <button type="button" class="quick-btn" data-n="15">N = 15</button>
+          <button type="button" class="quick-btn active" data-n="40">N = 40</button>
+          <button type="button" class="quick-btn" data-n="150">N = 150</button>
+          <button type="button" class="quick-btn" data-n="500">N = 500</button>
+        </div>
+      </div>
+
+      <div class="lab-controls-row">
+        <div class="slider-control">
+          <label for="sl-basel-n">Número de términos <strong>N</strong>: <span id="val-basel-n" class="mono-val">40</span></label>
+          <input id="sl-basel-n" type="range" min="1" max="500" value="40" />
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas-partial-sums" width="840" height="320" aria-label="Gráfica de sumas parciales de 1/n² frente a π²/6"></canvas>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-box">
+          <span class="metric-label">Suma parcial S<sub>N</sub></span>
+          <span class="metric-value cyan" id="metric-sn">1.620244</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Valor exacto π²/6</span>
+          <span class="metric-value emerald">1.644934</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Error restante (π²/6 − S<sub>N</sub>)</span>
+          <span class="metric-value amber" id="metric-err">0.024690</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Último término 1/N²</span>
+          <span class="metric-value slate" id="metric-term">0.000625</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL B: CEROS DE SIN(X)/X VS TAYLOR Y PRODUCTO -->
+    <div class="lab-card" style="margin-top: 2rem;">
+      <div class="lab-header">
+        <div>
+          <span class="lab-kicker">Experimento 2</span>
+          <h3>Ceros de sin(x)/x frente a su Polinomio de Taylor y Producto de Euler</h3>
+        </div>
+        <div class="toggles-group">
+          <label class="toggle-chip">
+            <input type="checkbox" id="chk-show-taylor" checked />
+            <span class="dot cyan"></span> Polinomio de Taylor
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="chk-show-product" checked />
+            <span class="dot purple"></span> Producto de Euler
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-controls-row two-cols">
+        <div class="slider-control">
+          <label for="sl-taylor-k">Grado del Polinomio de Taylor (<strong>2K</strong>): <span id="val-taylor-k" class="mono-val">x⁶ (K=3)</span></label>
+          <input id="sl-taylor-k" type="range" min="1" max="10" value="3" />
+        </div>
+        <div class="slider-control">
+          <label for="sl-euler-m">Factores del Producto de Euler (<strong>M</strong>): <span id="val-euler-m" class="mono-val">M = 3 (ceros ±π, ±2π, ±3π)</span></label>
+          <input id="sl-euler-m" type="range" min="1" max="6" value="3" />
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas-sinc-zeros" width="840" height="360" aria-label="Comparación de sin(x)/x con polinomio de Taylor y producto de Euler"></canvas>
+      </div>
+
+      <p class="lab-caption">
+        Observa cómo el <strong>polinomio de Taylor</strong> (cian) solo aproxima bien la curva cerca de <code class="inline-code">x = 0</code> y necesita grados altos para capturar las raíces <code class="inline-code">±π, ±2π, ±3π</code>, mientras que el <strong>producto de Euler</strong> (violeta) fija las raíces exactas desde el primer factor, pero diverge fuera del rango cubierto si <code class="inline-code">M</code> es pequeño.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: CONSECUENCIAS SORPRENDENTES -->
+  <section class="lesson-section" id="consecuencias-basilea">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Consecuencias Profundas: De ζ(2k) a la Probabilidad de Coprimos</h2>
+
+    <p class="lead-paragraph">
+      La resolución del Problema de Basilea no fue un punto final, sino la puerta de entrada a la teoría moderna de la <strong>función zeta de Riemann</strong>, definida como <code class="inline-code">ζ(s) = ∑ 1/nˢ</code>.
+    </p>
+
+    <div class="consequences-grid">
+      <div class="consequence-card">
+        <div class="conseq-badge">Teoría de Números</div>
+        <h4>1. Probabilidad de que dos enteros sean coprimos</h4>
+        <p>
+          Si eliges dos números enteros positivos al azar, ¿cuál es la probabilidad de que no compartan ningún divisor mayor que 1 (<code class="inline-code">mcd(a, b) = 1</code>)?
+        </p>
+        <p>
+          Para cada primo <code class="inline-code">p</code>, la probabilidad de que ambos sean múltiplos de <code class="inline-code">p</code> es <code class="inline-code">1/p²</code>, luego la probabilidad de que <em>no</em> lo sean es <code class="inline-code">1 − 1/p²</code>. Multiplicando sobre todos los primos mediante el producto de Euler:
+        </p>
+        <div class="mini-formula">
+          P(coprimos) = ∏<sub>p primo</sub> (1 − 1/p²) = 1 / ζ(2) = 6 / π² ≈ 60.79%
+        </div>
+      </div>
+
+      <div class="consequence-card">
+        <div class="conseq-badge">Análisis</div>
+        <h4>2. Potencias pares frente a impares</h4>
+        <p>
+          Comparando los coeficientes de <code class="inline-code">x⁴, x⁶, …</code> en el mismo producto de Euler, se obtienen todas las sumas pares:
+        </p>
+        <div class="mini-formula">
+          ζ(2) = π²/6 &nbsp;|&nbsp; ζ(4) = π⁴/90 &nbsp;|&nbsp; ζ(6) = π⁶/945
+        </div>
+        <p>
+          En cambio, las potencias impares como <code class="inline-code">ζ(3) = ∑ 1/n³</code> (constante de Apéry, ≈ 1.2020569) siguen resistiéndose a cualquier fórmula cerrada conocida en términos de <code class="inline-code">π</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: RETO PRÁCTICO -->
+  <section class="lesson-section" id="reto-basilea">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Reto Práctico: Pon a Prueba la Fórmula de Euler</h2>
+
+    <div class="quiz-grid">
+      <!-- PREGUNTA 1 -->
+      <div class="quiz-card" id="quiz-p1">
+        <div class="quiz-num">Desafío 01</div>
+        <h4>Suma de los inversos de los cuadrados impares</h4>
+        <p>
+          Sabiendo que <code class="inline-code">1 + 1/2² + 1/3² + 1/4² + … = π²/6</code>, ¿cuánto vale la suma restringida únicamente a los números <strong>impares</strong>: <code class="inline-code">1 + 1/3² + 1/5² + 1/7² + …</code>?
+        </p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">π² / 12</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="true">π² / 8</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">π² / 4</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">π² / 24</button>
+        </div>
+        <div class="quiz-feedback" id="fb-p1" hidden></div>
+      </div>
+
+      <!-- PREGUNTA 2 -->
+      <div class="quiz-card" id="quiz-p2">
+        <div class="quiz-num">Desafío 02</div>
+        <h4>El papel del coeficiente de x²</h4>
+        <p>
+          En la demostración de Euler, si en lugar de <code class="inline-code">sin(x)/x</code> usáramos una función hipotética <code class="inline-code">g(x)</code> con raíces en <code class="inline-code">±kπ</code> y serie de Taylor <code class="inline-code">1 − x²/24 + …</code>, ¿qué concluiríamos sobre <code class="inline-code">∑ 1/n²</code>? (No aplicable aquí directamente, pero clave en el método): ¿de dónde sale el <code class="inline-code">6</code> en el denominador de <code class="inline-code">π²/6</code>?
+        </p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">De las 6 caras del cubo en el espacio euclidiano</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="true">Del factorial 3! = 6 que acompaña a −x³/3! en la serie de Taylor de sin(x)</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">De que sin(π/6) = 1/2</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">De promediar los seis primeros términos de la serie</button>
+        </div>
+        <div class="quiz-feedback" id="fb-p2" hidden></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .lesson-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .marker-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-cyan, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), transparent);
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .lead-paragraph {
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: #cbd5e1;
+    margin-bottom: 1.75rem;
+  }
+
+  .inline-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92em;
+    background: rgba(148, 163, 184, 0.14);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    padding: 0.1rem 0.42rem;
+    border-radius: 5px;
+    color: #e2e8f0;
+  }
+
+  .basel-monument-card {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.72));
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+    box-shadow: 0 18px 40px -20px rgba(56, 189, 248, 0.25);
+  }
+
+  .monument-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.15rem;
+  }
+
+  .basel-giant-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1.15rem, 2.5vw, 1.65rem);
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .highlight-pi {
+    color: #34d399;
+    text-shadow: 0 0 18px rgba(52, 211, 153, 0.35);
+  }
+
+  .monument-desc {
+    max-width: 720px;
+    margin: 0 auto;
+    color: #cbd5e1;
+    line-height: 1.65;
+    font-size: 0.98rem;
+  }
+
+  .context-grid,
+  .consequences-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+
+  .context-card,
+  .consequence-card,
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+
+  .context-tag,
+  .conseq-badge,
+  .quiz-num {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    margin-bottom: 0.55rem;
+  }
+
+  .context-card h4,
+  .consequence-card h4,
+  .quiz-card h4 {
+    font-size: 1.12rem;
+    color: #f1f5f9;
+    margin-bottom: 0.7rem;
+  }
+
+  .context-card p,
+  .consequence-card p,
+  .quiz-card p {
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .mini-formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    background: rgba(2, 6, 23, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    color: #e2e8f0;
+    text-align: center;
+  }
+
+  .proof-steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+
+  .proof-step-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #38bdf8;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .step-header h4 {
+    font-size: 1.15rem;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .proof-step-card p {
+    color: #cbd5e1;
+    line-height: 1.65;
+    margin-bottom: 0.8rem;
+  }
+
+  .step-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    background: rgba(2, 6, 23, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    color: #f1f5f9;
+    margin: 0.8rem 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  .step-eq.accent-cyan {
+    border-color: rgba(56, 189, 248, 0.45);
+  }
+
+  .step-eq.accent-purple {
+    border-color: rgba(168, 85, 247, 0.45);
+  }
+
+  .step-eq.accent-emerald {
+    border-color: rgba(52, 211, 153, 0.5);
+    color: #6ee7b7;
+    font-weight: 600;
+  }
+
+  .hl-target {
+    color: #38bdf8;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .rigor-callout {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    margin-top: 1.5rem;
+  }
+
+  .rigor-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 0.45rem;
+  }
+
+  .rigor-callout p {
+    color: #e2e8f0;
+    line-height: 1.65;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  /* LABORATORIO */
+  .lab-card {
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .lab-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .lab-kicker {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.25rem;
+  }
+
+  .lab-header h3 {
+    margin: 0;
+    font-size: 1.22rem;
+    color: #f8fafc;
+  }
+
+  .quick-n-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .quick-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.38rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quick-btn:hover {
+    border-color: #38bdf8;
+    color: #f8fafc;
+  }
+
+  .quick-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .toggles-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .toggle-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .dot.cyan { background: #38bdf8; }
+  .dot.purple { background: #c084fc; }
+
+  .lab-controls-row {
+    margin-bottom: 1.1rem;
+  }
+
+  .lab-controls-row.two-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .slider-control label {
+    display: block;
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    margin-bottom: 0.45rem;
+  }
+
+  .mono-val {
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    font-weight: 600;
+  }
+
+  .slider-control input[type="range"] {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .canvas-wrapper {
+    background: rgba(2, 6, 23, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.1rem;
+  }
+
+  .canvas-wrapper canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .metric-box {
+    background: rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+  }
+
+  .metric-label {
+    display: block;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.08rem;
+    font-weight: 700;
+  }
+
+  .metric-value.cyan { color: #38bdf8; }
+  .metric-value.emerald { color: #34d399; }
+  .metric-value.amber { color: #fbbf24; }
+  .metric-value.slate { color: #cbd5e1; }
+
+  .lab-caption {
+    font-size: 0.92rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* QUIZ */
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .quiz-opt {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(30, 41, 59, 0.55);
+    color: #e2e8f0;
+    font-size: 0.94rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quiz-opt:hover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .quiz-opt.correct {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+    font-weight: 600;
+  }
+
+  .quiz-opt.wrong {
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+    color: #fca5a5;
+  }
+
+  .quiz-feedback {
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .quiz-feedback.ok {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    color: #a7f3d0;
+  }
+
+  .quiz-feedback.err {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    color: #fecaca;
+  }
+</style>
+
+<script>
+  // --- EXPERIMENTO 1: SUMAS PARCIALES ---
+  const PI2_6 = (Math.PI * Math.PI) / 6;
+  const slN = document.getElementById('sl-basel-n') as HTMLInputElement | null;
+  const valN = document.getElementById('val-basel-n');
+  const metricSn = document.getElementById('metric-sn');
+  const metricErr = document.getElementById('metric-err');
+  const metricTerm = document.getElementById('metric-term');
+  const quickBtns = document.querySelectorAll<HTMLButtonElement>('.quick-btn');
+  const canvasSums = document.getElementById('canvas-partial-sums') as HTMLCanvasElement | null;
+
+  function computePartialSums(maxN: number): number[] {
+    const sums: number[] = new Array(maxN + 1);
+    sums[0] = 0;
+    for (let k = 1; k <= maxN; k++) {
+      sums[k] = sums[k - 1] + 1 / (k * k);
+    }
+    return sums;
+  }
+
+  function drawPartialSums(n: number) {
+    if (!canvasSums) return;
+    const ctx = canvasSums.getContext('2d');
+    if (!ctx) return;
+
+    const w = canvasSums.width;
+    const h = canvasSums.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 62;
+    const padR = 28;
+    const padT = 28;
+    const padB = 42;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const yMin = 0.8;
+    const yMax = 1.75;
+    const toX = (k: number) => padL + ((k - 1) / Math.max(1, n - 1)) * plotW;
+    const toY = (y: number) => padT + ((yMax - y) / (yMax - yMin)) * plotH;
+
+    // Grid horizontal
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 1;
+    ctx.font = '12px JetBrains Mono, monospace';
+    ctx.fillStyle = '#94a3b8';
+
+    for (let y = 0.8; y <= 1.71; y += 0.2) {
+      const py = toY(y);
+      ctx.beginPath();
+      ctx.moveTo(padL, py);
+      ctx.lineTo(w - padR, py);
+      ctx.stroke();
+      ctx.fillText(y.toFixed(1), 16, py + 4);
+    }
+
+    // Línea objetivo π²/6
+    const yTarget = toY(PI2_6);
+    ctx.save();
+    ctx.setLineDash([7, 5]);
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(padL, yTarget);
+    ctx.lineTo(w - padR, yTarget);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 12px JetBrains Mono, monospace';
+    ctx.fillText('π²/6 ≈ 1.644934', w - padR - 135, yTarget - 8);
+
+    const sums = computePartialSums(n);
+
+    // Área bajo la curva
+    ctx.beginPath();
+    if (n === 1) {
+      ctx.arc(padL + plotW * 0.5, toY(sums[1]), 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fill();
+    } else {
+      ctx.moveTo(toX(1), toY(yMin));
+      for (let k = 1; k <= n; k++) {
+        ctx.lineTo(toX(k), toY(sums[k]));
+      }
+      ctx.lineTo(toX(n), toY(yMin));
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(0, padT, 0, h - padB);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.32)');
+      grad.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Curva S_k
+      ctx.beginPath();
+      for (let k = 1; k <= n; k++) {
+        const px = toX(k);
+        const py = toY(sums[k]);
+        if (k === 1) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Punto final
+      const lastX = toX(n);
+      const lastY = toY(sums[n]);
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Eje X etiquetas
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px JetBrains Mono, monospace';
+    ctx.fillText('k = 1', padL, h - 14);
+    ctx.fillText(`k = ${n}`, w - padR - 55, h - 14);
+
+    // Actualizar métricas
+    const sn = sums[n];
+    const err = PI2_6 - sn;
+    const term = 1 / (n * n);
+    if (valN) valN.textContent = String(n);
+    if (metricSn) metricSn.textContent = sn.toFixed(6);
+    if (metricErr) metricErr.textContent = err.toFixed(6);
+    if (metricTerm) metricTerm.textContent = term.toFixed(6);
+  }
+
+  if (slN) {
+    slN.addEventListener('input', () => {
+      const n = Number(slN.value);
+      quickBtns.forEach((b) => b.classList.toggle('active', Number(b.dataset.n) === n));
+      drawPartialSums(n);
+    });
+  }
+
+  quickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const n = Number(btn.dataset.n || '40');
+      if (slN) slN.value = String(n);
+      quickBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      drawPartialSums(n);
+    });
+  });
+
+  drawPartialSums(40);
+
+  // --- EXPERIMENTO 2: SIN(X)/X VS TAYLOR Y PRODUCTO DE EULER ---
+  const slK = document.getElementById('sl-taylor-k') as HTMLInputElement | null;
+  const slM = document.getElementById('sl-euler-m') as HTMLInputElement | null;
+  const valK = document.getElementById('val-taylor-k');
+  const valM = document.getElementById('val-euler-m');
+  const chkTaylor = document.getElementById('chk-show-taylor') as HTMLInputElement | null;
+  const chkProduct = document.getElementById('chk-show-product') as HTMLInputElement | null;
+  const canvasSinc = document.getElementById('canvas-sinc-zeros') as HTMLCanvasElement | null;
+
+  function sinc(x: number): number {
+    if (Math.abs(x) < 1e-6) return 1 - (x * x) / 6;
+    return Math.sin(x) / x;
+  }
+
+  function taylorSinc(x: number, kMax: number): number {
+    let sum = 1;
+    let term = 1;
+    for (let k = 1; k <= kMax; k++) {
+      term *= -(x * x) / ((2 * k) * (2 * k + 1));
+      sum += term;
+    }
+    return sum;
+  }
+
+  function eulerProductSinc(x: number, mMax: number): number {
+    let prod = 1;
+    const pi2 = Math.PI * Math.PI;
+    for (let n = 1; n <= mMax; n++) {
+      prod *= 1 - (x * x) / (n * n * pi2);
+    }
+    return prod;
+  }
+
+  function drawSincScene() {
+    if (!canvasSinc) return;
+    const ctx = canvasSinc.getContext('2d');
+    if (!ctx) return;
+
+    const kMax = slK ? Number(slK.value) : 3;
+    const mMax = slM ? Number(slM.value) : 3;
+    const showTaylor = chkTaylor ? chkTaylor.checked : true;
+    const showProduct = chkProduct ? chkProduct.checked : true;
+
+    if (valK) valK.textContent = `x^${2 * kMax} (K=${kMax})`;
+    if (valM) valM.textContent = `M = ${mMax} (ceros ±π … ±${mMax}π)`;
+
+    const w = canvasSinc.width;
+    const h = canvasSinc.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 52;
+    const padR = 24;
+    const padT = 24;
+    const padB = 38;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const xMin = -3.6 * Math.PI;
+    const xMax = 3.6 * Math.PI;
+    const yMin = -0.6;
+    const yMax = 1.25;
+
+    const toX = (x: number) => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+    const toY = (y: number) => padT + ((yMax - y) / (yMax - yMin)) * plotH;
+
+    // Eje Y=0 y X=0
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, toY(0));
+    ctx.lineTo(w - padR, toY(0));
+    ctx.moveTo(toX(0), padT);
+    ctx.lineTo(toX(0), h - padB);
+    ctx.stroke();
+
+    // Etiquetas de múltiplos de π
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px JetBrains Mono, monospace';
+    for (let m = -3; m <= 3; m++) {
+      if (m === 0) continue;
+      const px = toX(m * Math.PI);
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(px, padT);
+      ctx.lineTo(px, h - padB);
+      ctx.stroke();
+      const label = m === 1 ? 'π' : m === -1 ? '-π' : `${m}π`;
+      ctx.fillText(label, px - 10, h - 12);
+    }
+
+    const plotCurve = (fn: (x: number) => number, color: string, width: number, dashed = false) => {
+      ctx.save();
+      if (dashed) ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      let started = false;
+      const steps = 420;
+      for (let i = 0; i <= steps; i++) {
+        const x = xMin + (i / steps) * (xMax - xMin);
+        const y = fn(x);
+        if (y < yMin - 0.5 || y > yMax + 0.5) {
+          started = false;
+          continue;
+        }
+        const px = toX(x);
+        const py = toY(y);
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // 1. Producto de Euler
+    if (showProduct) {
+      plotCurve((x) => eulerProductSinc(x, mMax), '#c084fc', 2.2, true);
+    }
+
+    // 2. Polinomio de Taylor
+    if (showTaylor) {
+      plotCurve((x) => taylorSinc(x, kMax), '#38bdf8', 2.2, false);
+    }
+
+    // 3. Curva real sin(x)/x
+    plotCurve(sinc, '#34d399', 2.8, false);
+
+    // Puntos en los ceros de sin(x)/x
+    for (let m = -3; m <= 3; m++) {
+      if (m === 0) continue;
+      const px = toX(m * Math.PI);
+      const py = toY(0);
+      ctx.beginPath();
+      ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#34d399';
+      ctx.fill();
+    }
+
+    // Leyenda superior izquierda
+    ctx.font = '12px JetBrains Mono, monospace';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('— sin(x)/x (real)', padL + 10, padT + 14);
+    if (showTaylor) {
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText(`— Taylor grado ${2 * kMax}`, padL + 165, padT + 14);
+    }
+    if (showProduct) {
+      ctx.fillStyle = '#c084fc';
+      ctx.fillText(`-- Producto M=${mMax}`, padL + 330, padT + 14);
+    }
+  }
+
+  slK?.addEventListener('input', drawSincScene);
+  slM?.addEventListener('input', drawSincScene);
+  chkTaylor?.addEventListener('change', drawSincScene);
+  chkProduct?.addEventListener('change', drawSincScene);
+  drawSincScene();
+
+  // --- QUIZ ---
+  const explanations: Record<string, { ok: string; err: string }> = {
+    p1: {
+      ok: 'Correcto. La suma de los pares es 1/2² + 1/4² + 1/6² + … = (1/4)·(1 + 1/2² + 1/3² + …) = (1/4)·(π²/6) = π²/24. Al restarla del total: π²/6 − π²/24 = 3π²/24 = π²/8.',
+      err: 'Pista: separa la serie total en pares e impares. La suma de los inversos de los cuadrados pares es exactamente 1/4 del total (π²/24).'
+    },
+    p2: {
+      ok: 'Exacto. Al dividir sin(x) = x − x³/3! + x⁵/5! − … entre x, el segundo término pasa a ser −x²/3! = −x²/6. Al igualar −1/6 con −(1/π²)∑(1/n²) aparece directamente π²/6.',
+      err: 'Revisa el Paso 1 y el Paso 3: sin(x) tiene término cúbico −x³/3! = −x³/6, que al dividir por x se convierte en −x²/6.'
+    }
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('.quiz-opt').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q || '';
+      const isCorrect = btn.dataset.correct === 'true';
+      const siblings = document.querySelectorAll<HTMLButtonElement>(`.quiz-opt[data-q="${q}"]`);
+      siblings.forEach((s) => s.classList.remove('correct', 'wrong'));
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      const fb = document.getElementById(`fb-${q}`);
+      if (fb && explanations[q]) {
+        fb.hidden = false;
+        fb.className = `quiz-feedback ${isCorrect ? 'ok' : 'err'}`;
+        fb.textContent = isCorrect ? explanations[q].ok : explanations[q].err;
+      }
+    });
+  });
+</script>

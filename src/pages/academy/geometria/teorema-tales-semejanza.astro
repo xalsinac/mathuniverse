@@ -1,0 +1,1497 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-00')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'cal-05');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-seno-coseno');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: INTUICIÓN VISUAL -->
+  <section class="lesson-section" id="intuicion-escala">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Intuición Visual: Escalar el Mundo sin Deformarlo</h2>
+
+    <p class="lead-paragraph">
+      Cuando haces zoom sobre una fotografía o proyectas una diapositiva sobre una pared más lejana, la imagen cambia de tamaño pero <strong>conserva intactas todas sus proporciones y ángulos</strong>. En geometría, esa transformación perfecta se llama <strong>semejanza</strong>, y la ley que garantiza que las longitudes crecen al unísono es el <strong>Teorema de Tales</strong>.
+    </p>
+
+    <div class="tales-configs-grid">
+      <div class="config-card">
+        <div class="config-badge">CONFIGURACIÓN 1 · EN TRIÁNGULO</div>
+        <svg viewBox="0 0 320 190" class="config-svg" aria-label="Configuración estándar del Teorema de Tales en un triángulo con recta paralela">
+          <line x1="50" y1="160" x2="275" y2="160" stroke="#c084fc" stroke-width="2.5" />
+          <line x1="88" y1="95" x2="217" y2="95" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 3" />
+          <line x1="125" y1="30" x2="50" y2="160" stroke="currentColor" stroke-width="2" opacity="0.85" />
+          <line x1="125" y1="30" x2="275" y2="160" stroke="currentColor" stroke-width="2" opacity="0.85" />
+
+          <circle cx="125" cy="30" r="4.5" fill="#fbbf24" />
+          <text x="125" y="20" text-anchor="middle" class="svg-lbl gold">O</text>
+
+          <circle cx="88" cy="95" r="4" fill="#38bdf8" />
+          <text x="72" y="96" text-anchor="end" class="svg-lbl cyan">A′</text>
+          <circle cx="217" cy="95" r="4" fill="#38bdf8" />
+          <text x="232" y="96" class="svg-lbl cyan">B′</text>
+
+          <circle cx="50" cy="160" r="4.5" fill="#c084fc" />
+          <text x="36" y="166" text-anchor="end" class="svg-lbl purple">A</text>
+          <circle cx="275" cy="160" r="4.5" fill="#c084fc" />
+          <text x="288" y="166" class="svg-lbl purple">B</text>
+
+          <text x="160" y="178" text-anchor="middle" class="svg-note">A′B′ ∥ AB  ⇒  △OA′B′ ∼ △OAB</text>
+        </svg>
+        <p class="config-caption">
+          Un corte paralelo a la base genera un triángulo encajado que es una versión exactamente reducida (o ampliada) del original.
+        </p>
+      </div>
+
+      <div class="config-card">
+        <div class="config-badge">CONFIGURACIÓN 2 · EN LAZO / MARIPOSA</div>
+        <svg viewBox="0 0 320 190" class="config-svg" aria-label="Configuración en mariposa con el vértice O entre las dos paralelas">
+          <line x1="45" y1="36" x2="185" y2="36" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 3" />
+          <line x1="115" y1="156" x2="285" y2="156" stroke="#c084fc" stroke-width="2.5" />
+
+          <line x1="45" y1="36" x2="285" y2="156" stroke="currentColor" stroke-width="2" opacity="0.85" />
+          <line x1="185" y1="36" x2="115" y2="156" stroke="currentColor" stroke-width="2" opacity="0.85" />
+
+          <circle cx="145" cy="86" r="4.5" fill="#fbbf24" />
+          <text x="160" y="90" class="svg-lbl gold">O</text>
+
+          <circle cx="45" cy="36" r="4" fill="#38bdf8" />
+          <text x="35" y="34" text-anchor="end" class="svg-lbl cyan">A′</text>
+          <circle cx="185" cy="36" r="4" fill="#38bdf8" />
+          <text x="195" y="34" class="svg-lbl cyan">B′</text>
+
+          <circle cx="115" cy="156" r="4.5" fill="#c084fc" />
+          <text x="102" y="162" text-anchor="end" class="svg-lbl purple">B</text>
+          <circle cx="285" cy="156" r="4.5" fill="#c084fc" />
+          <text x="296" y="162" class="svg-lbl purple">A</text>
+
+          <text x="160" y="178" text-anchor="middle" class="svg-note">Ángulos opuestos en O + paralelas = semejanza invertida</text>
+        </svg>
+        <p class="config-caption">
+          Si las paralelas quedan a lados opuestos del vértice <code class="inline-code">O</code>, los triángulos se invierten (como en una lente o el ojo humano), manteniendo la misma proporción.
+        </p>
+      </div>
+    </div>
+
+    <div class="history-context-box">
+      <div class="h-icon">🏛️</div>
+      <div class="h-body">
+        <h4>Tales de Mileto y la Gran Pirámide de Keops (~600 a.C.)</h4>
+        <p>
+          Cuenta la tradición recogida por Plutarco y Diógenes Laercio que el filósofo y geómetra griego <strong>Tales de Mileto</strong> asombró a los sacerdotes egipcios midiendo la altura de la Gran Pirámide sin trepar por ella ni usar escaleras.
+        </p>
+        <p>
+          Esperó el instante del día en que la sombra de un bastón vertical clavado en la arena medía exactamente lo mismo que el propio bastón. En ese mismo instante, los rayos solares (prácticamente paralelos) formaban un triángulo semejante con la pirámide: bastaba medir su sombra desde el centro de la base para conocer su altura exacta.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: DEFINICIONES FORMALES Y CRITERIOS -->
+  <section class="lesson-section" id="definicion-formal">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Definiciones Formales y Criterios de Semejanza</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DE TALES (VERSIÓN GENERAL Y TRIANGULAR)</div>
+      <h3>Enunciado Canónico</h3>
+      <div class="thm-conditions">
+        <p>
+          Si dos rectas secantes <code class="inline-code">r</code> y <code class="inline-code">s</code> que se cortan en un punto <code class="inline-code">O</code> son intersecadas por un haz de rectas paralelas, <strong>los segmentos determinados sobre una de las secantes son proporcionales a los segmentos correspondientes determinados sobre la otra</strong>.
+        </p>
+        <p>
+          En particular, si una recta paralela al lado <code class="inline-code">AB</code> de un triángulo <code class="inline-code">△OAB</code> corta a los otros dos lados (o a sus prolongaciones) en <code class="inline-code">A′</code> y <code class="inline-code">B′</code>, entonces:
+        </p>
+        <div class="formula-display-banner">
+          <div class="frac-eq">
+            <span class="frac"><span class="num">OA′</span><span class="den">OA</span></span>
+            <span class="eq-op">=</span>
+            <span class="frac"><span class="num">OB′</span><span class="den">OB</span></span>
+            <span class="eq-op">=</span>
+            <span class="frac"><span class="num">A′B′</span><span class="den">AB</span></span>
+            <span class="eq-op">=</span>
+            <span class="k-badge">k</span>
+          </div>
+        </div>
+        <p class="thm-reciprocal">
+          <strong>Teorema Recíproco de Tales:</strong> Si en un triángulo <code class="inline-code">△OAB</code> los puntos <code class="inline-code">A′ ∈ OA</code> y <code class="inline-code">B′ ∈ OB</code> verifican <code class="inline-code">OA′ / OA = OB′ / OB</code>, entonces la recta que los une es necesariamente paralela a la base: <code class="inline-code">A′B′ ∥ AB</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="similarity-def-card">
+      <h4>Definición Formal de Semejanza de Triángulos (<code class="inline-code">△ABC ∼ △A′B′C′</code>)</h4>
+      <p>
+        Dos triángulos son <strong>semejantes</strong> si existe una correspondencia entre sus vértices tal que:
+      </p>
+      <ul class="def-list">
+        <li><strong>Ángulos homólogos congruentes:</strong> <code class="inline-code">∠A = ∠A′</code>, <code class="inline-code">∠B = ∠B′</code>, <code class="inline-code">∠C = ∠C′</code>.</li>
+        <li><strong>Lados homólogos proporcionales:</strong> <code class="inline-code">a′/a = b′/b = c′/c = k</code>, donde <code class="inline-code">k &gt; 0</code> es la <strong>razón de semejanza</strong>.</li>
+      </ul>
+      <div class="scale-laws-row">
+        <div class="scale-law">
+          <span class="sl-label">Razón de longitudes y perímetros</span>
+          <span class="sl-val">P′ / P = k</span>
+        </div>
+        <div class="scale-law">
+          <span class="sl-label">Razón de áreas</span>
+          <span class="sl-val">Área′ / Área = k²</span>
+        </div>
+        <div class="scale-law">
+          <span class="sl-label">Razón de volúmenes (en 3D)</span>
+          <span class="sl-val">V′ / V = k³</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Los 3 Criterios Mínimos de Semejanza</h3>
+    <p>
+      No hace falta comprobar los 3 ángulos y los 3 lados para garantizar que dos triángulos son semejantes. Bastan cualquiera de estas tres condiciones mínimas:
+    </p>
+
+    <div class="criteria-grid">
+      <div class="criterion-card">
+        <div class="crit-head">
+          <span class="crit-pill">Criterio 1</span>
+          <h4>AA (Ángulo – Ángulo)</h4>
+        </div>
+        <svg viewBox="0 0 220 110" class="crit-svg" aria-label="Criterio AA">
+          <polygon points="20,90 95,90 45,25" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2" />
+          <path d="M 33 90 A 13 13 0 0 0 28 79" fill="none" stroke="#fbbf24" stroke-width="2" />
+          <path d="M 80 90 A 15 15 0 0 1 86 78" fill="none" stroke="#10b981" stroke-width="2" />
+
+          <polygon points="120,95 205,95 148,20" fill="rgba(192, 132, 252, 0.14)" stroke="#c084fc" stroke-width="2" />
+          <path d="M 135 95 A 15 15 0 0 0 129 83" fill="none" stroke="#fbbf24" stroke-width="2" />
+          <path d="M 188 95 A 17 17 0 0 1 195 82" fill="none" stroke="#10b981" stroke-width="2" />
+        </svg>
+        <p>Si dos ángulos coinciden (<code class="inline-code">α = α′, β = β′</code>), el tercero también (<code class="inline-code">180° − α − β</code>). Es el criterio más usado.</p>
+      </div>
+
+      <div class="criterion-card">
+        <div class="crit-head">
+          <span class="crit-pill">Criterio 2</span>
+          <h4>LAL (Lado – Ángulo – Lado)</h4>
+        </div>
+        <svg viewBox="0 0 220 110" class="crit-svg" aria-label="Criterio LAL">
+          <polygon points="20,90 95,90 45,30" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" />
+          <line x1="20" y1="90" x2="95" y2="90" stroke="#38bdf8" stroke-width="3" />
+          <line x1="20" y1="90" x2="45" y2="30" stroke="#38bdf8" stroke-width="3" />
+          <path d="M 35 90 A 15 15 0 0 0 26 76" fill="none" stroke="#fbbf24" stroke-width="2.5" />
+
+          <polygon points="120,95 208,95 149,25" fill="rgba(192, 132, 252, 0.14)" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3 3" />
+          <line x1="120" y1="95" x2="208" y2="95" stroke="#c084fc" stroke-width="3" />
+          <line x1="120" y1="95" x2="149" y2="25" stroke="#c084fc" stroke-width="3" />
+          <path d="M 137 95 A 17 17 0 0 0 127 79" fill="none" stroke="#fbbf24" stroke-width="2.5" />
+        </svg>
+        <p>Dos pares de lados en la misma proporción (<code class="inline-code">a′/a = b′/b</code>) y el <strong>ángulo comprendido entre ellos</strong> igual.</p>
+      </div>
+
+      <div class="criterion-card">
+        <div class="crit-head">
+          <span class="crit-pill">Criterio 3</span>
+          <h4>LLL (Lado – Lado – Lado)</h4>
+        </div>
+        <svg viewBox="0 0 220 110" class="crit-svg" aria-label="Criterio LLL">
+          <polygon points="20,90 92,90 48,30" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2.8" />
+          <polygon points="122,95 206,95 155,25" fill="rgba(192, 132, 252, 0.14)" stroke="#c084fc" stroke-width="2.8" />
+          <text x="56" y="104" text-anchor="middle" class="svg-mini-lbl">a, b, c</text>
+          <text x="164" y="107" text-anchor="middle" class="svg-mini-lbl">k·a, k·b, k·c</text>
+        </svg>
+        <p>Los tres pares de lados guardan exactamente la misma razón <code class="inline-code">a′/a = b′/b = c′/c = k</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: LABORATORIO INTERACTIVO Y DEMOSTRACIÓN POR ÁREAS -->
+  <section class="lesson-section" id="laboratorio-tales">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Laboratorio Interactivo y Demostración Visual por Áreas (Euclides VI.2)</h2>
+
+    <p>
+      ¿Por qué una simple recta paralela garantiza la proporcionalidad exacta de todos los segmentos? En los <em>Elementos</em> (Libro VI, Proposición 2), Euclides lo demostró sin trigonometría ni coordenadas, utilizando únicamente <strong>áreas de triángulos</strong>. Explora ambos puntos de vista en el laboratorio:
+    </p>
+
+    <div class="tales-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist" aria-label="Modo del laboratorio de Tales">
+          <button type="button" class="lab-tab is-active" data-lab-mode="ratios" role="tab" aria-selected="true">
+            Proporciones de Tales
+          </button>
+          <button type="button" class="lab-tab" data-lab-mode="areas" role="tab" aria-selected="false">
+            Demostración por Áreas (Euclides)
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Razón de escala <code class="inline-code">k</code>: <strong id="tales-k-val">0.60</strong></span>
+            <input type="range" id="slider-tales-k" min="0.25" max="1.25" step="0.01" value="0.60" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Desplazar vértice <code class="inline-code">O</code>: <strong id="tales-skew-val">-20°</strong></span>
+            <input type="range" id="slider-tales-skew" min="-110" max="110" step="2" value="-40" />
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="tales-lab-canvas" aria-label="Laboratorio interactivo del Teorema de Tales"></canvas>
+      </div>
+
+      <div class="lab-readout-grid" id="readout-ratios">
+        <div class="readout-pill">
+          <span class="ro-label">OA′ / OA</span>
+          <span class="ro-val cyan" id="ro-oa">0.600</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">OB′ / OB</span>
+          <span class="ro-val cyan" id="ro-ob">0.600</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">A′B′ / AB</span>
+          <span class="ro-val cyan" id="ro-ab">0.600</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Área(△OA′B′) / Área(△OAB) = k²</span>
+          <span class="ro-val gold" id="ro-area">0.360</span>
+        </div>
+      </div>
+
+      <div class="lab-areas-note" id="readout-areas" hidden>
+        <p id="areas-explanation-text">
+          Los triángulos <strong>△A′B′A</strong> (naranja) y <strong>△A′B′B</strong> (verde) comparten la misma base <strong>A′B′</strong> y están encerrados entre dos paralelas (<code class="inline-code">A′B′ ∥ AB</code>), por lo que tienen exactamente la misma altura <code class="inline-code">h</code> y, en consecuencia, <strong>idéntica área</strong>: <span id="ro-area-pair" class="gold-mono">Área = Área</span>.
+        </p>
+      </div>
+    </div>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN FORMAL POR ÁREAS (EUCLIDES, PROPUESTA VI.2)</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Triángulos entre paralelas de igual área:</strong> En el triángulo <code class="inline-code">△OAB</code> con <code class="inline-code">A′B′ ∥ AB</code>, los triángulos <code class="inline-code">△A′B′A</code> y <code class="inline-code">△A′B′B</code> comparten la base <code class="inline-code">A′B′</code> y tienen la misma altura <code class="inline-code">h</code> (la distancia entre las dos rectas paralelas). Por tanto:
+          <div class="proof-eq">Área(△A′B′A) = Área(△A′B′B)</div>
+        </li>
+        <li>
+          <strong>Cociente de áreas en el lado izquierdo:</strong> Los triángulos <code class="inline-code">△OA′B′</code> y <code class="inline-code">△A′B′A</code> comparten la altura trazada desde <code class="inline-code">B′</code> sobre la recta <code class="inline-code">OA</code>. Como el área es <code class="inline-code">(base · altura)/2</code>, al dividir sus áreas se cancela la altura:
+          <div class="proof-eq">Área(△OA′B′) / Área(△A′B′A) = OA′ / A′A</div>
+        </li>
+        <li>
+          <strong>Cociente de áreas en el lado derecho:</strong> Análogamente, <code class="inline-code">△OA′B′</code> y <code class="inline-code">△A′B′B</code> comparten la altura desde <code class="inline-code">A′</code> sobre <code class="inline-code">OB</code>:
+          <div class="proof-eq">Área(△OA′B′) / Área(△A′B′B) = OB′ / B′B</div>
+        </li>
+        <li>
+          <strong>Conclusión por transitividad:</strong> Como los denominadores <code class="inline-code">Área(△A′B′A)</code> y <code class="inline-code">Área(△A′B′B)</code> son iguales, ambos cocientes son idénticos:
+          <div class="proof-eq">OA′ / A′A = OB′ / B′B  ⟹  OA′ / OA = OB′ / OB  ∎</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: CONTRAEJEMPLOS -->
+  <section class="lesson-section" id="contraejemplos">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Contraejemplos: Cuando las Hipótesis Fallan</h2>
+
+    <p>
+      Comprender un teorema exige ver con claridad <strong>qué ocurre cuando se viola una de sus hipótesis</strong>. Estos tres contraejemplos muestran errores clásicos en geometría:
+    </p>
+
+    <!-- Contraejemplo 1 Interactivo: Recta no paralela -->
+    <div class="counter-interactive-card">
+      <div class="counter-header">
+        <span class="counter-tag">CONTRAEJEMPLO 1 · HIPÓTESIS VIOLADA: A′B′ ∦ AB</span>
+        <h4>¿Qué pasa si la recta de corte NO es paralela a la base?</h4>
+      </div>
+
+      <div class="counter-split">
+        <div class="counter-svg-wrap">
+          <svg viewBox="0 0 320 200" id="counter-nonparallel-svg" class="counter-svg" aria-label="Contraejemplo de recta secante no paralela">
+            <line x1="40" y1="170" x2="280" y2="170" stroke="#c084fc" stroke-width="2.5" />
+            <line x1="150" y1="25" x2="40" y2="170" stroke="currentColor" stroke-width="2" opacity="0.8" />
+            <line x1="150" y1="25" x2="280" y2="170" stroke="currentColor" stroke-width="2" opacity="0.8" />
+            <line id="ce-cut-line" x1="95" y1="97.5" x2="215" y2="97.5" stroke="#f43f5e" stroke-width="2.8" />
+            <circle cx="150" cy="25" r="4.5" fill="#fbbf24" />
+            <text x="150" y="16" text-anchor="middle" class="svg-lbl gold">O</text>
+            <circle id="ce-dot-a" cx="95" cy="97.5" r="4.5" fill="#f43f5e" />
+            <text id="ce-lbl-a" x="80" y="96" text-anchor="end" class="svg-lbl red">A′</text>
+            <circle id="ce-dot-b" cx="215" cy="97.5" r="4.5" fill="#f43f5e" />
+            <text id="ce-lbl-b" x="230" y="96" class="svg-lbl red">B′</text>
+            <circle cx="40" cy="170" r="4" fill="#c084fc" />
+            <text x="28" y="175" text-anchor="end" class="svg-lbl purple">A</text>
+            <circle cx="280" cy="170" r="4" fill="#c084fc" />
+            <text x="292" y="175" class="svg-lbl purple">B</text>
+          </svg>
+        </div>
+
+        <div class="counter-controls">
+          <label class="lab-slider-item">
+            <span>Inclinación del corte (<code class="inline-code">Δθ</code>): <strong id="ce-tilt-val">+18°</strong></span>
+            <input type="range" id="slider-ce-tilt" min="-25" max="25" step="1" value="18" />
+          </label>
+          <div class="ce-metrics">
+            <div class="ce-metric-row">
+              <span>Razón izquierda <code class="inline-code">OA′ / OA</code>:</span>
+              <strong id="ce-ratio-l" class="ce-val">0.37</strong>
+            </div>
+            <div class="ce-metric-row">
+              <span>Razón derecha <code class="inline-code">OB′ / OB</code>:</span>
+              <strong id="ce-ratio-r" class="ce-val">0.63</strong>
+            </div>
+            <div class="ce-status-pill is-broken" id="ce-status-pill">
+              A′B′ ∦ AB — ¡Proporcionalidad rota! (0.37 ≠ 0.63)
+            </div>
+          </div>
+          <p class="ce-tip">Prueba a llevar el deslizador a <code class="inline-code">0°</code> para restaurar el paralelismo y ver cómo vuelven a coincidir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="counter-cards-grid">
+      <!-- Contraejemplo 2: LLA -->
+      <div class="ce-static-card">
+        <div class="counter-tag">CONTRAEJEMPLO 2 · EL FALSO CRITERIO LLA</div>
+        <h4>Dos lados proporcionales y un ángulo NO comprendido</h4>
+        <svg viewBox="0 0 280 145" class="ce-static-svg" aria-label="Caso ambiguo LLA con dos triángulos no semejantes">
+          <line x1="25" y1="120" x2="255" y2="120" stroke="currentColor" stroke-width="1.8" opacity="0.7" />
+          <line x1="25" y1="120" x2="145" y2="30" stroke="#38bdf8" stroke-width="2.5" />
+          <path d="M 48 120 A 23 23 0 0 0 43 106" fill="none" stroke="#fbbf24" stroke-width="2.5" />
+          <text x="53" y="112" class="svg-lbl gold">α</text>
+          <!-- Arco de compás desde el vértice superior -->
+          <path d="M 100 120 A 90 90 0 0 0 190 120" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 3" />
+          <line x1="145" y1="30" x2="105" y2="120" stroke="#f43f5e" stroke-width="2.2" />
+          <line x1="145" y1="30" x2="185" y2="120" stroke="#10b981" stroke-width="2.2" />
+          <circle cx="145" cy="30" r="3.5" fill="#38bdf8" />
+          <circle cx="105" cy="120" r="3.5" fill="#f43f5e" />
+          <circle cx="185" cy="120" r="3.5" fill="#10b981" />
+          <text x="82" y="80" class="svg-lbl cyan">b</text>
+          <text x="115" y="75" class="svg-lbl red">a</text>
+          <text x="174" y="75" class="svg-lbl green">a</text>
+        </svg>
+        <p>
+          Con los mismos lados <code class="inline-code">a, b</code> y un ángulo <code class="inline-code">α</code> no comprendido entre ellos, el arco de compás corta en <strong>dos puntos distintos</strong>: un triángulo acutángulo y otro obtusángulo que <strong>no son semejantes</strong>.
+        </p>
+      </div>
+
+      <!-- Contraejemplo 3: Polígonos >= 4 lados -->
+      <div class="ce-static-card">
+        <div class="counter-tag">CONTRAEJEMPLO 3 · POLÍGONOS DE 4+ LADOS</div>
+        <h4>Por qué AA y LLL solo bastan en triángulos</h4>
+        <svg viewBox="0 0 280 145" class="ce-static-svg" aria-label="Cuadrado frente a rectángulo y rombo">
+          <!-- Cuadrado vs Rectángulo (AA falla) -->
+          <rect x="20" y="22" width="44" height="44" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2" />
+          <rect x="78" y="26" width="60" height="36" fill="rgba(244, 63, 94, 0.14)" stroke="#f43f5e" stroke-width="2" />
+          <text x="79" y="84" text-anchor="middle" class="svg-mini-lbl">90° iguales ≠ semejantes</text>
+
+          <!-- Cuadrado vs Rombo (LLL falla) -->
+          <rect x="165" y="22" width="42" height="42" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2" />
+          <polygon points="235,20 265,42 235,64 205,42" fill="rgba(251, 191, 36, 0.14)" stroke="#fbbf24" stroke-width="2" />
+          <text x="215" y="84" text-anchor="middle" class="svg-mini-lbl">Lados iguales ≠ semejantes</text>
+        </svg>
+        <p>
+          Un cuadrado y un rectángulo tienen <strong>todos sus ángulos iguales</strong> (90°) pero distinta forma. Un cuadrado y un rombo tienen <strong>lados proporcionales</strong> pero distintos ángulos. Solo el triángulo es rígido.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: EJEMPLOS COTIDIANOS, TRADICIONALES Y CIENTÍFICOS -->
+  <section class="lesson-section" id="aplicaciones-reales">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Usos Tradicionales, Cotidianos y Científicos</h2>
+
+    <p>
+      Mucho antes de los telémetros láser y del GPS, navegantes, topógrafos, pintores y astrónomos usaban el Teorema de Tales y los triángulos semejantes para medir lo inalcanzable:
+    </p>
+
+    <!-- Uso 1: El método del pulgar estirado (interactivo) -->
+    <div class="thumb-sim-card">
+      <div class="thumb-badge">MÉTODO TRADICIONAL · EL PULGAR ESTIRADO (PARALAJE 10:1)</div>
+      <h3>Cómo medir la distancia a un edificio, árbol o barco solo con tu brazo</h3>
+      <p>
+        Estira el brazo por completo frente a ti y levanta el pulgar. Cierra el ojo izquierdo y alinea el pulgar con el borde de un objeto lejano (por ejemplo, una casa o un barco cuya anchura estimas). Sin mover el brazo, cierra el derecho y abre el izquierdo: <strong>verás que el pulgar «salta» lateralmente</strong>.
+      </p>
+      <p>
+        ¿Por qué funciona? La distancia media entre tus pupilas es de unos <code class="inline-code">6 cm</code> y la longitud del brazo extendido hasta el pulgar es de unos <code class="inline-code">60 cm</code>. Tus ojos, tu pulgar y el objeto lejano forman la <strong>configuración en mariposa de Tales</strong> con razón exacta <code class="inline-code">60 / 6 = 10</code>:
+      </p>
+
+      <div class="thumb-visual-wrap">
+        <svg viewBox="0 0 640 175" class="thumb-svg" aria-label="Esquema de triángulos semejantes del método del pulgar estirado">
+          <!-- Ojos a la izquierda -->
+          <circle cx="40" cy="65" r="5" fill="#38bdf8" />
+          <circle cx="40" cy="110" r="5" fill="#38bdf8" />
+          <line x1="40" y1="65" x2="40" y2="110" stroke="#38bdf8" stroke-width="2" />
+          <text x="24" y="92" text-anchor="end" class="svg-lbl cyan">6 cm</text>
+
+          <!-- Rayos cruzados en el pulgar -->
+          <line x1="40" y1="65" x2="585" y2="145" stroke="#fbbf24" stroke-width="1.6" stroke-dasharray="5 3" opacity="0.8" />
+          <line x1="40" y1="110" x2="585" y2="30" stroke="#fbbf24" stroke-width="1.6" stroke-dasharray="5 3" opacity="0.8" />
+
+          <!-- Pulgar en el vértice -->
+          <circle cx="145" cy="87.5" r="6" fill="#fbbf24" />
+          <text x="145" y="74" text-anchor="middle" class="svg-lbl gold">Pulgar</text>
+          <text x="92" y="138" text-anchor="middle" class="svg-mini-lbl">Brazo ≈ 60 cm</text>
+
+          <!-- Objeto lejano (salto aparente W) -->
+          <line x1="585" y1="30" x2="585" y2="145" stroke="#10b981" stroke-width="4" />
+          <text x="568" y="92" text-anchor="end" class="svg-lbl green">Salto W</text>
+          <text x="365" y="164" text-anchor="middle" class="svg-note">D / 60 cm = W / 6 cm  ⟹  Distancia D ≈ 10 · W</text>
+        </svg>
+      </div>
+
+      <div class="thumb-calc-box">
+        <label class="lab-slider-item">
+          <span>Anchura del salto aparente observado (<code class="inline-code">W</code>): <strong id="thumb-w-val">18 m</strong></span>
+          <input type="range" id="slider-thumb-w" min="2" max="80" step="1" value="18" />
+        </label>
+        <div class="thumb-result">
+          <span>Distancia estimada hasta el objetivo:</span>
+          <strong id="thumb-d-val">180 metros</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">TRADICIONAL · TOPOGRAFÍA</div>
+        <h4>La Sombra de Tales y la Altura de Árboles o Torres</h4>
+        <p>
+          Clava un palo de altura conocida <code class="inline-code">h</code> verticalmente en el suelo y mide su sombra <code class="inline-code">s</code>. Si al mismo tiempo mides la sombra <code class="inline-code">S</code> de un árbol o edificio, los rayos paralelos del Sol garantizan que <code class="inline-code">H / S = h / s</code>. Este mismo principio se usaba con el <em>bastón de Jacob</em> en navegación marítima.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">CIENTÍFICO · ASTRONOMÍA</div>
+        <h4>Paralaje Estelar y la Escala del Cosmos</h4>
+        <p>
+          Al igual que alternas ojo izquierdo y derecho con el pulgar, los astrónomos observan una estrella cercana en enero y en julio (cuando la Tierra está en extremos opuestos de su órbita, separados <code class="inline-code">300 millones de km</code>). El ángulo de desplazamiento aparente define el <strong>pársec</strong> (<code class="inline-code">3,26 años luz</code>).
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">CIENTÍFICO · ÓPTICA Y FOTOGRAFÍA</div>
+        <h4>Cámara Oscura, Lentes y Microscopios</h4>
+        <p>
+          La luz que atraviesa un orificio estenopeico o el centro óptico de una lente forma dos triángulos semejantes opuestos por el vértice. Por eso la relación entre el tamaño de la imagen proyectada en el sensor y el objeto real es exactamente <code class="inline-code">y′ / y = f / d</code>.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">TECNOLÓGICO · GRÁFICOS 3D</div>
+        <h4>Proyección en Perspectiva de Videojuegos</h4>
+        <p>
+          Cada fotograma de un motor 3D (como Unity, Unreal o el visor de <em>Vóxel Polyhedra 3D</em>) convierte coordenadas espaciales <code class="inline-code">(x, y, z)</code> en píxeles de pantalla mediante triángulos semejantes: <code class="inline-code">x_pantalla = d · x / z</code>. Sin el Teorema de Tales no existiría la profundidad visual en pantalla.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: RETO PRÁCTICO INTERACTIVO -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Comprobación Práctica</h2>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Topografía):</strong> Un poste vertical de <code class="inline-code">1,8 m</code> proyecta una sombra de <code class="inline-code">1,2 m</code>. En ese mismo instante, la sombra de un campanario mide <code class="inline-code">24 m</code>. ¿Cuál es la altura del campanario?
+        </p>
+        <div class="quiz-options" data-quiz="q1">
+          <button type="button" class="quiz-opt" data-correct="false">16 m</button>
+          <button type="button" class="quiz-opt" data-correct="true">36 m</button>
+          <button type="button" class="quiz-opt" data-correct="false">28,8 m</button>
+        </div>
+        <p class="quiz-feedback" id="fb-q1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Escala de Áreas):</strong> Un plano está dibujado a razón de semejanza <code class="inline-code">k = 3</code> respecto a una maqueta pequeña. Si el área de un triángulo en la maqueta es de <code class="inline-code">10 cm²</code>, ¿cuál será su área en el plano ampliado?
+        </p>
+        <div class="quiz-options" data-quiz="q2">
+          <button type="button" class="quiz-opt" data-correct="false">30 cm²</button>
+          <button type="button" class="quiz-opt" data-correct="false">60 cm²</button>
+          <button type="button" class="quiz-opt" data-correct="true">90 cm²</button>
+        </div>
+        <p class="quiz-feedback" id="fb-q2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .tales-configs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .config-card,
+  .similarity-def-card,
+  .criterion-card,
+  .tales-lab-shell,
+  .counter-interactive-card,
+  .ce-static-card,
+  .thumb-sim-card,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .config-badge,
+  .counter-tag,
+  .thumb-badge,
+  .app-tag,
+  .proof-header,
+  .thm-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #c084fc;
+    background: rgba(192, 132, 252, 0.12);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    padding: 0.22rem 0.55rem;
+    border-radius: 5px;
+    margin-bottom: 0.75rem;
+  }
+
+  .counter-tag {
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.12);
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .thumb-badge {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  .app-tag {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  .config-svg,
+  .crit-svg,
+  .counter-svg,
+  .ce-static-svg,
+  .thumb-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0.35rem 0 0.75rem;
+    color: var(--ink-strong, #f8fafc);
+  }
+
+  .svg-lbl {
+    font-family: var(--mono, monospace);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .svg-lbl.gold { fill: #fbbf24; }
+  .svg-lbl.cyan { fill: #38bdf8; }
+  .svg-lbl.purple { fill: #c084fc; }
+  .svg-lbl.red { fill: #f43f5e; }
+  .svg-lbl.green { fill: #10b981; }
+
+  .svg-note,
+  .svg-mini-lbl {
+    font-family: var(--mono, monospace);
+    font-size: 10.5px;
+    fill: var(--muted, #94a3b8);
+  }
+
+  .config-caption {
+    font-size: 0.88rem;
+    color: var(--ink-soft, #cbd5e1);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .history-context-box {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.06);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    margin-top: 1.5rem;
+  }
+
+  .h-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .h-body h4 {
+    margin: 0 0 0.5rem;
+    color: #fbbf24;
+  }
+
+  .h-body p {
+    margin: 0 0 0.6rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .h-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .theorem-box-highlight {
+    background: rgba(192, 132, 252, 0.07);
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .theorem-box-highlight h3 {
+    margin: 0 0 0.75rem;
+  }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .formula-display-banner {
+    background: #f8fafc;
+    border-color: rgba(15, 23, 42, 0.1);
+  }
+
+  .frac-eq {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: var(--mono, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.15;
+  }
+
+  .frac .num {
+    border-bottom: 2px solid currentColor;
+    padding: 0 0.35rem 0.15rem;
+    color: #38bdf8;
+  }
+
+  .frac .den {
+    padding: 0.15rem 0.35rem 0;
+    color: #c084fc;
+  }
+
+  .eq-op {
+    color: var(--muted, #94a3b8);
+  }
+
+  .k-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    background: rgba(251, 191, 36, 0.18);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+  }
+
+  .thm-reciprocal {
+    margin: 0.75rem 0 0;
+    font-size: 0.92rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  }
+
+  .similarity-def-card {
+    margin: 1.25rem 0 1.75rem;
+  }
+
+  .similarity-def-card h4 {
+    margin: 0 0 0.6rem;
+  }
+
+  .def-list {
+    margin: 0.5rem 0 1rem;
+    padding-left: 1.25rem;
+    line-height: 1.65;
+  }
+
+  .scale-laws-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .scale-law {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .sl-label {
+    font-size: 0.75rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .sl-val {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    color: #38bdf8;
+    font-size: 0.95rem;
+  }
+
+  .criteria-grid,
+  .counter-cards-grid,
+  .apps-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .crit-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .crit-head h4 {
+    margin: 0;
+    font-size: 0.96rem;
+  }
+
+  .crit-pill {
+    font-family: var(--mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+  }
+
+  .criterion-card p,
+  .ce-static-card p,
+  .app-card p {
+    font-size: 0.87rem;
+    line-height: 1.55;
+    margin: 0;
+    color: var(--ink-soft, #cbd5e1);
+  }
+
+  /* LABORATORIO TALES */
+  .tales-lab-shell {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lab-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .lab-mode-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lab-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.48rem 0.9rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .lab-tab.is-active {
+    background: rgba(192, 132, 252, 0.2);
+    border-color: #c084fc;
+    color: #e9d5ff;
+  }
+
+  :global([data-theme="light"]) .lab-tab.is-active {
+    color: #6b21a8;
+  }
+
+  .lab-sliders {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .lab-slider-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.84rem;
+  }
+
+  .lab-slider-item input[type="range"] {
+    width: 100%;
+    accent-color: #c084fc;
+    cursor: pointer;
+  }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 340px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  :global([data-theme="light"]) .lab-canvas-wrap {
+    background: #f8fafc;
+  }
+
+  #tales-lab-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .lab-readout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.65rem;
+  }
+
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .ro-label {
+    font-family: var(--mono, monospace);
+    font-size: 0.7rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .ro-val {
+    font-family: var(--mono, monospace);
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.gold, .gold-mono { color: #fbbf24; font-family: var(--mono, monospace); font-weight: 700; }
+
+  .lab-areas-note {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .lab-areas-note p {
+    margin: 0;
+  }
+
+  /* PROOF BOX */
+  .proof-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.35rem;
+    margin: 1.5rem 0;
+  }
+
+  .proof-header {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  .proof-steps {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .proof-steps li {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .proof-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #10b981;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    display: inline-block;
+  }
+
+  /* CONTRAEJEMPLO INTERACTIVO */
+  .counter-interactive-card {
+    margin: 1.25rem 0;
+    border-color: rgba(244, 63, 94, 0.3);
+  }
+
+  .counter-header h4 {
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .counter-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    align-items: center;
+  }
+
+  @media (max-width: 720px) {
+    .counter-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .counter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .ce-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .ce-metric-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.86rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+  }
+
+  .ce-val {
+    font-family: var(--mono, monospace);
+  }
+
+  .ce-status-pill {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .ce-status-pill.is-broken {
+    background: rgba(244, 63, 94, 0.16);
+    color: #fda4af;
+    border: 1px solid rgba(244, 63, 94, 0.4);
+  }
+
+  .ce-status-pill.is-valid {
+    background: rgba(16, 185, 129, 0.16);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  :global([data-theme="light"]) .ce-status-pill.is-broken { color: #be123c; }
+  :global([data-theme="light"]) .ce-status-pill.is-valid { color: #047857; }
+
+  .ce-tip {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .ce-static-card h4,
+  .app-card h4 {
+    margin: 0 0 0.55rem;
+    font-size: 0.98rem;
+  }
+
+  /* PULGAR ESTIRADO */
+  .thumb-sim-card {
+    margin: 1.25rem 0;
+    border-color: rgba(251, 191, 36, 0.3);
+  }
+
+  .thumb-sim-card h3 {
+    margin: 0 0 0.6rem;
+  }
+
+  .thumb-calc-box {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+
+  @media (max-width: 640px) {
+    .thumb-calc-box {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .thumb-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    text-align: center;
+  }
+
+  .thumb-result span {
+    font-size: 0.72rem;
+    color: var(--muted, #94a3b8);
+  }
+
+  .thumb-result strong {
+    font-family: var(--mono, monospace);
+    font-size: 1.15rem;
+    color: #10b981;
+  }
+
+  /* QUIZ */
+  .quiz-q {
+    margin: 0 0 0.85rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quiz-opt:hover {
+    border-color: #c084fc;
+  }
+
+  .quiz-opt.is-right {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #34d399;
+  }
+
+  .quiz-opt.is-wrong {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: #f43f5e;
+    color: #fda4af;
+  }
+
+  .quiz-feedback {
+    margin: 0.75rem 0 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+</style>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO INTERACTIVO DE TALES & DEMOSTRACIÓN POR ÁREAS
+    // =========================================================================
+    const canvas = document.getElementById('tales-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const sliderK = document.getElementById('slider-tales-k') as HTMLInputElement | null;
+    const sliderSkew = document.getElementById('slider-tales-skew') as HTMLInputElement | null;
+    const kValLabel = document.getElementById('tales-k-val');
+    const skewValLabel = document.getElementById('tales-skew-val');
+    const roOA = document.getElementById('ro-oa');
+    const roOB = document.getElementById('ro-ob');
+    const roAB = document.getElementById('ro-ab');
+    const roArea = document.getElementById('ro-area');
+    const readoutRatios = document.getElementById('readout-ratios');
+    const readoutAreas = document.getElementById('readout-areas');
+    const roAreaPair = document.getElementById('ro-area-pair');
+    const labTabs = document.querySelectorAll<HTMLButtonElement>('[data-lab-mode]');
+
+    let labMode: 'ratios' | 'areas' = 'ratios';
+    let kScale = 0.60;
+    let skewX = -40;
+
+    function triArea(p1: { x: number; y: number }, p2: { x: number; y: number }, p3: { x: number; y: number }): number {
+      return Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
+    }
+
+    function dist(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
+      return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    }
+
+    function drawLab() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      // Puntos base O, A, B
+      const O = { x: w * 0.5 + skewX, y: 42 };
+      const baseW = Math.min(w * 0.68, 420);
+      const baseY = h - 78;
+      const A = { x: w * 0.5 - baseW * 0.5, y: baseY };
+      const B = { x: w * 0.5 + baseW * 0.5, y: baseY };
+
+      const Ap = { x: O.x + (A.x - O.x) * kScale, y: O.y + (A.y - O.y) * kScale };
+      const Bp = { x: O.x + (B.x - O.x) * kScale, y: O.y + (B.y - O.y) * kScale };
+
+      // Cuadrícula de fondo sutil
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.05)' : 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < w; gx += 32) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+      }
+      for (let gy = 0; gy < h; gy += 32) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+      }
+
+      if (labMode === 'areas') {
+        // Triángulo A'B'A (naranja) y A'B'B (verde) entre paralelas
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.24)';
+        ctx.beginPath();
+        ctx.moveTo(Ap.x, Ap.y); ctx.lineTo(Bp.x, Bp.y); ctx.lineTo(A.x, A.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.24)';
+        ctx.beginPath();
+        ctx.moveTo(Ap.x, Ap.y); ctx.lineTo(Bp.x, Bp.y); ctx.lineTo(B.x, B.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        // Altura h entre las paralelas
+        const hx = (Ap.x + Bp.x) / 2;
+        ctx.strokeStyle = isLight ? '#0f172a' : '#f8fafc';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(hx, Ap.y);
+        ctx.lineTo(hx, A.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText('h', hx + 6, (Ap.y + A.y) / 2 + 4);
+
+        const a1 = triArea(Ap, Bp, A);
+        const a2 = triArea(Ap, Bp, B);
+        if (roAreaPair) {
+          roAreaPair.textContent = `Área(△A′B′A) = ${Math.round(a1)} px²  =  Área(△A′B′B) = ${Math.round(a2)} px²`;
+        }
+      } else {
+        // Relleno triángulo grande y pequeño
+        ctx.fillStyle = 'rgba(192, 132, 252, 0.10)';
+        ctx.beginPath();
+        ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.18)';
+        ctx.beginPath();
+        ctx.moveTo(O.x, O.y); ctx.lineTo(Ap.x, Ap.y); ctx.lineTo(Bp.x, Bp.y);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Secantes prolongadas desde O
+      const ext = Math.max(1.1, kScale + 0.12);
+      const endA = { x: O.x + (A.x - O.x) * ext, y: O.y + (A.y - O.y) * ext };
+      const endB = { x: O.x + (B.x - O.x) * ext, y: O.y + (B.y - O.y) * ext };
+
+      ctx.strokeStyle = isLight ? '#334155' : '#cbd5e1';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(endA.x, endA.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(endB.x, endB.y); ctx.stroke();
+
+      // Base AB y paralela A'B'
+      ctx.strokeStyle = '#c084fc';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(Ap.x, Ap.y); ctx.lineTo(Bp.x, Bp.y); ctx.stroke();
+
+      // Puntos y etiquetas
+      const pts = [
+        { p: O, lbl: 'O', color: '#fbbf24', dx: 0, dy: -14 },
+        { p: A, lbl: 'A', color: '#c084fc', dx: -16, dy: 6 },
+        { p: B, lbl: 'B', color: '#c084fc', dx: 14, dy: 6 },
+        { p: Ap, lbl: 'A′', color: '#38bdf8', dx: -18, dy: 4 },
+        { p: Bp, lbl: 'B′', color: '#38bdf8', dx: 16, dy: 4 },
+      ];
+      ctx.font = 'bold 13px monospace';
+      ctx.textAlign = 'center';
+      pts.forEach(({ p, lbl, color, dx, dy }) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText(lbl, p.x + dx, p.y + dy);
+      });
+
+      // Actualizar métricas
+      const rOA = dist(O, Ap) / dist(O, A);
+      const rOB = dist(O, Bp) / dist(O, B);
+      const rAB = dist(Ap, Bp) / dist(A, B);
+      const rArea = triArea(O, Ap, Bp) / triArea(O, A, B);
+
+      if (roOA) roOA.textContent = rOA.toFixed(3);
+      if (roOB) roOB.textContent = rOB.toFixed(3);
+      if (roAB) roAB.textContent = rAB.toFixed(3);
+      if (roArea) roArea.textContent = rArea.toFixed(3);
+
+      ctx.restore();
+    }
+
+    labTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        labTabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        labMode = (tab.getAttribute('data-lab-mode') as 'ratios' | 'areas') || 'ratios';
+        if (readoutRatios) readoutRatios.hidden = labMode === 'areas';
+        if (readoutAreas) readoutAreas.hidden = labMode === 'ratios';
+        drawLab();
+      });
+    });
+
+    sliderK?.addEventListener('input', (e) => {
+      kScale = parseFloat((e.target as HTMLInputElement).value);
+      if (kValLabel) kValLabel.textContent = kScale.toFixed(2);
+      drawLab();
+    });
+
+    sliderSkew?.addEventListener('input', (e) => {
+      skewX = parseFloat((e.target as HTMLInputElement).value);
+      if (skewValLabel) skewValLabel.textContent = `${Math.round((skewX / 110) * 35)}°`;
+      drawLab();
+    });
+
+    window.addEventListener('resize', drawLab);
+    new MutationObserver(drawLab).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    drawLab();
+
+    // =========================================================================
+    // 2. CONTRAEJEMPLO INTERACTIVO: RECTA NO PARALELA
+    // =========================================================================
+    const sliderTilt = document.getElementById('slider-ce-tilt') as HTMLInputElement | null;
+    const ceTiltVal = document.getElementById('ce-tilt-val');
+    const ceCutLine = document.getElementById('ce-cut-line');
+    const ceDotA = document.getElementById('ce-dot-a');
+    const ceDotB = document.getElementById('ce-dot-b');
+    const ceLblA = document.getElementById('ce-lbl-a');
+    const ceLblB = document.getElementById('ce-lbl-b');
+    const ceRatioL = document.getElementById('ce-ratio-l');
+    const ceRatioR = document.getElementById('ce-ratio-r');
+    const ceStatusPill = document.getElementById('ce-status-pill');
+
+    function updateCounterexample(tiltDeg: number) {
+      if (ceTiltVal) ceTiltVal.textContent = `${tiltDeg > 0 ? '+' : ''}${tiltDeg}°`;
+
+      // Base: O=(150,25), A=(40,170), B=(280,170), corte medio en t=0.50
+      const tL = Math.max(0.2, Math.min(0.85, 0.5 - tiltDeg * 0.01));
+      const tR = Math.max(0.2, Math.min(0.85, 0.5 + tiltDeg * 0.01));
+
+      const ax = 150 + (40 - 150) * tL;
+      const ay = 25 + (170 - 25) * tL;
+      const bx = 150 + (280 - 150) * tR;
+      const by = 25 + (170 - 25) * tR;
+
+      const isParallel = tiltDeg === 0;
+      const strokeColor = isParallel ? '#10b981' : '#f43f5e';
+
+      ceCutLine?.setAttribute('x1', ax.toFixed(1));
+      ceCutLine?.setAttribute('y1', ay.toFixed(1));
+      ceCutLine?.setAttribute('x2', bx.toFixed(1));
+      ceCutLine?.setAttribute('y2', by.toFixed(1));
+      ceCutLine?.setAttribute('stroke', strokeColor);
+
+      ceDotA?.setAttribute('cx', ax.toFixed(1));
+      ceDotA?.setAttribute('cy', ay.toFixed(1));
+      ceDotA?.setAttribute('fill', strokeColor);
+      ceLblA?.setAttribute('x', (ax - 12).toFixed(1));
+      ceLblA?.setAttribute('y', (ay + 4).toFixed(1));
+
+      ceDotB?.setAttribute('cx', bx.toFixed(1));
+      ceDotB?.setAttribute('cy', by.toFixed(1));
+      ceDotB?.setAttribute('fill', strokeColor);
+      ceLblB?.setAttribute('x', (bx + 12).toFixed(1));
+      ceLblB?.setAttribute('y', (by + 4).toFixed(1));
+
+      if (ceRatioL) ceRatioL.textContent = tL.toFixed(2);
+      if (ceRatioR) ceRatioR.textContent = tR.toFixed(2);
+      if (ceStatusPill) {
+        if (isParallel) {
+          ceStatusPill.className = 'ce-status-pill is-valid';
+          ceStatusPill.textContent = `A′B′ ∥ AB — ¡Proporcionalidad exacta! (${tL.toFixed(2)} = ${tR.toFixed(2)})`;
+        } else {
+          ceStatusPill.className = 'ce-status-pill is-broken';
+          ceStatusPill.textContent = `A′B′ ∦ AB — ¡Proporcionalidad rota! (${tL.toFixed(2)} ≠ ${tR.toFixed(2)})`;
+        }
+      }
+    }
+
+    sliderTilt?.addEventListener('input', (e) => {
+      updateCounterexample(parseInt((e.target as HTMLInputElement).value, 10));
+    });
+    updateCounterexample(18);
+
+    // =========================================================================
+    // 3. CALCULADORA DE PARALAJE DEL PULGAR ESTIRADO
+    // =========================================================================
+    const sliderThumb = document.getElementById('slider-thumb-w') as HTMLInputElement | null;
+    const thumbWVal = document.getElementById('thumb-w-val');
+    const thumbDVal = document.getElementById('thumb-d-val');
+
+    sliderThumb?.addEventListener('input', (e) => {
+      const wVal = parseInt((e.target as HTMLInputElement).value, 10);
+      if (thumbWVal) thumbWVal.textContent = `${wVal} m`;
+      if (thumbDVal) thumbDVal.textContent = `${wVal * 10} metros`;
+    });
+
+    // =========================================================================
+    // 4. QUIZ DE COMPROBACIÓN PRÁCTICA
+    // =========================================================================
+    const feedbackMap: Record<string, { ok: string; ko: string }> = {
+      q1: {
+        ok: 'Correcto: H / 24 = 1,8 / 1,2 = 1,5  ⇒  H = 24 · 1,5 = 36 metros.',
+        ko: 'Revisa la proporción: H / 24 = 1,8 / 1,2. Despejando, H = 24 · (1,8 / 1,2) = 36 m.',
+      },
+      q2: {
+        ok: 'Correcto: Si los lados se multiplican por k = 3, el área se multiplica por k² = 9  ⇒  10 · 9 = 90 cm².',
+        ko: 'Recuerda la ley cuadrática de escala: las longitudes escalan por k, pero las áreas escalan por k² = 3² = 9.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && feedbackMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? feedbackMap[qId].ok : feedbackMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

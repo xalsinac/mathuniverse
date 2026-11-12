@@ -1,0 +1,1024 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-seno-coseno')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-00');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'geo-cauchy-schwarz');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL SALTO MÁS ALLÁ DE LOS 90° -->
+  <section class="lesson-section" id="salto-oblicuangulos">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. El Salto Más Allá de los 90°: Triángulos Oblicuángulos</h2>
+
+    <p class="lead-paragraph">
+      El Teorema de Pitágoras (<code class="inline-code">a² + b² = c²</code>) y las razones trigonométricas básicas (<code class="inline-code">sen, cos, tg</code>) tienen una limitación estricta: <strong>solo funcionan cuando hay un ángulo recto de 90°</strong>. Sin embargo, en topografía, astronomía, navegación o robótica casi ningún triángulo tiene un ángulo recto.
+    </p>
+
+    <p>
+      ¿Cómo rescatar toda esa maquinaria? Con una idea brillante: <strong>trazar una altura interior o exterior</strong> para dividir cualquier triángulo en dos triángulos rectángulos pegados, o <strong>inscribirlo en su circunferencia circunscrita</strong>. De ahí nacen los dos pilares de la trigonometría general: el <strong>Teorema del Coseno</strong> y el <strong>Teorema del Seno</strong>.
+    </p>
+
+    <div class="tri-compare-grid">
+      <div class="tri-card">
+        <div class="tri-badge">ÁNGULO RECTO (γ = 90°)</div>
+        <svg viewBox="0 0 240 140" class="tri-svg" aria-label="Triángulo rectángulo clásico">
+          <polygon points="45,115 190,115 45,30" fill="rgba(16, 185, 129, 0.14)" stroke="#10b981" stroke-width="2.2" />
+          <rect x="45" y="102" width="13" height="13" fill="none" stroke="#10b981" stroke-width="1.8" />
+          <text x="115" y="130" text-anchor="middle" class="svg-lbl green">a</text>
+          <text x="33" y="75" text-anchor="end" class="svg-lbl green">b</text>
+          <text x="128" y="65" class="svg-lbl green">c</text>
+          <text x="120" y="18" text-anchor="middle" class="svg-note">c² = a² + b² (cos 90° = 0)</text>
+        </svg>
+      </div>
+
+      <div class="tri-card">
+        <div class="tri-badge cyan">ACUTÁNGULO (γ &lt; 90°)</div>
+        <svg viewBox="0 0 240 140" class="tri-svg" aria-label="Triángulo acutángulo con altura interior">
+          <polygon points="40,115 200,115 95,35" fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="2.2" />
+          <line x1="95" y1="35" x2="95" y2="115" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 3" />
+          <text x="103" y="80" class="svg-lbl gold">h</text>
+          <text x="67" y="130" text-anchor="middle" class="svg-mini-lbl">b·cos γ</text>
+          <text x="150" y="130" text-anchor="middle" class="svg-mini-lbl">a − b·cos γ</text>
+          <text x="120" y="18" text-anchor="middle" class="svg-note">c² &lt; a² + b² (se acorta)</text>
+        </svg>
+      </div>
+
+      <div class="tri-card">
+        <div class="tri-badge purple">OBTUSÁNGULO (γ &gt; 90°)</div>
+        <svg viewBox="0 0 240 140" class="tri-svg" aria-label="Triángulo obtusángulo con altura exterior">
+          <line x1="35" y1="115" x2="95" y2="115" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 3" />
+          <polygon points="95,115 205,115 45,35" fill="rgba(192, 132, 252, 0.14)" stroke="#c084fc" stroke-width="2.2" />
+          <line x1="45" y1="35" x2="45" y2="115" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 3" />
+          <text x="35" y="80" text-anchor="end" class="svg-lbl gold">h</text>
+          <text x="150" y="130" text-anchor="middle" class="svg-lbl purple">a</text>
+          <text x="120" y="18" text-anchor="middle" class="svg-note">c² &gt; a² + b² (cos γ &lt; 0)</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: TEOREMA DEL COSENO -->
+  <section class="lesson-section" id="teorema-coseno">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Enunciado y Deducción del Teorema del Coseno</h2>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">TEOREMA DEL COSENO (PITÁGORAS GENERALIZADO)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>
+        En todo triángulo de lados <code class="inline-code">a, b, c</code> y ángulos opuestos respectivos <code class="inline-code">α, β, γ</code>, el cuadrado de cualquier lado es igual a la suma de los cuadrados de los otros dos menos el doble producto de ambos por el coseno del ángulo que forman:
+      </p>
+      <div class="formula-display-banner">
+        <div class="cos-eq-list">
+          <div><span class="eq-hi">c²</span> = a² + b² − 2·a·b·cos(γ)</div>
+          <div class="eq-sub">a² = b² + c² − 2·b·c·cos(α) &nbsp;|&nbsp; b² = a² + c² − 2·a·c·cos(β)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proof-box">
+      <div class="proof-header">DEMOSTRACIÓN PASO A PASO MEDIANTE ALTURA Y PITÁGORAS</div>
+      <ol class="proof-steps">
+        <li>
+          <strong>Proyección sobre la base <code class="inline-code">a</code>:</strong> Trazamos la altura <code class="inline-code">h</code> desde el vértice <code class="inline-code">A</code> perpendicular a la recta que contiene al lado <code class="inline-code">a</code> (de longitud <code class="inline-code">CB</code>). Llamamos <code class="inline-code">H</code> al pie de la altura. En el triángulo rectángulo izquierdo <code class="inline-code">△CHA</code>:
+          <div class="proof-eq">h = b · sen(γ) &nbsp;&nbsp;y&nbsp;&nbsp; x = CH = b · cos(γ)</div>
+        </li>
+        <li>
+          <strong>Longitud de la base restante:</strong> El segmento restante <code class="inline-code">HB</code> del triángulo rectángulo derecho <code class="inline-code">△HBA</code> mide exactamente <code class="inline-code">a − b·cos(γ)</code> (esta expresión sigue siendo válida incluso si <code class="inline-code">γ &gt; 90°</code>, porque entonces <code class="inline-code">cos(γ) &lt; 0</code> y la resta suma automáticamente el tramo exterior).
+        </li>
+        <li>
+          <strong>Aplicamos Pitágoras al triángulo rectángulo derecho <code class="inline-code">△HBA</code>:</strong>
+          <div class="proof-eq">c² = h² + (a − b·cos γ)² = (b·sen γ)² + a² − 2ab·cos γ + (b·cos γ)²</div>
+        </li>
+        <li>
+          <strong>Identidad fundamental <code class="inline-code">sen²γ + cos²γ = 1</code>:</strong> Agrupamos los términos con <code class="inline-code">b²</code>:
+          <div class="proof-eq">c² = a² + b²·(sen²γ + cos²γ) − 2ab·cos γ = a² + b² − 2ab·cos γ &nbsp;∎</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: TEOREMA DEL SENO Y EL SECRETO DEL 2R -->
+  <section class="lesson-section" id="teorema-seno">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Enunciado y Deducción del Teorema del Seno (y el Diámetro 2R)</h2>
+
+    <div class="theorem-box-highlight is-cyan">
+      <div class="thm-tag cyan">TEOREMA DEL SENO (FORMA EXTENDIDA)</div>
+      <h3>Enunciado Canónico</h3>
+      <p>
+        En todo triángulo, la razón entre cada lado y el seno de su ángulo opuesto es constante e igual al <strong>diámetro (<code class="inline-code">2R</code>) de su circunferencia circunscrita</strong>:
+      </p>
+      <div class="formula-display-banner">
+        <div class="frac-eq">
+          <span class="frac"><span class="num">a</span><span class="den">sen(α)</span></span>
+          <span class="eq-op">=</span>
+          <span class="frac"><span class="num">b</span><span class="den">sen(β)</span></span>
+          <span class="eq-op">=</span>
+          <span class="frac"><span class="num">c</span><span class="den">sen(γ)</span></span>
+          <span class="eq-op">=</span>
+          <span class="k-badge">2R</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sine-proofs-grid">
+      <div class="proof-card-mini">
+        <div class="proof-mini-tag">DEMOSTRACIÓN 1 · POR ALTURAS</div>
+        <h4>Igualando la altura común <code class="inline-code">h<sub>c</sub></code></h4>
+        <p>
+          Al trazar la altura <code class="inline-code">h<sub>c</sub></code> desde <code class="inline-code">C</code> sobre el lado <code class="inline-code">c</code>, obtenemos dos triángulos rectángulos. En el izquierdo <code class="inline-code">h<sub>c</sub> = b·sen(α)</code> y en el derecho <code class="inline-code">h<sub>c</sub> = a·sen(β)</code>.
+        </p>
+        <div class="mini-eq">b·sen(α) = a·sen(β)  ⇒  a / sen(α) = b / sen(β)</div>
+        <p>Repitiendo con la altura sobre <code class="inline-code">a</code> se completa la triple igualdad.</p>
+      </div>
+
+      <div class="proof-card-mini">
+        <div class="proof-mini-tag">DEMOSTRACIÓN 2 · EL SECRETO DEL 2R</div>
+        <h4>Por qué la constante vale exactamente <code class="inline-code">2R</code></h4>
+        <div class="circum-svg-wrap">
+          <svg viewBox="0 0 240 165" class="circum-svg" aria-label="Demostración del 2R con circunferencia circunscrita y ángulo inscrito">
+            <circle cx="120" cy="84" r="64" fill="none" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="4 3" opacity="0.6" />
+            <!-- Triángulo original ABC -->
+            <polygon points="62,110 178,110 100,23" fill="rgba(192, 132, 252, 0.12)" stroke="#c084fc" stroke-width="2" />
+            <!-- Diámetro desde B pasando por centro O(120,84) hasta A' -->
+            <line x1="178" y1="110" x2="62" y2="58" stroke="#fbbf24" stroke-width="2" />
+            <!-- Lado A'C -->
+            <line x1="62" y1="58" x2="62" y2="110" stroke="#10b981" stroke-width="2" stroke-dasharray="3 2" />
+            <rect x="62" y="100" width="9" height="10" fill="none" stroke="#10b981" stroke-width="1.5" />
+
+            <circle cx="120" cy="84" r="3" fill="#fbbf24" />
+            <text x="128" y="81" class="svg-lbl gold">O</text>
+            <text x="96" y="16" class="svg-lbl purple">A</text>
+            <text x="50" y="55" class="svg-lbl gold">A′</text>
+            <text x="50" y="120" class="svg-lbl purple">C</text>
+            <text x="186" y="120" class="svg-lbl purple">B</text>
+            <text x="120" y="125" text-anchor="middle" class="svg-lbl purple">a</text>
+            <text x="125" y="72" class="svg-lbl gold">2R</text>
+          </svg>
+        </div>
+        <p>
+          Desliza el vértice <code class="inline-code">A</code> por la circunferencia hasta <code class="inline-code">A′</code> de modo que <code class="inline-code">BA′ = 2R</code> sea un diámetro. Por el <strong>Teorema del ángulo inscrito</strong>, <code class="inline-code">∠A′ = ∠A = α</code> (abarcan el mismo arco <code class="inline-code">BC</code>), y <code class="inline-code">∠A′CB = 90°</code>. Luego <code class="inline-code">sen(α) = a / 2R</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO -->
+  <section class="lesson-section" id="laboratorio-trigonometria">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: Coseno vs. Seno en Tiempo Real</h2>
+
+    <p>
+      Modifica los lados <code class="inline-code">a</code>, <code class="inline-code">b</code> y el ángulo comprendido <code class="inline-code">γ</code>. Observa cómo la altura <code class="inline-code">h</code> pasa de ser interior a exterior cuando superas los <code class="inline-code">90°</code>, y cambia al modo <strong>Circunferencia 2R</strong> para ver cómo la constante del Teorema del Seno coincide siempre con el diámetro circunscrito.
+    </p>
+
+    <div class="trig-lab-shell">
+      <div class="lab-toolbar">
+        <div class="lab-mode-tabs" role="tablist">
+          <button type="button" class="lab-tab is-active" data-trig-mode="cos" role="tab" aria-selected="true">
+            Modo Teorema del Coseno
+          </button>
+          <button type="button" class="lab-tab" data-trig-mode="sin" role="tab" aria-selected="false">
+            Modo Teorema del Seno &amp; 2R
+          </button>
+          <button type="button" class="lab-quick-90" id="btn-set-90">
+            Clavar γ = 90° (Pitágoras)
+          </button>
+        </div>
+
+        <div class="lab-sliders">
+          <label class="lab-slider-item">
+            <span>Lado <code class="inline-code">a</code>: <strong id="lbl-a">6.0</strong></span>
+            <input type="range" id="sl-a" min="3.0" max="9.0" step="0.2" value="6.0" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Lado <code class="inline-code">b</code>: <strong id="lbl-b">5.0</strong></span>
+            <input type="range" id="sl-b" min="3.0" max="8.0" step="0.2" value="5.0" />
+          </label>
+          <label class="lab-slider-item">
+            <span>Ángulo <code class="inline-code">γ</code>: <strong id="lbl-gamma">62°</strong></span>
+            <input type="range" id="sl-gamma" min="20" max="155" step="1" value="62" />
+          </label>
+        </div>
+      </div>
+
+      <div class="lab-canvas-wrap">
+        <canvas id="trig-lab-canvas" aria-label="Laboratorio interactivo de Teorema del Seno y del Coseno"></canvas>
+      </div>
+
+      <div class="lab-readout-grid" id="trig-readout-cos">
+        <div class="readout-pill">
+          <span class="ro-label">a² + b²</span>
+          <span class="ro-val purple" id="ro-ab2">61.00</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Término corrector (−2ab cos γ)</span>
+          <span class="ro-val gold" id="ro-corr">−28.17</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">c² = a² + b² − 2ab cos γ</span>
+          <span class="ro-val cyan" id="ro-c2">32.83</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Lado opuesto c</span>
+          <span class="ro-val green" id="ro-c">5.73</span>
+        </div>
+      </div>
+
+      <div class="lab-readout-grid" id="trig-readout-sin" hidden>
+        <div class="readout-pill">
+          <span class="ro-label">a / sen(α)</span>
+          <span class="ro-val cyan" id="ro-sa">6.49</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">b / sen(β)</span>
+          <span class="ro-val cyan" id="ro-sb">6.49</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">c / sen(γ)</span>
+          <span class="ro-val cyan" id="ro-sc">6.49</span>
+        </div>
+        <div class="readout-pill">
+          <span class="ro-label">Diámetro circunscrito 2R</span>
+          <span class="ro-val gold" id="ro-2r">6.49</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: EL CASO AMBIGUO (LLA) Y CONTRAEJEMPLOS -->
+  <section class="lesson-section" id="caso-ambiguo">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. El Caso Ambiguo (LLA) y Contraejemplos</h2>
+
+    <p>
+      Un error muy frecuente al usar el Teorema del Seno es olvidar que en <code class="inline-code">[0°, 180°]</code> existen <strong>dos ángulos distintos con el mismo seno</strong>: <code class="inline-code">sen(β) = sen(180° − β)</code>. Si conoces dos lados (<code class="inline-code">a, b</code>) y un ángulo <em>no comprendido</em> (<code class="inline-code">α</code>), pueden aparecer <strong>0, 1 o 2 triángulos válidos</strong>.
+    </p>
+
+    <div class="ambiguous-lab-card">
+      <div class="ambig-badge">EXPLORADOR DEL CASO AMBIGUO (α = 32°, b = 6.0)</div>
+      <div class="ambig-split">
+        <div class="ambig-canvas-wrap">
+          <canvas id="ambig-canvas" aria-label="Visualizador interactivo del caso ambiguo LLA"></canvas>
+        </div>
+        <div class="ambig-controls">
+          <label class="lab-slider-item">
+            <span>Longitud del lado móvil <code class="inline-code">a</code>: <strong id="ambig-a-val">4.2</strong></span>
+            <input type="range" id="sl-ambig-a" min="1.5" max="8.0" step="0.1" value="4.2" />
+          </label>
+          <div class="ambig-ref">
+            <span>Altura crítica <code class="inline-code">h = b·sen(32°) = 3.18</code></span>
+            <span>Lado fijo <code class="inline-code">b = 6.00</code></span>
+          </div>
+          <div class="ambig-status is-two" id="ambig-status">
+            h &lt; a &lt; b  ⇒  ¡2 TRIÁNGULOS POSIBLES! (β₁ agudo y β₂ = 180° − β₁ obtuso)
+          </div>
+          <p class="ambig-note">
+            Mueve <code class="inline-code">a</code> por debajo de <code class="inline-code">3.18</code> (0 soluciones: el compás no llega a la base) y por encima de <code class="inline-code">6.0</code> (1 única solución válida).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ce-warning-box">
+      <div class="ce-w-tag">CONTRAEJEMPLO ALGEBRAICO · DESIGUALDAD TRIANGULAR</div>
+      <h4>¿Qué ocurre si aplicas el Teorema del Coseno a lados imposibles?</h4>
+      <p>
+        Supón que alguien intenta calcular el ángulo <code class="inline-code">γ</code> de un supuesto triángulo de lados <code class="inline-code">a = 2</code>, <code class="inline-code">b = 3</code> y <code class="inline-code">c = 7</code>. Al despejar:
+      </p>
+      <div class="mini-eq red">cos(γ) = (2² + 3² − 7²) / (2·2·3) = (4 + 9 − 49) / 12 = −36 / 12 = −3</div>
+      <p>
+        Como <code class="inline-code">|cos(γ)| ≤ 1</code> siempre, obtener <code class="inline-code">cos(γ) = −3</code> es la alarma matemática automática de que el triángulo viola la <strong>desigualdad triangular</strong> (<code class="inline-code">2 + 3 &lt; 7</code>) y no puede cerrarse.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: APLICACIONES Y RETO FINAL -->
+  <section class="lesson-section" id="aplicaciones-reto">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Aplicaciones Reales y Comprobación Práctica</h2>
+
+    <div class="apps-grid">
+      <article class="app-card">
+        <div class="app-tag">TOPOGRAFÍA · TRIANGULACIÓN</div>
+        <h4>Medir Montañas y El Meridiano Terrestre</h4>
+        <p>
+          Desde dos estaciones en tierra separadas una distancia base conocida <code class="inline-code">d</code>, se miden con teodolito dos ángulos hacia una cumbre inaccesible. El <strong>Teorema del Seno</strong> calcula al instante la distancia oblicua sin cruzar ríos ni precipicios. Así se midió el Everest en 1852.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">NAVEGACIÓN Y AERONÁUTICA</div>
+        <h4>Deriva por Viento Cruzado</h4>
+        <p>
+          Si un avión apunta con velocidad <code class="inline-code">v<sub>a</sub></code> y encuentra viento lateral <code class="inline-code">v<sub>w</sub></code> formando un ángulo <code class="inline-code">θ</code>, su velocidad real sobre el suelo es la resultante de sumar vectores mediante el <strong>Teorema del Coseno</strong>.
+        </p>
+      </article>
+
+      <article class="app-card">
+        <div class="app-tag">ROBÓTICA · CINEMÁTICA INVERSA</div>
+        <h4>Cómo Dobla el Codo un Brazo Robótico</h4>
+        <p>
+          Un brazo articulado de longitudes <code class="inline-code">L₁, L₂</code> necesita alcanzar un objeto en <code class="inline-code">(x, y)</code> a distancia <code class="inline-code">r = √(x²+y²)</code>. El ángulo exacto del codo se calcula directamente despejando <code class="inline-code">cos(γ)</code> en el Teorema del Coseno.
+        </p>
+      </article>
+    </div>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 1 (Coseno):</strong> Dos barcos salen del mismo puerto con rumbos que forman <code class="inline-code">60°</code>. Uno recorre <code class="inline-code">5 km</code> y el otro <code class="inline-code">8 km</code>. ¿Qué distancia los separa?
+        </p>
+        <div class="quiz-options" data-quiz="tc1">
+          <button type="button" class="quiz-opt" data-correct="true">7 km</button>
+          <button type="button" class="quiz-opt" data-correct="false">9,4 km</button>
+          <button type="button" class="quiz-opt" data-correct="false">√89 km</button>
+        </div>
+        <p class="quiz-feedback" id="fb-tc1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Reto 2 (Seno y 2R):</strong> En un triángulo, el lado <code class="inline-code">a = 10 cm</code> está opuesto al ángulo <code class="inline-code">α = 30°</code>. ¿Cuánto mide el radio <code class="inline-code">R</code> de su circunferencia circunscrita?
+        </p>
+        <div class="quiz-options" data-quiz="tc2">
+          <button type="button" class="quiz-opt" data-correct="false">5 cm</button>
+          <button type="button" class="quiz-opt" data-correct="true">10 cm</button>
+          <button type="button" class="quiz-opt" data-correct="false">20 cm</button>
+        </div>
+        <p class="quiz-feedback" id="fb-tc2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .tri-compare-grid,
+  .sine-proofs-grid,
+  .apps-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+    margin: 1.35rem 0;
+  }
+
+  .tri-card,
+  .proof-card-mini,
+  .trig-lab-shell,
+  .ambiguous-lab-card,
+  .ce-warning-box,
+  .app-card,
+  .quiz-card {
+    background: var(--bg-raised, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .tri-badge,
+  .thm-tag,
+  .proof-header,
+  .proof-mini-tag,
+  .ambig-badge,
+  .ce-w-tag,
+  .app-tag {
+    display: inline-block;
+    font-family: var(--mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.65rem;
+  }
+
+  .tri-badge.cyan, .thm-tag.cyan, .app-tag { color: #38bdf8; background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); }
+  .tri-badge.purple, .thm-tag { color: #c084fc; background: rgba(192, 132, 252, 0.12); border-color: rgba(192, 132, 252, 0.3); }
+  .ambig-badge { color: #fbbf24; background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.3); }
+  .ce-w-tag { color: #f43f5e; background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); }
+
+  .tri-svg,
+  .circum-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    color: var(--ink-strong, #f8fafc);
+  }
+
+  .svg-lbl {
+    font-family: var(--mono, monospace);
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+  .svg-lbl.green { fill: #10b981; }
+  .svg-lbl.gold { fill: #fbbf24; }
+  .svg-lbl.purple { fill: #c084fc; }
+  .svg-note, .svg-mini-lbl {
+    font-family: var(--mono, monospace);
+    font-size: 10px;
+    fill: var(--muted, #94a3b8);
+  }
+
+  .theorem-box-highlight {
+    background: rgba(192, 132, 252, 0.07);
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    border-radius: 14px;
+    padding: 1.4rem;
+    margin: 1.35rem 0;
+  }
+
+  .theorem-box-highlight.is-cyan {
+    background: rgba(56, 189, 248, 0.07);
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+
+  .theorem-box-highlight h3 { margin: 0 0 0.6rem; }
+
+  .formula-display-banner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0.9rem;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .formula-display-banner {
+    background: #f8fafc;
+    border-color: rgba(15, 23, 42, 0.1);
+  }
+
+  .cos-eq-list {
+    text-align: center;
+    font-family: var(--mono, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .eq-hi { color: #38bdf8; }
+  .eq-sub { font-size: 0.8rem; color: var(--muted, #94a3b8); font-weight: 500; }
+
+  .frac-eq {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--mono, monospace);
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  .frac .num { border-bottom: 2px solid currentColor; padding: 0 0.35rem 0.12rem; color: #38bdf8; }
+  .frac .den { padding: 0.12rem 0.35rem 0; color: #c084fc; }
+  .eq-op { color: var(--muted, #94a3b8); }
+  .k-badge { padding: 0.2rem 0.6rem; border-radius: 6px; background: rgba(251, 191, 36, 0.18); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+
+  .proof-box {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.3rem;
+    margin: 1.35rem 0;
+  }
+  .proof-header { color: #10b981; background: rgba(16, 185, 129, 0.14); border-color: rgba(16, 185, 129, 0.35); }
+  .proof-steps { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .proof-steps li { font-size: 0.91rem; line-height: 1.55; }
+  .proof-eq, .mini-eq {
+    font-family: var(--mono, monospace);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #10b981;
+    margin-top: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.08);
+    display: inline-block;
+  }
+  .mini-eq.red { color: #fda4af; background: rgba(244, 63, 94, 0.12); margin: 0.45rem 0; }
+  :global([data-theme="light"]) .mini-eq.red { color: #be123c; }
+
+  .proof-card-mini h4, .app-card h4, .ce-warning-box h4 { margin: 0 0 0.5rem; font-size: 0.98rem; }
+  .proof-card-mini p, .app-card p, .ce-warning-box p { font-size: 0.87rem; line-height: 1.55; margin: 0 0 0.55rem; color: var(--ink-soft, #cbd5e1); }
+
+  /* LAB */
+  .trig-lab-shell { margin: 1.35rem 0; display: flex; flex-direction: column; gap: 1rem; }
+  .lab-toolbar { display: flex; flex-direction: column; gap: 0.85rem; }
+  .lab-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lab-tab, .lab-quick-90 {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+    color: var(--ink-soft, #cbd5e1);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono, monospace);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lab-tab.is-active { background: rgba(192, 132, 252, 0.2); border-color: #c084fc; color: #e9d5ff; }
+  :global([data-theme="light"]) .lab-tab.is-active { color: #6b21a8; }
+  .lab-quick-90 { color: #10b981; border-color: rgba(16, 185, 129, 0.35); margin-left: auto; }
+  .lab-quick-90:hover { background: rgba(16, 185, 129, 0.15); }
+
+  .lab-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.9rem; }
+  .lab-slider-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.84rem; }
+  .lab-slider-item input[type="range"] { width: 100%; accent-color: #c084fc; cursor: pointer; }
+
+  .lab-canvas-wrap {
+    width: 100%;
+    height: 340px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0b1020;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  }
+  :global([data-theme="light"]) .lab-canvas-wrap { background: #f8fafc; }
+  #trig-lab-canvas, #ambig-canvas { width: 100%; height: 100%; display: block; }
+
+  .lab-readout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 0.6rem; }
+  .readout-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+  .ro-label { font-family: var(--mono, monospace); font-size: 0.68rem; color: var(--muted, #94a3b8); }
+  .ro-val { font-family: var(--mono, monospace); font-size: 1.02rem; font-weight: 800; }
+  .ro-val.cyan { color: #38bdf8; }
+  .ro-val.purple { color: #c084fc; }
+  .ro-val.gold { color: #fbbf24; }
+  .ro-val.green { color: #10b981; }
+
+  /* CASO AMBIGUO */
+  .ambiguous-lab-card { margin: 1.25rem 0; border-color: rgba(251, 191, 36, 0.3); }
+  .ambig-split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1.15rem; align-items: center; }
+  @media (max-width: 720px) { .ambig-split { grid-template-columns: 1fr; } }
+  .ambig-canvas-wrap { width: 100%; height: 220px; border-radius: 8px; overflow: hidden; background: #0b1020; border: 1px solid var(--line, rgba(255, 255, 255, 0.08)); }
+  :global([data-theme="light"]) .ambig-canvas-wrap { background: #f8fafc; }
+  .ambig-controls { display: flex; flex-direction: column; gap: 0.75rem; }
+  .ambig-ref { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted, #94a3b8); font-family: var(--mono, monospace); flex-wrap: wrap; gap: 0.4rem; }
+  .ambig-status { padding: 0.55rem 0.75rem; border-radius: 8px; font-family: var(--mono, monospace); font-size: 0.78rem; font-weight: 700; text-align: center; }
+  .ambig-status.is-zero { background: rgba(244, 63, 94, 0.16); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.4); }
+  .ambig-status.is-two { background: rgba(251, 191, 36, 0.16); color: #fde68a; border: 1px solid rgba(251, 191, 36, 0.4); }
+  .ambig-status.is-one { background: rgba(16, 185, 129, 0.16); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+  :global([data-theme="light"]) .ambig-status.is-zero { color: #be123c; }
+  :global([data-theme="light"]) .ambig-status.is-two { color: #b45309; }
+  :global([data-theme="light"]) .ambig-status.is-one { color: #047857; }
+  .ambig-note { margin: 0; font-size: 0.8rem; color: var(--muted, #94a3b8); line-height: 1.45; }
+
+  .ce-warning-box { border-color: rgba(244, 63, 94, 0.3); }
+
+  /* QUIZ */
+  .quiz-q { margin: 0 0 0.8rem; font-size: 0.9rem; line-height: 1.5; }
+  .quiz-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .quiz-opt {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.15));
+    color: var(--ink-strong, #f8fafc);
+    padding: 0.45rem 0.9rem;
+    border-radius: 7px;
+    font-family: var(--mono, monospace);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af; }
+  .quiz-feedback { margin: 0.7rem 0 0; font-size: 0.83rem; line-height: 1.45; }
+</style>
+
+<script>
+  (() => {
+    // =========================================================================
+    // 1. LABORATORIO UNIFICADO SENO & COSENO
+    // =========================================================================
+    const canvas = document.getElementById('trig-lab-canvas') as HTMLCanvasElement | null;
+    const ctx = canvas?.getContext('2d');
+    const slA = document.getElementById('sl-a') as HTMLInputElement | null;
+    const slB = document.getElementById('sl-b') as HTMLInputElement | null;
+    const slGamma = document.getElementById('sl-gamma') as HTMLInputElement | null;
+    const lblA = document.getElementById('lbl-a');
+    const lblB = document.getElementById('lbl-b');
+    const lblGamma = document.getElementById('lbl-gamma');
+    const btn90 = document.getElementById('btn-set-90');
+    const trigTabs = document.querySelectorAll<HTMLButtonElement>('[data-trig-mode]');
+
+    const roCos = document.getElementById('trig-readout-cos');
+    const roSin = document.getElementById('trig-readout-sin');
+    const roAB2 = document.getElementById('ro-ab2');
+    const roCorr = document.getElementById('ro-corr');
+    const roC2 = document.getElementById('ro-c2');
+    const roC = document.getElementById('ro-c');
+    const roSA = document.getElementById('ro-sa');
+    const roSB = document.getElementById('ro-sb');
+    const roSC = document.getElementById('ro-sc');
+    const ro2R = document.getElementById('ro-2r');
+
+    let trigMode: 'cos' | 'sin' = 'cos';
+    let a = 6.0;
+    let b = 5.0;
+    let gammaDeg = 62;
+
+    function drawTrigLab() {
+      if (!canvas || !ctx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const gamma = (gammaDeg * Math.PI) / 180;
+      const c2 = a * a + b * b - 2 * a * b * Math.cos(gamma);
+      const c = Math.sqrt(Math.max(0.001, c2));
+
+      // Coordenadas del triángulo en unidades matemáticas: C=(0,0), B=(a,0), A=(b cos γ, b sen γ)
+      const Cx = 0, Cy = 0;
+      const Bx = a, By = 0;
+      const Ax = b * Math.cos(gamma), Ay = b * Math.sin(gamma);
+
+      // Circuncentro y radio R para auto-encuadre
+      const D = 2 * (Ax * By - Bx * Ay); // = -2 * a * b * sin(gamma)
+      const a2 = Ax * Ax + Ay * Ay;
+      const b2 = Bx * Bx + By * By;
+      const ux = (a2 * By - b2 * Ay) / (D || 1);
+      const uy = (Ax * b2 - Bx * a2) / (D || 1);
+      const R = Math.hypot(ux, uy);
+
+      // Escala dinámica para que quepa en ambos modos
+      let minX = Math.min(0, Ax, Bx), maxX = Math.max(0, Ax, Bx);
+      let minY = Math.min(0, Ay, By), maxY = Math.max(0, Ay, By);
+      if (trigMode === 'sin') {
+        minX = Math.min(minX, ux - R);
+        maxX = Math.max(maxX, ux + R);
+        minY = Math.min(minY, uy - R);
+        maxY = Math.max(maxY, uy + R);
+      }
+      const spanX = Math.max(1, maxX - minX);
+      const spanY = Math.max(1, maxY - minY);
+      const pad = 42;
+      const pxScale = Math.min((w - pad * 2) / spanX, (h - pad * 2) / spanY);
+
+      const midX = (minX + maxX) / 2;
+      const midY = (minY + maxY) / 2;
+      const toScreen = (mx: number, my: number) => ({
+        x: w / 2 + (mx - midX) * pxScale,
+        y: h / 2 - (my - midY) * pxScale,
+      });
+
+      const sC = toScreen(Cx, Cy);
+      const sB = toScreen(Bx, By);
+      const sA = toScreen(Ax, Ay);
+      const sH = toScreen(Ax, 0);
+      const sO = toScreen(ux, uy);
+
+      // Circunferencia circunscrita en modo seno
+      if (trigMode === 'sin') {
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.arc(sO.x, sO.y, R * pxScale, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Radio R desde centro O hasta B
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(sO.x, sO.y);
+        ctx.lineTo(sB.x, sB.y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath(); ctx.arc(sO.x, sO.y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(`R = ${R.toFixed(2)}`, (sO.x + sB.x) / 2 + 6, (sO.y + sB.y) / 2 - 6);
+      } else {
+        // Proyección exterior si gamma > 90°
+        if (Ax < 0) {
+          ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.35)' : 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(sH.x, sH.y); ctx.lineTo(sC.x, sC.y); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        // Altura h
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(sA.x, sA.y); ctx.lineTo(sH.x, sH.y); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText('h', sA.x + 8, (sA.y + sH.y) / 2);
+      }
+
+      // Triángulo principal
+      ctx.fillStyle = gammaDeg === 90 ? 'rgba(16, 185, 129, 0.16)' : 'rgba(56, 189, 248, 0.14)';
+      ctx.beginPath();
+      ctx.moveTo(sC.x, sC.y); ctx.lineTo(sB.x, sB.y); ctx.lineTo(sA.x, sA.y);
+      ctx.closePath();
+      ctx.fill();
+
+      // Lados
+      ctx.lineWidth = 2.8;
+      ctx.strokeStyle = '#c084fc';
+      ctx.beginPath(); ctx.moveTo(sC.x, sC.y); ctx.lineTo(sB.x, sB.y); ctx.stroke(); // a
+      ctx.beginPath(); ctx.moveTo(sC.x, sC.y); ctx.lineTo(sA.x, sA.y); ctx.stroke(); // b
+
+      ctx.strokeStyle = gammaDeg === 90 ? '#10b981' : '#38bdf8';
+      ctx.beginPath(); ctx.moveTo(sB.x, sB.y); ctx.lineTo(sA.x, sA.y); ctx.stroke(); // c
+
+      // Etiquetas de vértices y lados
+      ctx.font = 'bold 13px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+      ctx.fillText(`C (${gammaDeg}°)`, sC.x - 4, sC.y + 18);
+      ctx.fillText('B', sB.x + 12, sB.y + 14);
+      ctx.fillText('A', sA.x, sA.y - 10);
+
+      ctx.fillStyle = '#c084fc';
+      ctx.fillText(`a=${a.toFixed(1)}`, (sC.x + sB.x) / 2, sC.y + 18);
+      ctx.fillText(`b=${b.toFixed(1)}`, (sC.x + sA.x) / 2 - 22, (sC.y + sA.y) / 2);
+      ctx.fillStyle = gammaDeg === 90 ? '#10b981' : '#38bdf8';
+      ctx.fillText(`c=${c.toFixed(2)}`, (sA.x + sB.x) / 2 + 24, (sA.y + sB.y) / 2);
+
+      // Actualizar paneles de lectura
+      const corr = -2 * a * b * Math.cos(gamma);
+      if (roAB2) roAB2.textContent = (a * a + b * b).toFixed(2);
+      if (roCorr) roCorr.textContent = `${corr >= 0 ? '+' : '−'}${Math.abs(corr).toFixed(2)}`;
+      if (roC2) roC2.textContent = c2.toFixed(2);
+      if (roC) roC.textContent = c.toFixed(2);
+
+      const ratio2R = c / Math.sin(gamma);
+      if (roSA) roSA.textContent = ratio2R.toFixed(2);
+      if (roSB) roSB.textContent = ratio2R.toFixed(2);
+      if (roSC) roSC.textContent = ratio2R.toFixed(2);
+      if (ro2R) ro2R.textContent = (2 * R).toFixed(2);
+
+      ctx.restore();
+    }
+
+    trigTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        trigTabs.forEach((t) => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        trigMode = (tab.getAttribute('data-trig-mode') as 'cos' | 'sin') || 'cos';
+        if (roCos) roCos.hidden = trigMode !== 'cos';
+        if (roSin) roSin.hidden = trigMode !== 'sin';
+        drawTrigLab();
+      });
+    });
+
+    slA?.addEventListener('input', (e) => {
+      a = parseFloat((e.target as HTMLInputElement).value);
+      if (lblA) lblA.textContent = a.toFixed(1);
+      drawTrigLab();
+    });
+    slB?.addEventListener('input', (e) => {
+      b = parseFloat((e.target as HTMLInputElement).value);
+      if (lblB) lblB.textContent = b.toFixed(1);
+      drawTrigLab();
+    });
+    slGamma?.addEventListener('input', (e) => {
+      gammaDeg = parseInt((e.target as HTMLInputElement).value, 10);
+      if (lblGamma) lblGamma.textContent = `${gammaDeg}°`;
+      drawTrigLab();
+    });
+    btn90?.addEventListener('click', () => {
+      gammaDeg = 90;
+      if (slGamma) slGamma.value = '90';
+      if (lblGamma) lblGamma.textContent = '90°';
+      drawTrigLab();
+    });
+
+    // =========================================================================
+    // 2. EXPLORADOR DEL CASO AMBIGUO (LLA)
+    // =========================================================================
+    const ambigCanvas = document.getElementById('ambig-canvas') as HTMLCanvasElement | null;
+    const ambigCtx = ambigCanvas?.getContext('2d');
+    const slAmbigA = document.getElementById('sl-ambig-a') as HTMLInputElement | null;
+    const ambigAVal = document.getElementById('ambig-a-val');
+    const ambigStatus = document.getElementById('ambig-status');
+
+    let ambigA = 4.2;
+    const ambigB = 6.0;
+    const ambigAlpha = (32 * Math.PI) / 180;
+
+    function drawAmbiguous() {
+      if (!ambigCanvas || !ambigCtx) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = ambigCanvas.clientWidth;
+      const h = ambigCanvas.clientHeight;
+      if (w === 0 || h === 0) return;
+
+      if (ambigCanvas.width !== Math.floor(w * dpr) || ambigCanvas.height !== Math.floor(h * dpr)) {
+        ambigCanvas.width = Math.floor(w * dpr);
+        ambigCanvas.height = Math.floor(h * dpr);
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ambigCtx.save();
+      ambigCtx.scale(dpr, dpr);
+      ambigCtx.clearRect(0, 0, w, h);
+
+      const sc = Math.min(w / 14.5, h / 5.5);
+      const origin = { x: 34, y: h - 38 };
+      const C = {
+        x: origin.x + ambigB * Math.cos(ambigAlpha) * sc,
+        y: origin.y - ambigB * Math.sin(ambigAlpha) * sc,
+      };
+      const H = { x: C.x, y: origin.y };
+      const hCrit = ambigB * Math.sin(ambigAlpha);
+
+      // Rayo base horizontal desde A
+      ambigCtx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.35)';
+      ambigCtx.lineWidth = 1.8;
+      ambigCtx.beginPath();
+      ambigCtx.moveTo(origin.x, origin.y);
+      ambigCtx.lineTo(w - 18, origin.y);
+      ambigCtx.stroke();
+
+      // Lado fijo b
+      ambigCtx.strokeStyle = '#38bdf8';
+      ambigCtx.lineWidth = 2.6;
+      ambigCtx.beginPath();
+      ambigCtx.moveTo(origin.x, origin.y);
+      ambigCtx.lineTo(C.x, C.y);
+      ambigCtx.stroke();
+
+      // Altura crítica h
+      ambigCtx.strokeStyle = '#94a3b8';
+      ambigCtx.lineWidth = 1.2;
+      ambigCtx.setLineDash([3, 3]);
+      ambigCtx.beginPath();
+      ambigCtx.moveTo(C.x, C.y);
+      ambigCtx.lineTo(H.x, H.y);
+      ambigCtx.stroke();
+      ambigCtx.setLineDash([]);
+
+      // Arco de compás de radio a centrado en C
+      const rPx = ambigA * sc;
+      ambigCtx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+      ambigCtx.lineWidth = 1.5;
+      ambigCtx.setLineDash([4, 4]);
+      ambigCtx.beginPath();
+      ambigCtx.arc(C.x, C.y, rPx, 0.1 * Math.PI, 0.9 * Math.PI);
+      ambigCtx.stroke();
+      ambigCtx.setLineDash([]);
+
+      // Intersecciones con la base (y = origin.y)
+      if (ambigA >= hCrit - 0.02) {
+        const dx = Math.sqrt(Math.max(0, ambigA * ambigA - hCrit * hCrit));
+        const x1 = C.x + dx * sc;
+        const x2 = C.x - dx * sc;
+
+        // Solución derecha siempre válida si x1 > origin.x
+        ambigCtx.strokeStyle = '#10b981';
+        ambigCtx.lineWidth = 2.4;
+        ambigCtx.beginPath(); ambigCtx.moveTo(C.x, C.y); ambigCtx.lineTo(x1, origin.y); ambigCtx.stroke();
+        ambigCtx.fillStyle = '#10b981';
+        ambigCtx.beginPath(); ambigCtx.arc(x1, origin.y, 4.5, 0, Math.PI * 2); ambigCtx.fill();
+
+        // Solución izquierda válida si x2 > origin.x (es decir a < b)
+        if (ambigA < ambigB - 0.05 && dx > 0.08) {
+          ambigCtx.strokeStyle = '#f43f5e';
+          ambigCtx.lineWidth = 2.4;
+          ambigCtx.beginPath(); ambigCtx.moveTo(C.x, C.y); ambigCtx.lineTo(x2, origin.y); ambigCtx.stroke();
+          ambigCtx.fillStyle = '#f43f5e';
+          ambigCtx.beginPath(); ambigCtx.arc(x2, origin.y, 4.5, 0, Math.PI * 2); ambigCtx.fill();
+        }
+      }
+
+      ambigCtx.fillStyle = '#fbbf24';
+      ambigCtx.beginPath(); ambigCtx.arc(C.x, C.y, 4.5, 0, Math.PI * 2); ambigCtx.fill();
+
+      ambigCtx.font = 'bold 12px monospace';
+      ambigCtx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+      ambigCtx.fillText('A (32°)', origin.x + 12, origin.y + 18);
+      ambigCtx.fillStyle = '#38bdf8';
+      ambigCtx.fillText('b=6', (origin.x + C.x) / 2 - 18, (origin.y + C.y) / 2 - 6);
+
+      if (ambigStatus) {
+        if (ambigA < hCrit - 0.03) {
+          ambigStatus.className = 'ambig-status is-zero';
+          ambigStatus.textContent = 'a < h  ⇒  0 TRIÁNGULOS POSIBLES (El lado a no alcanza la base)';
+        } else if (Math.abs(ambigA - hCrit) <= 0.06) {
+          ambigStatus.className = 'ambig-status is-one';
+          ambigStatus.textContent = 'a = h  ⇒  1 ÚNICO TRIÁNGULO RECTÁNGULO (β = 90°)';
+        } else if (ambigA < ambigB) {
+          ambigStatus.className = 'ambig-status is-two';
+          ambigStatus.textContent = 'h < a < b  ⇒  ¡2 TRIÁNGULOS POSIBLES! (Caso Ambiguo LLA)';
+        } else {
+          ambigStatus.className = 'ambig-status is-one';
+          ambigStatus.textContent = 'a ≥ b  ⇒  1 ÚNICO TRIÁNGULO VÁLIDO';
+        }
+      }
+
+      ambigCtx.restore();
+    }
+
+    slAmbigA?.addEventListener('input', (e) => {
+      ambigA = parseFloat((e.target as HTMLInputElement).value);
+      if (ambigAVal) ambigAVal.textContent = ambigA.toFixed(1);
+      drawAmbiguous();
+    });
+
+    window.addEventListener('resize', () => {
+      drawTrigLab();
+      drawAmbiguous();
+    });
+    new MutationObserver(() => {
+      drawTrigLab();
+      drawAmbiguous();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    drawTrigLab();
+    drawAmbiguous();
+
+    // =========================================================================
+    // 3. QUIZ
+    // =========================================================================
+    const fbMap: Record<string, { ok: string; ko: string }> = {
+      tc1: {
+        ok: 'Correcto: c² = 5² + 8² − 2·5·8·cos(60°) = 25 + 64 − 40 = 49  ⇒  c = 7 km.',
+        ko: 'Aplica c² = 5² + 8² − 2·5·8·cos(60°). Como cos(60°) = 0,5, queda 25 + 64 − 40 = 49  ⇒  7 km.',
+      },
+      tc2: {
+        ok: 'Correcto: 2R = a / sen(α) = 10 / sen(30°) = 10 / 0,5 = 20 cm  ⇒  R = 10 cm.',
+        ko: 'Recuerda que a / sen(α) = 2R (el diámetro, no el radio). Como 2R = 10 / 0,5 = 20 cm, el radio es R = 10 cm.',
+      },
+    };
+
+    document.querySelectorAll<HTMLElement>('.quiz-options').forEach((group) => {
+      const qId = group.getAttribute('data-quiz') || '';
+      const fbEl = document.getElementById(`fb-${qId}`);
+      const buttons = group.querySelectorAll<HTMLButtonElement>('.quiz-opt');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('is-right', 'is-wrong'));
+          const isOk = btn.getAttribute('data-correct') === 'true';
+          btn.classList.add(isOk ? 'is-right' : 'is-wrong');
+          if (fbEl && fbMap[qId]) {
+            fbEl.hidden = false;
+            fbEl.textContent = isOk ? fbMap[qId].ok : fbMap[qId].ko;
+            fbEl.style.color = isOk ? '#10b981' : '#f43f5e';
+          }
+        });
+      });
+    });
+  })();
+</script>

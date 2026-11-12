@@ -1,0 +1,1325 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'prb-03')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'prb-02');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'teo-01');
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: EL PUENTE ENTRE EL AZAR Y LA PREDICTIBILIDAD -->
+  <section class="lesson-section" id="azar-predictibilidad">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. Del Caos Individual al Orden Colectivo</h2>
+
+    <p class="lead-paragraph">
+      Un único lanzamiento de moneda, el resultado de un dado o la energía de una molécula aislada son impredecibles. Sin embargo, cuando promediamos miles de repeticiones independientes, emerge una regularidad matemática casi determinista. Dos teoremas fundamentales explican este fenómeno, respondiendo a <strong>dos preguntas distintas</strong> sobre la media muestral <code class="inline-code">X̄<sub>n</sub> = (X₁ + X₂ + … + X<sub>n</sub>) / n</code>:
+    </p>
+
+    <div class="dual-theorem-banner">
+      <div class="theorem-pill cyan">
+        <div class="pill-tag">1. ¿A dónde va el promedio?</div>
+        <h3>Ley de los Grandes Números (LGN)</h3>
+        <div class="pill-eq">X̄<sub>n</sub> &nbsp;⟶&nbsp; μ</div>
+        <p>
+          La media muestral converge hacia una <strong>constante fija</strong>: la esperanza matemática <code class="inline-code">μ = E[Xᵢ]</code>. Sus fluctuaciones se apagan a medida que <code class="inline-code">n</code> crece.
+        </p>
+      </div>
+
+      <div class="theorem-pill purple">
+        <div class="pill-tag">2. ¿Cómo fluctúa alrededor de μ?</div>
+        <h3>Teorema Central del Límite (TCL)</h3>
+        <div class="pill-eq">√n · (X̄<sub>n</sub> − μ) / σ &nbsp;⟹&nbsp; N(0, 1)</div>
+        <p>
+          Si amplificamos las pequeñas fluctuaciones multiplicándolas por <code class="inline-code">√n</code>, su forma estadística converge siempre a la <strong>campana de Gauss estándar</strong>, sin importar la forma original de <code class="inline-code">Xᵢ</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="rigor-callout warn">
+      <div class="rigor-icon">Cuidado con la Falacia del Jugador</div>
+      <p>
+        La Ley de los Grandes Números <strong>no</strong> significa que el azar «tenga memoria» ni que compense rachas pasadas. Si lanzas una moneda justa y salen 10 caras seguidas, la probabilidad de cara en el lanzamiento 11 sigue siendo exactamente <code class="inline-code">0.5</code>. El promedio <code class="inline-code">X̄<sub>n</sub></code> se acerca a <code class="inline-code">0.5</code> porque esas 10 caras iniciales quedan <strong>diluidas</strong> al dividir entre un <code class="inline-code">n</code> cada vez más grande (<code class="inline-code">10/n → 0</code>), no porque tengan que salir más cruces después.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: LA LEY DE LOS GRANDES NÚMEROS -->
+  <section class="lesson-section" id="demostracion-lgn">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. La Ley de los Grandes Números: Demostración Exacta</h2>
+
+    <p class="lead-paragraph">
+      Sean <code class="inline-code">X₁, X₂, …, X<sub>n</sub></code> variables aleatorias independientes e idénticamente distribuidas (<strong>i.i.d.</strong>) con esperanza <code class="inline-code">E[Xᵢ] = μ</code> y varianza finita <code class="inline-code">Var(Xᵢ) = σ² &lt; ∞</code>.
+    </p>
+
+    <div class="theorem-box">
+      <div class="theorem-label">Ley Débil de los Grandes Números (Bernoulli / Khinchin)</div>
+      <p class="theorem-stmt">
+        Para cualquier tolerancia <code class="inline-code">ε &gt; 0</code> por pequeña que sea, la probabilidad de que la media muestral se desvíe de <code class="inline-code">μ</code> más de <code class="inline-code">ε</code> tiende a cero cuando <code class="inline-code">n → ∞</code>:
+      </p>
+      <div class="step-eq accent-cyan">
+        lim<sub>n→∞</sub> P(|X̄<sub>n</sub> − μ| ≥ ε) = 0
+      </div>
+    </div>
+
+    <div class="proof-steps-container">
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 1</span>
+          <h4>Esperanza y varianza de la media muestral X̄<sub>n</sub></h4>
+        </div>
+        <p>
+          Por linealidad de la esperanza, el promedio siempre está centrado en <code class="inline-code">μ</code>:
+        </p>
+        <div class="step-eq">
+          E[X̄<sub>n</sub>] = (1/n) · ∑<sub>i=1</sub><sup>n</sup> E[Xᵢ] = (1/n) · (nμ) = μ
+        </div>
+        <p>
+          Como las variables son <strong>independientes</strong>, la varianza de la suma es la suma de las varianzas, mientras que el factor escalar <code class="inline-code">1/n</code> sale al cuadrado (<code class="inline-code">1/n²</code>):
+        </p>
+        <div class="step-eq accent-cyan">
+          Var(X̄<sub>n</sub>) = Var((1/n) ∑ Xᵢ) = (1/n²) · ∑<sub>i=1</sub><sup>n</sup> Var(Xᵢ) = (1/n²) · (nσ²) = σ² / n
+        </div>
+        <p>
+          Esta ecuación encierra el secreto estadístico del muestreo: la desviación típica del promedio disminuye como <code class="inline-code">σ / √n</code>.
+        </p>
+      </div>
+
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 2</span>
+          <h4>La Desigualdad de Chebyshev (vía Markov)</h4>
+        </div>
+        <p>
+          Para cualquier variable no negativa <code class="inline-code">Y ≥ 0</code> y <code class="inline-code">a &gt; 0</code>, la <strong>desigualdad de Markov</strong> afirma que <code class="inline-code">P(Y ≥ a) ≤ E[Y] / a</code> (pues <code class="inline-code">E[Y] ≥ E[Y · 1<sub>Y≥a</sub>] ≥ a · P(Y ≥ a)</code>). Aplicándola a <code class="inline-code">Y = (X̄<sub>n</sub> − μ)²</code> y <code class="inline-code">a = ε²</code>:
+        </p>
+        <div class="step-eq">
+          P(|X̄<sub>n</sub> − μ| ≥ ε) = P((X̄<sub>n</sub> − μ)² ≥ ε²) ≤ E[(X̄<sub>n</sub> − μ)²] / ε² = Var(X̄<sub>n</sub>) / ε²
+        </div>
+      </div>
+
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge">Paso 3</span>
+          <h4>Paso al límite</h4>
+        </div>
+        <p>
+          Sustituyendo <code class="inline-code">Var(X̄<sub>n</sub>) = σ² / n</code> en la cota de Chebyshev obtenemos:
+        </p>
+        <div class="step-eq accent-emerald">
+          0 ≤ P(|X̄<sub>n</sub> − μ| ≥ ε) ≤ σ² / (n · ε²) &nbsp;⟶&nbsp; 0 &nbsp;&nbsp;(cuando n → ∞) &nbsp;∎
+        </div>
+      </div>
+    </div>
+
+    <div class="rigor-callout info">
+      <div class="rigor-icon">Ley Débil vs. Ley Fuerte de Kolmogorov</div>
+      <p>
+        La <strong>Ley Débil</strong> garantiza que, fijado un <code class="inline-code">n</code> grande, es muy improbable observar una desviación grande en ese instante (<em>convergencia en probabilidad</em>). La <strong>Ley Fuerte de los Grandes Números (Kolmogorov, 1933)</strong> va un paso más allá y requiere solo que <code class="inline-code">E[|X₁|] &lt; ∞</code>: afirma que con probabilidad <code class="inline-code">1</code> toda la trayectoria infinita termina entrando y quedándose dentro de cualquier banda alrededor de <code class="inline-code">μ</code>: <code class="inline-code">P(lim<sub>n→∞</sub> X̄<sub>n</sub> = μ) = 1</code> (<em>convergencia casi segura</em>).
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: EL TEOREMA CENTRAL DEL LÍMITE -->
+  <section class="lesson-section" id="teorema-central-limite">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. El Teorema Central del Límite: Por qué Emerge la Campana de Gauss</h2>
+
+    <p class="lead-paragraph">
+      La LGN nos dice que <code class="inline-code">X̄<sub>n</sub> − μ</code> se encoge a cero a una velocidad proporcional a <code class="inline-code">1/√n</code>. Si queremos observar la estructura microscópica de esas fluctuaciones, debemos mirarlas con una lupa de aumento <code class="inline-code">√n / σ</code>.
+    </p>
+
+    <div class="theorem-box purple">
+      <div class="theorem-label">Teorema Central del Límite (Lindeberg–Lévy)</div>
+      <p class="theorem-stmt">
+        Sean <code class="inline-code">X₁, X₂, …</code> i.i.d. con media <code class="inline-code">μ</code> y varianza finita <code class="inline-code">0 &lt; σ² &lt; ∞</code>. Definimos la variable estandarizada:
+      </p>
+      <div class="step-eq">
+        Z<sub>n</sub> = (X̄<sub>n</sub> − μ) / (σ / √n) = (∑<sub>i=1</sub><sup>n</sup> Xᵢ − nμ) / (σ√n)
+      </div>
+      <p class="theorem-stmt">
+        Entonces, cuando <code class="inline-code">n → ∞</code>, la distribución de <code class="inline-code">Z<sub>n</sub></code> converge a la distribución normal estándar <code class="inline-code">N(0, 1)</code>:
+      </p>
+      <div class="step-eq accent-purple">
+        lim<sub>n→∞</sub> P(Z<sub>n</sub> ≤ z) = Φ(z) = (1 / √(2π)) ∫<sub>−∞</sub><sup>z</sup> e<sup>−t²/2</sup> dt
+      </div>
+    </div>
+
+    <div class="proof-steps-container">
+      <div class="proof-step-card">
+        <div class="step-header">
+          <span class="step-badge purple">Idea de la Prueba</span>
+          <h4>El mecanismo de las funciones características y Taylor</h4>
+        </div>
+        <p>
+          Estandarizamos cada variable individual haciendo <code class="inline-code">Yᵢ = (Xᵢ − μ) / σ</code>, de modo que <code class="inline-code">E[Yᵢ] = 0</code>, <code class="inline-code">E[Yᵢ²] = Var(Yᵢ) = 1</code> y <code class="inline-code">Z<sub>n</sub> = (Y₁ + … + Y<sub>n</sub>) / √n</code>.
+        </p>
+        <p>
+          La <strong>función característica</strong> <code class="inline-code">φ<sub>Y</sub>(t) = E[e<sup>itY</sup>]</code> identifica de forma única a cualquier distribución. Expandiendo <code class="inline-code">e<sup>itY</sup> = 1 + itY − t²Y²/2 + o(t²)</code> alrededor de <code class="inline-code">t = 0</code>:
+        </p>
+        <div class="step-eq">
+          φ<sub>Y</sub>(t) = 1 + i·t·E[Y] − (t²/2)·E[Y²] + o(t²) = 1 − t²/2 + o(t²)
+        </div>
+        <p>
+          Por independencia, la función característica de una suma es el <strong>producto</strong> de las funciones características. Al dividir por <code class="inline-code">√n</code>, evaluamos en <code class="inline-code">t/√n</code>:
+        </p>
+        <div class="step-eq accent-purple">
+          φ<sub>Z<sub>n</sub></sub>(t) = [φ<sub>Y</sub>(t / √n)]<sup>n</sup> = [1 − t² / (2n) + o(t²/n)]<sup>n</sup> &nbsp;⟶&nbsp; e<sup>−t²/2</sup> &nbsp;&nbsp;(cuando n → ∞)
+        </div>
+        <p>
+          Dado que <code class="inline-code">e<sup>−t²/2</sup></code> es exactamente la función característica de la normal estándar <code class="inline-code">N(0, 1)</code>, el <strong>Teorema de Continuidad de Lévy</strong> concluye que <code class="inline-code">Z<sub>n</sub></code> converge en distribución a <code class="inline-code">N(0, 1)</code>. La razón por la que los detalles de la forma original (asimetría, picos, discreción) desaparecen es que todos residen en los términos de orden superior <code class="inline-code">o(t²/n)</code>, que se anulan al tomar el límite <code class="inline-code">n → ∞</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="rigor-callout warn">
+      <div class="rigor-icon">¿Cuándo fallan la LGN y el TCL? El contraejemplo de Cauchy</div>
+      <p>
+        Ambos teoremas exigen hipótesis integrables: si la distribución original tiene colas tan pesadas que su varianza (o incluso su esperanza) es infinita, la magia se rompe. El ejemplo clásico es la <strong>distribución de Cauchy estándar</strong> (<code class="inline-code">f(x) = 1 / [π(1 + x²)]</code>). Su media no está definida y su varianza es infinita; sorprendentemente, el promedio <code class="inline-code">X̄<sub>n</sub></code> de 1000 variables de Cauchy tiene exactamente la <em>misma</em> dispersión que una sola variable de Cauchy. ¡Pruébalo en el laboratorio de abajo!
+      </p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LABORATORIO INTERACTIVO DUAL -->
+  <section class="lesson-section" id="laboratorio-lgn-tcl">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. Laboratorio Interactivo: LGN en Tiempo Real y Campana del TCL</h2>
+
+    <!-- EXPERIMENTO 1: LGN -->
+    <div class="lab-card">
+      <div class="lab-header">
+        <div>
+          <span class="lab-kicker">Experimento 1 — Ley de los Grandes Números</span>
+          <h3>Trayectorias de la Media Muestral X̄<sub>k</sub> frente a μ</h3>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="action-btn primary" id="btn-lgn-one">Simular 1 trayectoria</button>
+          <button type="button" class="action-btn" id="btn-lgn-five">Superponer 5</button>
+          <button type="button" class="action-btn ghost" id="btn-lgn-clear">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="lab-controls-row two-cols">
+        <div class="select-control">
+          <label for="sel-lgn-dist">Distribución base Xᵢ:</label>
+          <select id="sel-lgn-dist">
+            <option value="coin">Moneda justa — Bernoulli(0.5) [μ = 0.5, σ = 0.5]</option>
+            <option value="dice">Dado equilibrado — Uniforme &#123;1..6&#125; [μ = 3.5, σ ≈ 1.71]</option>
+            <option value="exp">Exponencial(λ = 1) [μ = 1.0, σ = 1.0]</option>
+            <option value="cauchy">Contraejemplo: Cauchy estándar [μ indefinida, σ = ∞]</option>
+          </select>
+        </div>
+        <div class="slider-control">
+          <label for="sl-lgn-n">Longitud de trayectoria <strong>N</strong>: <span id="val-lgn-n" class="mono-val">600</span></label>
+          <input id="sl-lgn-n" type="range" min="100" max="2000" step="100" value="600" />
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas-lgn" width="840" height="320" aria-label="Trayectorias de la media muestral"></canvas>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-box">
+          <span class="metric-label">Última media X̄<sub>N</sub></span>
+          <span class="metric-value cyan" id="lgn-last-mean">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Esperanza teórica μ</span>
+          <span class="metric-value emerald" id="lgn-mu">0.5000</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Banda teórica ±2σ/√N</span>
+          <span class="metric-value amber" id="lgn-band">±0.0408</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENTO 2: TCL -->
+    <div class="lab-card" style="margin-top: 2rem;">
+      <div class="lab-header">
+        <div>
+          <span class="lab-kicker">Experimento 2 — Teorema Central del Límite</span>
+          <h3>Histograma de M Medias Muestrales X̄<sub>n</sub> frente a N(μ, σ²/n)</h3>
+        </div>
+        <div class="btn-group">
+          <label class="toggle-chip">
+            <input type="checkbox" id="chk-tcl-gauss" checked />
+            <span class="dot emerald"></span> Curva Normal Teórica
+          </label>
+          <button type="button" class="action-btn primary" id="btn-tcl-run">Remuestrear</button>
+        </div>
+      </div>
+
+      <div class="lab-controls-row three-cols">
+        <div class="select-control">
+          <label for="sel-tcl-dist">Forma de la población Xᵢ:</label>
+          <select id="sel-tcl-dist">
+            <option value="uniform">Uniforme [0, 1] (plana)</option>
+            <option value="exp">Exponencial (muy asimétrica)</option>
+            <option value="ushape">Bimodal en U (extremos 0 y 1)</option>
+            <option value="dice">Dado de 6 caras (discreta)</option>
+          </select>
+        </div>
+        <div class="slider-control">
+          <label for="sl-tcl-n">Tamaño de cada muestra <strong>n</strong>: <span id="val-tcl-n" class="mono-val">10</span></label>
+          <input id="sl-tcl-n" type="range" min="1" max="50" value="10" />
+        </div>
+        <div class="slider-control">
+          <label for="sl-tcl-m">Número de muestras <strong>M</strong>: <span id="val-tcl-m" class="mono-val">4000</span></label>
+          <input id="sl-tcl-m" type="range" min="500" max="10000" step="500" value="4000" />
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="canvas-tcl" width="840" height="350" aria-label="Histograma de medias muestrales frente a distribución normal"></canvas>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-box">
+          <span class="metric-label">Media observada</span>
+          <span class="metric-value cyan" id="tcl-obs-mean">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Desv. típica observada</span>
+          <span class="metric-value purple" id="tcl-obs-sd">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Error estándar teórico σ/√n</span>
+          <span class="metric-value emerald" id="tcl-theo-sd">—</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Asimetría observada (skew)</span>
+          <span class="metric-value amber" id="tcl-skew">—</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: APLICACIONES REALES Y RETO PRÁCTICO -->
+  <section class="lesson-section" id="reto-lgn-tcl">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Aplicaciones Reales y Reto Práctico</h2>
+
+    <div class="apps-grid">
+      <div class="app-card">
+        <div class="app-tag">Encuestas y Estadística</div>
+        <h4>La ley de la raíz cuadrada (1/√n)</h4>
+        <p>
+          El margen de error de una encuesta electoral escala como <code class="inline-code">1.96 · σ / √n</code> (al 95% de confianza). Por eso pasar de 1.000 a 4.000 encuestados (multiplicar por 4) solo reduce el margen de error a la <strong>mitad</strong>.
+        </p>
+      </div>
+      <div class="app-card">
+        <div class="app-tag">Física Estadística</div>
+        <h4>Por qué la temperatura es estable</h4>
+        <p>
+          La presión y la temperatura de un gas en una habitación son promedios de unas <code class="inline-code">10²³</code> colisiones moleculares. Gracias al factor <code class="inline-code">1/√n</code>, las fluctuaciones relativas son del orden de <code class="inline-code">10⁻¹¹</code>: imperceptibles a escala humana.
+        </p>
+      </div>
+    </div>
+
+    <div class="quiz-grid">
+      <!-- PREGUNTA 1 -->
+      <div class="quiz-card" id="quiz-p1">
+        <div class="quiz-num">Desafío 01</div>
+        <h4>Precisión en encuestas</h4>
+        <p>
+          Una encuesta a <code class="inline-code">n = 1000</code> personas tiene un margen de error de <code class="inline-code">±3%</code>. Si queremos reducir el margen de error a la mitad (<code class="inline-code">±1.5%</code>), ¿a cuántas personas debemos entrevistar aproximadamente?
+        </p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">2.000 personas</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="true">4.000 personas</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">10.000 personas</button>
+          <button type="button" class="quiz-opt" data-q="p1" data-correct="false">1.500 personas</button>
+        </div>
+        <div class="quiz-feedback" id="fb-p1" hidden></div>
+      </div>
+
+      <!-- PREGUNTA 2 -->
+      <div class="quiz-card" id="quiz-p2">
+        <div class="quiz-num">Desafío 02</div>
+        <h4>Condición imprescindible del TCL</h4>
+        <p>
+          ¿Cuál de las siguientes afirmaciones sobre la Ley de los Grandes Números y el Teorema Central del Límite es <strong>verdadera</strong>?
+        </p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">La LGN garantiza que tras 8 cruces seguidas aumente la probabilidad de cara</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">El TCL solo funciona si la variable original Xᵢ ya era simétrica</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="true">El TCL requiere varianza finita (σ² &lt; ∞); por eso falla en distribuciones como la de Cauchy</button>
+          <button type="button" class="quiz-opt" data-q="p2" data-correct="false">La suma S<sub>n</sub> tiene varianza σ²/n mientras que la media X̄<sub>n</sub> tiene varianza nσ²</button>
+        </div>
+        <div class="quiz-feedback" id="fb-p2" hidden></div>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<style>
+  .lesson-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-marker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .marker-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), transparent);
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .lead-paragraph {
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: #cbd5e1;
+    margin-bottom: 1.75rem;
+  }
+
+  .inline-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92em;
+    background: rgba(148, 163, 184, 0.14);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    padding: 0.1rem 0.42rem;
+    border-radius: 5px;
+    color: #e2e8f0;
+  }
+
+  .dual-theorem-banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+
+  .theorem-pill {
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .theorem-pill.cyan { border-color: rgba(56, 189, 248, 0.35); }
+  .theorem-pill.purple { border-color: rgba(192, 132, 252, 0.35); }
+
+  .pill-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    margin-bottom: 0.45rem;
+  }
+
+  .theorem-pill h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .pill-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    background: rgba(2, 6, 23, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    margin-bottom: 0.85rem;
+    color: #38bdf8;
+  }
+
+  .theorem-pill.purple .pill-eq {
+    color: #c084fc;
+  }
+
+  .theorem-pill p {
+    margin: 0;
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .theorem-box {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.65));
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .theorem-box.purple {
+    border-color: rgba(192, 132, 252, 0.35);
+  }
+
+  .theorem-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    margin-bottom: 0.6rem;
+  }
+
+  .theorem-box.purple .theorem-label {
+    color: #c084fc;
+  }
+
+  .theorem-stmt {
+    color: #e2e8f0;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+
+  .proof-steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin: 1.5rem 0;
+  }
+
+  .proof-step-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    padding: 1.45rem;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #38bdf8;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .step-badge.purple {
+    background: #c084fc;
+  }
+
+  .step-header h4 {
+    margin: 0;
+    font-size: 1.12rem;
+    color: #f8fafc;
+  }
+
+  .proof-step-card p {
+    color: #cbd5e1;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.94rem;
+    background: rgba(2, 6, 23, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 10px;
+    padding: 0.85rem 1.05rem;
+    color: #f1f5f9;
+    margin: 0.75rem 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  .step-eq.accent-cyan { border-color: rgba(56, 189, 248, 0.45); }
+  .step-eq.accent-purple { border-color: rgba(192, 132, 252, 0.48); color: #e9d5ff; }
+  .step-eq.accent-emerald { border-color: rgba(52, 211, 153, 0.5); color: #6ee7b7; font-weight: 600; }
+
+  .rigor-callout {
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    margin: 1.5rem 0;
+  }
+
+  .rigor-callout.warn {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.32);
+  }
+
+  .rigor-callout.info {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .rigor-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .rigor-callout.warn .rigor-icon { color: #fbbf24; }
+  .rigor-callout.info .rigor-icon { color: #38bdf8; }
+
+  .rigor-callout p {
+    margin: 0;
+    color: #e2e8f0;
+    line-height: 1.65;
+    font-size: 0.95rem;
+  }
+
+  /* LABORATORIO */
+  .lab-card {
+    background: rgba(15, 23, 42, 0.84);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .lab-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .lab-kicker {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.25rem;
+  }
+
+  .lab-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #f8fafc;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .action-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(30, 41, 59, 0.75);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn:hover {
+    border-color: #38bdf8;
+  }
+
+  .action-btn.primary {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .action-btn.ghost {
+    color: #94a3b8;
+  }
+
+  .toggle-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.84rem;
+    color: #e2e8f0;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .dot.emerald {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #34d399;
+  }
+
+  .lab-controls-row {
+    margin-bottom: 1.15rem;
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .lab-controls-row.two-cols {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .lab-controls-row.three-cols {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .select-control label,
+  .slider-control label {
+    display: block;
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    margin-bottom: 0.45rem;
+  }
+
+  .select-control select {
+    width: 100%;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    color: #f1f5f9;
+    font-size: 0.88rem;
+  }
+
+  .mono-val {
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    font-weight: 600;
+  }
+
+  .slider-control input[type="range"] {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .canvas-wrapper {
+    background: rgba(2, 6, 23, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.1rem;
+  }
+
+  .canvas-wrapper canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .metric-box {
+    background: rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+  }
+
+  .metric-label {
+    display: block;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .metric-value.cyan { color: #38bdf8; }
+  .metric-value.purple { color: #c084fc; }
+  .metric-value.emerald { color: #34d399; }
+  .metric-value.amber { color: #fbbf24; }
+
+  .apps-grid,
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .app-card,
+  .quiz-card {
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+
+  .app-tag,
+  .quiz-num {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    margin-bottom: 0.5rem;
+  }
+
+  .app-card h4,
+  .quiz-card h4 {
+    font-size: 1.12rem;
+    color: #f1f5f9;
+    margin: 0 0 0.65rem 0;
+  }
+
+  .app-card p,
+  .quiz-card p {
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-size: 0.94rem;
+    margin: 0;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .quiz-opt {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(30, 41, 59, 0.55);
+    color: #e2e8f0;
+    font-size: 0.93rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .quiz-opt:hover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .quiz-opt.correct {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+    font-weight: 600;
+  }
+
+  .quiz-opt.wrong {
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+    color: #fca5a5;
+  }
+
+  .quiz-feedback {
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .quiz-feedback.ok {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    color: #a7f3d0;
+  }
+
+  .quiz-feedback.err {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    color: #fecaca;
+  }
+</style>
+
+<script>
+  // --- UTILIDAD DE MUESTREO ---
+  type DistMeta = {
+    sample: () => number;
+    mu: number | null;
+    sigma: number | null;
+    yMin: number;
+    yMax: number;
+  };
+
+  function getLgnDist(key: string): DistMeta {
+    switch (key) {
+      case 'dice':
+        return {
+          sample: () => Math.floor(Math.random() * 6) + 1,
+          mu: 3.5,
+          sigma: Math.sqrt(35 / 12),
+          yMin: 1.0,
+          yMax: 6.0,
+        };
+      case 'exp':
+        return {
+          sample: () => -Math.log(1 - Math.random()),
+          mu: 1.0,
+          sigma: 1.0,
+          yMin: 0.0,
+          yMax: 2.5,
+        };
+      case 'cauchy':
+        return {
+          sample: () => Math.tan(Math.PI * (Math.random() - 0.5)),
+          mu: null,
+          sigma: null,
+          yMin: -10,
+          yMax: 10,
+        };
+      case 'coin':
+      default:
+        return {
+          sample: () => (Math.random() < 0.5 ? 1 : 0),
+          mu: 0.5,
+          sigma: 0.5,
+          yMin: 0.0,
+          yMax: 1.0,
+        };
+    }
+  }
+
+  // --- EXPERIMENTO 1: LGN ---
+  const selLgn = document.getElementById('sel-lgn-dist') as HTMLSelectElement | null;
+  const slLgnN = document.getElementById('sl-lgn-n') as HTMLInputElement | null;
+  const valLgnN = document.getElementById('val-lgn-n');
+  const canvasLgn = document.getElementById('canvas-lgn') as HTMLCanvasElement | null;
+  const lgnLastMean = document.getElementById('lgn-last-mean');
+  const lgnMuEl = document.getElementById('lgn-mu');
+  const lgnBandEl = document.getElementById('lgn-band');
+
+  const btnLgnOne = document.getElementById('btn-lgn-one');
+  const btnLgnFive = document.getElementById('btn-lgn-five');
+  const btnLgnClear = document.getElementById('btn-lgn-clear');
+
+  let trajectories: number[][] = [];
+  const palette = ['#38bdf8', '#c084fc', '#f472b6', '#fbbf24', '#60a5fa', '#2dd4bf'];
+
+  function generateTrajectory(distKey: string, n: number): number[] {
+    const meta = getLgnDist(distKey);
+    const means: number[] = new Array(n);
+    let sum = 0;
+    for (let k = 1; k <= n; k++) {
+      sum += meta.sample();
+      means[k - 1] = sum / k;
+    }
+    return means;
+  }
+
+  function renderLgn() {
+    if (!canvasLgn) return;
+    const ctx = canvasLgn.getContext('2d');
+    if (!ctx) return;
+
+    const distKey = selLgn ? selLgn.value : 'coin';
+    const n = slLgnN ? Number(slLgnN.value) : 600;
+    if (valLgnN) valLgnN.textContent = String(n);
+
+    const meta = getLgnDist(distKey);
+    const w = canvasLgn.width;
+    const h = canvasLgn.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 56;
+    const padR = 24;
+    const padT = 24;
+    const padB = 36;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const toX = (k: number) => padL + ((k - 1) / Math.max(1, n - 1)) * plotW;
+    const toY = (y: number) => {
+      const clamped = Math.max(meta.yMin, Math.min(meta.yMax, y));
+      return padT + ((meta.yMax - clamped) / (meta.yMax - meta.yMin)) * plotH;
+    };
+
+    // Grid horizontal
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+    ctx.lineWidth = 1;
+    ctx.font = '12px JetBrains Mono, monospace';
+    ctx.fillStyle = '#94a3b8';
+    const ticks = 4;
+    for (let i = 0; i <= ticks; i++) {
+      const yVal = meta.yMin + (i / ticks) * (meta.yMax - meta.yMin);
+      const py = padT + ((meta.yMax - yVal) / (meta.yMax - meta.yMin)) * plotH;
+      ctx.beginPath();
+      ctx.moveTo(padL, py);
+      ctx.lineTo(w - padR, py);
+      ctx.stroke();
+      ctx.fillText(yVal.toFixed(1), 12, py + 4);
+    }
+
+    // Banda ±2σ/√k y línea μ si existen
+    if (meta.mu !== null && meta.sigma !== null) {
+      const mu = meta.mu;
+      const sigma = meta.sigma;
+
+      ctx.beginPath();
+      for (let k = 1; k <= n; k += 2) {
+        const px = toX(k);
+        const py = toY(mu + (2 * sigma) / Math.sqrt(k));
+        if (k === 1) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      for (let k = n; k >= 1; k -= 2) {
+        const px = toX(k);
+        const py = toY(mu - (2 * sigma) / Math.sqrt(k));
+        ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.12)';
+      ctx.fill();
+
+      const yMu = toY(mu);
+      ctx.save();
+      ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(padL, yMu);
+      ctx.lineTo(w - padR, yMu);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = '#34d399';
+      ctx.fillText(`μ = ${mu.toFixed(2)}`, w - padR - 86, yMu - 7);
+    } else {
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('Cauchy: μ indefinida, σ = ∞ (sin convergencia)', padL + 12, padT + 16);
+    }
+
+    // Trayectorias
+    trajectories.forEach((traj, idx) => {
+      ctx.strokeStyle = palette[idx % palette.length];
+      ctx.lineWidth = 1.9;
+      ctx.beginPath();
+      const len = Math.min(n, traj.length);
+      for (let i = 0; i < len; i++) {
+        const px = toX(i + 1);
+        const py = toY(traj[i]);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    });
+
+    // Eje X
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('k = 1', padL, h - 10);
+    ctx.fillText(`k = ${n}`, w - padR - 55, h - 10);
+
+    // Métricas
+    if (lgnMuEl) lgnMuEl.textContent = meta.mu !== null ? meta.mu.toFixed(4) : 'No existe';
+    if (lgnBandEl) {
+      lgnBandEl.textContent =
+        meta.sigma !== null ? `±${((2 * meta.sigma) / Math.sqrt(n)).toFixed(4)}` : '∞';
+    }
+    if (lgnLastMean) {
+      if (trajectories.length > 0) {
+        const lastTraj = trajectories[trajectories.length - 1];
+        lgnLastMean.textContent = lastTraj[lastTraj.length - 1].toFixed(4);
+      } else {
+        lgnLastMean.textContent = '—';
+      }
+    }
+  }
+
+  function addTrajectories(count: number) {
+    const distKey = selLgn ? selLgn.value : 'coin';
+    const n = slLgnN ? Number(slLgnN.value) : 600;
+    for (let i = 0; i < count; i++) {
+      trajectories.push(generateTrajectory(distKey, n));
+    }
+    if (trajectories.length > 10) {
+      trajectories = trajectories.slice(trajectories.length - 10);
+    }
+    renderLgn();
+  }
+
+  btnLgnOne?.addEventListener('click', () => addTrajectories(1));
+  btnLgnFive?.addEventListener('click', () => addTrajectories(5));
+  btnLgnClear?.addEventListener('click', () => {
+    trajectories = [];
+    renderLgn();
+  });
+  selLgn?.addEventListener('change', () => {
+    trajectories = [];
+    addTrajectories(2);
+  });
+  slLgnN?.addEventListener('input', () => {
+    trajectories = [];
+    addTrajectories(2);
+  });
+
+  addTrajectories(2);
+
+  // --- EXPERIMENTO 2: TCL ---
+  const selTcl = document.getElementById('sel-tcl-dist') as HTMLSelectElement | null;
+  const slTclN = document.getElementById('sl-tcl-n') as HTMLInputElement | null;
+  const slTclM = document.getElementById('sl-tcl-m') as HTMLInputElement | null;
+  const valTclN = document.getElementById('val-tcl-n');
+  const valTclM = document.getElementById('val-tcl-m');
+  const chkTclGauss = document.getElementById('chk-tcl-gauss') as HTMLInputElement | null;
+  const btnTclRun = document.getElementById('btn-tcl-run');
+  const canvasTcl = document.getElementById('canvas-tcl') as HTMLCanvasElement | null;
+
+  const tclObsMean = document.getElementById('tcl-obs-mean');
+  const tclObsSd = document.getElementById('tcl-obs-sd');
+  const tclTheoSd = document.getElementById('tcl-theo-sd');
+  const tclSkew = document.getElementById('tcl-skew');
+
+  function getTclDist(key: string): { sample: () => number; mu: number; sigma: number; minX: number; maxX: number } {
+    switch (key) {
+      case 'exp':
+        return {
+          sample: () => -Math.log(1 - Math.random()),
+          mu: 1.0,
+          sigma: 1.0,
+          minX: 0,
+          maxX: 3.0,
+        };
+      case 'ushape': {
+        return {
+          sample: () => {
+            const s = Math.sin(Math.PI * Math.random() * 0.5);
+            return s * s;
+          },
+          mu: 0.5,
+          sigma: Math.sqrt(1 / 8),
+          minX: 0,
+          maxX: 1,
+        };
+      }
+      case 'dice':
+        return {
+          sample: () => Math.floor(Math.random() * 6) + 1,
+          mu: 3.5,
+          sigma: Math.sqrt(35 / 12),
+          minX: 1,
+          maxX: 6,
+        };
+      case 'uniform':
+      default:
+        return {
+          sample: () => Math.random(),
+          mu: 0.5,
+          sigma: Math.sqrt(1 / 12),
+          minX: 0,
+          maxX: 1,
+        };
+    }
+  }
+
+  function runTclSimulation() {
+    if (!canvasTcl) return;
+    const ctx = canvasTcl.getContext('2d');
+    if (!ctx) return;
+
+    const distKey = selTcl ? selTcl.value : 'uniform';
+    const n = slTclN ? Number(slTclN.value) : 10;
+    const m = slTclM ? Number(slTclM.value) : 4000;
+    const showGauss = chkTclGauss ? chkTclGauss.checked : true;
+
+    if (valTclN) valTclN.textContent = String(n);
+    if (valTclM) valTclM.textContent = String(m);
+
+    const dist = getTclDist(distKey);
+    const means: number[] = new Array(m);
+
+    let sumMeans = 0;
+    for (let i = 0; i < m; i++) {
+      let s = 0;
+      for (let j = 0; j < n; j++) {
+        s += dist.sample();
+      }
+      const mean = s / n;
+      means[i] = mean;
+      sumMeans += mean;
+    }
+
+    const obsMean = sumMeans / m;
+    let m2 = 0;
+    let m3 = 0;
+    for (let i = 0; i < m; i++) {
+      const d = means[i] - obsMean;
+      m2 += d * d;
+      m3 += d * d * d;
+    }
+    const obsVar = m2 / m;
+    const obsSd = Math.sqrt(obsVar);
+    const skew = obsSd > 1e-9 ? (m3 / m) / Math.pow(obsSd, 3) : 0;
+    const theoSd = dist.sigma / Math.sqrt(n);
+
+    if (tclObsMean) tclObsMean.textContent = obsMean.toFixed(4);
+    if (tclObsSd) tclObsSd.textContent = obsSd.toFixed(4);
+    if (tclTheoSd) tclTheoSd.textContent = theoSd.toFixed(4);
+    if (tclSkew) tclSkew.textContent = skew.toFixed(3);
+
+    const xMin = dist.minX;
+    const xMax = dist.maxX;
+    const bins = n === 1 && distKey === 'dice' ? 6 : 36;
+    const counts = new Array(bins).fill(0);
+    const binW = (xMax - xMin) / bins;
+
+    for (let i = 0; i < m; i++) {
+      const idx = Math.floor((means[i] - xMin) / binW);
+      if (idx >= 0 && idx < bins) counts[idx]++;
+    }
+
+    const densities = counts.map((c) => c / (m * binW));
+    const maxGauss = 1 / (theoSd * Math.sqrt(2 * Math.PI));
+    const maxDens = Math.max(...densities, showGauss ? maxGauss : 0, 0.1) * 1.12;
+
+    const w = canvasTcl.width;
+    const h = canvasTcl.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 48;
+    const padR = 24;
+    const padT = 26;
+    const padB = 38;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const toX = (x: number) => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+    const toY = (d: number) => padT + (1 - d / maxDens) * plotH;
+
+    const pxBarW = plotW / bins;
+    for (let i = 0; i < bins; i++) {
+      const x = padL + i * pxBarW;
+      const y = toY(densities[i]);
+      const barH = h - padB - y;
+      ctx.fillStyle = 'rgba(192, 132, 252, 0.45)';
+      ctx.strokeStyle = 'rgba(192, 132, 252, 0.85)';
+      ctx.lineWidth = 1;
+      ctx.fillRect(x + 1, y, Math.max(1, pxBarW - 2), barH);
+      ctx.strokeRect(x + 1, y, Math.max(1, pxBarW - 2), barH);
+    }
+
+    if (showGauss) {
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      const steps = 260;
+      for (let i = 0; i <= steps; i++) {
+        const x = xMin + (i / steps) * (xMax - xMin);
+        const z = (x - dist.mu) / theoSd;
+        const g = (1 / (theoSd * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * z * z);
+        const px = toX(x);
+        const py = toY(g);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, h - padB);
+    ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px JetBrains Mono, monospace';
+    ctx.fillText(xMin.toFixed(1), padL, h - 12);
+    ctx.fillText(`μ=${dist.mu.toFixed(2)}`, toX(dist.mu) - 26, h - 12);
+    ctx.fillText(xMax.toFixed(1), w - padR - 28, h - 12);
+  }
+
+  selTcl?.addEventListener('change', runTclSimulation);
+  slTclN?.addEventListener('input', runTclSimulation);
+  slTclM?.addEventListener('input', runTclSimulation);
+  chkTclGauss?.addEventListener('change', runTclSimulation);
+  btnTclRun?.addEventListener('click', runTclSimulation);
+  runTclSimulation();
+
+  // --- QUIZ ---
+  const explanations: Record<string, { ok: string; err: string }> = {
+    p1: {
+      ok: 'Correcto. El margen de error escala como 1/√n. Para dividir el error por 2, necesitamos multiplicar n por 2² = 4, pasando de 1.000 a 4.000 encuestados.',
+      err: 'Recuerda que la desviación típica de la media muestral es σ/√n, no σ/n. Para reducir el error a la mitad, √n debe duplicarse.'
+    },
+    p2: {
+      ok: 'Exacto. Si la varianza es infinita (como en la distribución de Cauchy), no se cumplen las hipótesis ni de Chebyshev ni del TCL.',
+      err: 'Revisa las secciones 1 y 3: la LGN no implica compensación de rachas pasadas, el TCL funciona incluso con distribuciones asimétricas y la varianza de X̄ₙ es σ²/n.'
+    }
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('.quiz-opt').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const q = btn.dataset.q || '';
+      const isCorrect = btn.dataset.correct === 'true';
+      const siblings = document.querySelectorAll<HTMLButtonElement>(`.quiz-opt[data-q="${q}"]`);
+      siblings.forEach((s) => s.classList.remove('correct', 'wrong'));
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      const fb = document.getElementById(`fb-${q}`);
+      if (fb && explanations[q]) {
+        fb.hidden = false;
+        fb.className = `quiz-feedback ${isCorrect ? 'ok' : 'err'}`;
+        fb.textContent = isCorrect ? explanations[q].ok : explanations[q].err;
+      }
+    });
+  });
+</script>
