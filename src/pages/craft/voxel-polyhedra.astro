@@ -446,9 +446,15 @@ import SiteHeader from '../../components/SiteHeader.astro';
       const v2 = vertices[indices[2]];
       const ax = v1.x - v0.x, ay = v1.y - v0.y, az = v1.z - v0.z;
       const bx = v2.x - v0.x, by = v2.y - v0.y, bz = v2.z - v0.z;
-      const nx = ay * bz - az * by;
-      const ny = az * bx - ax * bz;
-      const nz = ax * by - ay * bx;
+      let nx = ay * bz - az * by;
+      let ny = az * bx - ax * bz;
+      let nz = ax * by - ay * bx;
+      // Garantizar que la normal apunte siempre hacia el exterior del poliedro convexo
+      if (centroid.x * nx + centroid.y * ny + centroid.z * nz < 0) {
+        nx = -nx;
+        ny = -ny;
+        nz = -nz;
+      }
       return { centroid, normal: normalize({ x: nx, y: ny, z: nz }) };
     }
 
@@ -525,31 +531,46 @@ import SiteHeader from '../../components/SiteHeader.astro';
       dodecahedron: {
         name: 'Dodecaedro Regular',
         category: 'Sólido Platónico',
-        vertices: [
-          // 8 vértices del cubo base (±1, ±1, ±1)
-          { x: -1, y: -1, z: -1 }, { x: 1, y: -1, z: -1 }, { x: 1, y: 1, z: -1 }, { x: -1, y: 1, z: -1 },
-          { x: -1, y: -1, z: 1 },  { x: 1, y: -1, z: 1 },  { x: 1, y: 1, z: 1 },  { x: -1, y: 1, z: 1 },
-          // 12 vértices dorados (0, ±1/phi, ±phi), etc.
-          { x: 0, y: -1 / PHI, z: -PHI }, { x: 0, y: 1 / PHI, z: -PHI },
-          { x: 0, y: -1 / PHI, z: PHI },  { x: 0, y: 1 / PHI, z: PHI },
-          { x: -1 / PHI, y: -PHI, z: 0 }, { x: 1 / PHI, y: -PHI, z: 0 },
-          { x: -1 / PHI, y: PHI, z: 0 },  { x: 1 / PHI, y: PHI, z: 0 },
-          { x: -PHI, y: 0, z: -1 / PHI }, { x: -PHI, y: 0, z: 1 / PHI },
-          { x: PHI, y: 0, z: -1 / PHI },  { x: PHI, y: 0, z: 1 / PHI },
-        ],
+        vertices: (() => {
+          const invPhi = 1 / PHI;
+          const verts: Point3D[] = [];
+          for (const x of [-1, 1]) {
+            for (const y of [-1, 1]) {
+              for (const z of [-1, 1]) {
+                verts.push({ x, y, z });
+              }
+            }
+          }
+          for (const y of [-PHI, PHI]) {
+            for (const z of [-invPhi, invPhi]) {
+              verts.push({ x: 0, y, z });
+            }
+          }
+          for (const x of [-invPhi, invPhi]) {
+            for (const z of [-PHI, PHI]) {
+              verts.push({ x, y: 0, z });
+            }
+          }
+          for (const x of [-PHI, PHI]) {
+            for (const y of [-invPhi, invPhi]) {
+              verts.push({ x, y, z: 0 });
+            }
+          }
+          return verts;
+        })(),
         faces: [
-          { indices: [8, 9, 2, 18, 1] },
-          { indices: [9, 8, 0, 16, 3] },
-          { indices: [10, 11, 7, 17, 4] },
-          { indices: [11, 10, 5, 19, 6] },
-          { indices: [12, 13, 1, 18, 0] },
-          { indices: [13, 12, 4, 17, 5] },
-          { indices: [14, 15, 6, 19, 7] },
-          { indices: [15, 14, 3, 16, 2] },
-          { indices: [16, 17, 7, 11, 3] },
-          { indices: [17, 16, 0, 8, 4] },
-          { indices: [18, 19, 5, 10, 1] },
-          { indices: [19, 18, 2, 9, 6] },
+          { indices: [0, 12, 14, 4, 8] },
+          { indices: [1, 16, 0, 8, 9] },
+          { indices: [16, 17, 2, 12, 0] },
+          { indices: [13, 1, 9, 5, 15] },
+          { indices: [2, 17, 3, 11, 10] },
+          { indices: [4, 14, 6, 19, 18] },
+          { indices: [12, 2, 10, 6, 14] },
+          { indices: [9, 8, 4, 18, 5] },
+          { indices: [17, 16, 1, 13, 3] },
+          { indices: [3, 13, 15, 7, 11] },
+          { indices: [10, 11, 7, 19, 6] },
+          { indices: [7, 15, 5, 18, 19] },
         ],
         edgeFormula: 'a',
         volFormula: (a) => ((15 + 7 * Math.sqrt(5)) / 4) * Math.pow(a, 3),
@@ -601,21 +622,21 @@ import SiteHeader from '../../components/SiteHeader.astro';
           return verts;
         })(),
         faces: [
-          // 6 octógonos y 8 triángulos
-          { indices: [0, 2, 5, 3, 1, 4] }, // Aproximación representativa de caras
-          { indices: [6, 8, 11, 9, 7, 10] },
-          { indices: [12, 14, 17, 15, 13, 16] },
-          { indices: [18, 20, 23, 21, 19, 22] },
-          { indices: [0, 1, 7, 6] },
-          { indices: [2, 3, 9, 8] },
-          { indices: [4, 5, 11, 10] },
-          { indices: [12, 13, 19, 18] },
-          { indices: [14, 15, 21, 20] },
-          { indices: [16, 17, 23, 22] },
-          { indices: [0, 4, 12, 16] },
-          { indices: [1, 5, 13, 17] },
-          { indices: [2, 6, 14, 18] },
-          { indices: [3, 7, 15, 19] },
+          // 6 octógonos regulares y 8 triángulos equiláteros
+          { indices: [16, 17, 14, 13, 19, 20, 23, 22] },
+          { indices: [1, 2, 5, 4, 10, 11, 8, 7] },
+          { indices: [6, 8, 11, 9, 21, 23, 20, 18] },
+          { indices: [3, 5, 2, 0, 12, 14, 17, 15] },
+          { indices: [9, 10, 4, 3, 15, 16, 22, 21] },
+          { indices: [0, 1, 7, 6, 18, 19, 13, 12] },
+          { indices: [2, 1, 0] },
+          { indices: [4, 5, 3] },
+          { indices: [7, 8, 6] },
+          { indices: [11, 10, 9] },
+          { indices: [12, 13, 14] },
+          { indices: [15, 17, 16] },
+          { indices: [18, 20, 19] },
+          { indices: [21, 22, 23] },
         ],
         edgeFormula: 'a',
         volFormula: (a) => ((21 + 14 * Math.SQRT2) / 3) * Math.pow(a, 3) * 0.1,
@@ -907,10 +928,10 @@ import SiteHeader from '../../components/SiteHeader.astro';
 
       // Base scale
       const scale = Math.min(w, h) * 0.22 * zoom;
-      const cameraDistance = 5.0;
+      const cameraDistance = 6.5;
 
-      // Luz direccional superior derecha
-      const lightDir = normalize({ x: 0.55, y: -0.75, z: 0.35 });
+      // Luz direccional superior derecha frontal
+      const lightDir = normalize({ x: 0.5, y: 0.7, z: 0.65 });
 
       const facesToDraw: ProjectedFace[] = [];
 
@@ -937,8 +958,12 @@ import SiteHeader from '../../components/SiteHeader.astro';
             z: centroid.z + offset.z,
           }, rotX, rotY);
 
-          // Culling de caras traseras solo si no es translúcido
-          if (!isTranslucent && rotNormal.z <= 0.05) return;
+          // Culling exacto en perspectiva: comprobar si la cara mira hacia la cámara en (0, 0, cameraDistance)
+          const viewDot =
+            rotNormal.x * -rotCentroid.x +
+            rotNormal.y * -rotCentroid.y +
+            rotNormal.z * (cameraDistance - rotCentroid.z);
+          if (!isTranslucent && viewDot <= 0) return;
 
           // Proyectar vértices de la cara
           const poly2D: { x: number; y: number }[] = [];
@@ -950,7 +975,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
               z: v.z + offset.z,
             };
             const pRot = rotatePoint(pExploded, rotX, rotY);
-            const persp = cameraDistance / (cameraDistance + pRot.z);
+            const persp = cameraDistance / Math.max(0.5, cameraDistance - pRot.z);
             poly2D.push({
               x: cx + pRot.x * scale * persp,
               y: cy - pRot.y * scale * persp,
@@ -992,7 +1017,6 @@ import SiteHeader from '../../components/SiteHeader.astro';
             if (voxelSet.has(neighborKey)) return;
 
             const rotNormal = rotatePoint(cf.normal, rotX, rotY);
-            if (rotNormal.z <= 0.05) return; // Back-face culling
 
             // Centroide de la cara
             const faceCenter = {
@@ -1001,6 +1025,13 @@ import SiteHeader from '../../components/SiteHeader.astro';
               z: vox.z + cf.normal.z * 0.5,
             };
             const rotCentroid = rotatePoint(faceCenter, rotX, rotY);
+
+            // Culling exacto en perspectiva
+            const viewDot =
+              rotNormal.x * -rotCentroid.x +
+              rotNormal.y * -rotCentroid.y +
+              rotNormal.z * (cameraDistance - rotCentroid.z);
+            if (!isTranslucent && viewDot <= 0) return;
 
             // Proyectar los 4 vértices
             const poly2D: { x: number; y: number }[] = [];
@@ -1011,7 +1042,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
                 z: vox.z + pt[2],
               };
               const pRot = rotatePoint(pWorld, rotX, rotY);
-              const persp = cameraDistance / (cameraDistance + pRot.z);
+              const persp = cameraDistance / Math.max(0.5, cameraDistance - pRot.z);
               poly2D.push({
                 x: cx + pRot.x * scale * persp,
                 y: cy - pRot.y * scale * persp,
@@ -1093,7 +1124,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 
         model.vertices.forEach((v) => {
           const pRot = rotatePoint(v, rotX, rotY);
-          const persp = cameraDistance / (cameraDistance + pRot.z);
+          const persp = cameraDistance / Math.max(0.5, cameraDistance - pRot.z);
           const px = cx + pRot.x * scale * persp;
           const py = cy - pRot.y * scale * persp;
 
