@@ -1,0 +1,1393 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Radar Cartesiano: Caza del Tesoro con Rectas y Circunferencias | Math Universe"
+  description="Juego manipulativo de geometría analítica. Arrastra rectas (y = mx + n) y circunferencias directamente sobre el radar cartesiano para triangular un tesoro oculto."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Geometría Analítica" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="radar-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">Radar Cartesiano</h1>
+              <span class="badge-pill">Rectas &amp; Circunferencias</span>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <select id="sel-difficulty" class="diff-select" aria-label="Dificultad">
+              <option value="8" selected>Sector Normal [−8, 8] · 7 sondas</option>
+              <option value="10">Sector Experto [−10, 10] · 6 sondas</option>
+            </select>
+            <button type="button" class="btn-mini" id="btn-new-mission">Nueva misión</button>
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: HERRAMIENTA MANIPULATIVA Y ECUACIÓN EN VIVO -->
+          <div class="col-tools">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Paso 1 · Elige herramienta</span>
+                  <h2 class="panel-title">Modo del Sonar</h2>
+                </div>
+              </div>
+
+              <div class="tool-tabs" role="group" aria-label="Herramienta de sonda">
+                <button type="button" class="tool-tab is-active" data-tool="line">
+                  <span class="t-icon">╱</span>
+                  <span>Recta</span>
+                </button>
+                <button type="button" class="tool-tab" data-tool="circle">
+                  <span class="t-icon">◯</span>
+                  <span>Círculo</span>
+                </button>
+                <button type="button" class="tool-tab dig-tab" data-tool="dig">
+                  <span class="t-icon">⊕</span>
+                  <span>Excavar</span>
+                </button>
+              </div>
+
+              <!-- CONTROLES RECTA -->
+              <div class="tool-controls" id="ctrl-line">
+                <div class="eq-display" id="line-eq-display">y = 1x + 0</div>
+                <p class="manip-hint">Arrastra los puntos <strong>A</strong> y <strong>B</strong> en el radar o ajusta los deslizadores:</p>
+
+                <label class="slider-field">
+                  <span>Pendiente <strong>m</strong>: <b id="val-m">1.0</b></span>
+                  <input id="sl-m" type="range" min="-4" max="4" step="0.5" value="1" />
+                </label>
+                <label class="slider-field">
+                  <span>Ordenada <strong>n</strong>: <b id="val-n">0</b></span>
+                  <input id="sl-n" type="range" min="-8" max="8" step="1" value="0" />
+                </label>
+
+                <button type="button" class="launch-btn" id="btn-fire-line">Lanzar Sonda Recta</button>
+              </div>
+
+              <!-- CONTROLES CIRCUNFERENCIA -->
+              <div class="tool-controls" id="ctrl-circle" hidden>
+                <div class="eq-display" id="circle-eq-display">(x − 0)² + (y − 0)² = 4²</div>
+                <p class="manip-hint">Arrastra el <strong>Centro C</strong> o el <strong>borde R</strong> en el radar:</p>
+
+                <label class="slider-field">
+                  <span>Centro <strong>a</strong> (X): <b id="val-a">0</b></span>
+                  <input id="sl-a" type="range" min="-8" max="8" step="1" value="0" />
+                </label>
+                <label class="slider-field">
+                  <span>Centro <strong>b</strong> (Y): <b id="val-b">0</b></span>
+                  <input id="sl-b" type="range" min="-8" max="8" step="1" value="0" />
+                </label>
+                <label class="slider-field">
+                  <span>Radio <strong>r</strong>: <b id="val-r">4</b></span>
+                  <input id="sl-r" type="range" min="1" max="12" step="1" value="4" />
+                </label>
+
+                <button type="button" class="launch-btn circle" id="btn-fire-circle">Lanzar Sonda Circunferencia</button>
+              </div>
+
+              <!-- CONTROLES EXCAVAR -->
+              <div class="tool-controls" id="ctrl-dig" hidden>
+                <div class="eq-display dig" id="dig-coord-display">Objetivo: (0, 0)</div>
+                <p class="manip-hint">Haz clic o arrastra la mirilla sobre cualquier coordenada entera del radar y pulsa excavar.</p>
+                <button type="button" class="launch-btn dig" id="btn-dig-now">Excavar en (0, 0)</button>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <label class="shade-toggle">
+                <input type="checkbox" id="chk-shade" checked />
+                <span>Sombrear zonas descartadas en el radar</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: RADAR CARTESIANO MANIPULATIVO -->
+          <div class="col-radar">
+            <div class="status-bar" id="status-bar">
+              Arrastra los tiradores en el radar y lanza sondas para triangular el tesoro.
+            </div>
+
+            <div class="panel-card radar-card">
+              <div class="radar-canvas-wrap">
+                <canvas id="radar-canvas" width="540" height="540" aria-label="Radar cartesiano interactivo"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: MARCADOR + BITÁCORA DEL SONAR -->
+          <div class="col-log">
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Sondas restantes</span>
+                <span class="kpi-val spent" id="kpi-probes">7</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Puntuación / Racha</span>
+                <span class="kpi-val pos" id="kpi-score">0 pts · 0</span>
+              </div>
+            </div>
+
+            <div class="panel-card log-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Lecturas del Sonar</span>
+                  <h2 class="panel-title">Bitácora de Sondas</h2>
+                </div>
+              </div>
+
+              <div class="probe-log" id="probe-log">
+                <div class="empty-log">Aún no has lanzado ninguna sonda.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Geometría Analítica en Acción</span>
+          <h2>¿Cómo triangula el radar usando ecuaciones?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. Semiplanos con Rectas</div>
+            <h3>La recta y = mx + n parte el plano en dos</h3>
+            <p>
+              Al evaluar la expresión <code class="inline-code">y − (mx + n)</code> en el tesoro <code class="inline-code">(T<sub>x</sub>, T<sub>y</sub>)</code>, su signo nos dice al instante si el tesoro está <strong>por encima</strong> (<code class="inline-code">&gt; 0</code>) o <strong>por debajo</strong> (<code class="inline-code">&lt; 0</code>), descartando la mitad del mapa de un golpe.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. Distancia al Centro</div>
+            <h3>La circunferencia (x − a)² + (y − b)² = r²</h3>
+            <p>
+              Una sonda circular calcula la distancia euclidiana <code class="inline-code">d = √[(T<sub>x</sub> − a)² + (T<sub>y</sub> − b)²]</code>. Conocer la distancia exacta desde dos centros distintos reduce el tesoro a <strong>como máximo dos puntos</strong> (la intersección de ambos círculos).
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Estrategia Óptima</div>
+            <h3>Divide y vencerás + Triangulación</h3>
+            <p>
+              Usa primero una recta que pase cerca del centro para partir el sector por la mitad, o lanza dos sondas circulares centradas en esquinas opuestas: ¡las lecturas de distancia exacta te darán las coordenadas en 3 o 4 sondas!
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .radar-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #34d399;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .diff-select {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.44rem 0.65rem;
+    color: var(--ink-strong);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .btn-mini {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.48rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(275px, 315px) minmax(340px, 1fr) minmax(280px, 340px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1150px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(270px, 315px) 1fr;
+    }
+    .col-log {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-radar { order: 1; }
+    .col-tools { order: 2; }
+    .col-log { order: 3; }
+  }
+
+  .col-tools,
+  .col-radar,
+  .col-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .tool-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .tool-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.18rem;
+    padding: 0.5rem 0.4rem;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .tool-tab .t-icon {
+    font-size: 1.05rem;
+  }
+
+  .tool-tab.is-active {
+    background: rgba(37, 99, 235, 0.14);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .tool-tab.dig-tab.is-active {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  :root[data-theme='dark'] .tool-tab.dig-tab.is-active {
+    color: #34d399;
+  }
+
+  .eq-display {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-align: center;
+    padding: 0.62rem 0.7rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: #d97706;
+    margin-bottom: 0.65rem;
+  }
+
+  :root[data-theme='dark'] .eq-display {
+    color: #fbbf24;
+  }
+
+  .eq-display.dig {
+    color: #059669;
+  }
+
+  :root[data-theme='dark'] .eq-display.dig {
+    color: #34d399;
+  }
+
+  .manip-hint {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .slider-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.65rem;
+  }
+
+  .slider-field b {
+    font-family: var(--mono);
+    color: var(--ink-strong);
+  }
+
+  .slider-field input[type='range'] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .launch-btn {
+    width: 100%;
+    padding: 0.72rem 0.9rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 0.35rem;
+    transition: transform 0.14s ease;
+  }
+
+  .launch-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .launch-btn.circle {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+  }
+
+  .launch-btn.dig {
+    background: linear-gradient(135deg, #34d399, #059669);
+  }
+
+  .launch-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .shade-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+
+  /* RADAR */
+  .status-bar {
+    padding: 0.65rem 0.95rem;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .status-bar.win {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  .status-bar.lose {
+    background: rgba(244, 63, 94, 0.14);
+    border-color: #f43f5e;
+    color: #dc2626;
+  }
+
+  :root[data-theme='dark'] .status-bar.win { color: #34d399; }
+  :root[data-theme='dark'] .status-bar.lose { color: #fb7185; }
+
+  .radar-card {
+    padding: 0.75rem;
+  }
+
+  .radar-canvas-wrap {
+    display: flex;
+    justify-content: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .radar-canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  /* KPIS Y BITÁCORA */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+
+  .probe-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 410px;
+    overflow-y: auto;
+  }
+
+  .empty-log {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.6rem;
+    text-align: center;
+  }
+
+  .probe-entry {
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    font-size: 0.78rem;
+  }
+
+  .probe-eq {
+    font-family: var(--mono);
+    font-weight: 800;
+    color: var(--ink-strong);
+    margin-bottom: 0.2rem;
+  }
+
+  .probe-res {
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+</style>
+
+<script>
+  type Probe =
+    | { type: 'line'; m: number; n: number; verticalX: number | null; side: 'above' | 'below' | 'on'; dist: number; eq: string }
+    | { type: 'circle'; a: number; b: number; r: number; zone: 'in' | 'out' | 'on'; dist: number; eq: string };
+
+  let gridBound = 8;
+  let maxProbes = 7;
+  let probesLeft = 7;
+  let score = 0;
+  let streak = 0;
+  let treasure = { x: 3, y: -2 };
+  let missionOver = false;
+  let missionWon = false;
+
+  let activeTool: 'line' | 'circle' | 'dig' = 'line';
+  let probes: Probe[] = [];
+  let digAttempts: { x: number; y: number; dist: number }[] = [];
+
+  // Estado manipulativo Recta (puntos A y B)
+  let ptA = { x: -4, y: -4 };
+  let ptB = { x: 4, y: 4 };
+
+  // Estado manipulativo Circunferencia
+  let circA = 0;
+  let circB = 0;
+  let circR = 4;
+
+  // Mirilla excavar
+  let digTarget = { x: 0, y: 0 };
+
+  let draggingHandle: 'A' | 'B' | 'C' | 'R' | 'DIG' | null = null;
+  let sweepAngle = 0;
+
+  const canvas = document.getElementById('radar-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+
+  const selDiff = document.getElementById('sel-difficulty') as HTMLSelectElement;
+  const chkShade = document.getElementById('chk-shade') as HTMLInputElement;
+  const statusBar = document.getElementById('status-bar')!;
+  const kpiProbes = document.getElementById('kpi-probes')!;
+  const kpiScore = document.getElementById('kpi-score')!;
+  const probeLog = document.getElementById('probe-log')!;
+
+  const ctrlLine = document.getElementById('ctrl-line')!;
+  const ctrlCircle = document.getElementById('ctrl-circle')!;
+  const ctrlDig = document.getElementById('ctrl-dig')!;
+
+  const lineEqDisplay = document.getElementById('line-eq-display')!;
+  const circleEqDisplay = document.getElementById('circle-eq-display')!;
+  const digCoordDisplay = document.getElementById('dig-coord-display')!;
+  const btnDigNow = document.getElementById('btn-dig-now') as HTMLButtonElement;
+
+  const slM = document.getElementById('sl-m') as HTMLInputElement;
+  const slN = document.getElementById('sl-n') as HTMLInputElement;
+  const valM = document.getElementById('val-m')!;
+  const valN = document.getElementById('val-n')!;
+
+  const slA = document.getElementById('sl-a') as HTMLInputElement;
+  const slB = document.getElementById('sl-b') as HTMLInputElement;
+  const slR = document.getElementById('sl-r') as HTMLInputElement;
+  const valA = document.getElementById('val-a')!;
+  const valB = document.getElementById('val-b')!;
+  const valR = document.getElementById('val-r')!;
+
+  function toPx(coord: number, axis: 'x' | 'y'): number {
+    const pad = 34;
+    const size = canvas.width - pad * 2;
+    const norm = (coord + gridBound) / (2 * gridBound);
+    return axis === 'x' ? pad + norm * size : canvas.height - pad - norm * size;
+  }
+
+  function toCoord(px: number, py: number): { x: number; y: number } {
+    const pad = 34;
+    const size = canvas.width - pad * 2;
+    const rx = ((px - pad) / size) * (2 * gridBound) - gridBound;
+    const ry = ((canvas.height - pad - py) / size) * (2 * gridBound) - gridBound;
+    return {
+      x: Math.max(-gridBound, Math.min(gridBound, Math.round(rx))),
+      y: Math.max(-gridBound, Math.min(gridBound, Math.round(ry))),
+    };
+  }
+
+  function getLineParams(): { m: number; n: number; verticalX: number | null; eq: string } {
+    if (ptA.x === ptB.x) {
+      return { m: 0, n: 0, verticalX: ptA.x, eq: `x = ${ptA.x}` };
+    }
+    const m = (ptB.y - ptA.y) / (ptB.x - ptA.x);
+    const n = ptA.y - m * ptA.x;
+    const mStr = Math.abs(m - Math.round(m)) < 1e-6 ? String(Math.round(m)) : m.toFixed(2);
+    const nRounded = Math.abs(n - Math.round(n)) < 1e-6 ? Math.round(n) : Number(n.toFixed(2));
+    const sign = nRounded >= 0 ? `+ ${nRounded}` : `− ${Math.abs(nRounded)}`;
+    return { m, n, verticalX: null, eq: `y = ${mStr}x ${sign}` };
+  }
+
+  function syncSlidersFromGeometry() {
+    const lp = getLineParams();
+    lineEqDisplay.textContent = lp.eq;
+    if (lp.verticalX === null) {
+      valM.textContent = lp.m.toFixed(1);
+      valN.textContent = lp.n.toFixed(1);
+      slM.value = String(Math.max(-4, Math.min(4, lp.m)));
+      slN.value = String(Math.max(-gridBound, Math.min(gridBound, Math.round(lp.n))));
+    } else {
+      valM.textContent = '∞';
+      valN.textContent = '—';
+    }
+
+    const aStr = circA >= 0 ? `− ${circA}` : `+ ${Math.abs(circA)}`;
+    const bStr = circB >= 0 ? `− ${circB}` : `+ ${Math.abs(circB)}`;
+    circleEqDisplay.textContent = `(x ${aStr})² + (y ${bStr})² = ${circR}²`;
+    valA.textContent = String(circA);
+    valB.textContent = String(circB);
+    valR.textContent = String(circR);
+    slA.value = String(circA);
+    slB.value = String(circB);
+    slR.value = String(circR);
+
+    digCoordDisplay.textContent = `Objetivo: (${digTarget.x}, ${digTarget.y})`;
+    btnDigNow.textContent = `Excavar en (${digTarget.x}, ${digTarget.y})`;
+  }
+
+  function drawRadar() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const pad = 34;
+    const plotSize = w - pad * 2;
+
+    // Fondo
+    ctx.fillStyle = isLight ? '#ece9e0' : '#090e18';
+    ctx.fillRect(0, 0, w, h);
+
+    // Sombrear zonas descartadas
+    if (chkShade.checked) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad, pad, plotSize, plotSize);
+      ctx.clip();
+
+      for (const p of probes) {
+        ctx.fillStyle = isLight ? 'rgba(220, 38, 38, 0.08)' : 'rgba(244, 63, 94, 0.1)';
+        if (p.type === 'line') {
+          if (p.side === 'on') continue;
+          ctx.beginPath();
+          if (p.verticalX !== null) {
+            const xPx = toPx(p.verticalX, 'x');
+            if (p.side === 'above') {
+              // treasure x > verticalX -> discard left
+              ctx.rect(pad, pad, xPx - pad, plotSize);
+            } else {
+              ctx.rect(xPx, pad, w - pad - xPx, plotSize);
+            }
+          } else {
+            const yLeft = p.m * -gridBound + p.n;
+            const yRight = p.m * gridBound + p.n;
+            const xL = toPx(-gridBound, 'x');
+            const yL = toPx(yLeft, 'y');
+            const xR = toPx(gridBound, 'x');
+            const yR = toPx(yRight, 'y');
+            if (p.side === 'above') {
+              // discard below
+              ctx.moveTo(xL, yL);
+              ctx.lineTo(xR, yR);
+              ctx.lineTo(w - pad, h - pad);
+              ctx.lineTo(pad, h - pad);
+            } else {
+              // discard above
+              ctx.moveTo(xL, yL);
+              ctx.lineTo(xR, yR);
+              ctx.lineTo(w - pad, pad);
+              ctx.lineTo(pad, pad);
+            }
+            ctx.closePath();
+          }
+          ctx.fill();
+        } else if (p.type === 'circle') {
+          if (p.zone === 'on') continue;
+          const cx = toPx(p.a, 'x');
+          const cy = toPx(p.b, 'y');
+          const rPx = (p.r / (2 * gridBound)) * plotSize;
+          ctx.beginPath();
+          if (p.zone === 'in') {
+            // discard outside
+            ctx.rect(pad, pad, plotSize, plotSize);
+            ctx.arc(cx, cy, rPx, 0, Math.PI * 2, true);
+          } else {
+            // discard inside
+            ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
+          }
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    // Cuadrícula
+    ctx.strokeStyle = isLight ? 'rgba(20, 21, 26, 0.1)' : 'rgba(148, 163, 184, 0.12)';
+    ctx.lineWidth = 1;
+    ctx.font = '10px monospace';
+    ctx.fillStyle = isLight ? '#626573' : '#94a3b8';
+
+    for (let i = -gridBound; i <= gridBound; i++) {
+      const px = toPx(i, 'x');
+      const py = toPx(i, 'y');
+      ctx.beginPath();
+      ctx.moveTo(px, pad);
+      ctx.lineTo(px, h - pad);
+      ctx.moveTo(pad, py);
+      ctx.lineTo(w - pad, py);
+      ctx.stroke();
+
+      if (i % 2 === 0) {
+        ctx.textAlign = 'center';
+        ctx.fillText(String(i), px, h - 14);
+        ctx.textAlign = 'right';
+        ctx.fillText(String(i), pad - 6, py + 3);
+      }
+    }
+
+    // Ejes X e Y
+    ctx.strokeStyle = isLight ? 'rgba(20, 21, 26, 0.45)' : 'rgba(226, 232, 240, 0.45)';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(pad, toPx(0, 'y'));
+    ctx.lineTo(w - pad, toPx(0, 'y'));
+    ctx.moveTo(toPx(0, 'x'), pad);
+    ctx.lineTo(toPx(0, 'x'), h - pad);
+    ctx.stroke();
+
+    // Haz de radar sutil
+    const cx0 = toPx(0, 'x');
+    const cy0 = toPx(0, 'y');
+    const grad = ctx.createRadialGradient(cx0, cy0, 10, cx0, cy0, plotSize * 0.5);
+    grad.addColorStop(0, 'rgba(16, 185, 129, 0.08)');
+    grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx0, cy0);
+    ctx.arc(cx0, cy0, plotSize * 0.5, sweepAngle, sweepAngle + 0.45);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+
+    // Dibujar sondas lanzadas
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(pad, pad, plotSize, plotSize);
+    ctx.clip();
+
+    for (const p of probes) {
+      if (p.type === 'line') {
+        ctx.strokeStyle = isLight ? 'rgba(217, 119, 6, 0.7)' : 'rgba(251, 191, 36, 0.7)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        if (p.verticalX !== null) {
+          const xPx = toPx(p.verticalX, 'x');
+          ctx.moveTo(xPx, pad);
+          ctx.lineTo(xPx, h - pad);
+        } else {
+          ctx.moveTo(toPx(-gridBound, 'x'), toPx(p.m * -gridBound + p.n, 'y'));
+          ctx.lineTo(toPx(gridBound, 'x'), toPx(p.m * gridBound + p.n, 'y'));
+        }
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = isLight ? 'rgba(37, 99, 235, 0.7)' : 'rgba(56, 189, 248, 0.7)';
+        ctx.lineWidth = 1.8;
+        const rPx = (p.r / (2 * gridBound)) * plotSize;
+        ctx.beginPath();
+        ctx.arc(toPx(p.a, 'x'), toPx(p.b, 'y'), rPx, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Intentos de excavación fallidos
+    for (const d of digAttempts) {
+      const dx = toPx(d.x, 'x');
+      const dy = toPx(d.y, 'y');
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(dx - 5, dy - 5);
+      ctx.lineTo(dx + 5, dy + 5);
+      ctx.moveTo(dx + 5, dy - 5);
+      ctx.lineTo(dx - 5, dy + 5);
+      ctx.stroke();
+    }
+
+    // Previsualización manipulativa activa
+    if (!missionOver) {
+      if (activeTool === 'line') {
+        const lp = getLineParams();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.6;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        if (lp.verticalX !== null) {
+          const xPx = toPx(lp.verticalX, 'x');
+          ctx.moveTo(xPx, pad);
+          ctx.lineTo(xPx, h - pad);
+        } else {
+          ctx.moveTo(toPx(-gridBound, 'x'), toPx(lp.m * -gridBound + lp.n, 'y'));
+          ctx.lineTo(toPx(gridBound, 'x'), toPx(lp.m * gridBound + lp.n, 'y'));
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Tiradores A y B
+        [{ pt: ptA, lbl: 'A' }, { pt: ptB, lbl: 'B' }].forEach(({ pt, lbl }) => {
+          const px = toPx(pt.x, 'x');
+          const py = toPx(pt.y, 'y');
+          ctx.beginPath();
+          ctx.arc(px, py, 9, 0, Math.PI * 2);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = '#1c1917';
+          ctx.font = 'bold 10px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(lbl, px, py + 3.5);
+        });
+      } else if (activeTool === 'circle') {
+        const cx = toPx(circA, 'x');
+        const cy = toPx(circB, 'y');
+        const rPx = (circR / (2 * gridBound)) * plotSize;
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.6;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Centro C
+        ctx.beginPath();
+        ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+        ctx.fillStyle = '#2563eb';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('C', cx, cy + 3.5);
+
+        // Tirador Radio R
+        const rx = cx + rPx;
+        ctx.beginPath();
+        ctx.arc(rx, cy, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillText('R', rx, cy + 3.5);
+      } else if (activeTool === 'dig') {
+        const dx = toPx(digTarget.x, 'x');
+        const dy = toPx(digTarget.y, 'y');
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(dx, dy, 10, 0, Math.PI * 2);
+        ctx.moveTo(dx - 15, dy);
+        ctx.lineTo(dx + 15, dy);
+        ctx.moveTo(dx, dy - 15);
+        ctx.lineTo(dx, dy + 15);
+        ctx.stroke();
+      }
+    }
+
+    // Mostrar tesoro si terminó la misión
+    if (missionOver) {
+      const tx = toPx(treasure.x, 'x');
+      const ty = toPx(treasure.y, 'y');
+      ctx.beginPath();
+      ctx.arc(tx, ty, 11, 0, Math.PI * 2);
+      ctx.fillStyle = missionWon ? '#10b981' : '#f43f5e';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('★', tx, ty + 4);
+    }
+
+    ctx.restore();
+  }
+
+  function addLogEntry(eq: string, msg: string) {
+    const empty = probeLog.querySelector('.empty-log');
+    if (empty) probeLog.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'probe-entry';
+    div.innerHTML = `<div class="probe-eq">${eq}</div><div class="probe-res">${msg}</div>`;
+    probeLog.prepend(div);
+  }
+
+  function fireLineProbe() {
+    if (missionOver || probesLeft <= 0) return;
+    const lp = getLineParams();
+    probesLeft--;
+
+    let side: 'above' | 'below' | 'on' = 'on';
+    let dist = 0;
+    let msg = '';
+
+    if (lp.verticalX !== null) {
+      dist = Math.abs(treasure.x - lp.verticalX);
+      if (treasure.x === lp.verticalX) {
+        side = 'on';
+        msg = '¡IMPACTO DIRECTO! El tesoro está sobre esta recta.';
+      } else if (treasure.x > lp.verticalX) {
+        side = 'above';
+        msg = `A la DERECHA (x > ${lp.verticalX}) · Distancia: ${dist.toFixed(2)} u`;
+      } else {
+        side = 'below';
+        msg = `A la IZQUIERDA (x < ${lp.verticalX}) · Distancia: ${dist.toFixed(2)} u`;
+      }
+    } else {
+      const diff = treasure.y - (lp.m * treasure.x + lp.n);
+      dist = Math.abs(diff) / Math.sqrt(lp.m * lp.m + 1);
+      if (Math.abs(diff) < 1e-6) {
+        side = 'on';
+        msg = '¡IMPACTO DIRECTO! El tesoro está sobre esta recta.';
+      } else if (diff > 0) {
+        side = 'above';
+        msg = `POR ENCIMA de la recta · Distancia: ${dist.toFixed(2)} u`;
+      } else {
+        side = 'below';
+        msg = `POR DEBAJO de la recta · Distancia: ${dist.toFixed(2)} u`;
+      }
+    }
+
+    probes.push({ type: 'line', m: lp.m, n: lp.n, verticalX: lp.verticalX, side, dist, eq: lp.eq });
+    addLogEntry(lp.eq, msg);
+    statusBar.textContent = `Sonda Recta (${lp.eq}): ${msg}`;
+    checkOutOfProbes();
+  }
+
+  function fireCircleProbe() {
+    if (missionOver || probesLeft <= 0) return;
+    probesLeft--;
+
+    const dx = treasure.x - circA;
+    const dy = treasure.y - circB;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const eq = circleEqDisplay.textContent || '';
+
+    let zone: 'in' | 'out' | 'on' = 'on';
+    let msg = '';
+    if (Math.abs(dist - circR) < 1e-6) {
+      zone = 'on';
+      msg = `¡EN EL BORDE EXACTO! Distancia al centro = ${dist.toFixed(2)} u`;
+    } else if (dist < circR) {
+      zone = 'in';
+      msg = `DENTRO del círculo · Distancia al centro = ${dist.toFixed(2)} u`;
+    } else {
+      zone = 'out';
+      msg = `FUERA del círculo · Distancia al centro = ${dist.toFixed(2)} u`;
+    }
+
+    probes.push({ type: 'circle', a: circA, b: circB, r: circR, zone, dist, eq });
+    addLogEntry(eq, msg);
+    statusBar.textContent = `Sonda Círculo: ${msg}`;
+    checkOutOfProbes();
+  }
+
+  function digAtTarget() {
+    if (missionOver || probesLeft <= 0) return;
+    probesLeft--;
+    if (digTarget.x === treasure.x && digTarget.y === treasure.y) {
+      missionOver = true;
+      missionWon = true;
+      streak++;
+      const earned = 100 + probesLeft * 40;
+      score += earned;
+      statusBar.className = 'status-bar win';
+      statusBar.textContent = `¡TESORO ENCONTRADO en (${treasure.x}, ${treasure.y})! +${earned} pts`;
+      addLogEntry(`Excavar (${digTarget.x}, ${digTarget.y})`, `¡ÉXITO! +${earned} puntos`);
+      updateKpis();
+      return;
+    }
+
+    const d = Math.hypot(treasure.x - digTarget.x, treasure.y - digTarget.y);
+    digAttempts.push({ x: digTarget.x, y: digTarget.y, dist: d });
+    const msg = `Agua… estás a ${d.toFixed(2)} u del tesoro.`;
+    addLogEntry(`Excavar (${digTarget.x}, ${digTarget.y})`, msg);
+    statusBar.textContent = msg;
+    checkOutOfProbes();
+  }
+
+  function checkOutOfProbes() {
+    if (!missionOver && probesLeft <= 0) {
+      missionOver = true;
+      missionWon = false;
+      streak = 0;
+      statusBar.className = 'status-bar lose';
+      statusBar.textContent = `Sin sondas. El tesoro estaba en (${treasure.x}, ${treasure.y}).`;
+    }
+    updateKpis();
+  }
+
+  function updateKpis() {
+    kpiProbes.textContent = String(probesLeft);
+    kpiScore.textContent = `${score} pts · Racha ${streak}`;
+  }
+
+  function newMission() {
+    gridBound = Number(selDiff.value);
+    maxProbes = gridBound === 8 ? 7 : 6;
+    probesLeft = maxProbes;
+    missionOver = false;
+    missionWon = false;
+    probes = [];
+    digAttempts = [];
+
+    treasure = {
+      x: Math.floor(Math.random() * (gridBound * 2 + 1)) - gridBound,
+      y: Math.floor(Math.random() * (gridBound * 2 + 1)) - gridBound,
+    };
+
+    slN.min = String(-gridBound);
+    slN.max = String(gridBound);
+    slA.min = String(-gridBound);
+    slA.max = String(gridBound);
+    slB.min = String(-gridBound);
+    slB.max = String(gridBound);
+
+    ptA = { x: -4, y: -4 };
+    ptB = { x: 4, y: 4 };
+    circA = 0;
+    circB = 0;
+    circR = 4;
+    digTarget = { x: 0, y: 0 };
+
+    statusBar.className = 'status-bar';
+    statusBar.textContent = `Nueva misión en [−${gridBound}, ${gridBound}]. Arrastra en el radar y lanza sondas.`;
+    probeLog.innerHTML = '<div class="empty-log">Aún no has lanzado ninguna sonda.</div>';
+
+    syncSlidersFromGeometry();
+    updateKpis();
+  }
+
+  // Manipulación directa en Canvas (Pointer Events)
+  function getCanvasPos(e: PointerEvent) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      px: ((e.clientX - rect.left) / rect.width) * canvas.width,
+      py: ((e.clientY - rect.top) / rect.height) * canvas.height,
+    };
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (missionOver) return;
+    const { px, py } = getCanvasPos(e);
+    const hitR = 18;
+
+    if (activeTool === 'line') {
+      const dA = Math.hypot(px - toPx(ptA.x, 'x'), py - toPx(ptA.y, 'y'));
+      const dB = Math.hypot(px - toPx(ptB.x, 'x'), py - toPx(ptB.y, 'y'));
+      if (dA <= hitR) draggingHandle = 'A';
+      else if (dB <= hitR) draggingHandle = 'B';
+      else {
+        const c = toCoord(px, py);
+        if (dA < dB) ptA = c;
+        else ptB = c;
+        draggingHandle = dA < dB ? 'A' : 'B';
+        syncSlidersFromGeometry();
+      }
+    } else if (activeTool === 'circle') {
+      const cx = toPx(circA, 'x');
+      const cy = toPx(circB, 'y');
+      const pad = 34;
+      const rPx = (circR / (2 * gridBound)) * (canvas.width - pad * 2);
+      const dC = Math.hypot(px - cx, py - cy);
+      const dR = Math.hypot(px - (cx + rPx), py - cy);
+      if (dR <= hitR) draggingHandle = 'R';
+      else if (dC <= hitR) draggingHandle = 'C';
+      else {
+        const c = toCoord(px, py);
+        circA = c.x;
+        circB = c.y;
+        draggingHandle = 'C';
+        syncSlidersFromGeometry();
+      }
+    } else if (activeTool === 'dig') {
+      digTarget = toCoord(px, py);
+      draggingHandle = 'DIG';
+      syncSlidersFromGeometry();
+    }
+
+    if (draggingHandle) canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!draggingHandle || missionOver) return;
+    const { px, py } = getCanvasPos(e);
+    const c = toCoord(px, py);
+
+    if (draggingHandle === 'A') {
+      if (c.x !== ptB.x || c.y !== ptB.y) ptA = c;
+    } else if (draggingHandle === 'B') {
+      if (c.x !== ptA.x || c.y !== ptA.y) ptB = c;
+    } else if (draggingHandle === 'C') {
+      circA = c.x;
+      circB = c.y;
+    } else if (draggingHandle === 'R') {
+      const dist = Math.round(Math.hypot(c.x - circA, c.y - circB));
+      circR = Math.max(1, Math.min(12, dist));
+    } else if (draggingHandle === 'DIG') {
+      digTarget = c;
+    }
+    syncSlidersFromGeometry();
+  });
+
+  canvas.addEventListener('pointerup', () => {
+    draggingHandle = null;
+  });
+
+  // Sliders sincronizados
+  [slM, slN].forEach((el) =>
+    el.addEventListener('input', () => {
+      const m = Number(slM.value);
+      const n = Number(slN.value);
+      ptA = { x: -4, y: Math.max(-gridBound, Math.min(gridBound, Math.round(m * -4 + n))) };
+      ptB = { x: 4, y: Math.max(-gridBound, Math.min(gridBound, Math.round(m * 4 + n))) };
+      // Ajustar exactamente para mostrar m y n exactos en pantalla si están en rango
+      const x1 = -2;
+      const x2 = 2;
+      ptA = { x: x1, y: m * x1 + n };
+      ptB = { x: x2, y: m * x2 + n };
+      syncSlidersFromGeometry();
+    })
+  );
+
+  [slA, slB, slR].forEach((el) =>
+    el.addEventListener('input', () => {
+      circA = Number(slA.value);
+      circB = Number(slB.value);
+      circR = Number(slR.value);
+      syncSlidersFromGeometry();
+    })
+  );
+
+  document.querySelectorAll<HTMLButtonElement>('.tool-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tool-tab').forEach((t) => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      activeTool = (tab.dataset.tool as 'line' | 'circle' | 'dig') || 'line';
+      ctrlLine.hidden = activeTool !== 'line';
+      ctrlCircle.hidden = activeTool !== 'circle';
+      ctrlDig.hidden = activeTool !== 'dig';
+    });
+  });
+
+  document.getElementById('btn-fire-line')?.addEventListener('click', fireLineProbe);
+  document.getElementById('btn-fire-circle')?.addEventListener('click', fireCircleProbe);
+  btnDigNow.addEventListener('click', digAtTarget);
+  document.getElementById('btn-new-mission')?.addEventListener('click', newMission);
+  selDiff.addEventListener('change', newMission);
+
+  function animateLoop() {
+    sweepAngle = (sweepAngle + 0.025) % (Math.PI * 2);
+    drawRadar();
+    requestAnimationFrame(animateLoop);
+  }
+
+  newMission();
+  requestAnimationFrame(animateLoop);
+</script>

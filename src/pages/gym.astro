@@ -15,6 +15,16 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
   ...sheet,
   pdfUrl: resolveGymPdfUrl(sheet.pdfPath),
 }));
+
+const levelCounts = gymWorksheets.reduce((acc, w) => {
+  acc[w.level] = (acc[w.level] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+const branchCounts = gymWorksheets.reduce((acc, w) => {
+  acc[w.branch] = (acc[w.branch] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
 ---
 
 <BaseLayout
@@ -148,7 +158,7 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
                 class="level-pill is-active"
                 data-level-btn="all"
               >
-                <span>Todos los cursos</span>
+                <span>Todos los cursos ({gymWorksheets.length})</span>
               </button>
               {
                 GYM_LEVELS.map((lvl) => (
@@ -159,7 +169,7 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
                     class="level-pill"
                     data-level-btn={lvl.id}
                   >
-                    <span>{lvl.short}</span>
+                    <span>{lvl.short} ({levelCounts[lvl.id] || 0})</span>
                     <small>{lvl.stage}</small>
                   </button>
                 ))
@@ -179,7 +189,7 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
                 data-branch-btn="all"
               >
                 <span class="branch-sym">✱</span>
-                <span>Todas las ramas</span>
+                <span>Todas las ramas ({gymWorksheets.length})</span>
               </button>
               {
                 GYM_BRANCHES.map((br) => (
@@ -190,7 +200,7 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
                     style={`--branch-col:${br.color}`}
                   >
                     <span class="branch-sym">{br.symbol}</span>
-                    <span>{br.code} · {br.name}</span>
+                    <span>{br.name} ({branchCounts[br.id] || 0})</span>
                   </button>
                 ))
               }
@@ -238,6 +248,15 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
             </div>
 
             <div class="viewer-actions">
+              <a
+                href="#"
+                download
+                class="viewer-dl-external"
+                data-gym-viewer-dl
+                title="Descargar esta hoja de ejercicios en PDF"
+              >
+                📥 Descargar PDF
+              </a>
               <button
                 type="button"
                 class="viewer-aux-link"
@@ -610,6 +629,12 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
       viewerTitleEl.textContent = selectedSheet.title;
       viewerStageEl.innerHTML = renderViewerPane(selectedSheet);
 
+      const dlBtn = document.querySelector<HTMLAnchorElement>('[data-gym-viewer-dl]');
+      if (dlBtn && selectedSheet) {
+        dlBtn.href = selectedSheet.pdfUrl;
+        dlBtn.setAttribute('download', `${selectedSheet.id}.pdf`);
+      }
+
       viewerStageEl.querySelectorAll<HTMLButtonElement>('[data-copy-path]').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const path = btn.dataset.copyPath || '';
@@ -746,6 +771,18 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
         document.querySelectorAll('[data-level-btn]').forEach((b) =>
           b.classList.toggle('is-active', b === btn),
         );
+        // Si la rama seleccionada previamente no tiene ejercicios en este curso, restablecer rama a 'all'
+        if (activeLevel !== 'all' && activeBranch !== 'all') {
+          const hasBranchInLevel = clientWorksheets.some(
+            (s) => s.level === activeLevel && s.branch === activeBranch,
+          );
+          if (!hasBranchInLevel) {
+            activeBranch = 'all';
+            document.querySelectorAll<HTMLElement>('[data-branch-btn]').forEach((b) =>
+              b.classList.toggle('is-active', b.dataset.branchBtn === 'all'),
+            );
+          }
+        }
         renderArchive();
       });
     });
@@ -1551,8 +1588,30 @@ const clientWorksheets = gymWorksheets.map((sheet) => ({
   .viewer-stage :global(.pdf-iframe) {
     border: 0;
     flex: 1;
-    height: 720px;
+    min-height: 85vh;
+    height: 880px;
     width: 100%;
+  }
+
+  .viewer-dl-external {
+    background: var(--accent);
+    color: #ffffff !important;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font: 700 0.68rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.55rem 0.95rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .viewer-dl-external:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
   /* Blueprint cuando está pendiente de subir a Cloudflare R2 */

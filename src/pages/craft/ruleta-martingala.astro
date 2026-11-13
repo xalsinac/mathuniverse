@@ -1,0 +1,1280 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="La Ruleta y la Trampa de la Martingala | Math Universe"
+  description="Simula la estrategia Martingala en la ruleta europea (18/37). Observa cómo subes poco a poco en dientes de sierra hasta que una racha inevitable te lleva a la ruina."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Probabilidad" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="roulette-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">La Ruleta y la Trampa de la Martingala</h1>
+              <span class="badge-pill">Ventaja Banca: 2,70% (1/37)</span>
+            </div>
+          </div>
+
+          <div class="strategy-tabs" role="group" aria-label="Seleccionar estrategia">
+            <button type="button" class="strat-tab is-active" data-strat="martingale">
+              <span class="tab-name">Martingala</span>
+              <span class="tab-sub">Doblar al perder</span>
+            </button>
+            <button type="button" class="strat-tab" data-strat="flat">
+              <span class="tab-name">Apuesta Fija</span>
+              <span class="tab-sub">Siempre base</span>
+            </button>
+            <button type="button" class="strat-tab" data-strat="paroli">
+              <span class="tab-name">Paroli (Inversa)</span>
+              <span class="tab-sub">Doblar al ganar</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: RULETA VISUAL + CONFIGURACIÓN -->
+          <div class="col-wheel">
+            <div class="panel-card wheel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Ruleta Europea (37 casillas)</span>
+                  <h2 class="panel-title" id="wheel-result-title">Lista para girar</h2>
+                </div>
+                <span class="last-num-badge" id="last-num-badge">—</span>
+              </div>
+
+              <div class="wheel-canvas-wrap">
+                <canvas id="wheel-canvas" width="280" height="280" aria-label="Ruleta europea animada"></canvas>
+              </div>
+
+              <div class="history-strip" id="history-strip" aria-label="Últimos números"></div>
+            </div>
+
+            <div class="panel-card config-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Reglas de la Mesa</span>
+                  <h2 class="panel-title">Configuración</h2>
+                </div>
+              </div>
+
+              <div class="config-grid">
+                <label class="cfg-field">
+                  <span>Color elegido (18/37)</span>
+                  <select id="sel-color">
+                    <option value="red">Rojo (18 números)</option>
+                    <option value="black">Negro (18 números)</option>
+                  </select>
+                </label>
+
+                <label class="cfg-field">
+                  <span>Saldo inicial</span>
+                  <select id="sel-bankroll">
+                    <option value="500">500 €</option>
+                    <option value="1000" selected>1.000 €</option>
+                    <option value="5000">5.000 €</option>
+                  </select>
+                </label>
+
+                <label class="cfg-field">
+                  <span>Apuesta base</span>
+                  <select id="sel-base">
+                    <option value="5" selected>5 €</option>
+                    <option value="10">10 €</option>
+                    <option value="25">25 €</option>
+                  </select>
+                </label>
+
+                <label class="cfg-field">
+                  <span>Límite de la mesa</span>
+                  <select id="sel-limit">
+                    <option value="500">500 €</option>
+                    <option value="1000" selected>1.000 €</option>
+                    <option value="9999999">Sin límite</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: CONTROLES + KPIS + GRÁFICA -->
+          <div class="col-center">
+            <div class="panel-card controls-card">
+              <div class="sim-buttons">
+                <button type="button" class="sim-btn primary" id="btn-spin-1">Girar 1 vez</button>
+                <button type="button" class="sim-btn" id="btn-spin-10">10 tiradas</button>
+                <button type="button" class="sim-btn" id="btn-spin-100">100 tiradas</button>
+                <button type="button" class="sim-btn" id="btn-spin-1000">1.000 tiradas</button>
+                <button type="button" class="sim-btn gold" id="btn-auto-ruin">Auto hasta Ruina o +50%</button>
+                <button type="button" class="sim-btn ghost" id="btn-reset">Reiniciar</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Saldo actual</span>
+                <span class="kpi-val pos" id="kpi-balance">1.000,00 €</span>
+                <span class="kpi-sub" id="kpi-peak">Máximo: 1.000,00 €</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Siguiente apuesta</span>
+                <span class="kpi-val spent" id="kpi-next-bet">5,00 €</span>
+                <span class="kpi-sub" id="kpi-bet-note">Nivel 1 de Martingala</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Tiradas jugadas</span>
+                <span class="kpi-val" id="kpi-spins">0</span>
+                <span class="kpi-sub" id="kpi-winrate">Victorias: 0 (—)</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Peor racha perdida</span>
+                <span class="kpi-val neg" id="kpi-worst-streak">0 seguidas</span>
+                <span class="kpi-sub" id="kpi-cur-streak">Racha actual: 0</span>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Evolución del capital</span>
+                  <h2 class="panel-title">Saldo en Mesa (€)</h2>
+                </div>
+                <span class="status-pill" id="session-status-pill">En juego</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="balance-canvas" width="680" height="235" aria-label="Gráfica del saldo a lo largo de las tiradas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: ESCALERA DE RACHAS Y PROBABILIDAD DE RUINA -->
+          <div class="col-table">
+            <div class="panel-card table-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Escalera exponencial de la Martingala</span>
+                  <h2 class="panel-title">Rachas de Derrotas</h2>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="streak-table">
+                  <thead>
+                    <tr>
+                      <th>Derrotas</th>
+                      <th>Apuesta sig.</th>
+                      <th>Pérdida acum.</th>
+                      <th>Prob. (19/37)<sup>k</sup></th>
+                    </tr>
+                  </thead>
+                  <tbody id="streak-tbody"></tbody>
+                </table>
+              </div>
+              <p class="table-footnote">
+                El <strong>0 verde</strong> hace que perder tenga probabilidad <strong>19/37 (51,35%)</strong>. Una racha de 8 o 9 derrotas parece rara en una tirada, pero en 500 tiradas ocurre casi siempre.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Explicación Matemática</span>
+          <h2>¿Por qué la Martingala parece funcionar… hasta que te arruina?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. El Engaño de los Dientes de Sierra</div>
+            <h3>Ganar 5 € muchas veces vs. perder 1.000 € de golpe</h3>
+            <p>
+              Con la Martingala ganas tu apuesta base <code class="inline-code">+b</code> cada vez que cierras un ciclo. Por eso el saldo sube como una escalera muy regular. Sin embargo, no has eliminado el riesgo: simplemente has <strong>empaquetado todas tus pérdidas potenciales en un único precipicio</strong>.
+            </p>
+            <div class="formula-box">
+              Apuesta en el paso k = b · 2<sup>k−1</sup> &nbsp;|&nbsp; Capital en riesgo = b · (2<sup>k</sup> − 1)
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. Esperanza Matemática Inmutable</div>
+            <h3>Doblar no cambia la ventaja del casino</h3>
+            <p>
+              En cada giro de la ruleta europea, la probabilidad de acertar Rojo/Negro es <code class="inline-code">18/37</code> y la de fallar (por el color contrario o el <code class="inline-code">0</code> verde) es <code class="inline-code">19/37</code>:
+            </p>
+            <div class="formula-box">
+              E[X] = (18/37)·(+A) + (19/37)·(−A) = −(1/37)·A ≈ −2,70% · A
+            </div>
+            <p>
+              Al doblar la apuesta <code class="inline-code">A</code>, también multiplicas por 2 la pérdida esperada en dólares/euros de esa tirada.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. La Ruina del Jugador</div>
+            <h3>Límites de mesa y saldo finito</h3>
+            <p>
+              Para sobrevivir a solo <strong>10 derrotas seguidas</strong> empezando en 5 € necesitas arriesgar <strong>5.115 €</strong> únicamente para ganar 5 €. En cuanto alcanzas el límite de la mesa o tu saldo se agota, ya no puedes doblar y la pérdida se vuelve irreversible.
+            </p>
+            <a href="/academy/probabilidad/ley-grandes-numeros-tcl" class="academy-inline-link">
+              Ver en Math Academy: Ley de los Grandes Números →
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .roulette-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1420px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #e11d48;
+    background: rgba(244, 63, 94, 0.14);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #fb7185;
+  }
+
+  .strategy-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .strat-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.45rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+
+  .strat-tab:hover {
+    border-color: #f43f5e;
+  }
+
+  .strat-tab.is-active {
+    background: rgba(244, 63, 94, 0.14);
+    border-color: #f43f5e;
+    color: var(--ink-strong);
+  }
+
+  .tab-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .tab-sub {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(295px, 330px) 1fr minmax(330px, 385px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(290px, 340px) 1fr;
+    }
+    .col-table {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-center { order: 1; }
+    .col-wheel { order: 2; }
+    .col-table { order: 3; }
+    .strategy-tabs { width: 100%; }
+  }
+
+  .col-wheel,
+  .col-center,
+  .col-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .last-num-badge {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 800;
+    min-width: 38px;
+    height: 32px;
+    padding: 0 0.55rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: var(--ink-strong);
+  }
+
+  .last-num-badge.red { background: #dc2626; border-color: #dc2626; color: #fff; }
+  .last-num-badge.black { background: #18181b; border-color: #3f3f46; color: #fff; }
+  .last-num-badge.green { background: #059669; border-color: #059669; color: #fff; }
+
+  .wheel-canvas-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.7rem;
+  }
+
+  .wheel-canvas-wrap canvas {
+    max-width: 240px;
+    width: 100%;
+    height: auto;
+  }
+
+  .history-strip {
+    display: flex;
+    gap: 0.28rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 24px;
+  }
+
+  .hist-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+  }
+
+  .hist-dot.red { background: #dc2626; }
+  .hist-dot.black { background: #27272a; }
+  .hist-dot.green { background: #059669; }
+
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .cfg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    font-size: 0.74rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .cfg-field select {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 0.42rem 0.5rem;
+    color: var(--ink-strong);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  /* CONTROLES */
+  .sim-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  @media (max-width: 560px) {
+    .sim-buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sim-btn {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.62rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-sunken);
+    color: var(--ink-strong);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    text-align: center;
+  }
+
+  .sim-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .sim-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .sim-btn.gold {
+    grid-column: span 2;
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  :root[data-theme='dark'] .sim-btn.gold {
+    color: #fbbf24;
+  }
+
+  .sim-btn.gold.running {
+    background: #e11d48;
+    border-color: #e11d48;
+    color: #ffffff;
+  }
+
+  .sim-btn.ghost {
+    color: var(--muted);
+  }
+
+  /* KPIS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  .kpi-val.neg { color: #dc2626; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+  :root[data-theme='dark'] .kpi-val.neg { color: #f87171; }
+
+  .kpi-sub {
+    display: block;
+    font-size: 0.71rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .status-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  .status-pill.ruin {
+    background: rgba(244, 63, 94, 0.16);
+    border-color: rgba(244, 63, 94, 0.45);
+    color: #e11d48;
+  }
+
+  :root[data-theme='dark'] .status-pill { color: #34d399; }
+  :root[data-theme='dark'] .status-pill.ruin { color: #fb7185; }
+
+  .canvas-wrap {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* TABLA DE RACHAS */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .streak-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  .streak-table th,
+  .streak-table td {
+    padding: 0.38rem 0.42rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .streak-table th {
+    font-family: var(--mono);
+    font-size: 0.67rem;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .streak-table td {
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  .streak-table tr.is-current {
+    background: rgba(245, 158, 11, 0.14);
+  }
+
+  .streak-table tr.is-current td:first-child {
+    color: #d97706;
+    font-weight: 800;
+  }
+
+  :root[data-theme='dark'] .streak-table tr.is-current td:first-child {
+    color: #fbbf24;
+  }
+
+  .streak-table tr.is-over-limit {
+    opacity: 0.55;
+  }
+
+  .table-footnote {
+    margin: 0.75rem 0 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+
+  .academy-inline-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.25rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #d97706;
+    text-decoration: none;
+  }
+
+  :root[data-theme='dark'] .academy-inline-link {
+    color: #fbbf24;
+  }
+
+  .academy-inline-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  // Secuencia real de la ruleta europea
+  const WHEEL_NUMBERS = [
+    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10,
+    5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
+  ];
+  const RED_SET = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
+
+  function getNumColor(n: number): 'green' | 'red' | 'black' {
+    if (n === 0) return 'green';
+    return RED_SET.has(n) ? 'red' : 'black';
+  }
+
+  let strategy: 'martingale' | 'flat' | 'paroli' = 'martingale';
+  let chosenColor: 'red' | 'black' = 'red';
+  let initialBankroll = 1000;
+  let baseBet = 5;
+  let tableLimit = 1000;
+
+  let balance = 1000;
+  let peakBalance = 1000;
+  let nextBet = 5;
+  let spins = 0;
+  let wins = 0;
+  let curLossStreak = 0;
+  let worstLossStreak = 0;
+  let paroliStep = 0;
+  let balanceHistory: number[] = [1000];
+  let recentNumbers: number[] = [];
+  let wheelAngle = 0;
+  let spinAnimRaf: number | null = null;
+  let autoRaf: number | null = null;
+
+  const wheelCanvas = document.getElementById('wheel-canvas') as HTMLCanvasElement;
+  const balanceCanvas = document.getElementById('balance-canvas') as HTMLCanvasElement;
+  const wheelResultTitle = document.getElementById('wheel-result-title')!;
+  const lastNumBadge = document.getElementById('last-num-badge')!;
+  const historyStrip = document.getElementById('history-strip')!;
+  const streakTbody = document.getElementById('streak-tbody')!;
+
+  const kpiBalance = document.getElementById('kpi-balance')!;
+  const kpiPeak = document.getElementById('kpi-peak')!;
+  const kpiNextBet = document.getElementById('kpi-next-bet')!;
+  const kpiBetNote = document.getElementById('kpi-bet-note')!;
+  const kpiSpins = document.getElementById('kpi-spins')!;
+  const kpiWinrate = document.getElementById('kpi-winrate')!;
+  const kpiWorstStreak = document.getElementById('kpi-worst-streak')!;
+  const kpiCurStreak = document.getElementById('kpi-cur-streak')!;
+  const sessionStatusPill = document.getElementById('session-status-pill')!;
+  const btnAutoRuin = document.getElementById('btn-auto-ruin')!;
+
+  const selColor = document.getElementById('sel-color') as HTMLSelectElement;
+  const selBankroll = document.getElementById('sel-bankroll') as HTMLSelectElement;
+  const selBase = document.getElementById('sel-base') as HTMLSelectElement;
+  const selLimit = document.getElementById('sel-limit') as HTMLSelectElement;
+
+  const fmtEur = (v: number) =>
+    v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+
+  function drawWheel(angle: number, highlightNum: number | null = null) {
+    const ctx = wheelCanvas.getContext('2d');
+    if (!ctx) return;
+    const w = wheelCanvas.width;
+    const h = wheelCanvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const rOuter = w * 0.46;
+    const rInner = w * 0.25;
+    const slice = (Math.PI * 2) / WHEEL_NUMBERS.length;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Aro exterior dorado
+    ctx.beginPath();
+    ctx.arc(cx, cy, rOuter + 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#b45309';
+    ctx.fill();
+
+    WHEEL_NUMBERS.forEach((num, idx) => {
+      const start = angle + idx * slice - Math.PI / 2;
+      const end = start + slice;
+      const col = getNumColor(num);
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, rOuter, start, end);
+      ctx.closePath();
+      ctx.fillStyle = col === 'green' ? '#059669' : col === 'red' ? '#dc2626' : '#18181b';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      // Número
+      const mid = start + slice / 2;
+      const tx = cx + Math.cos(mid) * (rOuter * 0.82);
+      const ty = cy + Math.sin(mid) * (rOuter * 0.82);
+      ctx.save();
+      ctx.translate(tx, ty);
+      ctx.rotate(mid + Math.PI / 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(num), 0, 0);
+      ctx.restore();
+
+      // Bola en el número ganador
+      if (highlightNum === num) {
+        const bx = cx + Math.cos(mid) * (rOuter * 0.62);
+        const by = cy + Math.sin(mid) * (rOuter * 0.62);
+        ctx.beginPath();
+        ctx.arc(bx, by, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+
+    // Centro de la ruleta
+    ctx.beginPath();
+    ctx.arc(cx, cy, rInner, 0, Math.PI * 2);
+    ctx.fillStyle = '#18181b';
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fill();
+  }
+
+  function computeActualBet(): number {
+    if (balance <= 0) return 0;
+    return Math.min(nextBet, tableLimit, balance);
+  }
+
+  function spinOnce(): { num: number; won: boolean; bet: number } | null {
+    const bet = computeActualBet();
+    if (bet <= 0) return null;
+
+    const num = WHEEL_NUMBERS[Math.floor(Math.random() * WHEEL_NUMBERS.length)];
+    const col = getNumColor(num);
+    const won = col === chosenColor;
+
+    spins++;
+    if (won) {
+      wins++;
+      balance += bet;
+      if (balance > peakBalance) peakBalance = balance;
+      curLossStreak = 0;
+
+      if (strategy === 'martingale' || strategy === 'flat') {
+        nextBet = baseBet;
+      } else if (strategy === 'paroli') {
+        paroliStep++;
+        if (paroliStep >= 3) {
+          paroliStep = 0;
+          nextBet = baseBet;
+        } else {
+          nextBet = Math.min(bet * 2, tableLimit);
+        }
+      }
+    } else {
+      balance -= bet;
+      curLossStreak++;
+      if (curLossStreak > worstLossStreak) worstLossStreak = curLossStreak;
+
+      if (strategy === 'martingale') {
+        nextBet = Math.min(bet * 2, tableLimit);
+      } else if (strategy === 'flat') {
+        nextBet = baseBet;
+      } else if (strategy === 'paroli') {
+        paroliStep = 0;
+        nextBet = baseBet;
+      }
+    }
+
+    recentNumbers.unshift(num);
+    if (recentNumbers.length > 14) recentNumbers.pop();
+
+    return { num, won, bet };
+  }
+
+  function pushHistory() {
+    balanceHistory.push(balance);
+    if (balanceHistory.length > 260) {
+      balanceHistory = balanceHistory.filter((_, idx) => idx % 2 === 0 || idx === balanceHistory.length - 1);
+    }
+  }
+
+  function renderUI(lastResult?: { num: number; won: boolean; bet: number } | null) {
+    const isRuined = balance <= 0;
+    kpiBalance.textContent = fmtEur(balance);
+    kpiBalance.className = 'kpi-val ' + (isRuined ? 'neg' : balance >= initialBankroll ? 'pos' : 'neg');
+    kpiPeak.textContent = `Máximo: ${fmtEur(peakBalance)}`;
+
+    const actualNext = computeActualBet();
+    kpiNextBet.textContent = fmtEur(actualNext);
+    if (isRuined) {
+      kpiBetNote.textContent = 'Saldo agotado';
+    } else if (strategy === 'martingale') {
+      kpiBetNote.textContent =
+        nextBet > tableLimit
+          ? 'Topado por límite de mesa'
+          : `Nivel ${curLossStreak + 1} de Martingala`;
+    } else {
+      kpiBetNote.textContent = strategy === 'flat' ? 'Apuesta constante' : `Ciclo Paroli ${paroliStep + 1}/3`;
+    }
+
+    kpiSpins.textContent = spins.toLocaleString('es-ES');
+    const wr = spins > 0 ? ((wins / spins) * 100).toFixed(1) + '%' : '—';
+    kpiWinrate.textContent = `Victorias: ${wins} (${wr})`;
+    kpiWorstStreak.textContent = `${worstLossStreak} seguidas`;
+    kpiCurStreak.textContent = `Racha actual: ${curLossStreak}`;
+
+    if (isRuined) {
+      sessionStatusPill.textContent = '¡ARRUINADO!';
+      sessionStatusPill.classList.add('ruin');
+    } else {
+      sessionStatusPill.textContent = 'En juego';
+      sessionStatusPill.classList.remove('ruin');
+    }
+
+    if (lastResult) {
+      const col = getNumColor(lastResult.num);
+      lastNumBadge.textContent = String(lastResult.num);
+      lastNumBadge.className = `last-num-badge ${col}`;
+      wheelResultTitle.textContent = lastResult.won
+        ? `¡Ganas +${fmtEur(lastResult.bet)}!`
+        : `Pierdes −${fmtEur(lastResult.bet)}`;
+    }
+
+    historyStrip.innerHTML = recentNumbers
+      .map((n) => `<span class="hist-dot ${getNumColor(n)}">${n}</span>`)
+      .join('');
+
+    // Tabla de rachas k = 1..10
+    let rows = '';
+    for (let k = 1; k <= 10; k++) {
+      const stake = baseBet * Math.pow(2, k - 1);
+      const cumLoss = baseBet * (Math.pow(2, k) - 1);
+      const prob = Math.pow(19 / 37, k) * 100;
+      const isCur = curLossStreak === k - 1 && !isRuined;
+      const overLimit = stake > tableLimit || cumLoss > initialBankroll;
+      rows += `
+        <tr class="${isCur ? 'is-current' : ''} ${overLimit ? 'is-over-limit' : ''}">
+          <td>${k} seguidas</td>
+          <td>${fmtEur(stake)}</td>
+          <td>${fmtEur(cumLoss)}</td>
+          <td>${prob >= 0.1 ? prob.toFixed(2) : prob.toFixed(3)}%</td>
+        </tr>
+      `;
+    }
+    streakTbody.innerHTML = rows;
+
+    drawBalanceChart();
+  }
+
+  function drawBalanceChart() {
+    const ctx = balanceCanvas.getContext('2d');
+    if (!ctx) return;
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const w = balanceCanvas.width;
+    const h = balanceCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 64;
+    const padR = 18;
+    const padT = 18;
+    const padB = 26;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const maxVal = Math.max(initialBankroll * 1.25, ...balanceHistory);
+    const minVal = 0;
+    const span = Math.max(100, maxVal - minVal);
+
+    const toX = (i: number) => padL + (i / Math.max(1, balanceHistory.length - 1)) * plotW;
+    const toY = (v: number) => padT + ((maxVal - v) / span) * plotH;
+
+    // Línea saldo inicial
+    const yInit = toY(initialBankroll);
+    ctx.strokeStyle = isLight ? 'rgba(20, 21, 26, 0.25)' : 'rgba(148, 163, 184, 0.35)';
+    ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(padL, yInit);
+    ctx.lineTo(w - padR, yInit);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = isLight ? '#626573' : '#94a3b8';
+    ctx.font = '11px monospace';
+    ctx.fillText(`${initialBankroll} €`, 8, yInit + 4);
+    ctx.fillText('0 €', 16, h - padB);
+
+    if (balanceHistory.length < 2) return;
+
+    const lastVal = balanceHistory[balanceHistory.length - 1];
+    ctx.strokeStyle =
+      lastVal <= 0
+        ? isLight ? '#dc2626' : '#f43f5e'
+        : lastVal >= initialBankroll
+          ? isLight ? '#059669' : '#34d399'
+          : isLight ? '#d97706' : '#fbbf24';
+    ctx.lineWidth = 2.3;
+    ctx.beginPath();
+    for (let i = 0; i < balanceHistory.length; i++) {
+      const px = toX(i);
+      const py = toY(balanceHistory[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  function runSingleAnimated() {
+    if (balance <= 0) return;
+    const res = spinOnce();
+    if (!res) return;
+    pushHistory();
+
+    if (spinAnimRaf !== null) cancelAnimationFrame(spinAnimRaf);
+    const startAngle = wheelAngle;
+    const targetAngle = startAngle + Math.PI * 2.5 + Math.random() * Math.PI;
+    const startTime = performance.now();
+    const duration = 420;
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      wheelAngle = startAngle + (targetAngle - startAngle) * ease;
+      drawWheel(wheelAngle, t >= 1 ? res.num : null);
+      if (t < 1) {
+        spinAnimRaf = requestAnimationFrame(step);
+      } else {
+        spinAnimRaf = null;
+        renderUI(res);
+      }
+    };
+    spinAnimRaf = requestAnimationFrame(step);
+  }
+
+  function runBatch(count: number) {
+    if (balance <= 0) return;
+    let lastRes: { num: number; won: boolean; bet: number } | null = null;
+    const stepHist = Math.max(1, Math.floor(count / 45));
+    for (let i = 0; i < count; i++) {
+      const r = spinOnce();
+      if (!r) break;
+      lastRes = r;
+      if (i % stepHist === 0 || i === count - 1 || balance <= 0) {
+        pushHistory();
+      }
+      if (balance <= 0) break;
+    }
+    if (lastRes) drawWheel(wheelAngle, lastRes.num);
+    renderUI(lastRes);
+  }
+
+  function stopAuto() {
+    if (autoRaf !== null) {
+      cancelAnimationFrame(autoRaf);
+      autoRaf = null;
+    }
+    btnAutoRuin.classList.remove('running');
+    btnAutoRuin.textContent = 'Auto hasta Ruina o +50%';
+  }
+
+  function toggleAuto() {
+    if (autoRaf !== null) {
+      stopAuto();
+      return;
+    }
+    if (balance <= 0) return;
+    const targetGoal = initialBankroll * 1.5;
+    btnAutoRuin.classList.add('running');
+    btnAutoRuin.textContent = 'Pausar simulación';
+
+    const tick = () => {
+      let lastRes: { num: number; won: boolean; bet: number } | null = null;
+      for (let i = 0; i < 15; i++) {
+        const r = spinOnce();
+        if (!r) break;
+        lastRes = r;
+        pushHistory();
+        if (balance <= 0 || balance >= targetGoal) break;
+      }
+      if (lastRes) drawWheel(wheelAngle + 0.35, lastRes.num);
+      wheelAngle += 0.35;
+      renderUI(lastRes);
+
+      if (balance <= 0 || balance >= targetGoal) {
+        stopAuto();
+        if (balance >= targetGoal) {
+          wheelResultTitle.textContent = `¡Objetivo +50% alcanzado en ${spins} tiradas!`;
+        } else {
+          wheelResultTitle.textContent = `¡Ruina total en la tirada ${spins}!`;
+        }
+      } else {
+        autoRaf = requestAnimationFrame(tick);
+      }
+    };
+    autoRaf = requestAnimationFrame(tick);
+  }
+
+  function resetAll() {
+    stopAuto();
+    chosenColor = selColor.value === 'black' ? 'black' : 'red';
+    initialBankroll = Number(selBankroll.value);
+    baseBet = Number(selBase.value);
+    tableLimit = Number(selLimit.value);
+
+    balance = initialBankroll;
+    peakBalance = initialBankroll;
+    nextBet = baseBet;
+    spins = 0;
+    wins = 0;
+    curLossStreak = 0;
+    worstLossStreak = 0;
+    paroliStep = 0;
+    balanceHistory = [initialBankroll];
+    recentNumbers = [];
+
+    lastNumBadge.textContent = '—';
+    lastNumBadge.className = 'last-num-badge';
+    wheelResultTitle.textContent = 'Lista para girar';
+    drawWheel(wheelAngle, null);
+    renderUI(null);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.strat-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.strat-tab').forEach((t) => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      strategy = (tab.dataset.strat as 'martingale' | 'flat' | 'paroli') || 'martingale';
+      resetAll();
+    });
+  });
+
+  [selColor, selBankroll, selBase, selLimit].forEach((el) => el.addEventListener('change', resetAll));
+
+  document.getElementById('btn-spin-1')?.addEventListener('click', runSingleAnimated);
+  document.getElementById('btn-spin-10')?.addEventListener('click', () => runBatch(10));
+  document.getElementById('btn-spin-100')?.addEventListener('click', () => runBatch(100));
+  document.getElementById('btn-spin-1000')?.addEventListener('click', () => runBatch(1000));
+  btnAutoRuin.addEventListener('click', toggleAuto);
+  document.getElementById('btn-reset')?.addEventListener('click', resetAll);
+
+  new MutationObserver(() => drawBalanceChart()).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  resetAll();
+</script>

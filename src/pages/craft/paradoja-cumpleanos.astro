@@ -1,0 +1,1089 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="La Paradoja del Cumpleaños (Colisión en el Aula) | Math Universe"
+  description="Calendario visual de 365 días para llenar un aula alumno a alumno. Comprueba en directo por qué con solo 23 personas hay un 50,7% de probabilidad de compartir cumpleaños."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Combinatoria" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="bday-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">La Paradoja del Cumpleaños</h1>
+              <span class="badge-pill">23 alumnos → 50,73%</span>
+            </div>
+          </div>
+
+          <div class="collision-banner" id="collision-banner">
+            Añade alumnos al aula para observar las coincidencias en el calendario.
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: CALENDARIO ANUAL VISUAL (365 DÍAS) -->
+          <div class="col-calendar">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Mapa anual de 365 días</span>
+                  <h2 class="panel-title">Calendario de Cumpleaños</h2>
+                </div>
+                <div class="cal-legend">
+                  <span class="leg-chip"><i class="dot one"></i> 1</span>
+                  <span class="leg-chip"><i class="dot dup"></i> 2+ ¡Colisión!</span>
+                </div>
+              </div>
+
+              <div class="year-grid" id="year-grid" aria-label="Calendario anual de 365 días"></div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: CONTROLES + KPIS + CURVA DE PROBABILIDAD -->
+          <div class="col-center">
+            <div class="panel-card controls-card">
+              <div class="sim-buttons">
+                <button type="button" class="sim-btn primary" id="btn-add-1">+1 alumno</button>
+                <button type="button" class="sim-btn" id="btn-add-5">+5 alumnos</button>
+                <button type="button" class="sim-btn" id="btn-fill-23">Aula de 23</button>
+                <button type="button" class="sim-btn gold" id="btn-until-hit">Añadir hasta 1ª colisión</button>
+                <button type="button" class="sim-btn" id="btn-mc-1000">Simular 1.000 aulas de n</button>
+                <button type="button" class="sim-btn ghost" id="btn-clear">Vaciar aula</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Alumnos en el aula (n)</span>
+                <span class="kpi-val" id="kpi-n">0</span>
+                <span class="kpi-sub" id="kpi-pairs">0 parejas posibles C(n,2)</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Probabilidad teórica</span>
+                <span class="kpi-val spent" id="kpi-prob">0,00%</span>
+                <span class="kpi-sub">Con 365 días equiprobables</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Colisiones en esta aula</span>
+                <span class="kpi-val pos" id="kpi-hits">0 fechas</span>
+                <span class="kpi-sub" id="kpi-hit-detail">Ninguna coincidencia aún</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Monte Carlo (1.000 aulas)</span>
+                <span class="kpi-val" id="kpi-mc">—</span>
+                <span class="kpi-sub" id="kpi-mc-sub">Pulsa «Simular 1.000 aulas»</span>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Curva exacta de probabilidad</span>
+                  <h2 class="panel-title">P(colisión) según el tamaño del aula (n)</h2>
+                </div>
+                <span class="curve-badge" id="curve-badge">n = 0</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="prob-canvas" width="660" height="225" aria-label="Curva de probabilidad de la paradoja del cumpleaños"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: EJEMPLO EN VIVO (LISTA DE ALUMNOS + HITOS) -->
+          <div class="col-roster">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Ejemplo en vivo</span>
+                  <h2 class="panel-title">Lista del Aula</h2>
+                </div>
+                <span class="roster-count" id="roster-count">0 alumnos</span>
+              </div>
+
+              <div class="roster-list" id="roster-list">
+                <div class="empty-roster">El aula está vacía. Pulsa «+1 alumno» o «Aula de 23».</div>
+              </div>
+
+              <div class="milestones-block">
+                <div class="milestones-title">Hitos clave de probabilidad</div>
+                <table class="milestones-table">
+                  <thead>
+                    <tr>
+                      <th>Alumnos (n)</th>
+                      <th>Parejas C(n,2)</th>
+                      <th>P(colisión)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>10</td><td>45</td><td>11,69%</td></tr>
+                    <tr class="hl-row"><td>23</td><td>253</td><td>50,73%</td></tr>
+                    <tr><td>30</td><td>435</td><td>70,63%</td></tr>
+                    <tr><td>50</td><td>1.225</td><td>97,04%</td></tr>
+                    <tr><td>60</td><td>1.770</td><td>99,41%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Explicación Matemática</span>
+          <h2>¿Por qué 23 personas bastan para superar el 50%?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. La Trampa de las Parejas</div>
+            <h3>No comparas contigo: comparas todos contra todos</h3>
+            <p>
+              Nuestra intuición falla porque pensamos en la probabilidad de que alguien cumpla <strong>nuestro mismo día</strong> (ahí sí harían falta 253 personas para superar el 50%). Pero en el aula vale <strong>cualquier pareja</strong> que coincida: con <code class="inline-code">23</code> alumnos hay:
+            </p>
+            <div class="formula-box">
+              C(23, 2) = 23 × 22 / 2 = 253 parejas distintas
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. El Truco del Suceso Contrario</div>
+            <h3>Calcular que TODOS cumplan días distintos</h3>
+            <p>
+              Es mucho más fácil calcular la probabilidad de que no haya ninguna coincidencia: el 1.º tiene <code class="inline-code">365/365</code> días libres, el 2.º <code class="inline-code">364/365</code>, el 3.º <code class="inline-code">363/365</code>… hasta el alumno <code class="inline-code">n</code>:
+            </p>
+            <div class="formula-box">
+              P(colisión) = 1 − (365/365)·(364/365)·…·((365 − n + 1)/365)
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Aplicación en Ciberseguridad</div>
+            <h3>El «Ataque del Cumpleaños» en criptografía</h3>
+            <p>
+              Este mismo principio explica por qué encontrar una colisión en una función hash de <code class="inline-code">N</code> salidas posibles no requiere probar <code class="inline-code">N/2</code> entradas, sino aproximadamente <code class="inline-code">√N</code>. Por eso los hashes seguros (como SHA-256) usan 256 bits.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .bday-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: rgba(37, 99, 235, 0.12);
+    border: 1px solid rgba(37, 99, 235, 0.32);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .collision-banner {
+    font-size: 0.84rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .collision-banner.has-hit {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #b45309;
+    font-weight: 700;
+  }
+
+  :root[data-theme='dark'] .collision-banner.has-hit {
+    color: #fcd34d;
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 430px) 1fr minmax(280px, 330px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(330px, 410px) 1fr;
+    }
+    .col-roster {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-center { order: 1; }
+    .col-calendar { order: 2; }
+    .col-roster { order: 3; }
+  }
+
+  .col-calendar,
+  .col-center,
+  .col-roster {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .cal-legend {
+    display: flex;
+    gap: 0.55rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .leg-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+  }
+
+  .leg-chip .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .leg-chip .dot.one { background: #2563eb; }
+  .leg-chip .dot.dup { background: #f59e0b; border: 1px solid #e11d48; }
+
+  /* CALENDARIO ANUAL 365 DÍAS */
+  .year-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  @media (max-width: 480px) {
+    .year-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .month-box {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.42rem;
+  }
+
+  .month-name {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .days-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .day-cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: transform 0.15s ease;
+  }
+
+  .day-cell.has-one {
+    background: #2563eb;
+    border-color: #60a5fa;
+    color: #ffffff;
+    font-weight: 800;
+  }
+
+  .day-cell.has-collision {
+    background: linear-gradient(135deg, #fbbf24, #e11d48);
+    border-color: #fde68a;
+    color: #ffffff;
+    font-weight: 900;
+    transform: scale(1.18);
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.7);
+  }
+
+  /* CONTROLES */
+  .sim-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  @media (max-width: 560px) {
+    .sim-buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sim-btn {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.6rem 0.6rem;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-sunken);
+    color: var(--ink-strong);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    text-align: center;
+  }
+
+  .sim-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .sim-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .sim-btn.gold {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  :root[data-theme='dark'] .sim-btn.gold {
+    color: #fbbf24;
+  }
+
+  .sim-btn.ghost {
+    color: var(--muted);
+  }
+
+  /* KPIS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  .kpi-val.neg { color: #dc2626; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+  :root[data-theme='dark'] .kpi-val.neg { color: #f87171; }
+
+  .kpi-sub {
+    display: block;
+    font-size: 0.71rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .curve-badge {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: var(--ink-strong);
+  }
+
+  .canvas-wrap {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ROSTER Y HITOS */
+  .roster-count {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .roster-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-height: 235px;
+    overflow-y: auto;
+    margin-bottom: 0.85rem;
+  }
+
+  .empty-roster {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.65rem;
+    text-align: center;
+    background: var(--bg-sunken);
+    border-radius: 8px;
+  }
+
+  .roster-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.34rem 0.6rem;
+    border-radius: 8px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    font-size: 0.78rem;
+  }
+
+  .roster-item.is-collision {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    font-weight: 700;
+  }
+
+  .roster-name {
+    color: var(--ink-strong);
+  }
+
+  .roster-date {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+
+  .roster-item.is-collision .roster-date {
+    color: #d97706;
+  }
+
+  :root[data-theme='dark'] .roster-item.is-collision .roster-date {
+    color: #fbbf24;
+  }
+
+  .milestones-block {
+    border-top: 1px solid var(--line);
+    padding-top: 0.75rem;
+  }
+
+  .milestones-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .milestones-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+  }
+
+  .milestones-table th,
+  .milestones-table td {
+    padding: 0.34rem 0.4rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+  }
+
+  .milestones-table th {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .milestones-table tr.hl-row {
+    background: rgba(37, 99, 235, 0.12);
+    font-weight: 800;
+  }
+
+  .milestones-table tr.hl-row td {
+    color: var(--accent-ink);
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+</style>
+
+<script>
+  const MONTHS = [
+    { name: 'Ene', days: 31 },
+    { name: 'Feb', days: 28 },
+    { name: 'Mar', days: 31 },
+    { name: 'Abr', days: 30 },
+    { name: 'May', days: 31 },
+    { name: 'Jun', days: 30 },
+    { name: 'Jul', days: 31 },
+    { name: 'Ago', days: 31 },
+    { name: 'Sep', days: 30 },
+    { name: 'Oct', days: 31 },
+    { name: 'Nov', days: 30 },
+    { name: 'Dic', days: 31 },
+  ];
+
+  const NAMES = [
+    'Sofía', 'Mateo', 'Lucía', 'Hugo', 'Martina', 'Lucas', 'Valeria', 'Leo',
+    'Paula', 'Daniel', 'Julia', 'Álvaro', 'Emma', 'Pablo', 'Carla', 'Adrián',
+    'Alba', 'Mario', 'Elena', 'Diego', 'Noa', 'Marcos', 'Clara', 'Izan',
+    'Olivia', 'Bruno', 'Sara', 'Javier', 'Carmen', 'Nico', 'Irene', 'Álex',
+    'Laia', 'Marc', 'Claudia', 'Unai', 'Ainhoa', 'Gael', 'Nerea', 'Eric',
+    'Inés', 'pol', 'Vera', 'Biel', 'Lola', 'Arnau', 'Abril', 'Enzo',
+    'Nora', 'Thiago', 'Rocío', 'Iker', 'Marina', 'Joel', 'vega', 'Saúl',
+  ].map((s) => s.charAt(0).toUpperCase() + s.slice(1));
+
+  type Student = {
+    idx: number;
+    name: string;
+    dayOfYear: number; // 0..364
+    label: string;
+  };
+
+  let students: Student[] = [];
+  const yearGrid = document.getElementById('year-grid')!;
+  const rosterList = document.getElementById('roster-list')!;
+  const rosterCount = document.getElementById('roster-count')!;
+  const collisionBanner = document.getElementById('collision-banner')!;
+  const probCanvas = document.getElementById('prob-canvas') as HTMLCanvasElement;
+
+  const kpiN = document.getElementById('kpi-n')!;
+  const kpiPairs = document.getElementById('kpi-pairs')!;
+  const kpiProb = document.getElementById('kpi-prob')!;
+  const kpiHits = document.getElementById('kpi-hits')!;
+  const kpiHitDetail = document.getElementById('kpi-hit-detail')!;
+  const kpiMc = document.getElementById('kpi-mc')!;
+  const kpiMcSub = document.getElementById('kpi-mc-sub')!;
+  const curveBadge = document.getElementById('curve-badge')!;
+
+  function dayToLabel(dayOfYear: number): string {
+    let rem = dayOfYear;
+    for (const m of MONTHS) {
+      if (rem < m.days) return `${rem + 1} ${m.name}`;
+      rem -= m.days;
+    }
+    return '31 Dic';
+  }
+
+  function exactBirthdayProb(n: number): number {
+    if (n <= 1) return 0;
+    if (n > 365) return 1;
+    let pDistinct = 1;
+    for (let i = 0; i < n; i++) {
+      pDistinct *= (365 - i) / 365;
+    }
+    return 1 - pDistinct;
+  }
+
+  function addStudents(count: number) {
+    for (let i = 0; i < count; i++) {
+      const idx = students.length + 1;
+      const dayOfYear = Math.floor(Math.random() * 365);
+      const name = NAMES[(idx - 1) % NAMES.length];
+      students.push({
+        idx,
+        name,
+        dayOfYear,
+        label: dayToLabel(dayOfYear),
+      });
+    }
+    renderAll();
+  }
+
+  function addUntilCollision() {
+    clearRoom();
+    while (students.length < 365) {
+      addStudents(1);
+      const counts = new Map<number, number>();
+      let hit = false;
+      for (const s of students) {
+        const c = (counts.get(s.dayOfYear) || 0) + 1;
+        counts.set(s.dayOfYear, c);
+        if (c >= 2) {
+          hit = true;
+          break;
+        }
+      }
+      if (hit) break;
+    }
+  }
+
+  function clearRoom() {
+    students = [];
+    kpiMc.textContent = '—';
+    kpiMcSub.textContent = 'Pulsa «Simular 1.000 aulas»';
+    renderAll();
+  }
+
+  function runMonteCarlo1000() {
+    const n = Math.max(2, students.length || 23);
+    if (students.length === 0) addStudents(23);
+    let hits = 0;
+    for (let sim = 0; sim < 1000; sim++) {
+      const seen = new Set<number>();
+      let dup = false;
+      for (let i = 0; i < n; i++) {
+        const d = Math.floor(Math.random() * 365);
+        if (seen.has(d)) {
+          dup = true;
+          break;
+        }
+        seen.add(d);
+      }
+      if (dup) hits++;
+    }
+    kpiMc.textContent = `${((hits / 1000) * 100).toFixed(1)}%`;
+    kpiMcSub.textContent = `${hits} / 1.000 aulas de ${n} con colisión`;
+  }
+
+  function renderCalendar(byDay: Map<number, Student[]>) {
+    yearGrid.innerHTML = '';
+    let globalDay = 0;
+
+    for (const m of MONTHS) {
+      const box = document.createElement('div');
+      box.className = 'month-box';
+
+      let monthHits = 0;
+      const daysWrap = document.createElement('div');
+      daysWrap.className = 'days-mini-grid';
+
+      for (let d = 1; d <= m.days; d++) {
+        const list = byDay.get(globalDay) || [];
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        if (list.length === 1) {
+          cell.classList.add('has-one');
+          cell.title = `${d} ${m.name}: ${list[0].name}`;
+        } else if (list.length >= 2) {
+          cell.classList.add('has-collision');
+          cell.textContent = String(list.length);
+          cell.title = `¡COLISIÓN ${d} ${m.name}!: ${list.map((s) => s.name).join(', ')}`;
+          monthHits++;
+        } else {
+          cell.title = `${d} ${m.name}`;
+        }
+        daysWrap.appendChild(cell);
+        globalDay++;
+      }
+
+      const header = document.createElement('div');
+      header.className = 'month-name';
+      header.innerHTML = `<span>${m.name}</span><span>${monthHits > 0 ? '★' : ''}</span>`;
+
+      box.appendChild(header);
+      box.appendChild(daysWrap);
+      yearGrid.appendChild(box);
+    }
+  }
+
+  function drawProbCurve(currentN: number) {
+    const ctx = probCanvas.getContext('2d');
+    if (!ctx) return;
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const w = probCanvas.width;
+    const h = probCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 44;
+    const padR = 18;
+    const padT = 18;
+    const padB = 28;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+    const maxN = Math.max(70, currentN + 5);
+
+    const toX = (n: number) => padL + (n / maxN) * plotW;
+    const toY = (p: number) => padT + (1 - p) * plotH;
+
+    // Línea 50%
+    const y50 = toY(0.5);
+    ctx.strokeStyle = isLight ? 'rgba(217, 119, 6, 0.55)' : 'rgba(251, 191, 36, 0.55)';
+    ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(padL, y50);
+    ctx.lineTo(w - padR, y50);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = isLight ? '#b45309' : '#fbbf24';
+    ctx.font = '11px monospace';
+    ctx.fillText('50%', 10, y50 + 4);
+    ctx.fillText('100%', 6, padT + 6);
+    ctx.fillText('0%', 14, h - padB);
+
+    // Curva exacta
+    ctx.strokeStyle = isLight ? '#2563eb' : '#38bdf8';
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    for (let n = 0; n <= maxN; n++) {
+      const px = toX(n);
+      const py = toY(exactBirthdayProb(n));
+      if (n === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Hito n=23
+    const x23 = toX(23);
+    const y23 = toY(exactBirthdayProb(23));
+    ctx.beginPath();
+    ctx.arc(x23, y23, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fill();
+    ctx.fillStyle = isLight ? '#b45309' : '#fbbf24';
+    ctx.fillText('n=23', x23 + 6, y23 + 12);
+
+    // Punto actual
+    if (currentN > 0) {
+      const xc = toX(currentN);
+      const yc = toY(exactBirthdayProb(currentN));
+      ctx.beginPath();
+      ctx.arc(xc, yc, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#10b981';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  function renderAll() {
+    const byDay = new Map<number, Student[]>();
+    for (const s of students) {
+      const arr = byDay.get(s.dayOfYear) || [];
+      arr.push(s);
+      byDay.set(s.dayOfYear, arr);
+    }
+
+    const collisions: Student[][] = [];
+    byDay.forEach((arr) => {
+      if (arr.length >= 2) collisions.push(arr);
+    });
+
+    renderCalendar(byDay);
+
+    const n = students.length;
+    const pairs = (n * (n - 1)) / 2;
+    const prob = exactBirthdayProb(n);
+
+    kpiN.textContent = String(n);
+    kpiPairs.textContent = `${pairs.toLocaleString('es-ES')} parejas C(n,2)`;
+    kpiProb.textContent = `${(prob * 100).toFixed(2)}%`;
+    curveBadge.textContent = `n = ${n} (${(prob * 100).toFixed(1)}%)`;
+
+    if (collisions.length > 0) {
+      const firstGroup = collisions[0];
+      kpiHits.textContent = `${collisions.length} ${collisions.length === 1 ? 'fecha' : 'fechas'}`;
+      kpiHits.className = 'kpi-val neg';
+      kpiHitDetail.textContent = `${firstGroup[0].label}: ${firstGroup.map((s) => s.name).join(' y ')}`;
+
+      collisionBanner.className = 'collision-banner has-hit';
+      collisionBanner.textContent = `¡COLISIÓN! ${firstGroup.map((s) => `${s.name} (#${s.idx})`).join(' y ')} cumplen ambos el ${firstGroup[0].label}.`;
+    } else {
+      kpiHits.textContent = '0 fechas';
+      kpiHits.className = 'kpi-val pos';
+      kpiHitDetail.textContent = n === 0 ? 'Aula vacía' : 'Todos en días distintos aún';
+
+      collisionBanner.className = 'collision-banner';
+      collisionBanner.textContent =
+        n === 0
+          ? 'Añade alumnos al aula para observar las coincidencias en el calendario.'
+          : `${n} alumnos y aún sin colisiones (prob. de evitarla: ${((1 - prob) * 100).toFixed(1)}%).`;
+    }
+
+    // Lista de alumnos
+    rosterCount.textContent = `${n} ${n === 1 ? 'alumno' : 'alumnos'}`;
+    if (n === 0) {
+      rosterList.innerHTML = '<div class="empty-roster">El aula está vacía. Pulsa «+1 alumno» o «Aula de 23».</div>';
+    } else {
+      rosterList.innerHTML = [...students]
+        .reverse()
+        .map((s) => {
+          const isCol = (byDay.get(s.dayOfYear)?.length || 0) >= 2;
+          return `
+            <div class="roster-item ${isCol ? 'is-collision' : ''}">
+              <span class="roster-name">#${s.idx} ${s.name}</span>
+              <span class="roster-date">${s.label}${isCol ? ' ★' : ''}</span>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    drawProbCurve(n);
+  }
+
+  document.getElementById('btn-add-1')?.addEventListener('click', () => addStudents(1));
+  document.getElementById('btn-add-5')?.addEventListener('click', () => addStudents(5));
+  document.getElementById('btn-fill-23')?.addEventListener('click', () => {
+    clearRoom();
+    addStudents(23);
+  });
+  document.getElementById('btn-until-hit')?.addEventListener('click', addUntilCollision);
+  document.getElementById('btn-mc-1000')?.addEventListener('click', runMonteCarlo1000);
+  document.getElementById('btn-clear')?.addEventListener('click', clearRoom);
+
+  new MutationObserver(() => drawProbCurve(students.length)).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  renderAll();
+</script>

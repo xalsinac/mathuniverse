@@ -3,6 +3,7 @@ import { resources } from '../data/resources';
 import { selectividadExams, MODALITIES } from '../data/selectividad';
 import { GYM_LEVELS, GYM_BRANCHES } from '../data/gym';
 import { craftProjects } from '../data/craft';
+import { challengeExams } from '../data/challenge';
 
 // Construimos el índice de búsqueda global para el Command Palette (⌘K / Ctrl+K)
 const appItems = resources.map((r) => ({
@@ -160,7 +161,30 @@ const craftItems = craftProjects.map((p) => ({
   external: p.url.startsWith('http'),
 }));
 
-const searchIndex = [...toolItems, ...appItems, ...gymItems, ...craftItems, ...pauItems];
+const challengeItems = [
+  {
+    id: 'challenge-home',
+    category: 'Math Challenge · Exámenes',
+    title: 'Banco de Exámenes y Pruebas Evaluativas',
+    subtitle: 'Modelos de examen de 1.º ESO a 2.º Bachillerato con visor integrado',
+    badge: '05 · RETOS',
+    color: '#ff70a6',
+    href: '/challenge',
+    external: false,
+  },
+  ...challengeExams.slice(0, 15).map((e) => ({
+    id: `challenge-${e.id}`,
+    category: 'Math Challenge · Exámenes',
+    title: `${e.title} (${e.level.toUpperCase()})`,
+    subtitle: e.description,
+    badge: e.level.toUpperCase(),
+    color: '#ff70a6',
+    href: '/challenge',
+    external: false,
+  })),
+];
+
+const searchIndex = [...toolItems, ...appItems, ...gymItems, ...craftItems, ...challengeItems, ...pauItems];
 ---
 
 <!-- Modal Buscador Global (Command Palette · ⌘K / Ctrl+K) -->

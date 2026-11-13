@@ -1,0 +1,1038 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="El Juego de Nim con Visión Binaria (XOR) | Math Universe"
+  description="Duelo estratégico por turnos retirando fichas de varios montones contra una IA invencible. Activa la Visión Binaria para ver las potencias de 2 y dominar la suma XOR."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Lógica Binaria" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="nim-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">El Juego de Nim</h1>
+              <span class="badge-pill">Visión Binaria (XOR)</span>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <label class="xor-toggle-pill">
+              <input type="checkbox" id="chk-xor-vision" checked />
+              <span>Visión Binaria (XOR)</span>
+            </label>
+            <button type="button" class="btn-mini" id="btn-new-game">Nueva partida</button>
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: CONFIGURACIÓN + HISTORIAL -->
+          <div class="col-config">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Modo de juego</span>
+                  <h2 class="panel-title">Rival y Tablero</h2>
+                </div>
+              </div>
+
+              <div class="cfg-stack">
+                <label class="cfg-field">
+                  <span>Oponente</span>
+                  <select id="sel-mode">
+                    <option value="perfect" selected>IA Perfecta (Estrategia XOR)</option>
+                    <option value="easy">IA Principiante (Azar)</option>
+                    <option value="pvp">2 Jugadores (Local)</option>
+                  </select>
+                </label>
+
+                <label class="cfg-field">
+                  <span>Configuración inicial</span>
+                  <select id="sel-preset">
+                    <option value="1,3,5,7" selected>Clásico (1, 3, 5, 7) — XOR = 0</option>
+                    <option value="3,4,5">Triángulo (3, 4, 5) — XOR = 2</option>
+                    <option value="2,5,6,9">Asimétrico (2, 5, 6, 9) — XOR = 8</option>
+                    <option value="random">Aleatorio (4 montones)</option>
+                  </select>
+                </label>
+
+                <label class="cfg-field">
+                  <span>Quién empieza</span>
+                  <select id="sel-starter">
+                    <option value="1" selected>Empieza Jugador 1 (Tú)</option>
+                    <option value="2">Empieza Rival / IA</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Registro de jugadas</span>
+                  <h2 class="panel-title">Historial</h2>
+                </div>
+              </div>
+              <div class="move-log" id="move-log">
+                <div class="empty-log">Haz clic en cualquier ficha de un montón para retirar esa ficha y las superiores.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: TABLERO DE MONTONES INTERACTIVO -->
+          <div class="col-board">
+            <div class="turn-banner" id="turn-banner">
+              <span class="turn-dot"></span>
+              <span id="turn-text">Turno del Jugador 1 — Elige un montón y retira al menos 1 ficha</span>
+            </div>
+
+            <div class="panel-card board-card">
+              <div class="piles-arena" id="piles-arena" aria-label="Montones del Juego de Nim"></div>
+              <div class="board-hint">
+                Regla: En tu turno elige <strong>un único montón</strong> y haz clic sobre la ficha desde la que quieres cortar hacia arriba. <strong>Gana quien retira la última ficha.</strong>
+              </div>
+            </div>
+
+            <div class="kpi-row">
+              <div class="kpi-mini">
+                <span class="kpi-label">Fichas restantes</span>
+                <span class="kpi-val" id="kpi-total-tokens">16</span>
+              </div>
+              <div class="kpi-mini">
+                <span class="kpi-label">Suma XOR actual</span>
+                <span class="kpi-val spent" id="kpi-xor-val">0</span>
+              </div>
+              <div class="kpi-mini">
+                <span class="kpi-label">Estado teórico</span>
+                <span class="kpi-val" id="kpi-state-label">Equilibrada</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: VISOR BINARIO XOR EN TIEMPO REAL -->
+          <div class="col-xor">
+            <div class="panel-card xor-card" id="xor-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Rayos X Matemáticos</span>
+                  <h2 class="panel-title">Matriz Binaria (Potencias de 2)</h2>
+                </div>
+                <span class="xor-status-pill" id="xor-status-pill">XOR = 0</span>
+              </div>
+
+              <div id="xor-matrix-wrap">
+                <table class="xor-table">
+                  <thead>
+                    <tr>
+                      <th>Montón</th>
+                      <th>Dec</th>
+                      <th>8</th>
+                      <th>4</th>
+                      <th>2</th>
+                      <th>1</th>
+                    </tr>
+                  </thead>
+                  <tbody id="xor-tbody"></tbody>
+                  <tfoot id="xor-tfoot"></tfoot>
+                </table>
+
+                <div class="tactical-box" id="tactical-box">
+                  <!-- Pista táctica generada en vivo -->
+                </div>
+              </div>
+
+              <div class="xor-hidden-msg" id="xor-hidden-msg" hidden>
+                La <strong>Visión Binaria</strong> está desactivada. Intenta ganar de cabeza o actívala arriba para ver las columnas de potencias de 2.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Teorema de Bouton (1901)</span>
+          <h2>¿Por qué el operador binario XOR resuelve el Nim por completo?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. Descomposición en Potencias de 2</div>
+            <h3>Cada montón es una suma de bloques 8, 4, 2, 1</h3>
+            <p>
+              Si escribimos cada montón en base 2, podemos emparejar las potencias iguales entre distintos montones. Por ejemplo, <code class="inline-code">5 = 4 + 1</code> y <code class="inline-code">7 = 4 + 2 + 1</code> comparten un bloque de <code class="inline-code">4</code> y un bloque de <code class="inline-code">1</code>.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. El Invariante XOR = 0</div>
+            <h3>Paridad por columnas</h3>
+            <p>
+              La <strong>suma XOR (⊕)</strong> suma cada columna binaria sin acarreo (módulo 2): da <code class="inline-code">0</code> si hay un número <strong>par</strong> de unos y <code class="inline-code">1</code> si es <strong>impar</strong>. Cuando todas las columnas son pares (<code class="inline-code">XOR = 0</code>), la posición es perdedora para quien mueve.
+            </p>
+            <div class="formula-box">
+              1 ⊕ 3 ⊕ 5 ⊕ 7 = (0001) ⊕ (0011) ⊕ (0101) ⊕ (0111) = 0000
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Cómo Jugar Perfecto</div>
+            <h3>La regla de oro en dos pasos</h3>
+            <p>
+              <strong>1)</strong> Si recibes <code class="inline-code">XOR = 0</code>, cualquier jugada que hagas romperá al menos una columna y entregará <code class="inline-code">XOR ≠ 0</code>.<br />
+              <strong>2)</strong> Si recibes <code class="inline-code">XOR ≠ 0</code>, siempre puedes elegir un montón con el bit más alto de la suma encendido y ajustarlo a <code class="inline-code">nuevo = actual ⊕ XOR</code>.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .nim-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1420px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #9333ea;
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #c084fc;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .xor-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    background: rgba(168, 85, 247, 0.12);
+    color: var(--ink-strong);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-mini {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.46rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 300px) 1fr minmax(310px, 360px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .cockpit-grid {
+      grid-template-columns: 1fr minmax(300px, 350px);
+    }
+    .col-config {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-config {
+      grid-template-columns: 1fr;
+      order: 3;
+    }
+    .col-board { order: 1; }
+    .col-xor { order: 2; }
+  }
+
+  .col-config,
+  .col-board,
+  .col-xor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .cfg-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .cfg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .cfg-field select {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 0.45rem 0.55rem;
+    color: var(--ink-strong);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .move-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-height: 170px;
+    overflow-y: auto;
+    font-size: 0.76rem;
+  }
+
+  .empty-log {
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .log-entry {
+    padding: 0.34rem 0.55rem;
+    border-radius: 7px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  /* TABLERO DE MONTONES */
+  .turn-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .turn-banner.win {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  .turn-banner.lose {
+    background: rgba(244, 63, 94, 0.14);
+    border-color: #f43f5e;
+    color: #dc2626;
+  }
+
+  :root[data-theme='dark'] .turn-banner.win { color: #34d399; }
+  :root[data-theme='dark'] .turn-banner.lose { color: #fb7185; }
+
+  .turn-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .piles-arena {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    min-height: 290px;
+    align-items: end;
+    padding: 0.85rem 0.5rem 0.6rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+
+  .pile-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .tokens-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.3rem;
+    width: 100%;
+    align-items: center;
+    min-height: 215px;
+    justify-content: flex-start;
+  }
+
+  .nim-token {
+    width: 82%;
+    max-width: 78px;
+    height: 19px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    box-shadow: 0 3px 8px -3px rgba(37, 99, 235, 0.5);
+  }
+
+  .nim-token.will-remove {
+    background: linear-gradient(135deg, #fbbf24, #f43f5e);
+    border-color: #fde68a;
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.65);
+  }
+
+  .nim-token:disabled {
+    cursor: default;
+    opacity: 0.65;
+  }
+
+  .pile-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--ink-strong);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+  }
+
+  .board-hint {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-mini {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.18rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  .kpi-val.neg { color: #dc2626; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+  :root[data-theme='dark'] .kpi-val.neg { color: #f87171; }
+
+  /* VISOR XOR */
+  .xor-status-pill {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  .xor-status-pill.nonzero {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #d97706;
+  }
+
+  :root[data-theme='dark'] .xor-status-pill { color: #34d399; }
+  :root[data-theme='dark'] .xor-status-pill.nonzero { color: #fbbf24; }
+
+  .xor-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .xor-table th,
+  .xor-table td {
+    padding: 0.42rem 0.35rem;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .xor-table th {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .bit-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-weight: 800;
+    background: var(--bg-sunken);
+    color: var(--muted);
+    border: 1px solid var(--line);
+  }
+
+  .bit-cell.on {
+    background: #2563eb;
+    border-color: #60a5fa;
+    color: #ffffff;
+  }
+
+  .bit-cell.xor-even {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  .bit-cell.xor-odd {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #f59e0b;
+    color: #d97706;
+  }
+
+  :root[data-theme='dark'] .bit-cell.xor-even { color: #34d399; }
+  :root[data-theme='dark'] .bit-cell.xor-odd { color: #fbbf24; }
+
+  .tactical-box {
+    margin-top: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .xor-hidden-msg {
+    padding: 1.2rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    line-height: 1.55;
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+</style>
+
+<script>
+  let piles = [1, 3, 5, 7];
+  let currentPlayer = 1; // 1 = Jugador 1, 2 = IA o Jugador 2
+  let gameOver = false;
+  let aiTimer: number | null = null;
+
+  const selMode = document.getElementById('sel-mode') as HTMLSelectElement;
+  const selPreset = document.getElementById('sel-preset') as HTMLSelectElement;
+  const selStarter = document.getElementById('sel-starter') as HTMLSelectElement;
+  const chkXor = document.getElementById('chk-xor-vision') as HTMLInputElement;
+
+  const pilesArena = document.getElementById('piles-arena')!;
+  const turnBanner = document.getElementById('turn-banner')!;
+  const turnText = document.getElementById('turn-text')!;
+  const moveLog = document.getElementById('move-log')!;
+
+  const kpiTotalTokens = document.getElementById('kpi-total-tokens')!;
+  const kpiXorVal = document.getElementById('kpi-xor-val')!;
+  const kpiStateLabel = document.getElementById('kpi-state-label')!;
+  const xorStatusPill = document.getElementById('xor-status-pill')!;
+  const xorTbody = document.getElementById('xor-tbody')!;
+  const xorTfoot = document.getElementById('xor-tfoot')!;
+  const tacticalBox = document.getElementById('tactical-box')!;
+  const xorMatrixWrap = document.getElementById('xor-matrix-wrap')!;
+  const xorHiddenMsg = document.getElementById('xor-hidden-msg')!;
+
+  function computeNimSum(arr: number[]): number {
+    return arr.reduce((acc, v) => acc ^ v, 0);
+  }
+
+  function findWinningMove(arr: number[]): { pileIdx: number; remove: number } | null {
+    const nimSum = computeNimSum(arr);
+    if (nimSum === 0) return null;
+    for (let i = 0; i < arr.length; i++) {
+      const target = arr[i] ^ nimSum;
+      if (target < arr[i]) {
+        return { pileIdx: i, remove: arr[i] - target };
+      }
+    }
+    return null;
+  }
+
+  function appendLog(text: string) {
+    const empty = moveLog.querySelector('.empty-log');
+    if (empty) moveLog.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.textContent = text;
+    moveLog.prepend(div);
+  }
+
+  function renderPiles() {
+    pilesArena.innerHTML = '';
+    const isHumanTurn = !gameOver && (selMode.value === 'pvp' || currentPlayer === 1);
+
+    piles.forEach((count, pileIdx) => {
+      const col = document.createElement('div');
+      col.className = 'pile-col';
+
+      const stack = document.createElement('div');
+      stack.className = 'tokens-stack';
+
+      for (let t = 0; t < count; t++) {
+        const token = document.createElement('button');
+        token.type = 'button';
+        token.className = 'nim-token';
+        const removeCount = count - t;
+        token.title = `Quitar ${removeCount} ficha${removeCount > 1 ? 's' : ''} del Montón ${String.fromCharCode(65 + pileIdx)}`;
+        token.disabled = !isHumanTurn;
+
+        if (isHumanTurn) {
+          token.addEventListener('mouseenter', () => {
+            const btns = stack.querySelectorAll<HTMLButtonElement>('.nim-token');
+            btns.forEach((b, idx) => {
+              b.classList.toggle('will-remove', idx >= t);
+            });
+          });
+          token.addEventListener('mouseleave', () => {
+            stack.querySelectorAll('.nim-token').forEach((b) => b.classList.remove('will-remove'));
+          });
+          token.addEventListener('click', () => makeMove(pileIdx, removeCount));
+        }
+        stack.appendChild(token);
+      }
+
+      const lbl = document.createElement('div');
+      lbl.className = 'pile-label';
+      lbl.textContent = `${String.fromCharCode(65 + pileIdx)}: ${count}`;
+
+      col.appendChild(stack);
+      col.appendChild(lbl);
+      pilesArena.appendChild(col);
+    });
+  }
+
+  function renderXorPanel() {
+    const showXor = chkXor.checked;
+    xorMatrixWrap.hidden = !showXor;
+    xorHiddenMsg.hidden = showXor;
+
+    const nimSum = computeNimSum(piles);
+    const total = piles.reduce((a, b) => a + b, 0);
+
+    kpiTotalTokens.textContent = String(total);
+    kpiXorVal.textContent = showXor ? String(nimSum) : '—';
+    kpiStateLabel.textContent = showXor
+      ? nimSum === 0
+        ? 'Equilibrada (0)'
+        : 'Ganadora (≠ 0)'
+      : 'Oculto';
+    kpiStateLabel.className = 'kpi-val ' + (showXor ? (nimSum === 0 ? 'pos' : 'spent') : '');
+
+    xorStatusPill.textContent = showXor ? `XOR = ${nimSum}` : 'Oculto';
+    xorStatusPill.className = 'xor-status-pill' + (showXor && nimSum !== 0 ? ' nonzero' : '');
+
+    if (!showXor) return;
+
+    xorTbody.innerHTML = piles
+      .map((val, idx) => {
+        const bits = [8, 4, 2, 1].map((mask) => ((val & mask) ? 1 : 0));
+        return `
+          <tr>
+            <td><strong>${String.fromCharCode(65 + idx)}</strong></td>
+            <td>${val}</td>
+            ${bits.map((b) => `<td><span class="bit-cell ${b ? 'on' : ''}">${b}</span></td>`).join('')}
+          </tr>
+        `;
+      })
+      .join('');
+
+    const sumBits = [8, 4, 2, 1].map((mask) => ((nimSum & mask) ? 1 : 0));
+    xorTfoot.innerHTML = `
+      <tr>
+        <td><strong>⊕</strong></td>
+        <td><strong>${nimSum}</strong></td>
+        ${sumBits
+          .map(
+            (b) =>
+              `<td><span class="bit-cell ${b ? 'xor-odd' : 'xor-even'}">${b}</span></td>`
+          )
+          .join('')}
+      </tr>
+    `;
+
+    if (total === 0) {
+      tacticalBox.innerHTML = 'Partida finalizada.';
+    } else if (nimSum === 0) {
+      tacticalBox.innerHTML =
+        '<strong>Posición equilibrada (XOR = 0):</strong> todas las columnas tienen paridad par. Quien mueve ahora entregará ventaja al rival.';
+    } else {
+      const best = findWinningMove(piles);
+      if (best) {
+        const letter = String.fromCharCode(65 + best.pileIdx);
+        tacticalBox.innerHTML = `<strong>Posición ganadora (XOR = ${nimSum}):</strong> retira <strong>${best.remove}</strong> ficha${best.remove > 1 ? 's' : ''} del <strong>Montón ${letter}</strong> para dejar XOR = 0.`;
+      }
+    }
+  }
+
+  function updateTurnBanner() {
+    if (gameOver) {
+      const winner = currentPlayer;
+      const mode = selMode.value;
+      const winnerName =
+        mode === 'pvp'
+          ? `Jugador ${winner}`
+          : winner === 1
+            ? '¡Has ganado tú!'
+            : '¡Gana la IA!';
+      turnBanner.className = 'turn-banner ' + (winner === 1 ? 'win' : 'lose');
+      turnText.textContent = `${winnerName} (retiró la última ficha)`;
+      return;
+    }
+
+    turnBanner.className = 'turn-banner';
+    if (selMode.value === 'pvp') {
+      turnText.textContent = `Turno del Jugador ${currentPlayer} — Retira 1 o más fichas de un montón`;
+    } else if (currentPlayer === 1) {
+      turnText.textContent = 'Tu turno — Haz clic en la ficha desde la que quieres retirar';
+    } else {
+      turnText.textContent = 'La IA está calculando la suma XOR…';
+    }
+  }
+
+  function makeMove(pileIdx: number, removeCount: number) {
+    if (gameOver || removeCount <= 0 || removeCount > piles[pileIdx]) return;
+    const actor =
+      selMode.value === 'pvp'
+        ? `J${currentPlayer}`
+        : currentPlayer === 1
+          ? 'Tú'
+          : 'IA';
+
+    piles[pileIdx] -= removeCount;
+    appendLog(`${actor}: −${removeCount} del Montón ${String.fromCharCode(65 + pileIdx)} (quedan ${piles[pileIdx]})`);
+
+    const total = piles.reduce((a, b) => a + b, 0);
+    if (total === 0) {
+      gameOver = true;
+      renderPiles();
+      renderXorPanel();
+      updateTurnBanner();
+      return;
+    }
+
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    renderPiles();
+    renderXorPanel();
+    updateTurnBanner();
+
+    if (selMode.value !== 'pvp' && currentPlayer === 2) {
+      aiTimer = window.setTimeout(runAiMove, 520);
+    }
+  }
+
+  function runAiMove() {
+    if (gameOver) return;
+    const nonEmpty = piles
+      .map((c, idx) => ({ c, idx }))
+      .filter((x) => x.c > 0);
+    if (nonEmpty.length === 0) return;
+
+    let move: { pileIdx: number; remove: number } | null = null;
+    if (selMode.value === 'perfect') {
+      move = findWinningMove(piles);
+    }
+    if (!move) {
+      const pick = nonEmpty[Math.floor(Math.random() * nonEmpty.length)];
+      const rem = selMode.value === 'perfect' ? 1 : Math.floor(Math.random() * pick.c) + 1;
+      move = { pileIdx: pick.idx, remove: rem };
+    }
+    makeMove(move.pileIdx, move.remove);
+  }
+
+  function startNewGame() {
+    if (aiTimer !== null) {
+      window.clearTimeout(aiTimer);
+      aiTimer = null;
+    }
+    const preset = selPreset.value;
+    if (preset === 'random') {
+      piles = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
+    } else {
+      piles = preset.split(',').map(Number);
+    }
+    currentPlayer = Number(selStarter.value) || 1;
+    gameOver = false;
+    moveLog.innerHTML = '<div class="empty-log">Partida iniciada. Retira al menos 1 ficha de un montón.</div>';
+
+    renderPiles();
+    renderXorPanel();
+    updateTurnBanner();
+
+    if (selMode.value !== 'pvp' && currentPlayer === 2) {
+      aiTimer = window.setTimeout(runAiMove, 520);
+    }
+  }
+
+  document.getElementById('btn-new-game')?.addEventListener('click', startNewGame);
+  [selMode, selPreset, selStarter].forEach((el) => el.addEventListener('change', startNewGame));
+  chkXor.addEventListener('change', renderXorPanel);
+
+  startNewGame();
+</script>

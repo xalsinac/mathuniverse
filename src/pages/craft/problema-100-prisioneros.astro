@@ -1,0 +1,1068 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="El Problema de los 100 Prisioneros (Ciclos de Permutación) | Math Universe"
+  description="100 prisioneros deben encontrar su número en 100 cajas abriendo solo 50. Experimenta el tablero 10x10, sigue los ciclos de permutación y comprueba por qué la probabilidad pasa de 0% al 31,18%."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Combinatoria" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="prisoners-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">El Problema de los 100 Prisioneros</h1>
+              <span class="badge-pill">Éxito teórico: 31,18%</span>
+            </div>
+          </div>
+
+          <div class="prisoner-picker">
+            <label for="inp-prisoner">Seguir al prisionero #</label>
+            <input id="inp-prisoner" type="number" min="1" max="100" value="1" />
+            <button type="button" class="btn-mini" id="btn-follow-cycle">Seguir su ciclo</button>
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: TABLERO 10x10 DE LAS 100 CAJAS -->
+          <div class="col-boxes">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker" id="boxes-kicker">Prisionero #1 · Máximo 50 intentos</span>
+                  <h2 class="panel-title" id="boxes-title">Haz clic en una caja o sigue su ciclo</h2>
+                </div>
+                <span class="step-counter" id="step-counter">0 / 50</span>
+              </div>
+
+              <div class="boxes-grid" id="boxes-grid" aria-label="100 cajas numeradas del 1 al 100"></div>
+
+              <div class="legend-row">
+                <span class="leg-item"><i class="leg-dot opened"></i> Ciclo válido (≤ 50)</span>
+                <span class="leg-item"><i class="leg-dot found"></i> ¡Encontrado!</span>
+                <span class="leg-item"><i class="leg-dot mortal"></i> Ciclo mortal (&gt; 50)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: CONTROLES + KPIS + VISUALIZADOR DE CICLOS -->
+          <div class="col-center">
+            <div class="panel-card controls-card">
+              <div class="sim-buttons">
+                <button type="button" class="sim-btn primary" id="btn-new-prison">Barajar 100 cajas</button>
+                <button type="button" class="sim-btn" id="btn-run-100">Probar los 100 prisioneros</button>
+                <button type="button" class="sim-btn gold" id="btn-sim-1000-cycles">Simular 1.000 cárceles (Ciclos)</button>
+                <button type="button" class="sim-btn" id="btn-sim-1000-random">1.000 al Azar</button>
+                <button type="button" class="sim-btn ghost" id="btn-reset-stats">Reiniciar contadores</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Éxito Estrategia Ciclos</span>
+                <span class="kpi-val pos" id="kpi-cycle-rate">—</span>
+                <span class="kpi-sub" id="kpi-cycle-count">0 / 0 cárceles salvadas</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Éxito al Azar puro</span>
+                <span class="kpi-val neg" id="kpi-rand-rate">—</span>
+                <span class="kpi-sub" id="kpi-rand-count">Teórico: (1/2)¹⁰⁰ ≈ 0%</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Ciclo más largo actual</span>
+                <span class="kpi-val" id="kpi-max-cycle">—</span>
+                <span class="kpi-sub" id="kpi-prison-verdict">Baraja o prueba los 100</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Ciclos en esta cárcel</span>
+                <span class="kpi-val spent" id="kpi-num-cycles">—</span>
+                <span class="kpi-sub">Media teórica: ~5,19 ciclos</span>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Estructura de la permutación actual</span>
+                  <h2 class="panel-title">Longitud de cada ciclo (límite = 50)</h2>
+                </div>
+                <span class="verdict-pill" id="verdict-pill">Sin evaluar</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="cycles-canvas" width="660" height="220" aria-label="Gráfica de longitudes de ciclos"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: DESGLOSE DE CICLOS DE LA CÁRCEL ACTUAL -->
+          <div class="col-table">
+            <div class="panel-card table-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Desglose de la permutación</span>
+                  <h2 class="panel-title">Ciclos detectados</h2>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="cycles-table">
+                  <thead>
+                    <tr>
+                      <th>Ciclo</th>
+                      <th>Longitud</th>
+                      <th>Estado</th>
+                      <th>Muestra del recorrido</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cycles-tbody"></tbody>
+                </table>
+              </div>
+              <p class="table-footnote">
+                Basta que <strong>un solo ciclo</strong> supere las <strong>50 cajas</strong> para que todos los prisioneros atrapados en él fallen. Si ningún ciclo supera 50, ¡los 100 se salvan!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Explicación Matemática</span>
+          <h2>¿Cómo puede coordinarse un grupo sin hablarse?</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. El Secreto de los Ciclos Disjuntos</div>
+            <h3>Cada permutación se parte en bucles cerrados</h3>
+            <p>
+              Si cada caja <code class="inline-code">i</code> apunta al papel <code class="inline-code">π(i)</code> que contiene, la ordenación forma <strong>ciclos cerrados disjuntos</strong>. Al empezar por la caja con tu propio número <code class="inline-code">i</code> y seguir las pistas, recorres exactamente el ciclo al que perteneces.
+            </p>
+            <div class="formula-box">
+              Todos se salvan ⟺ Longitud del ciclo máximo ≤ 50
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. Probabilidad Exacta de un Ciclo Largo</div>
+            <h3>¿Por qué la probabilidad de un ciclo de longitud k &gt; 50 es 1/k?</h3>
+            <p>
+              Para que una permutación contenga un ciclo de longitud <code class="inline-code">k &gt; 50</code> (como solo puede haber uno), elegimos los <code class="inline-code">k</code> elementos (<code class="inline-code">C(100, k)</code>), los ordenamos en ciclo (<code class="inline-code">(k−1)!</code>) y permutamos los restantes (<code class="inline-code">(100−k)!</code>):
+            </p>
+            <div class="formula-box">
+              P(ciclo de longitud k) = [C(100, k)·(k−1)!·(100−k)!] / 100! = 1 / k
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Serie Armónica y Límite Universal</div>
+            <h3>Del 31,18% al límite 1 − ln(2)</h3>
+            <p>
+              La probabilidad de fracaso es la suma de <code class="inline-code">1/k</code> desde <code class="inline-code">k = 51</code> hasta <code class="inline-code">100</code>, que vale aproximadamente <code class="inline-code">ln(100/50) = ln(2) ≈ 0,6931</code>. Por tanto, el éxito es:
+            </p>
+            <div class="formula-box">
+              P(éxito) = 1 − ∑<sub>k=51</sub><sup>100</sup> (1/k) ≈ 31,18% &nbsp;(límite N→∞: 1 − ln 2 ≈ 30,69%)
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .prisoners-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1420px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #34d399;
+  }
+
+  .prisoner-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    padding: 0.4rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  .prisoner-picker input {
+    width: 58px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    padding: 0.28rem 0.4rem;
+    color: var(--ink-strong);
+    font-family: var(--mono);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .btn-mini {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.36rem 0.72rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--accent-ink);
+    cursor: pointer;
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 390px) 1fr minmax(300px, 360px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1180px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(310px, 380px) 1fr;
+    }
+    .col-table {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-center { order: 1; }
+    .col-boxes { order: 2; }
+    .col-table { order: 3; }
+  }
+
+  .col-boxes,
+  .col-center,
+  .col-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .step-counter {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 0.24rem 0.55rem;
+    border-radius: 8px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: var(--ink-strong);
+    white-space: nowrap;
+  }
+
+  /* TABLERO 10x10 */
+  .boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 0.22rem;
+  }
+
+  .box-cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.12s ease;
+  }
+
+  .box-cell:hover {
+    border-color: var(--accent);
+  }
+
+  .box-cell.is-open {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    border-color: #60a5fa;
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
+  }
+
+  .box-cell.is-found {
+    background: linear-gradient(135deg, #34d399, #059669);
+    border-color: #6ee7b7;
+    color: #ffffff;
+    font-weight: 800;
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+  }
+
+  .box-cell.is-mortal {
+    background: linear-gradient(135deg, #fb7185, #e11d48);
+    border-color: #fda4af;
+    color: #ffffff;
+    font-weight: 800;
+  }
+
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .leg-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .leg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .leg-dot.opened { background: #2563eb; }
+  .leg-dot.found { background: #059669; }
+  .leg-dot.mortal { background: #e11d48; }
+
+  /* CONTROLES */
+  .sim-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  @media (max-width: 560px) {
+    .sim-buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sim-btn {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.6rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-sunken);
+    color: var(--ink-strong);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    text-align: center;
+  }
+
+  .sim-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .sim-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .sim-btn.gold {
+    grid-column: span 2;
+    background: rgba(245, 158, 11, 0.16);
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  :root[data-theme='dark'] .sim-btn.gold {
+    color: #fbbf24;
+  }
+
+  .sim-btn.ghost {
+    color: var(--muted);
+  }
+
+  /* KPIS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  .kpi-val.neg { color: #dc2626; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+  :root[data-theme='dark'] .kpi-val.neg { color: #f87171; }
+
+  .kpi-sub {
+    display: block;
+    font-size: 0.71rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .verdict-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+  }
+
+  .verdict-pill.ok {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #059669;
+  }
+
+  .verdict-pill.fail {
+    background: rgba(244, 63, 94, 0.16);
+    border-color: rgba(244, 63, 94, 0.45);
+    color: #e11d48;
+  }
+
+  :root[data-theme='dark'] .verdict-pill.ok { color: #34d399; }
+  :root[data-theme='dark'] .verdict-pill.fail { color: #fb7185; }
+
+  .canvas-wrap {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* TABLA DE CICLOS */
+  .table-scroll {
+    overflow-x: auto;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  .cycles-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  .cycles-table th,
+  .cycles-table td {
+    padding: 0.38rem 0.42rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  .cycles-table th {
+    font-family: var(--mono);
+    font-size: 0.67rem;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .cycles-table td {
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  .cycles-table tr.is-mortal td {
+    color: #dc2626;
+    font-weight: 700;
+  }
+
+  :root[data-theme='dark'] .cycles-table tr.is-mortal td {
+    color: #fb7185;
+  }
+
+  .table-footnote {
+    margin: 0.75rem 0 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+</style>
+
+<script>
+  let perm: number[] = [];
+  let currentPrisoner = 1;
+  let openedBoxes: number[] = [];
+  let foundTarget = false;
+  let followTimer: number | null = null;
+
+  let cycleSims = 0;
+  let cycleWins = 0;
+  let randSims = 0;
+  let randWins = 0;
+
+  const boxesGrid = document.getElementById('boxes-grid')!;
+  const boxesKicker = document.getElementById('boxes-kicker')!;
+  const boxesTitle = document.getElementById('boxes-title')!;
+  const stepCounter = document.getElementById('step-counter')!;
+  const inpPrisoner = document.getElementById('inp-prisoner') as HTMLInputElement;
+  const cyclesCanvas = document.getElementById('cycles-canvas') as HTMLCanvasElement;
+  const cyclesTbody = document.getElementById('cycles-tbody')!;
+  const verdictPill = document.getElementById('verdict-pill')!;
+
+  const kpiCycleRate = document.getElementById('kpi-cycle-rate')!;
+  const kpiCycleCount = document.getElementById('kpi-cycle-count')!;
+  const kpiRandRate = document.getElementById('kpi-rand-rate')!;
+  const kpiMaxCycle = document.getElementById('kpi-max-cycle')!;
+  const kpiPrisonVerdict = document.getElementById('kpi-prison-verdict')!;
+  const kpiNumCycles = document.getElementById('kpi-num-cycles')!;
+
+  function shufflePerm(): number[] {
+    const arr = new Array(101).fill(0);
+    const pool: number[] = [];
+    for (let i = 1; i <= 100; i++) pool.push(i);
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    for (let i = 1; i <= 100; i++) arr[i] = pool[i - 1];
+    return arr;
+  }
+
+  function extractCycles(p: number[]): number[][] {
+    const visited = new Array(101).fill(false);
+    const cycles: number[][] = [];
+    for (let i = 1; i <= 100; i++) {
+      if (!visited[i]) {
+        const cyc: number[] = [];
+        let cur = i;
+        while (!visited[cur]) {
+          visited[cur] = true;
+          cyc.push(cur);
+          cur = p[cur];
+        }
+        cycles.push(cyc);
+      }
+    }
+    cycles.sort((a, b) => b.length - a.length);
+    return cycles;
+  }
+
+  function stopFollow() {
+    if (followTimer !== null) {
+      window.clearInterval(followTimer);
+      followTimer = null;
+    }
+  }
+
+  function renderBoxes() {
+    boxesGrid.innerHTML = '';
+    const isMortalRun = openedBoxes.length > 50 || (openedBoxes.length === 50 && !foundTarget);
+
+    for (let i = 1; i <= 100; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'box-cell';
+      const isOpened = openedBoxes.includes(i);
+
+      if (isOpened) {
+        const inside = perm[i];
+        btn.textContent = String(inside);
+        btn.title = `Caja ${i} → contiene ${inside}`;
+        if (inside === currentPrisoner) {
+          btn.classList.add('is-found');
+        } else if (isMortalRun) {
+          btn.classList.add('is-mortal');
+        } else {
+          btn.classList.add('is-open');
+        }
+      } else {
+        btn.textContent = String(i);
+        btn.title = `Caja ${i} (cerrada)`;
+      }
+
+      btn.addEventListener('click', () => openManualBox(i));
+      boxesGrid.appendChild(btn);
+    }
+
+    stepCounter.textContent = `${openedBoxes.length} / 50`;
+    boxesKicker.textContent = `Prisionero #${currentPrisoner} · Máximo 50 intentos`;
+
+    if (foundTarget) {
+      boxesTitle.textContent = `¡Encontró el #${currentPrisoner} en ${openedBoxes.length} cajas!`;
+    } else if (openedBoxes.length >= 50) {
+      boxesTitle.textContent = `Agotó los 50 intentos sin hallar el #${currentPrisoner}`;
+    } else if (openedBoxes.length === 0) {
+      boxesTitle.textContent = `Haz clic en una caja o sigue su ciclo`;
+    } else {
+      const last = openedBoxes[openedBoxes.length - 1];
+      boxesTitle.textContent = `Caja ${last} contenía ${perm[last]} → siguiente: ${perm[last]}`;
+    }
+  }
+
+  function openManualBox(boxNum: number) {
+    stopFollow();
+    if (foundTarget || openedBoxes.length >= 50 || openedBoxes.includes(boxNum)) return;
+    openedBoxes.push(boxNum);
+    if (perm[boxNum] === currentPrisoner) foundTarget = true;
+    renderBoxes();
+  }
+
+  function followCycleAnimated() {
+    stopFollow();
+    currentPrisoner = Math.max(1, Math.min(100, Number(inpPrisoner.value) || 1));
+    inpPrisoner.value = String(currentPrisoner);
+    openedBoxes = [];
+    foundTarget = false;
+    renderBoxes();
+
+    let nextBox = currentPrisoner;
+    followTimer = window.setInterval(() => {
+      if (foundTarget || openedBoxes.length >= 50) {
+        stopFollow();
+        return;
+      }
+      openedBoxes.push(nextBox);
+      const inside = perm[nextBox];
+      if (inside === currentPrisoner) {
+        foundTarget = true;
+        stopFollow();
+      } else {
+        nextBox = inside;
+      }
+      renderBoxes();
+    }, 85);
+  }
+
+  function renderCyclesAnalysis(cycles: number[][]) {
+    const maxLen = cycles[0]?.length || 0;
+    const survived = maxLen <= 50;
+
+    kpiMaxCycle.textContent = `${maxLen} cajas`;
+    kpiMaxCycle.className = 'kpi-val ' + (survived ? 'pos' : 'neg');
+    kpiPrisonVerdict.textContent = survived
+      ? 'Todos los ciclos ≤ 50 → ¡SALVADOS!'
+      : `Ciclo de ${maxLen} > 50 → Todos pierden`;
+    kpiNumCycles.textContent = `${cycles.length} ciclos`;
+
+    verdictPill.textContent = survived ? '¡100/100 SALVADOS!' : 'EJECUCIÓN (FALLO)';
+    verdictPill.className = 'verdict-pill ' + (survived ? 'ok' : 'fail');
+
+    cyclesTbody.innerHTML = cycles
+      .map((cyc, idx) => {
+        const mortal = cyc.length > 50;
+        const preview =
+          cyc.length <= 4
+            ? cyc.join('→')
+            : `${cyc[0]}→${cyc[1]}→…→${cyc[cyc.length - 1]}`;
+        return `
+          <tr class="${mortal ? 'is-mortal' : ''}">
+            <td>#${idx + 1}</td>
+            <td>${cyc.length}</td>
+            <td>${mortal ? 'MORTAL (>50)' : 'Seguro'}</td>
+            <td>${preview}</td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    drawCyclesChart(cycles);
+  }
+
+  function drawCyclesChart(cycles: number[][]) {
+    const ctx = cyclesCanvas.getContext('2d');
+    if (!ctx) return;
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const w = cyclesCanvas.width;
+    const h = cyclesCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 42;
+    const padR = 18;
+    const padT = 20;
+    const padB = 28;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const maxY = Math.max(60, cycles[0]?.length || 50);
+    const toY = (v: number) => padT + (1 - v / maxY) * plotH;
+
+    const y50 = toY(50);
+    ctx.strokeStyle = isLight ? '#d97706' : '#fbbf24';
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(padL, y50);
+    ctx.lineTo(w - padR, y50);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = isLight ? '#b45309' : '#fbbf24';
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText('50', 12, y50 + 4);
+
+    const n = cycles.length;
+    const slotW = plotW / Math.max(1, n);
+    const barW = Math.max(6, Math.min(44, slotW * 0.72));
+
+    cycles.forEach((cyc, idx) => {
+      const cx = padL + idx * slotW + (slotW - barW) / 2;
+      const y = toY(cyc.length);
+      const bh = h - padB - y;
+      const mortal = cyc.length > 50;
+
+      ctx.fillStyle = mortal
+        ? isLight ? '#dc2626' : '#f43f5e'
+        : isLight ? '#059669' : '#34d399';
+      ctx.fillRect(cx, y, barW, bh);
+
+      ctx.fillStyle = isLight ? '#14151a' : '#f3f4f8';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(cyc.length), cx + barW / 2, y - 5);
+    });
+    ctx.textAlign = 'left';
+  }
+
+  function updateSimKpis() {
+    kpiCycleRate.textContent = cycleSims > 0 ? ((cycleWins / cycleSims) * 100).toFixed(2) + '%' : '—';
+    kpiCycleCount.textContent = `${cycleWins.toLocaleString('es-ES')} / ${cycleSims.toLocaleString('es-ES')} salvadas`;
+    kpiRandRate.textContent = randSims > 0 ? ((randWins / randSims) * 100).toFixed(2) + '%' : '—';
+  }
+
+  function newPrison(recordResult = false) {
+    stopFollow();
+    perm = shufflePerm();
+    openedBoxes = [];
+    foundTarget = false;
+    const cycles = extractCycles(perm);
+
+    if (recordResult) {
+      cycleSims++;
+      if ((cycles[0]?.length || 0) <= 50) cycleWins++;
+      updateSimKpis();
+    }
+
+    renderBoxes();
+    renderCyclesAnalysis(cycles);
+  }
+
+  function runBatchCycles(count: number) {
+    stopFollow();
+    let lastPerm = perm;
+    for (let s = 0; s < count; s++) {
+      const p = shufflePerm();
+      const cycs = extractCycles(p);
+      cycleSims++;
+      if ((cycs[0]?.length || 0) <= 50) cycleWins++;
+      lastPerm = p;
+    }
+    perm = lastPerm;
+    openedBoxes = [];
+    foundTarget = false;
+    renderBoxes();
+    renderCyclesAnalysis(extractCycles(perm));
+    updateSimKpis();
+  }
+
+  function runBatchRandom(count: number) {
+    for (let s = 0; s < count; s++) {
+      randSims++;
+      let allOk = true;
+      for (let p = 0; p < 100; p++) {
+        if (Math.random() >= 0.5) {
+          allOk = false;
+          break;
+        }
+      }
+      if (allOk) randWins++;
+    }
+    updateSimKpis();
+  }
+
+  document.getElementById('btn-new-prison')?.addEventListener('click', () => newPrison(false));
+  document.getElementById('btn-run-100')?.addEventListener('click', () => {
+    const cycs = extractCycles(perm);
+    cycleSims++;
+    if ((cycs[0]?.length || 0) <= 50) cycleWins++;
+    updateSimKpis();
+    renderCyclesAnalysis(cycs);
+  });
+  document.getElementById('btn-sim-1000-cycles')?.addEventListener('click', () => runBatchCycles(1000));
+  document.getElementById('btn-sim-1000-random')?.addEventListener('click', () => runBatchRandom(1000));
+  document.getElementById('btn-follow-cycle')?.addEventListener('click', followCycleAnimated);
+  document.getElementById('btn-reset-stats')?.addEventListener('click', () => {
+    cycleSims = 0;
+    cycleWins = 0;
+    randSims = 0;
+    randWins = 0;
+    updateSimKpis();
+  });
+
+  inpPrisoner.addEventListener('change', () => {
+    stopFollow();
+    currentPrisoner = Math.max(1, Math.min(100, Number(inpPrisoner.value) || 1));
+    inpPrisoner.value = String(currentPrisoner);
+    openedBoxes = [];
+    foundTarget = false;
+    renderBoxes();
+  });
+
+  new MutationObserver(() => renderCyclesAnalysis(extractCycles(perm))).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  newPrison(false);
+  updateSimKpis();
+</script>

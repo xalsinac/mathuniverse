@@ -77,7 +77,7 @@ export const resources: Resource[] = [
     eyebrow: 'Ponerse a prueba',
     description: 'Exámenes de todos los temas para practicar en situaciones reales.',
     detail: 'Modelos de evaluación resueltos y comentados para medir tu progreso sin sorpresas.',
-    href: '#',
+    href: '/challenge',
     icon: 'exams',
     color: '#ff70a6',
   },

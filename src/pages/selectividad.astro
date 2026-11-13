@@ -264,6 +264,15 @@ const clientExams = selectividadExams.map((exam) => ({
             </div>
 
             <div class="viewer-actions">
+              <a
+                href="#"
+                download
+                class="viewer-dl-external"
+                data-viewer-dl-btn
+                title="Descargar este examen en PDF"
+              >
+                📥 Descargar PDF
+              </a>
               <button
                 type="button"
                 class="viewer-aux-link"
@@ -577,6 +586,14 @@ const clientExams = selectividadExams.map((exam) => ({
       document.querySelectorAll<HTMLButtonElement>('[data-viewer-mode]').forEach((btn) => {
         btn.classList.toggle('is-active', btn.dataset.viewerMode === viewerMode);
       });
+
+      const dlBtn = document.querySelector<HTMLAnchorElement>('[data-viewer-dl-btn]');
+      if (dlBtn && selectedExam) {
+        const targetUrl = viewerMode === 'solution' ? selectedExam.solutionUrl : selectedExam.statementUrl;
+        dlBtn.href = targetUrl;
+        dlBtn.setAttribute('download', `${selectedExam.id}-${viewerMode}.pdf`);
+        dlBtn.textContent = viewerMode === 'solution' ? '📥 Descargar Corrección' : '📥 Descargar Enunciado';
+      }
 
       if (viewerMode === 'statement') {
         viewerStageEl.className = 'viewer-stage is-single';
@@ -1594,8 +1611,30 @@ const clientExams = selectividadExams.map((exam) => ({
 
   .study-viewer :global(.pdf-iframe) {
     border: 0;
-    height: 640px;
+    min-height: 85vh;
+    height: 880px;
     width: 100%;
+  }
+
+  .viewer-dl-external {
+    background: var(--accent);
+    color: #ffffff !important;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font: 700 0.68rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.55rem 0.95rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .viewer-dl-external:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
   .study-viewer :global(.r2-status-pill) {
@@ -1726,7 +1765,13 @@ const clientExams = selectividadExams.map((exam) => ({
     border: 1px solid var(--line);
     display: grid;
     gap: 1px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 860px) {
+    .years-archive :global(.year-cards-grid) {
+      grid-template-columns: 1fr;
+    }
   }
 
   .years-archive :global(.exam-card) {

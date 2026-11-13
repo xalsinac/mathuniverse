@@ -320,6 +320,184 @@ const totalCount = craftProjects.length;
                           <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.8" font-family="monospace" font-size="10">1 / 139.8M</text>
                         </svg>
                       )}
+                      {project.id === 'ruleta-martingala' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#180d14" />
+                          <!-- Ruleta estilizada a la izquierda -->
+                          <g transform="translate(88, 96)">
+                            <circle cx="0" cy="0" r="52" fill="#23121b" stroke="#fbbf24" stroke-width="2.5" />
+                            <circle cx="0" cy="0" r="42" stroke="#f43f5e" stroke-width="8" stroke-dasharray="11 11" />
+                            <circle cx="0" cy="0" r="42" stroke="#1e293b" stroke-width="8" stroke-dasharray="11 11" stroke-dashoffset="11" />
+                            <!-- Casilla 0 verde -->
+                            <path d="M 0 -46 L 4 -36 L -4 -36 Z" fill="#10b981" />
+                            <circle cx="0" cy="0" r="16" fill="#180d14" stroke="#fbbf24" stroke-width="1.8" />
+                            <circle cx="0" cy="0" r="4" fill="#fbbf24" />
+                            <!-- Bola blanca -->
+                            <circle cx="28" cy="-24" r="4.2" fill="#ffffff" />
+                          </g>
+                          <!-- Gráfica dientes de sierra + caída abrupta -->
+                          <path d="M 162 122 L 176 116 L 176 118 L 190 110 L 190 112 L 204 103 L 204 105 L 218 96 L 218 98 L 232 90 L 240 156 L 296 156" stroke="#34d399" stroke-width="2.2" stroke-linejoin="round" fill="none" />
+                          <path d="M 232 90 L 240 156 L 296 156" stroke="#f43f5e" stroke-width="2.6" stroke-linejoin="round" fill="none" />
+                          <circle cx="240" cy="156" r="3.5" fill="#f43f5e" />
+                          <text x="20" y="28" fill="#f43f5e" font-family="monospace" font-size="11" letter-spacing="1">RULETA · MARTINGALA</text>
+                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.85" font-family="monospace" font-size="10">-2.70%</text>
+                        </svg>
+                      )}
+                      {project.id === 'problema-100-prisioneros' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#091614" />
+                          <!-- Ciclo cerrado de cajas conectadas -->
+                          <circle cx="160" cy="94" r="54" stroke="#3fe0b5" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.45" />
+                          <!-- 5 Cajas en ciclo -->
+                          <g transform="translate(145, 32)">
+                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
+                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">12</text>
+                          </g>
+                          <g transform="translate(202, 72)">
+                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
+                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">47</text>
+                          </g>
+                          <g transform="translate(182, 128)">
+                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
+                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">83</text>
+                          </g>
+                          <g transform="translate(108, 128)">
+                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
+                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">05</text>
+                          </g>
+                          <g transform="translate(88, 72)">
+                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#fbbf24" stroke-width="2" />
+                            <text x="15" y="16" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">12</text>
+                          </g>
+                          <!-- Flechas de ciclo -->
+                          <path d="M 178 48 L 204 68" stroke="#38bdf8" stroke-width="1.8" />
+                          <path d="M 212 99 L 200 124" stroke="#38bdf8" stroke-width="1.8" />
+                          <path d="M 179 140 L 141 140" stroke="#38bdf8" stroke-width="1.8" />
+                          <path d="M 118 124 L 106 99" stroke="#38bdf8" stroke-width="1.8" />
+                          <path d="M 118 68 L 142 48" stroke="#fbbf24" stroke-width="1.8" />
+
+                          <text x="20" y="28" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">100 PRISIONEROS · CICLOS</text>
+                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">31.18%</text>
+                        </svg>
+                      )}
+                      {project.id === 'paradoja-cumpleanos' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#091322" />
+                          <!-- Mini calendario estilizado -->
+                          <rect x="24" y="42" width="146" height="114" rx="8" fill="#102036" stroke="#38bdf8" stroke-width="1.5" opacity="0.9" />
+                          <rect x="24" y="42" width="146" height="22" rx="8" fill="#163254" />
+                          <text x="97" y="57" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">CALENDARIO 365 DÍAS</text>
+                          <!-- Casillas de días -->
+                          <rect x="36" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="58" y="74" width="16" height="14" rx="3" fill="#38bdf8" />
+                          <rect x="80" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="102" y="74" width="16" height="14" rx="3" fill="#38bdf8" />
+                          <rect x="124" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="146" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
+
+                          <rect x="36" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="58" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <!-- Día con colisión en ámbar/rojo -->
+                          <rect x="80" y="96" width="16" height="14" rx="3" fill="#fbbf24" stroke="#f43f5e" stroke-width="1.8" />
+                          <rect x="102" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="124" y="96" width="16" height="14" rx="3" fill="#38bdf8" />
+                          <rect x="146" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
+
+                          <rect x="36" y="118" width="16" height="14" rx="3" fill="#38bdf8" />
+                          <rect x="58" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="80" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="102" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="124" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
+                          <rect x="146" y="118" width="16" height="14" rx="3" fill="#38bdf8" />
+
+                          <!-- Curva S de probabilidad a la derecha -->
+                          <path d="M 188 148 C 215 148, 224 100, 245 78 C 266 56, 285 52, 300 50" stroke="#3fe0b5" stroke-width="2.5" fill="none" />
+                          <line x1="188" y1="98" x2="300" y2="98" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4 3" opacity="0.7" />
+                          <circle cx="228" cy="98" r="4.5" fill="#fbbf24" />
+                          <text x="236" y="112" fill="#fbbf24" font-family="monospace" font-size="9.5" font-weight="bold">n=23 (50.7%)</text>
+
+                          <text x="20" y="28" fill="#38bdf8" font-family="monospace" font-size="11" letter-spacing="1">CUMPLEAÑOS · COLISIÓN</text>
+                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">C(23,2)=253</text>
+                        </svg>
+                      )}
+                      {project.id === 'juego-nim' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#130d1e" />
+                          <!-- 4 Montones de fichas (1, 3, 5, 7) -->
+                          <!-- Montón 1 (1 ficha) -->
+                          <rect x="34" y="132" width="34" height="11" rx="4" fill="#c084fc" />
+                          <!-- Montón 2 (3 fichas) -->
+                          <rect x="82" y="132" width="34" height="11" rx="4" fill="#38bdf8" />
+                          <rect x="82" y="117" width="34" height="11" rx="4" fill="#38bdf8" />
+                          <rect x="82" y="102" width="34" height="11" rx="4" fill="#38bdf8" />
+                          <!-- Montón 3 (5 fichas) -->
+                          <rect x="130" y="132" width="34" height="11" rx="4" fill="#3fe0b5" />
+                          <rect x="130" y="117" width="34" height="11" rx="4" fill="#3fe0b5" />
+                          <rect x="130" y="102" width="34" height="11" rx="4" fill="#3fe0b5" />
+                          <rect x="130" y="87" width="34" height="11" rx="4" fill="#3fe0b5" />
+                          <rect x="130" y="72" width="34" height="11" rx="4" fill="#fbbf24" />
+                          <!-- Matriz Binaria XOR a la derecha -->
+                          <rect x="184" y="54" width="116" height="94" rx="8" fill="#1d1430" stroke="#c084fc" stroke-width="1.5" />
+                          <text x="242" y="72" fill="#c084fc" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">VISIÓN XOR (⊕)</text>
+                          <text x="242" y="90" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">1 = 0 0 1</text>
+                          <text x="242" y="106" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">3 = 0 1 1</text>
+                          <text x="242" y="122" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">5 = 1 0 1</text>
+                          <line x1="196" y1="128" x2="288" y2="128" stroke="#c084fc" stroke-width="1" opacity="0.6" />
+                          <text x="242" y="141" fill="#3fe0b5" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">⊕ = 1 1 1</text>
+
+                          <text x="20" y="28" fill="#c084fc" font-family="monospace" font-size="11" letter-spacing="1">JUEGO DE NIM · BINARIO</text>
+                          <text x="300" y="28" text-anchor="end" fill="#3fe0b5" opacity="0.9" font-family="monospace" font-size="10">XOR = 0</text>
+                        </svg>
+                      )}
+                      {project.id === 'radar-cartesiano' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#071514" />
+                          <!-- Ejes cartesianos -->
+                          <line x1="28" y1="92" x2="292" y2="92" stroke="#3fe0b5" stroke-width="1" opacity="0.35" />
+                          <line x1="160" y1="24" x2="160" y2="168" stroke="#3fe0b5" stroke-width="1" opacity="0.35" />
+                          <!-- Círculos de radar -->
+                          <circle cx="160" cy="92" r="28" stroke="#3fe0b5" stroke-width="1" opacity="0.2" />
+                          <circle cx="160" cy="92" r="56" stroke="#3fe0b5" stroke-width="1" opacity="0.2" />
+                          <!-- Sonda circunferencia -->
+                          <circle cx="192" cy="84" r="44" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5 3" fill="rgba(56, 189, 248, 0.08)" />
+                          <circle cx="192" cy="84" r="4" fill="#38bdf8" />
+                          <!-- Sonda recta y = mx + n -->
+                          <line x1="56" y1="154" x2="274" y2="34" stroke="#fbbf24" stroke-width="2.2" />
+                          <circle cx="110" cy="124" r="4.5" fill="#fbbf24" />
+                          <circle cx="220" cy="64" r="4.5" fill="#fbbf24" />
+                          <!-- Tesoro en intersección -->
+                          <circle cx="224" cy="62" r="7" fill="none" stroke="#f43f5e" stroke-width="2" />
+                          <circle cx="224" cy="62" r="2.8" fill="#f43f5e" />
+
+                          <text x="20" y="26" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">RADAR CARTESIANO</text>
+                          <text x="300" y="26" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">y = mx + n</text>
+                        </svg>
+                      )}
+                      {project.id === 'sierpinski-chaos' && (
+                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
+                          <rect width="320" height="180" fill="#091518" />
+                          <!-- Triángulo de Sierpinski recursivo estilizado -->
+                          <polygon points="160,34 86,154 234,154" stroke="#3fe0b5" stroke-width="1.6" fill="rgba(63, 224, 181, 0.06)" />
+                          <polygon points="160,34 123,94 197,94" stroke="#38bdf8" stroke-width="1.2" fill="rgba(56, 189, 248, 0.14)" />
+                          <polygon points="123,94 86,154 160,154" stroke="#fbbf24" stroke-width="1.2" fill="rgba(251, 191, 36, 0.14)" />
+                          <polygon points="197,94 160,154 234,154" stroke="#c084fc" stroke-width="1.2" fill="rgba(192, 132, 252, 0.14)" />
+                          <!-- Vértices -->
+                          <circle cx="160" cy="34" r="4.5" fill="#38bdf8" />
+                          <circle cx="86" cy="154" r="4.5" fill="#fbbf24" />
+                          <circle cx="234" cy="154" r="4.5" fill="#c084fc" />
+                          <!-- Puntos del juego del caos -->
+                          <circle cx="160" cy="64" r="1.6" fill="#38bdf8" />
+                          <circle cx="142" cy="79" r="1.6" fill="#38bdf8" />
+                          <circle cx="178" cy="79" r="1.6" fill="#38bdf8" />
+                          <circle cx="123" cy="124" r="1.6" fill="#fbbf24" />
+                          <circle cx="105" cy="139" r="1.6" fill="#fbbf24" />
+                          <circle cx="197" cy="124" r="1.6" fill="#c084fc" />
+                          <circle cx="215" cy="139" r="1.6" fill="#c084fc" />
+
+                          <text x="20" y="26" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">JUEGO DEL CAOS · IFS</text>
+                          <text x="300" y="26" text-anchor="end" fill="#38bdf8" opacity="0.9" font-family="monospace" font-size="10">D = 1.585</text>
+                        </svg>
+                      )}
                       {project.id === 'demolicion-fiq' && (
                         <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
                           <rect width="320" height="180" fill="url(#fiq-grad)" />

@@ -1,0 +1,995 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="El Juego del Caos & Fractales | Math Universe"
+  description="Genera el Triángulo de Sierpinski, pentágonos áureos y el Helecho de Barnsley a partir de saltos aleatorios. Arrastra los vértices en tiempo real y observa emerger el orden fractal."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Geometría Fractal" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="chaos-page" id="main-content">
+    <section class="cockpit-section">
+      <div class="cockpit-container">
+        <!-- CABECERA -->
+        <header class="cockpit-header">
+          <div class="header-left">
+            <a href="/craft" class="back-pill" title="Volver a Math Gaming">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Math Gaming</span>
+            </a>
+            <div class="header-titles">
+              <h1 class="game-title">El Juego del Caos &amp; Fractales</h1>
+              <span class="badge-pill">Atractores IFS</span>
+            </div>
+          </div>
+
+          <div class="preset-tabs" role="group" aria-label="Seleccionar fractal">
+            <button type="button" class="preset-tab is-active" data-preset="sierpinski">Sierpinski (3)</button>
+            <button type="button" class="preset-tab" data-preset="pentagon">Pentágono Áureo (5)</button>
+            <button type="button" class="preset-tab" data-preset="square">Cuadrado (4)</button>
+            <button type="button" class="preset-tab" data-preset="fern">Helecho Barnsley</button>
+          </div>
+        </header>
+
+        <!-- COCKPIT 3 COLUMNAS EN PC -->
+        <div class="cockpit-grid">
+          <!-- COLUMNA 1: PARÁMETROS MANIPULATIVOS -->
+          <div class="col-params">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Reglas del Juego</span>
+                  <h2 class="panel-title">Parámetros del Atractor</h2>
+                </div>
+              </div>
+
+              <div id="poly-params">
+                <p class="manip-hint">
+                  Arrastra los <strong>vértices numerados</strong> directamente sobre el lienzo para deformar el fractal en vivo.
+                </p>
+
+                <label class="slider-field">
+                  <span>Factor de salto <strong>r</strong>: <b id="val-ratio">0.50</b></span>
+                  <input id="sl-ratio" type="range" min="0.25" max="0.78" step="0.005" value="0.5" />
+                </label>
+
+                <label class="check-field">
+                  <input type="checkbox" id="chk-no-repeat" />
+                  <span>Prohibir repetir el vértice anterior</span>
+                </label>
+
+                <label class="check-field">
+                  <input type="checkbox" id="chk-color-vertex" checked />
+                  <span>Colorear puntos según vértice destino</span>
+                </label>
+              </div>
+
+              <div id="fern-params" hidden>
+                <p class="manip-hint">
+                  El <strong>Helecho de Barnsley</strong> aplica 4 transformaciones afines con probabilidades <code>1%</code>, <code>85%</code>, <code>7%</code> y <code>7%</code> en cada iteración.
+                </p>
+              </div>
+
+              <label class="slider-field" style="margin-top: 0.85rem;">
+                <span>Velocidad (Auto): <b id="val-speed">250 pts/frame</b></span>
+                <input id="sl-speed" type="range" min="10" max="1500" step="10" value="250" />
+              </label>
+            </div>
+
+            <div class="panel-card step-info-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Última iteración</span>
+                  <h2 class="panel-title">Traza del Salto</h2>
+                </div>
+              </div>
+              <div class="step-log" id="step-log">
+                Pulsa «+1 paso» para ver el salto geométrico exacto, o «Auto» para llenar el fractal.
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 2: LIENZO DEL FRACTAL -->
+          <div class="col-canvas">
+            <div class="panel-card canvas-card">
+              <div class="canvas-wrap">
+                <canvas id="chaos-canvas" width="580" height="520" aria-label="Lienzo del Juego del Caos"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: CONTROLES DE EJECUCIÓN Y KPIS -->
+          <div class="col-controls">
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Motor Estocástico</span>
+                  <h2 class="panel-title">Controles</h2>
+                </div>
+              </div>
+
+              <div class="sim-buttons">
+                <button type="button" class="sim-btn primary" id="btn-step-1">+1 paso (visual)</button>
+                <button type="button" class="sim-btn" id="btn-step-100">+100 puntos</button>
+                <button type="button" class="sim-btn" id="btn-step-1000">+1.000 puntos</button>
+                <button type="button" class="sim-btn" id="btn-step-10000">+10.000 puntos</button>
+                <button type="button" class="sim-btn gold" id="btn-auto">Auto (Continuo)</button>
+                <button type="button" class="sim-btn ghost" id="btn-clear">Limpiar lienzo</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-box">
+                <span class="kpi-label">Puntos dibujados</span>
+                <span class="kpi-val spent" id="kpi-points">0</span>
+                <span class="kpi-sub">Iteraciones acumuladas</span>
+              </div>
+              <div class="kpi-box">
+                <span class="kpi-label">Dimensión fractal</span>
+                <span class="kpi-val pos" id="kpi-dim">1,585</span>
+                <span class="kpi-sub" id="kpi-dim-sub">ln(3) / ln(2)</span>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="panel-kicker">Experimento rápido</span>
+                  <h2 class="panel-title">¿Por qué no sale ruido?</h2>
+                </div>
+              </div>
+              <p class="mini-note">
+                Aunque elegimos los vértices <strong>completamente al azar</strong>, cada salto multiplica las distancias por <code class="inline-code">r &lt; 1</code> (contracción). Ningún punto puede escapar del atractor y los huecos prohibidos nunca vuelven a rellenarse tras unas pocas iteraciones.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN EDUCATIVA -->
+    <section class="theory-section">
+      <div class="theory-container">
+        <div class="section-header">
+          <span class="theory-kicker">Geometría Fractal</span>
+          <h2>Del azar puro a la autosimilitud infinita</h2>
+        </div>
+
+        <div class="theory-grid">
+          <article class="theory-card">
+            <div class="card-tag">1. El Algoritmo</div>
+            <h3>Tres pasos y un dado</h3>
+            <p>
+              Fija 3 vértices <code class="inline-code">V₁, V₂, V₃</code> y un punto inicial cualquiera <code class="inline-code">P₀</code>. En cada paso, elige un vértice al azar y salta a la mitad del camino: <code class="inline-code">P<sub>k+1</sub> = (P<sub>k</sub> + V<sub>i</sub>) / 2</code>. Tras unos cientos de saltos, emerge el <strong>Triángulo de Sierpinski</strong>.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">2. Dimensión Fractal (1,585)</div>
+            <h3>Entre una línea (1D) y un área (2D)</h3>
+            <p>
+              Si duplicas el lado de un triángulo de Sierpinski, obtienes <strong>3 copias</strong> idénticas del original (no 4 como en un triángulo macizo). Por tanto, su dimensión de Hausdorff es:
+            </p>
+            <div class="formula-box">
+              2<sup>D</sup> = 3 &nbsp;⟹&nbsp; D = ln(3) / ln(2) ≈ 1,58496
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <div class="card-tag">3. Restricciones y Naturaleza</div>
+            <h3>Pentágonos áureos y helechos</h3>
+            <p>
+              En un cuadrado (<code class="inline-code">r = 0,5</code>) el azar sin restricciones rellena todo el interior; basta prohibir repetir el vértice anterior para que brote un fractal. Con 4 transformaciones afines en distinta proporción se sintetizan hojas de helecho y paisajes por ordenador.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .chaos-page {
+    padding-bottom: 4rem;
+    color: var(--ink);
+  }
+
+  .cockpit-section {
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  .cockpit-container,
+  .theory-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .cockpit-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .back-pill:hover {
+    border-color: var(--accent);
+    color: var(--ink-strong);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .game-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+    font-weight: 800;
+    color: var(--ink-strong);
+    letter-spacing: -0.02em;
+  }
+
+  .badge-pill {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #059669;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  :root[data-theme='dark'] .badge-pill {
+    color: #34d399;
+  }
+
+  .preset-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .preset-tab {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.46rem 0.78rem;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+
+  .preset-tab:hover {
+    border-color: #10b981;
+  }
+
+  .preset-tab.is-active {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  :root[data-theme='dark'] .preset-tab.is-active {
+    color: #34d399;
+  }
+
+  /* 3 COLUMNAS PC */
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(270px, 310px) minmax(360px, 1fr) minmax(270px, 320px);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1150px) {
+    .cockpit-grid {
+      grid-template-columns: minmax(270px, 315px) 1fr;
+    }
+    .col-controls {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .cockpit-section {
+      padding: 0.75rem 0.85rem 1.75rem;
+    }
+    .cockpit-grid {
+      grid-template-columns: 1fr;
+    }
+    .col-canvas { order: 1; }
+    .col-controls { order: 2; }
+    .col-params { order: 3; }
+  }
+
+  .col-params,
+  .col-canvas,
+  .col-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .panel-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px -16px rgba(15, 23, 42, 0.2);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .panel-kicker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  :root[data-theme='dark'] .panel-kicker {
+    color: #fbbf24;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .manip-hint {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.48;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .slider-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.65rem;
+  }
+
+  .slider-field b {
+    font-family: var(--mono);
+    color: var(--ink-strong);
+  }
+
+  .slider-field input[type='range'] {
+    width: 100%;
+    accent-color: #10b981;
+    cursor: pointer;
+  }
+
+  .check-field {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.45rem;
+    cursor: pointer;
+  }
+
+  .step-log {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  .canvas-card {
+    padding: 0.75rem;
+  }
+
+  .canvas-wrap {
+    display: flex;
+    justify-content: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    touch-action: none;
+  }
+
+  /* CONTROLES */
+  .sim-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .sim-btn {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.62rem 0.6rem;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-sunken);
+    color: var(--ink-strong);
+    cursor: pointer;
+    transition: all 0.14s ease;
+    text-align: center;
+  }
+
+  .sim-btn:hover {
+    border-color: #10b981;
+    transform: translateY(-1px);
+  }
+
+  .sim-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .sim-btn.gold {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: #10b981;
+    color: #059669;
+  }
+
+  :root[data-theme='dark'] .sim-btn.gold {
+    color: #34d399;
+  }
+
+  .sim-btn.gold.running {
+    background: #e11d48;
+    border-color: #e11d48;
+    color: #ffffff;
+  }
+
+  .sim-btn.ghost {
+    color: var(--muted);
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .kpi-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .kpi-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .kpi-val {
+    display: block;
+    font-family: var(--mono);
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--ink-strong);
+  }
+
+  .kpi-val.spent { color: #d97706; }
+  .kpi-val.pos { color: #059669; }
+  :root[data-theme='dark'] .kpi-val.spent { color: #fbbf24; }
+  :root[data-theme='dark'] .kpi-val.pos { color: #34d399; }
+
+  .kpi-sub {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  .mini-note {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* TEORÍA */
+  .theory-section {
+    padding: 1.5rem 1.25rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .theory-kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #d97706;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  :root[data-theme='dark'] .theory-kicker {
+    color: #fbbf24;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+    color: var(--ink-strong);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .theory-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .theory-card h3 {
+    margin: 0 0 0.65rem 0;
+    font-size: 1.08rem;
+    color: var(--ink-strong);
+  }
+
+  .theory-card p {
+    margin: 0 0 0.75rem 0;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .formula-box {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    color: var(--ink-strong);
+    text-align: center;
+  }
+
+  .inline-code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.08rem 0.35rem;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+</style>
+
+<script>
+  type PresetKey = 'sierpinski' | 'pentagon' | 'square' | 'fern';
+  type Vertex = { x: number; y: number; color: string };
+
+  const VERTEX_COLORS = ['#38bdf8', '#fbbf24', '#c084fc', '#34d399', '#f43f5e'];
+
+  const canvas = document.getElementById('chaos-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+
+  // Buffer offscreen para acumular decenas de miles de puntos sin redibujar todo cada frame
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width = canvas.width;
+  offCanvas.height = canvas.height;
+  const offCtx = offCanvas.getContext('2d')!;
+
+  let preset: PresetKey = 'sierpinski';
+  let vertices: Vertex[] = [];
+  let ratio = 0.5;
+  let noRepeat = false;
+  let colorByVertex = true;
+  let speed = 250;
+
+  let curX = canvas.width / 2;
+  let curY = canvas.height / 2;
+  let fernX = 0;
+  let fernY = 0;
+  let lastVertexIdx = -1;
+  let totalPoints = 0;
+  let autoRaf: number | null = null;
+  let dragVertexIdx: number | null = null;
+  let lastJumpVisual: { fromX: number; fromY: number; toX: number; toY: number; vx: number; vy: number; color: string } | null = null;
+
+  const polyParams = document.getElementById('poly-params')!;
+  const fernParams = document.getElementById('fern-params')!;
+  const slRatio = document.getElementById('sl-ratio') as HTMLInputElement;
+  const valRatio = document.getElementById('val-ratio')!;
+  const chkNoRepeat = document.getElementById('chk-no-repeat') as HTMLInputElement;
+  const chkColorVertex = document.getElementById('chk-color-vertex') as HTMLInputElement;
+  const slSpeed = document.getElementById('sl-speed') as HTMLInputElement;
+  const valSpeed = document.getElementById('val-speed')!;
+  const stepLog = document.getElementById('step-log')!;
+  const kpiPoints = document.getElementById('kpi-points')!;
+  const kpiDim = document.getElementById('kpi-dim')!;
+  const kpiDimSub = document.getElementById('kpi-dim-sub')!;
+  const btnAuto = document.getElementById('btn-auto')!;
+
+  function buildPolygonVertices(n: number): Vertex[] {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2 + (n === 3 ? 28 : 8);
+    const rad = Math.min(canvas.width, canvas.height) * 0.42;
+    const arr: Vertex[] = [];
+    for (let i = 0; i < n; i++) {
+      const ang = -Math.PI / 2 + (i * Math.PI * 2) / n + (n === 4 ? Math.PI / 4 : 0);
+      arr.push({
+        x: cx + Math.cos(ang) * rad,
+        y: cy + Math.sin(ang) * rad,
+        color: VERTEX_COLORS[i % VERTEX_COLORS.length],
+      });
+    }
+    return arr;
+  }
+
+  function clearBuffer() {
+    offCtx.clearRect(0, 0, offCanvas.width, offCanvas.height);
+    totalPoints = 0;
+    lastJumpVisual = null;
+    curX = canvas.width / 2;
+    curY = canvas.height / 2;
+    fernX = 0;
+    fernY = 0;
+    lastVertexIdx = -1;
+    kpiPoints.textContent = '0';
+    renderComposite();
+  }
+
+  function stepFern(): { px: number; py: number; color: string } {
+    const r = Math.random();
+    let nx = 0;
+    let ny = 0;
+    let col = '#10b981';
+    if (r < 0.01) {
+      nx = 0;
+      ny = 0.16 * fernY;
+      col = '#d97706';
+    } else if (r < 0.86) {
+      nx = 0.85 * fernX + 0.04 * fernY;
+      ny = -0.04 * fernX + 0.85 * fernY + 1.6;
+      col = '#10b981';
+    } else if (r < 0.93) {
+      nx = 0.2 * fernX - 0.26 * fernY;
+      ny = 0.23 * fernX + 0.22 * fernY + 1.6;
+      col = '#34d399';
+    } else {
+      nx = -0.15 * fernX + 0.28 * fernY;
+      ny = 0.26 * fernX + 0.24 * fernY + 0.44;
+      col = '#059669';
+    }
+    fernX = nx;
+    fernY = ny;
+
+    // Mapear x ∈ [-2.5, 2.8], y ∈ [0, 10.2] al canvas
+    const px = ((fernX + 2.6) / 5.4) * (canvas.width * 0.82) + canvas.width * 0.09;
+    const py = canvas.height - 24 - (fernY / 10.3) * (canvas.height - 48);
+    return { px, py, color: col };
+  }
+
+  function addPoints(count: number, visualStep = false) {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    for (let i = 0; i < count; i++) {
+      if (preset === 'fern') {
+        const pt = stepFern();
+        offCtx.fillStyle = pt.color;
+        offCtx.fillRect(pt.px, pt.py, 1.4, 1.4);
+        totalPoints++;
+        if (visualStep) {
+          stepLog.textContent = `Helecho IFS: punto (${fernX.toFixed(2)}, ${fernY.toFixed(2)})`;
+        }
+      } else {
+        let idx = Math.floor(Math.random() * vertices.length);
+        if (noRepeat && vertices.length > 1 && idx === lastVertexIdx) {
+          idx = (idx + 1 + Math.floor(Math.random() * (vertices.length - 1))) % vertices.length;
+        }
+        lastVertexIdx = idx;
+        const v = vertices[idx];
+        const prevX = curX;
+        const prevY = curY;
+
+        curX = curX + (v.x - curX) * ratio;
+        curY = curY + (v.y - curY) * ratio;
+
+        const dotColor = colorByVertex ? v.color : isLight ? '#1d4ed8' : '#38bdf8';
+        offCtx.fillStyle = dotColor;
+        const size = totalPoints < 500 ? 2.2 : 1.35;
+        offCtx.fillRect(curX - size / 2, curY - size / 2, size, size);
+        totalPoints++;
+
+        if (visualStep) {
+          lastJumpVisual = {
+            fromX: prevX,
+            fromY: prevY,
+            toX: curX,
+            toY: curY,
+            vx: v.x,
+            vy: v.y,
+            color: v.color,
+          };
+          stepLog.textContent = `Vértice sorteado: V${idx + 1} · Salto r = ${ratio.toFixed(3)} hacia (${Math.round(v.x)}, ${Math.round(v.y)})`;
+        } else {
+          lastJumpVisual = null;
+        }
+      }
+    }
+
+    kpiPoints.textContent = totalPoints.toLocaleString('es-ES');
+    renderComposite();
+  }
+
+  function renderComposite() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = isLight ? '#ece9e0' : '#090e18';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Puntos fractales acumulados
+    ctx.drawImage(offCanvas, 0, 0);
+
+    // Traza del salto paso a paso
+    if (lastJumpVisual && preset !== 'fern') {
+      const j = lastJumpVisual;
+      ctx.save();
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = j.color;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(j.fromX, j.fromY);
+      ctx.lineTo(j.vx, j.vy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Punto anterior
+      ctx.beginPath();
+      ctx.arc(j.fromX, j.fromY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fill();
+
+      // Nuevo punto
+      ctx.beginPath();
+      ctx.arc(j.toX, j.toY, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = j.color;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Vértices arrastrables
+    if (preset !== 'fern') {
+      vertices.forEach((v, idx) => {
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = v.color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`V${idx + 1}`, v.x, v.y);
+      });
+    }
+  }
+
+  function stopAuto() {
+    if (autoRaf !== null) {
+      cancelAnimationFrame(autoRaf);
+      autoRaf = null;
+    }
+    btnAuto.classList.remove('running');
+    btnAuto.textContent = 'Auto (Continuo)';
+  }
+
+  function toggleAuto() {
+    if (autoRaf !== null) {
+      stopAuto();
+      return;
+    }
+    btnAuto.classList.add('running');
+    btnAuto.textContent = 'Pausar Auto';
+
+    const tick = () => {
+      addPoints(speed, false);
+      autoRaf = requestAnimationFrame(tick);
+    };
+    autoRaf = requestAnimationFrame(tick);
+  }
+
+  function selectPreset(key: PresetKey) {
+    stopAuto();
+    preset = key;
+    polyParams.hidden = key === 'fern';
+    fernParams.hidden = key !== 'fern';
+
+    if (key === 'sierpinski') {
+      vertices = buildPolygonVertices(3);
+      ratio = 0.5;
+      noRepeat = false;
+      kpiDim.textContent = '1,585';
+      kpiDimSub.textContent = 'ln(3) / ln(2)';
+    } else if (key === 'pentagon') {
+      vertices = buildPolygonVertices(5);
+      ratio = 0.618;
+      noRepeat = false;
+      kpiDim.textContent = '~1,86';
+      kpiDimSub.textContent = 'Razón áurea r ≈ 0,618';
+    } else if (key === 'square') {
+      vertices = buildPolygonVertices(4);
+      ratio = 0.5;
+      noRepeat = true;
+      kpiDim.textContent = '~1,77';
+      kpiDimSub.textContent = 'Con restricción no-repetir';
+    } else {
+      vertices = [];
+      kpiDim.textContent = '~1,73';
+      kpiDimSub.textContent = 'Atractor afín 4 reglas';
+    }
+
+    slRatio.value = String(ratio);
+    valRatio.textContent = ratio.toFixed(3).replace(/0$/, '');
+    chkNoRepeat.checked = noRepeat;
+    clearBuffer();
+  }
+
+  // Arrastrar vértices directamente en el canvas
+  function getCanvasPos(e: PointerEvent) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      px: ((e.clientX - rect.left) / rect.width) * canvas.width,
+      py: ((e.clientY - rect.top) / rect.height) * canvas.height,
+    };
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (preset === 'fern') return;
+    const { px, py } = getCanvasPos(e);
+    for (let i = 0; i < vertices.length; i++) {
+      if (Math.hypot(px - vertices[i].x, py - vertices[i].y) <= 18) {
+        dragVertexIdx = i;
+        canvas.setPointerCapture(e.pointerId);
+        break;
+      }
+    }
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (dragVertexIdx === null || preset === 'fern') return;
+    const { px, py } = getCanvasPos(e);
+    vertices[dragVertexIdx].x = Math.max(16, Math.min(canvas.width - 16, px));
+    vertices[dragVertexIdx].y = Math.max(16, Math.min(canvas.height - 16, py));
+    clearBuffer();
+  });
+
+  canvas.addEventListener('pointerup', () => {
+    dragVertexIdx = null;
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.preset-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.preset-tab').forEach((t) => t.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      selectPreset((tab.dataset.preset as PresetKey) || 'sierpinski');
+    });
+  });
+
+  slRatio.addEventListener('input', () => {
+    ratio = Number(slRatio.value);
+    valRatio.textContent = ratio.toFixed(3).replace(/0$/, '');
+    clearBuffer();
+  });
+
+  chkNoRepeat.addEventListener('change', () => {
+    noRepeat = chkNoRepeat.checked;
+    clearBuffer();
+  });
+
+  chkColorVertex.addEventListener('change', () => {
+    colorByVertex = chkColorVertex.checked;
+    clearBuffer();
+  });
+
+  slSpeed.addEventListener('input', () => {
+    speed = Number(slSpeed.value);
+    valSpeed.textContent = `${speed} pts/frame`;
+  });
+
+  document.getElementById('btn-step-1')?.addEventListener('click', () => addPoints(1, true));
+  document.getElementById('btn-step-100')?.addEventListener('click', () => addPoints(100, false));
+  document.getElementById('btn-step-1000')?.addEventListener('click', () => addPoints(1000, false));
+  document.getElementById('btn-step-10000')?.addEventListener('click', () => addPoints(10000, false));
+  btnAuto.addEventListener('click', toggleAuto);
+  document.getElementById('btn-clear')?.addEventListener('click', () => {
+    stopAuto();
+    clearBuffer();
+  });
+
+  new MutationObserver(() => renderComposite()).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
+  selectPreset('sierpinski');
+</script>

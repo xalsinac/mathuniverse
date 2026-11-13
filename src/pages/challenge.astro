@@ -1,0 +1,1191 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import ScientificCalculator from '../components/ScientificCalculator.astro';
+import { site } from '../config/site';
+import {
+  CHALLENGE_LEVELS,
+  CHALLENGE_BRANCHES,
+  challengeExams,
+  resolveChallengePdfUrl,
+} from '../data/challenge';
+
+// Serializamos el catálogo con las URLs resueltas hacia Cloudflare R2
+const clientExams = challengeExams.map((exam) => ({
+  ...exam,
+  pdfUrl: resolveChallengePdfUrl(exam.pdfPath),
+}));
+
+// Conteo por curso y por rama para los pills de filtrado
+const levelCounts = challengeExams.reduce((acc, e) => {
+  acc[e.level] = (acc[e.level] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+const branchCounts = challengeExams.reduce((acc, e) => {
+  acc[e.branch] = (acc[e.branch] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+---
+
+<BaseLayout
+  title={`Math Challenge — ${site.name}`}
+  description="Banco de exámenes reales y modelos de evaluación de matemáticas para ESO y Bachillerato organizados por nivel y rama matemática, con visor integrado, calculadora flotante y descarga directa."
+>
+  <!-- Barra superior técnica unificada + Acceso a Calculadora -->
+  <SiteHeader activePage="challenge" statusText="05 · Math Challenge" ctaHref="/#recursos" ctaLabel="Todas las Apps">
+    <div slot="right-extra" class="topbar-cell challenge-top-actions">
+      <button
+        type="button"
+        class="challenge-top-btn"
+        data-toggle-floating-calc
+        title="Abrir calculadora científica flotante o en Picture-in-Picture"
+      >
+        <span>🧮 Calculadora Flotante</span>
+      </button>
+      <a
+        href="/selectividad"
+        class="challenge-top-btn is-accent"
+        title="Ir a exámenes oficiales de Selectividad (PAU)"
+      >
+        <span>🎓 Selectividad (PAU)</span>
+      </a>
+    </div>
+  </SiteHeader>
+
+  <main>
+    <section class="challenge-band section-band is-drawn">
+      <span class="section-rule" aria-hidden="true"></span>
+      <div class="section-frame">
+        <span class="tick tick-half tick-left" aria-hidden="true"></span>
+        <span class="tick tick-half tick-right" aria-hidden="true"></span>
+
+        <div class="section-eyebrow">
+          <span>
+            <span class="eyebrow-num">05</span>
+            <span class="eyebrow-sep" aria-hidden="true">/</span>
+            Math Challenge · Banco de exámenes reales
+          </span>
+          <span class="eyebrow-right">Modelos de examen · Pruebas trimestrales · Visor Cloudflare R2</span>
+        </div>
+
+        <!-- Cabecera -->
+        <div class="challenge-hero section-body">
+          <div class="challenge-top-split">
+            <div class="challenge-intro">
+              <p class="kicker">Ponerse a prueba</p>
+              <h1>Exámenes y pruebas <em>por curso y tema.</em></h1>
+              <p class="challenge-lead">
+                Selecciona tu curso y bloque temático para consultar o descargar cada examen en PDF.
+                Prepárate con situaciones de examen reales, mide tu progreso y apóyate en la calculadora científica flotante en cualquier momento.
+              </p>
+              <div class="challenge-hero-pills">
+                <span class="stat-pill"><strong>{challengeExams.length}</strong> Exámenes catalogados</span>
+                <span class="stat-pill"><strong>6</strong> Cursos (ESO y Bachillerato)</span>
+                <span class="stat-pill"><strong>5</strong> Bloques matemáticos</span>
+              </div>
+            </div>
+
+            <!-- Ficha lateral informativa -->
+            <aside class="challenge-info-card" aria-label="Consejo de entrenamiento">
+              <div class="card-head">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span class="card-eyebrow">MODO EVALUACIÓN</span>
+              </div>
+              <p class="card-desc">
+                Resuelve cada examen con un cronómetro de <strong>50 minutos</strong> y sin apuntes delante. Luego comprueba tus respuestas y detecta los puntos a reforzar.
+              </p>
+              <div class="card-links">
+                <a href="/gym" class="card-link">← Ir a hojas de entrenamiento (Math Gym)</a>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Selector de Curso (Pills principales) -->
+          <div class="level-selector-bar">
+            <span class="bar-tag">FILTRAR POR CURSO:</span>
+            <div class="level-pills" role="tablist" aria-label="Filtrar por curso">
+              <button
+                type="button"
+                role="tab"
+                class="level-pill is-active"
+                data-level-filter="all"
+                aria-selected="true"
+              >
+                <span>Todos los cursos ({challengeExams.length})</span>
+              </button>
+              {
+                CHALLENGE_LEVELS.map((lvl) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    class="level-pill"
+                    data-level-filter={lvl.id}
+                    aria-selected="false"
+                  >
+                    <span>{lvl.short} ({levelCounts[lvl.id] || 0})</span>
+                    <small>{lvl.stage}</small>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Barra de Filtros secundarios: Rama Matemática y Buscador -->
+          <div class="filters-bar">
+            <div class="branch-selector">
+              <span class="filter-label">RAMA MATEMÁTICA:</span>
+              <div class="branch-pills" role="tablist" aria-label="Filtrar por rama">
+                <button
+                  type="button"
+                  class="branch-pill is-active"
+                  data-branch-filter="all"
+                >
+                  <span class="branch-sym">✱</span>
+                  <span>Todas las ramas ({challengeExams.length})</span>
+                </button>
+                {
+                  CHALLENGE_BRANCHES.map((br) => (
+                    <button
+                      type="button"
+                      class="branch-pill"
+                      data-branch-filter={br.id}
+                      style={`--branch-col:${br.color}`}
+                    >
+                      <span class="branch-sym">{br.symbol}</span>
+                      <span>{br.name} ({branchCounts[br.id] || 0})</span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+
+            <!-- Buscador en tiempo real -->
+            <div class="search-wrap">
+              <svg
+                class="search-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                type="search"
+                class="search-input"
+                placeholder="Buscar examen por tema o palabra clave..."
+                data-challenge-search
+                aria-label="Buscar examen"
+              />
+              <span class="catalog-count-badge" data-challenge-count>
+                {challengeExams.length} exámenes
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- VISOR INTEGRADO DEL EXAMEN (OCULTO POR DEFECTO, ABRE AL CLIC)   -->
+        <!-- =============================================================== -->
+        <div class="study-viewer" data-study-viewer hidden>
+          <div class="viewer-toolbar">
+            <div class="viewer-info">
+              <span class="viewer-badge" data-viewer-badge>1.º ESO · NÚMEROS</span>
+              <h3 class="viewer-title" data-viewer-title>Examen seleccionado</h3>
+            </div>
+
+            <div class="viewer-actions">
+              <a
+                href="#"
+                download
+                class="viewer-dl-btn"
+                data-viewer-dl-main
+                title="Descargar este examen en PDF"
+              >
+                📥 Descargar PDF
+              </a>
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="viewer-tab-btn"
+                data-viewer-tab-main
+                title="Abrir examen en una nueva pestaña"
+              >
+                Abrir en pestaña ↗
+              </a>
+              <button
+                type="button"
+                class="viewer-aux-link"
+                data-toggle-floating-calc
+                title="Mostrar u ocultar calculadora científica flotante"
+              >
+                🧮 Calculadora Flotante
+              </button>
+              <button
+                type="button"
+                class="viewer-close-btn"
+                data-close-viewer
+                title="Cerrar visor"
+              >
+                CERRAR VISOR ✕
+              </button>
+            </div>
+          </div>
+
+          <div class="viewer-stage" data-viewer-stage>
+            <!-- Iframe inyectado dinámicamente -->
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- CATÁLOGO COMPLETO DE TARJETAS DE EXAMEN (GRID ANCHO Y LIMPIO)   -->
+        <!-- =============================================================== -->
+        <div class="challenge-archive section-body" data-challenge-archive>
+          <!-- Generado por cliente JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Calculadora Científica Flotante integrada -->
+  <ScientificCalculator />
+</BaseLayout>
+
+<!-- Datos serializados para el cliente -->
+<script
+  id="challenge-data"
+  type="application/json"
+  set:html={JSON.stringify({
+    clientExams,
+    CHALLENGE_LEVELS,
+    CHALLENGE_BRANCHES,
+  })}
+/>
+
+<script>
+  interface ClientExam {
+    id: string;
+    level: string;
+    branch: string;
+    topic: string;
+    title: string;
+    description: string;
+    pdfPath: string;
+    pdfUrl: string;
+    available: boolean;
+  }
+
+  interface ChallengeStore {
+    clientExams: ClientExam[];
+    CHALLENGE_LEVELS: { id: string; short: string; name: string; stage: string }[];
+    CHALLENGE_BRANCHES: { id: string; code: string; name: string; symbol: string; color: string }[];
+  }
+
+  const rawData = document.getElementById('challenge-data')?.textContent;
+  const challengeStore: ChallengeStore | null = rawData ? JSON.parse(rawData) : null;
+
+  if (challengeStore) {
+    const { clientExams, CHALLENGE_LEVELS, CHALLENGE_BRANCHES } = challengeStore;
+
+    let activeLevel: string = 'all';
+    let activeBranch: string = 'all';
+    let searchQuery: string = '';
+    let selectedExam: ClientExam | null = null;
+
+    const archiveEl = document.querySelector<HTMLElement>('[data-challenge-archive]');
+    const countBadgeEl = document.querySelector<HTMLElement>('[data-challenge-count]');
+    const viewerEl = document.querySelector<HTMLElement>('[data-study-viewer]');
+    const viewerBadgeEl = document.querySelector<HTMLElement>('[data-viewer-badge]');
+    const viewerTitleEl = document.querySelector<HTMLElement>('[data-viewer-title]');
+    const viewerStageEl = document.querySelector<HTMLElement>('[data-viewer-stage]');
+    const viewerDlBtn = document.querySelector<HTMLAnchorElement>('[data-viewer-dl-main]');
+    const viewerTabBtn = document.querySelector<HTMLAnchorElement>('[data-viewer-tab-main]');
+    const closeViewerBtn = document.querySelector<HTMLElement>('[data-close-viewer]');
+
+    const renderViewer = () => {
+      if (!viewerEl || !viewerStageEl || !viewerBadgeEl || !viewerTitleEl) return;
+      if (!selectedExam) {
+        viewerEl.hidden = true;
+        return;
+      }
+
+      viewerEl.hidden = false;
+      const branchObj = CHALLENGE_BRANCHES.find((b) => b.id === selectedExam?.branch);
+      const levelObj = CHALLENGE_LEVELS.find((l) => l.id === selectedExam?.level);
+
+      viewerBadgeEl.textContent = `${levelObj?.short || selectedExam.level.toUpperCase()} · ${branchObj?.name.toUpperCase() || selectedExam.branch.toUpperCase()}`;
+      viewerTitleEl.textContent = selectedExam.title;
+
+      if (viewerDlBtn) {
+        viewerDlBtn.href = selectedExam.pdfUrl;
+        viewerDlBtn.setAttribute('download', `${selectedExam.id}.pdf`);
+      }
+      if (viewerTabBtn) {
+        viewerTabBtn.href = selectedExam.pdfUrl;
+      }
+
+      viewerStageEl.innerHTML = `
+        <div class="doc-pane">
+          <div class="doc-pane-head">
+            <span>EXAMEN OFICIAL · ${selectedExam.title}</span>
+            <div class="doc-pane-links">
+              <a href="${selectedExam.pdfUrl}" target="_blank" rel="noopener noreferrer">Abrir en pestaña ↗</a>
+              <a href="${selectedExam.pdfUrl}" download class="dl-btn">↓ Descargar PDF</a>
+            </div>
+          </div>
+          <iframe class="pdf-iframe" src="${selectedExam.pdfUrl}" title="${selectedExam.title}"></iframe>
+        </div>
+      `;
+
+      viewerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const renderArchive = () => {
+      if (!archiveEl) return;
+
+      const q = searchQuery.trim().toLowerCase();
+      const filtered = clientExams.filter((exam) => {
+        if (activeLevel !== 'all' && exam.level !== activeLevel) return false;
+        if (activeBranch !== 'all' && exam.branch !== activeBranch) return false;
+        if (q) {
+          const haystack = `${exam.title} ${exam.description} ${exam.topic} ${exam.level}`.toLowerCase();
+          if (!haystack.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (countBadgeEl) {
+        countBadgeEl.textContent = `${filtered.length} ${filtered.length === 1 ? 'examen' : 'exámenes'}`;
+      }
+
+      if (filtered.length === 0) {
+        archiveEl.innerHTML = `
+          <div class="empty-archive">
+            <p>No se han encontrado exámenes con los filtros seleccionados.</p>
+            <button type="button" class="reset-filter-btn" data-reset-filters>Restablecer filtros</button>
+          </div>
+        `;
+        archiveEl.querySelector('[data-reset-filters]')?.addEventListener('click', () => {
+          activeLevel = 'all';
+          activeBranch = 'all';
+          searchQuery = '';
+          const searchInput = document.querySelector<HTMLInputElement>('[data-challenge-search]');
+          if (searchInput) searchInput.value = '';
+          document.querySelectorAll<HTMLElement>('[data-level-filter]').forEach((b) =>
+            b.classList.toggle('is-active', b.dataset.levelFilter === 'all'),
+          );
+          document.querySelectorAll<HTMLElement>('[data-branch-filter]').forEach((b) =>
+            b.classList.toggle('is-active', b.dataset.branchFilter === 'all'),
+          );
+          renderArchive();
+        });
+        return;
+      }
+
+      // Agrupamos por nivel para una lectura pedagógica clara
+      const levelsOrder = ['1eso', '2eso', '3eso', '4eso', '1bach', '2bach'];
+      const presentLevels = levelsOrder.filter((lvlId) =>
+        filtered.some((e) => e.level === lvlId),
+      );
+
+      archiveEl.innerHTML = presentLevels
+        .map((lvlId) => {
+          const lvlInfo = CHALLENGE_LEVELS.find((l) => l.id === lvlId);
+          const examsOfLevel = filtered.filter((e) => e.level === lvlId);
+
+          const cardsHtml = examsOfLevel
+            .map((exam) => {
+              const branchObj = CHALLENGE_BRANCHES.find((b) => b.id === exam.branch);
+              const isSelected = selectedExam?.id === exam.id;
+
+              return `
+                <article class="exam-card ${isSelected ? 'is-selected' : ''}" data-exam-card="${exam.id}">
+                  <div class="exam-card-top">
+                    <span class="exam-level-tag">${lvlInfo?.short || exam.level}</span>
+                    <span class="exam-branch-tag" style="--br-color:${branchObj?.color || 'var(--accent)'}">
+                      ${branchObj?.symbol || '•'} ${branchObj?.name || exam.branch}
+                    </span>
+                  </div>
+
+                  <span class="exam-topic-kicker">${exam.topic}</span>
+                  <h3 class="exam-card-title">${exam.title}</h3>
+                  <p class="exam-card-desc">${exam.description}</p>
+
+                  <div class="exam-card-foot">
+                    <button
+                      type="button"
+                      class="exam-open-btn"
+                      data-open-exam="${exam.id}"
+                    >
+                      <span>👁 Ver en visor →</span>
+                    </button>
+                    <a
+                      href="${exam.pdfUrl}"
+                      download
+                      class="exam-dl-btn"
+                      title="Descargar PDF"
+                    >
+                      <span>📥 Descargar</span>
+                    </a>
+                  </div>
+                </article>
+              `;
+            })
+            .join('');
+
+          return `
+            <div class="level-block">
+              <div class="level-sidebar">
+                <span class="level-kicker">${lvlInfo?.stage || 'CURSO'}</span>
+                <h2 class="level-heading">${lvlInfo?.name || lvlId}</h2>
+                <span class="level-count">${examsOfLevel.length} exámenes de evaluación</span>
+              </div>
+              <div class="level-cards-grid">
+                ${cardsHtml}
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      // Delegación de eventos en botones de abrir
+      archiveEl.querySelectorAll<HTMLButtonElement>('[data-open-exam]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.openExam;
+          const found = clientExams.find((e) => e.id === id);
+          if (!found) return;
+          selectedExam = found;
+          renderViewer();
+          renderArchive();
+        });
+      });
+    };
+
+    closeViewerBtn?.addEventListener('click', () => {
+      selectedExam = null;
+      renderViewer();
+      renderArchive();
+    });
+
+    // Filtros de Nivel (con reseteo inteligente de rama si no tiene exámenes)
+    document.querySelectorAll<HTMLButtonElement>('[data-level-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeLevel = btn.dataset.levelFilter || 'all';
+        document.querySelectorAll('[data-level-filter]').forEach((b) =>
+          b.classList.toggle('is-active', b === btn),
+        );
+        if (activeLevel !== 'all' && activeBranch !== 'all') {
+          const hasBranchInLevel = clientExams.some(
+            (e) => e.level === activeLevel && e.branch === activeBranch,
+          );
+          if (!hasBranchInLevel) {
+            activeBranch = 'all';
+            document.querySelectorAll<HTMLElement>('[data-branch-filter]').forEach((b) =>
+              b.classList.toggle('is-active', b.dataset.branchFilter === 'all'),
+            );
+          }
+        }
+        renderArchive();
+      });
+    });
+
+    // Filtros de Rama
+    document.querySelectorAll<HTMLButtonElement>('[data-branch-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeBranch = btn.dataset.branchFilter || 'all';
+        document.querySelectorAll('[data-branch-filter]').forEach((b) =>
+          b.classList.toggle('is-active', b === btn),
+        );
+        renderArchive();
+      });
+    });
+
+    // Buscador
+    const searchInput = document.querySelector<HTMLInputElement>('[data-challenge-search]');
+    searchInput?.addEventListener('input', () => {
+      searchQuery = searchInput.value;
+      renderArchive();
+    });
+
+    // Inicializar render con el catálogo limpio (visor cerrado por defecto)
+    renderArchive();
+  }
+</script>
+
+<style>
+  /* ==========================================================================
+     MATH CHALLENGE — ESTILOS TÉCNICOS INTEGRADOS Y MODO CLARO / OSCURO 100%
+     ========================================================================== */
+
+  .challenge-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .challenge-top-btn {
+    align-items: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    font: 600 0.68rem/1 var(--mono);
+    gap: 0.35rem;
+    letter-spacing: 0.05em;
+    padding: 0.45rem 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .challenge-top-btn:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .challenge-top-btn.is-accent {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .challenge-top-btn.is-accent:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  /* Hero Section */
+  .challenge-hero {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2rem;
+    padding-top: 2.5rem;
+  }
+
+  .challenge-top-split {
+    align-items: stretch;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    margin-bottom: 2.25rem;
+  }
+
+  @media (max-width: 960px) {
+    .challenge-top-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .kicker {
+    color: var(--accent-ink);
+    font: 500 0.7rem var(--mono);
+    letter-spacing: 0.14em;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .challenge-intro h1 {
+    font-family: var(--display);
+    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    font-stretch: 115%;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    margin: 0 0 1rem;
+  }
+
+  .challenge-intro h1 em {
+    color: var(--serif-ink);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .challenge-lead {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.55;
+    margin: 0 0 1.5rem;
+    max-width: 44rem;
+  }
+
+  .challenge-hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .stat-pill {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font: 500 0.7rem/1 var(--mono);
+    letter-spacing: 0.05em;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .stat-pill strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* Tarjeta lateral */
+  .challenge-info-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .card-head {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .live-dot {
+    background: var(--accent-ink);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+    display: inline-block;
+    height: 7px;
+    width: 7px;
+  }
+
+  .card-eyebrow {
+    color: var(--accent-ink);
+    font: 700 0.65rem/1 var(--mono);
+    letter-spacing: 0.12em;
+  }
+
+  .card-desc {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+  }
+
+  .card-desc strong {
+    color: var(--ink);
+  }
+
+  .card-links {
+    border-top: 1px solid var(--line);
+    padding-top: 0.85rem;
+  }
+
+  .card-link {
+    color: var(--accent-ink);
+    font: 600 0.72rem/1 var(--mono);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+
+  .card-link:hover {
+    color: var(--ink);
+  }
+
+  /* Selector de Curso */
+  .level-selector-bar {
+    align-items: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .bar-tag {
+    color: var(--accent-ink);
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.12em;
+  }
+
+  .level-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .level-pill {
+    align-items: baseline;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    font: 600 0.7rem/1 var(--mono);
+    gap: 0.4rem;
+    letter-spacing: 0.05em;
+    padding: 0.45rem 0.85rem;
+    text-transform: uppercase;
+    transition: all 0.18s ease;
+  }
+
+  .level-pill small {
+    font-size: 0.58rem;
+    opacity: 0.7;
+  }
+
+  .level-pill:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .level-pill.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  /* Barra de Filtros secundarios */
+  .filters-bar {
+    align-items: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+  }
+
+  .branch-selector {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .filter-label {
+    color: var(--muted);
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.1em;
+  }
+
+  .branch-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .branch-pill {
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    font: 500 0.68rem/1 var(--mono);
+    gap: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    transition: all 0.18s ease;
+  }
+
+  .branch-sym {
+    color: var(--branch-col, var(--accent));
+    font-weight: 700;
+  }
+
+  .branch-pill:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .branch-pill.is-active {
+    background: var(--invert-bg);
+    border-color: var(--invert-bg);
+    color: var(--invert-fg);
+  }
+
+  .search-wrap {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .search-input {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font: 500 0.74rem/1.2 var(--mono);
+    min-width: 260px;
+    outline: none;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
+  }
+
+  .search-icon {
+    color: var(--muted);
+    display: none;
+  }
+
+  .catalog-count-badge {
+    color: var(--accent-ink);
+    font: 600 0.68rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  /* ========================================================================= */
+  /* VISOR INTEGRADO DE ESTUDIO (ALTO, CÓMODO Y CON BOTÓN EXTERNO DE DESCARGA) */
+  /* ========================================================================= */
+  .study-viewer {
+    background: var(--bg-sunken);
+    border-bottom: 2px solid var(--accent);
+    padding: 1.25rem clamp(1.5rem, 3.5vw, 2.75rem) 1.75rem;
+  }
+
+  .viewer-toolbar {
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .viewer-badge {
+    color: var(--accent-ink);
+    display: block;
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.12em;
+    margin-bottom: 0.25rem;
+  }
+
+  .viewer-title {
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-stretch: 115%;
+    margin: 0;
+  }
+
+  .viewer-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .viewer-dl-btn {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #ffffff !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font: 700 0.68rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.55rem 0.95rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.18s ease;
+  }
+
+  .viewer-dl-btn:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .viewer-tab-btn,
+  .viewer-aux-link {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    cursor: pointer;
+    font: 600 0.64rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.55rem 0.85rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.18s ease;
+  }
+
+  .viewer-tab-btn:hover,
+  .viewer-aux-link:hover {
+    border-color: var(--line-strong);
+  }
+
+  .viewer-close-btn {
+    background: var(--invert-bg);
+    border: 1px solid var(--invert-bg);
+    color: var(--invert-fg);
+    cursor: pointer;
+    font: 700 0.64rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .viewer-stage :global(.doc-pane) {
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viewer-stage :global(.doc-pane-head) {
+    align-items: center;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    display: flex;
+    font: 600 0.65rem/1 var(--mono);
+    justify-content: space-between;
+    letter-spacing: 0.08em;
+    padding: 0.65rem 1rem;
+    text-transform: uppercase;
+  }
+
+  .viewer-stage :global(.doc-pane-links) {
+    display: flex;
+    gap: 0.65rem;
+  }
+
+  .viewer-stage :global(.doc-pane-links a) {
+    color: var(--accent-ink);
+    text-decoration: none;
+  }
+
+  .viewer-stage :global(.pdf-iframe) {
+    border: 0;
+    flex: 1;
+    min-height: 85vh;
+    height: 880px;
+    width: 100%;
+  }
+
+  /* ========================================================================= */
+  /* CATÁLOGO POR CURSOS Y GRID LIMPIO                                         */
+  /* ========================================================================= */
+  .challenge-archive {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-top: 2rem;
+  }
+
+  .challenge-archive :global(.level-block) {
+    align-items: start;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: 210px 1fr;
+    padding-bottom: 2.5rem;
+  }
+
+  .challenge-archive :global(.level-block:last-child) {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  @media (max-width: 900px) {
+    .challenge-archive :global(.level-block) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .challenge-archive :global(.level-sidebar) {
+    position: sticky;
+    top: 4.5rem;
+  }
+
+  .challenge-archive :global(.level-kicker) {
+    color: var(--muted);
+    display: block;
+    font: 600 0.6rem/1 var(--mono);
+    letter-spacing: 0.14em;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+  }
+
+  .challenge-archive :global(.level-heading) {
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-stretch: 118%;
+    font-variation-settings: 'wdth' 118;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin: 0 0 0.45rem;
+  }
+
+  .challenge-archive :global(.level-count) {
+    color: var(--accent-ink);
+    font: 500 0.66rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .challenge-archive :global(.level-cards-grid) {
+    background: var(--line);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 860px) {
+    .challenge-archive :global(.level-cards-grid) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .challenge-archive :global(.exam-card) {
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    transition: background-color 0.18s ease;
+  }
+
+  .challenge-archive :global(.exam-card:hover) {
+    background: var(--bg-sunken);
+  }
+
+  .challenge-archive :global(.exam-card.is-selected) {
+    background: var(--bg-raised);
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .challenge-archive :global(.exam-card-top) {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .challenge-archive :global(.exam-level-tag) {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font: 700 0.58rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.25rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .challenge-archive :global(.exam-branch-tag) {
+    color: var(--br-color, var(--accent));
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.05em;
+  }
+
+  .challenge-archive :global(.exam-topic-kicker) {
+    color: var(--accent-ink);
+    display: block;
+    font: 600 0.62rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .challenge-archive :global(.exam-card-title) {
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 1.15rem;
+    font-stretch: 110%;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
+  }
+
+  .challenge-archive :global(.exam-card-desc) {
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0 0 1.25rem;
+  }
+
+  .challenge-archive :global(.exam-card-foot) {
+    align-items: center;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+  }
+
+  .challenge-archive :global(.exam-open-btn) {
+    background: var(--invert-bg);
+    border: 0;
+    color: var(--invert-fg);
+    cursor: pointer;
+    font: 700 0.65rem/1 var(--mono);
+    letter-spacing: 0.08em;
+    padding: 0.55rem 0.85rem;
+    text-transform: uppercase;
+    transition: opacity 0.18s ease;
+  }
+
+  .challenge-archive :global(.exam-open-btn:hover) {
+    opacity: 0.85;
+  }
+
+  .challenge-archive :global(.exam-dl-btn) {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    color: var(--accent-ink);
+    font: 600 0.65rem/1 var(--mono);
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.18s ease;
+  }
+
+  .challenge-archive :global(.exam-dl-btn:hover) {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  .empty-archive {
+    align-items: center;
+    background: var(--bg-sunken);
+    border: 1px dashed var(--line-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+
+  .empty-archive p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .reset-filter-btn {
+    background: var(--accent);
+    border: 0;
+    color: #ffffff;
+    cursor: pointer;
+    font: 600 0.7rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
+  }
+</style>

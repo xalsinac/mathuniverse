@@ -14,7 +14,7 @@
  *   https://pub-xxxxxxxx.r2.dev/selectividad/catalunya/ciencias/2025/junio-serie-1-enunciado.pdf
  *   https://pub-xxxxxxxx.r2.dev/selectividad/catalunya/ciencias/2025/junio-serie-1-solucion.pdf
  */
-export const R2_BASE_URL = 'https://r2-placeholder.mathuniverse.es/selectividad';
+export const R2_BASE_URL = 'https://pub-a13ce29b88ae4089bc4d88a87441bd57.r2.dev';
 
 export type ModalityId = 'ciencias' | 'ccss';
 
@@ -132,9 +132,9 @@ function buildCatalunyaYear(
     sessionKind: s.kind,
     title: s.title,
     subtitle: s.subtitle,
-    statementPath: `catalunya/${modality}/${year}/${s.slug}-enunciado.pdf`,
-    solutionPath: `catalunya/${modality}/${year}/${s.slug}-solucion.pdf`,
-    available: s.available ?? false,
+    statementPath: `selectividad/catalunya/${modality}/${year}/${s.slug}-enunciado.pdf`,
+    solutionPath: `selectividad/catalunya/${modality}/${year}/${s.slug}-solucion.pdf`,
+    available: s.available ?? true,
   }));
 }
 
@@ -143,28 +143,28 @@ const CATALUNYA_STANDARD_SERIES: {
   title: string;
   subtitle: string;
   kind: SessionKind;
+  available?: boolean;
 }[] = [
   {
-    slug: 'junio-serie-1',
-    title: 'Junio · Serie 1',
+    slug: 'ordinaria',
+    title: 'Junio · Ordinaria',
     subtitle: 'Convocatoria Ordinaria (PAU)',
     kind: 'ordinaria',
+    available: true,
   },
   {
-    slug: 'junio-serie-2',
-    title: 'Junio · Serie 2',
-    subtitle: 'Convocatoria Ordinaria / Tribunal de incidencias',
-    kind: 'incidencias',
-  },
-  {
-    slug: 'septiembre-serie-3',
-    title: 'Septiembre · Serie 3',
+    slug: 'extraordinaria',
+    title: 'Septiembre · Extraordinaria',
     subtitle: 'Convocatoria Extraordinaria (PAU)',
     kind: 'extraordinaria',
+    available: true,
   },
 ];
 
-const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const YEARS = [
+  2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018,
+  2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010
+];
 
 export const selectividadExams: ExamPaper[] = [
   ...YEARS.flatMap((year) => [
