@@ -2,21 +2,45 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import CraftHeroOrbit from '../components/CraftHeroOrbit.astro';
+import CraftAppIcon from '../components/CraftAppIcon.astro';
 import { site } from '../config/site';
 import {
   craftProjects,
-  CRAFT_CATEGORIES,
   type CraftProject,
 } from '../data/craft';
 
 const teacherCount = craftProjects.filter((p) => p.authorType === 'teacher').length;
 const studentCount = craftProjects.filter((p) => p.authorType === 'student').length;
 const totalCount = craftProjects.length;
+
+// Clasificación de proyectos en estanterías lógicas
+const dojoIds = ['math-dojo-arcade', 'math-dojo-junior'];
+const arcadeIds = ['galaxy-pong', 'demolicion-fiq', 'astro-raya', 'radar-cartesiano'];
+const paradoxIds = [
+  'monty-hall',
+  'problema-100-prisioneros',
+  'paradoja-cumpleanos',
+  'ruleta-martingala',
+  'simulador-loteria',
+  'juego-nim',
+  'game-theory-dilemma',
+];
+const geometryIds = [
+  'sierpinski-chaos',
+  'torres-hanoi',
+  'orbital-gravity',
+  'voxel-polyhedra',
+];
+
+const dojoProjects = craftProjects.filter((p) => dojoIds.includes(p.id));
+const arcadeProjects = craftProjects.filter((p) => arcadeIds.includes(p.id));
+const paradoxProjects = craftProjects.filter((p) => paradoxIds.includes(p.id));
+const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id));
 ---
 
 <BaseLayout
   title={`Math Gaming — ${site.name}`}
-  description="Juegos matemáticos, simulaciones de física y experimentos interactivos creados por profesores y alumnos en Math Universe. Donde jugar es otra forma de pensar."
+  description="Catálogo de juegos matemáticos, simulaciones de física y experimentos interactivos en Math Universe. Donde jugar es otra forma de pensar."
 >
   <!-- Barra superior técnica unificada -->
   <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/#recursos" ctaLabel="Todas las Apps">
@@ -32,68 +56,21 @@ const totalCount = craftProjects.length;
     </div>
   </SiteHeader>
 
-  <main>
-    <!-- Cabecera Hero Orbits a sangre estilo ArtCraft Studio -->
+  <main class="craft-main-wrapper">
+    <!-- Hero Orbits interactivo -->
     <section class="craft-hero-band">
       <CraftHeroOrbit />
     </section>
 
-    <!-- Barra de Filtros, Diferenciación de Autor y Búsqueda Rápida -->
-    <section class="craft-catalog-band section-band is-drawn" id="catalogo">
-      <span class="section-rule" aria-hidden="true"></span>
-      <div class="section-frame">
-        <span class="tick tick-half tick-left" aria-hidden="true"></span>
-        <span class="tick tick-half tick-right" aria-hidden="true"></span>
-
-        <div class="section-eyebrow">
-          <span>
-            <span class="eyebrow-num">08</span>
-            <span class="eyebrow-sep" aria-hidden="true">/</span>
-            Math Gaming · Catálogo de Juegos y Experimentos
-          </span>
-          <span class="eyebrow-right" data-craft-status-counter>Mostrando {totalCount} juegos</span>
-        </div>
-
-        <div class="craft-controls-bar section-body">
-          <!-- Filtro Principal: Autor (Profesor vs Alumnos) -->
-          <div class="author-toggle-group" role="group" aria-label="Filtrar por autor">
-            <span class="filter-group-label">CREADOR:</span>
-            <button
-              type="button"
-              class="author-btn is-active"
-              data-author-filter="all"
-              aria-pressed="true"
-            >
-              <span>Todos</span>
-              <span class="author-count">{totalCount}</span>
-            </button>
-            <button
-              type="button"
-              class="author-btn"
-              data-author-filter="teacher"
-              aria-pressed="false"
-            >
-              <span class="author-dot is-teacher"></span>
-              <span>Profesor · Xavier Alsina</span>
-              <span class="author-count">{teacherCount}</span>
-            </button>
-            <button
-              type="button"
-              class="author-btn"
-              data-author-filter="student"
-              aria-pressed="false"
-            >
-              <span class="author-dot is-student"></span>
-              <span>Proyectos de Alumnos</span>
-              <span class="author-count">{studentCount}</span>
-            </button>
-          </div>
-
-          <!-- Fila secundaria: Buscador y Categorías -->
-          <div class="craft-secondary-bar">
-            <!-- Buscador en tiempo real -->
-            <div class="craft-search-box">
-              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <!-- Barra de Control Minimalista (Búsqueda + Píldoras de Navegación + Favoritos + Filtro Autor) -->
+    <section class="craft-toolbar-section" id="catalogo">
+      <div class="craft-container">
+        <div class="craft-toolbar-card">
+          <!-- Fila Superior: Buscador y Acceso Rápido por Píldoras de Sección -->
+          <div class="toolbar-top-row">
+            <!-- Búsqueda Rápida Instantánea -->
+            <div class="toolbar-search-box">
+              <svg class="search-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.3-4.3"></path>
               </svg>
@@ -101,8 +78,8 @@ const totalCount = craftProjects.length;
                 type="search"
                 class="craft-search-input"
                 data-craft-search
-                placeholder="Buscar juego, alumno (ej. Leo Rueda), física, colisiones..."
-                aria-label="Buscar proyectos en Math Gaming"
+                placeholder="Buscar por juego, concepto (ej. colisiones, bayes, nim, Leo Rueda)..."
+                aria-label="Buscar juegos en Math Gaming"
                 autocomplete="off"
                 spellcheck="false"
               />
@@ -117,620 +94,476 @@ const totalCount = craftProjects.length;
               </button>
             </div>
 
-            <!-- Chips de Categoría temática -->
-            <div class="category-chips-row" role="tablist" aria-label="Filtrar por categoría temática">
-              {
-                CRAFT_CATEGORIES.map((cat, idx) => (
-                  <button
-                    type="button"
-                    class={`cat-chip ${idx === 0 ? 'is-active' : ''}`}
-                    data-category-filter={cat.id}
-                    role="tab"
-                    aria-selected={idx === 0 ? 'true' : 'false'}
-                  >
-                    <span class="cat-chip-icon">{cat.icon}</span>
-                    <span>{cat.label}</span>
-                  </button>
-                ))
-              }
+            <!-- Píldoras de Acceso Rápido a Secciones -->
+            <nav class="section-nav-pills" aria-label="Acceso rápido por estantería">
+              <a href="#shelf-dojos" class="shelf-nav-pill is-gold">
+                <span class="nav-pill-dot"></span>
+                <span>🥋 Math Dojos</span>
+              </a>
+              <a href="#shelf-arcades" class="shelf-nav-pill is-cyan">
+                <span class="nav-pill-dot"></span>
+                <span>🕹️ Arcades</span>
+              </a>
+              <a href="#shelf-paradoxes" class="shelf-nav-pill is-emerald">
+                <span class="nav-pill-dot"></span>
+                <span>🎲 Paradojas</span>
+              </a>
+              <a href="#shelf-geometry" class="shelf-nav-pill is-purple">
+                <span class="nav-pill-dot"></span>
+                <span>📐 Geometría</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Fila Inferior: Favoritos, Filtro de Autor y Conteo -->
+          <div class="toolbar-bottom-row">
+            <div class="toolbar-filters-left">
+              <!-- Filtro de Favoritos -->
+              <button
+                type="button"
+                class="toolbar-fav-btn"
+                data-fav-filter-btn
+                aria-pressed="false"
+                title="Filtrar por juegos guardados en favoritos"
+              >
+                <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Favoritos</span>
+                <span class="fav-count-pill" data-fav-count>0</span>
+              </button>
+
+              <!-- Filtro de Creador / Autor -->
+              <div class="author-pills-group" role="group" aria-label="Filtrar por creador">
+                <button
+                  type="button"
+                  class="author-pill is-active"
+                  data-author-filter="all"
+                  aria-pressed="true"
+                >
+                  <span>Todos</span>
+                  <span class="pill-count">{totalCount}</span>
+                </button>
+                <button
+                  type="button"
+                  class="author-pill"
+                  data-author-filter="teacher"
+                  aria-pressed="false"
+                >
+                  <span class="author-dot is-teacher"></span>
+                  <span>Profesor</span>
+                  <span class="pill-count">{teacherCount}</span>
+                </button>
+                <button
+                  type="button"
+                  class="author-pill"
+                  data-author-filter="student"
+                  aria-pressed="false"
+                >
+                  <span class="author-dot is-student"></span>
+                  <span>Alumnos</span>
+                  <span class="pill-count">{studentCount}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Contador de Estado Dinámico -->
+            <div class="toolbar-status-badge" data-craft-status-counter>
+              {totalCount} juegos disponibles
             </div>
           </div>
-        </div>
-
-        <!-- Rejilla de Tarjetas Cuadradas Simplificadas (Cristal) -->
-        <div class="craft-cards-grid section-body" data-craft-grid>
-          {
-            craftProjects.map((project) => (
-              <a
-                href={project.url}
-                target={project.isExternal ? '_blank' : undefined}
-                rel={project.isExternal ? 'noopener noreferrer' : undefined}
-                class={`craft-card ${project.url === '#' ? 'is-upcoming' : ''}`}
-                id={`game-${project.id}`}
-                data-craft-card
-                data-id={project.id}
-                data-author={project.authorType}
-                data-category={project.category}
-                data-tags={project.tags.join(',').toLowerCase()}
-                data-title={project.title.toLowerCase()}
-                data-author-name={project.authorName.toLowerCase()}
-                data-desc={project.description.toLowerCase()}
-                data-topic={project.mathTopic.toLowerCase()}
-                style={`--card-accent:${project.color}`}
-              >
-                <!-- Miniatura Visual -->
-                <div class="card-media-frame">
-                  {project.previewImage ? (
-                    <img
-                      src={project.previewImage}
-                      alt={`Captura del juego ${project.title}`}
-                      class="card-img"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div class="card-placeholder-art" aria-hidden="true">
-                      <!-- Procedural vector art según tipo de juego -->
-                      {project.id === 'astro-raya' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#0d1124" />
-                          <circle cx="52" cy="36" r="1.4" fill="#ffffff" opacity="0.65" />
-                          <circle cx="272" cy="144" r="1.8" fill="#38bdf8" opacity="0.75" />
-                          <circle cx="255" cy="34" r="1.2" fill="#b48cff" opacity="0.7" />
-                          <circle cx="66" cy="148" r="1.2" fill="#3fe0b5" opacity="0.6" />
-                          <circle cx="160" cy="90" r="68" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 5" opacity="0.22" />
-                          <!-- Tablero 3x3 cósmico centrado -->
-                          <line x1="138" y1="30" x2="138" y2="150" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
-                          <line x1="182" y1="30" x2="182" y2="150" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
-                          <line x1="100" y1="70" x2="220" y2="70" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
-                          <line x1="100" y1="110" x2="220" y2="110" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
-                          <!-- X en diagonal ganadora -->
-                          <path d="M108 40 L128 60 M128 40 L108 60" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
-                          <path d="M150 80 L170 100 M170 80 L150 100" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
-                          <path d="M192 120 L212 140 M212 120 L192 140" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
-                          <!-- O orbitales -->
-                          <circle cx="202" cy="50" r="10.5" stroke="#b48cff" stroke-width="3.2" />
-                          <circle cx="118" cy="130" r="10.5" stroke="#b48cff" stroke-width="3.2" />
-                          <!-- Línea láser de victoria -->
-                          <line x1="102" y1="34" x2="218" y2="146" stroke="#3fe0b5" stroke-width="2.5" stroke-linecap="round" opacity="0.88" />
-                          <text x="20" y="30" fill="#38bdf8" font-family="monospace" font-size="11" letter-spacing="1">ASTRO · RAYA</text>
-                        </svg>
-                      )}
-                      {project.id === 'monty-hall' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#0d1b18" />
-                          <circle cx="160" cy="90" r="70" stroke="#3fe0b5" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.25" />
-                          <!-- 3 Puertas Estilizadas -->
-                          <!-- Puerta 1 (Cerrada) -->
-                          <g transform="translate(60, 48)">
-                            <rect width="50" height="92" rx="4" stroke="#3fe0b5" stroke-width="1.8" fill="#132b26" />
-                            <rect x="6" y="8" width="38" height="34" rx="2" stroke="#3fe0b5" stroke-width="1" opacity="0.4" />
-                            <rect x="6" y="48" width="38" height="36" rx="2" stroke="#3fe0b5" stroke-width="1" opacity="0.4" />
-                            <circle cx="42" cy="50" r="3" fill="#3fe0b5" />
-                            <text x="25" y="28" fill="#3fe0b5" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">1</text>
-                          </g>
-                          <!-- Puerta 2 (Abierta - Coche / Premio) -->
-                          <g transform="translate(135, 48)">
-                            <rect width="50" height="92" rx="4" stroke="#3fe0b5" stroke-width="1.8" fill="#091412" stroke-dasharray="2 2" opacity="0.5" />
-                            <!-- Coche deportivo dentro -->
-                            <g transform="translate(6, 32) scale(0.65)">
-                              <path d="M4 35 Q10 18 28 16 L42 16 Q54 22 56 35 Z" fill="#3fe0b5" />
-                              <circle cx="16" cy="38" r="7" fill="#091412" stroke="#3fe0b5" stroke-width="2" />
-                              <circle cx="44" cy="38" r="7" fill="#091412" stroke="#3fe0b5" stroke-width="2" />
-                              <path d="M18 22 L26 18 L38 18 L42 22 Z" fill="#091412" />
-                            </g>
-                            <!-- Hoja de puerta abierta en ángulo -->
-                            <path d="M0 0 L-18 12 L-18 84 L0 92 Z" fill="#163830" stroke="#3fe0b5" stroke-width="1.8" />
-                            <text x="25" y="20" fill="#3fe0b5" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">2/3</text>
-                          </g>
-                          <!-- Puerta 3 (Cerrada) -->
-                          <g transform="translate(210, 48)">
-                            <rect width="50" height="92" rx="4" stroke="#3fe0b5" stroke-width="1.8" fill="#132b26" />
-                            <rect x="6" y="8" width="38" height="34" rx="2" stroke="#3fe0b5" stroke-width="1" opacity="0.4" />
-                            <rect x="6" y="48" width="38" height="36" rx="2" stroke="#3fe0b5" stroke-width="1" opacity="0.4" />
-                            <circle cx="42" cy="50" r="3" fill="#3fe0b5" />
-                            <text x="25" y="28" fill="#3fe0b5" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">3</text>
-                          </g>
-                          <text x="20" y="30" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">MONTY HALL · 3 PUERTAS</text>
-                          <text x="300" y="30" text-anchor="end" fill="#3fe0b5" opacity="0.6" font-family="monospace" font-size="10">P=2/3</text>
-                        </svg>
-                      )}
-                      {project.id === 'torres-hanoi' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#08131e" />
-                          <circle cx="160" cy="92" r="74" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.25" />
-                          <circle cx="160" cy="92" r="48" stroke="#38bdf8" stroke-width="0.8" opacity="0.15" />
-
-                          <!-- Base principal de madera técnica/metálica -->
-                          <rect x="28" y="148" width="264" height="9" rx="4.5" fill="#0f1d2d" stroke="#38bdf8" stroke-width="1.6" />
-
-                          <!-- 3 Varas Cilíndricas (Pegs A, B, C) -->
-                          <!-- Vara A (x = 75) -->
-                          <rect x="72.5" y="52" width="5" height="96" rx="2.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" opacity="0.85" />
-                          <text x="75" y="44" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">A</text>
-
-                          <!-- Vara B (x = 160) -->
-                          <rect x="157.5" y="52" width="5" height="96" rx="2.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" opacity="0.85" />
-                          <text x="160" y="44" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">B</text>
-
-                          <!-- Vara C (x = 245) -->
-                          <rect x="242.5" y="52" width="5" height="96" rx="2.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" opacity="0.85" />
-                          <text x="245" y="44" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">C</text>
-
-                          <!-- Discos apilados en Vara A -->
-                          <!-- Disco 4 (rosa/coral) -->
-                          <rect x="42" y="133" width="66" height="14" rx="3.5" fill="#f43f5e" stroke="#fda4af" stroke-width="1.2" />
-                          <text x="75" y="143" fill="#032030" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">4</text>
-                          <!-- Disco 3 (ámbar) -->
-                          <rect x="49" y="117" width="52" height="14" rx="3.5" fill="#fbbf24" stroke="#fde68a" stroke-width="1.2" />
-                          <text x="75" y="127" fill="#032030" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">3</text>
-
-                          <!-- Arco balístico de trasvase (de A hacia C) -->
-                          <path d="M 75 104 Q 160 14 245 118" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="4 3" opacity="0.75" />
-
-                          <!-- Disco 1 volando en pleno movimiento parabólico (Cyan) -->
-                          <g transform="translate(142, 38) rotate(7)">
-                            <rect width="36" height="13" rx="3" fill="#38bdf8" stroke="#7dd3fc" stroke-width="1.5" />
-                            <text x="18" y="9.5" fill="#032030" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">1</text>
-                          </g>
-
-                          <!-- Disco en Vara C (esmeralda) -->
-                          <!-- Disco 2 -->
-                          <rect x="224" y="133" width="42" height="14" rx="3.5" fill="#3fe0b5" stroke="#6ee7b7" stroke-width="1.2" />
-                          <text x="245" y="143" fill="#032030" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">2</text>
-
-                          <!-- Textos de cabecera -->
-                          <text x="20" y="28" fill="#38bdf8" font-family="monospace" font-size="11" letter-spacing="1">TORRES DE HANOI · RECURSIÓN</text>
-                          <text x="300" y="28" text-anchor="end" fill="#38bdf8" opacity="0.8" font-family="monospace" font-size="10">2ⁿ - 1</text>
-                        </svg>
-                      )}
-                      {project.id === 'simulador-loteria' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#17120a" />
-                          <circle cx="160" cy="95" r="72" stroke="#fbbf24" stroke-width="1.1" stroke-dasharray="4 4" opacity="0.22" />
-                          <!-- Gráfica descendente de Esperanza Matemática E[X] < 0 -->
-                          <line x1="24" y1="108" x2="296" y2="108" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" opacity="0.45" />
-                          <path d="M 24 108 L 70 115 L 115 123 L 155 119 L 205 135 L 250 144 L 296 156" stroke="#f43f5e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-                          <circle cx="296" cy="156" r="3.5" fill="#f43f5e" />
-
-                          <!-- Bolas de Lotería -->
-                          <g transform="translate(46, 74)">
-                            <circle cx="0" cy="0" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-                            <text x="0" y="5" fill="#f8fafc" font-family="monospace" font-size="13" font-weight="bold" text-anchor="middle">07</text>
-                          </g>
-                          <g transform="translate(92, 66)">
-                            <circle cx="0" cy="0" r="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-                            <text x="0" y="5" fill="#f8fafc" font-family="monospace" font-size="13" font-weight="bold" text-anchor="middle">23</text>
-                          </g>
-                          <g transform="translate(138, 76)">
-                            <circle cx="0" cy="0" r="18" fill="#1e293b" stroke="#3fe0b5" stroke-width="2.2" />
-                            <text x="0" y="5" fill="#3fe0b5" font-family="monospace" font-size="13" font-weight="bold" text-anchor="middle">42</text>
-                          </g>
-
-                          <!-- Estrellas doradas -->
-                          <g transform="translate(208, 70)">
-                            <circle cx="0" cy="0" r="19" fill="#2a1f08" stroke="#fbbf24" stroke-width="2.2" />
-                            <text x="0" y="5" fill="#fbbf24" font-family="monospace" font-size="13" font-weight="bold" text-anchor="middle">★5</text>
-                          </g>
-                          <g transform="translate(256, 70)">
-                            <circle cx="0" cy="0" r="19" fill="#2a1f08" stroke="#fbbf24" stroke-width="2.2" />
-                            <text x="0" y="5" fill="#fbbf24" font-family="monospace" font-size="13" font-weight="bold" text-anchor="middle">★9</text>
-                          </g>
-
-                          <text x="20" y="28" fill="#fbbf24" font-family="monospace" font-size="11" letter-spacing="1">LOTERÍA · E[X] &lt; 0</text>
-                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.8" font-family="monospace" font-size="10">1 / 139.8M</text>
-                        </svg>
-                      )}
-                      {project.id === 'ruleta-martingala' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#180d14" />
-                          <!-- Ruleta estilizada a la izquierda -->
-                          <g transform="translate(88, 96)">
-                            <circle cx="0" cy="0" r="52" fill="#23121b" stroke="#fbbf24" stroke-width="2.5" />
-                            <circle cx="0" cy="0" r="42" stroke="#f43f5e" stroke-width="8" stroke-dasharray="11 11" />
-                            <circle cx="0" cy="0" r="42" stroke="#1e293b" stroke-width="8" stroke-dasharray="11 11" stroke-dashoffset="11" />
-                            <!-- Casilla 0 verde -->
-                            <path d="M 0 -46 L 4 -36 L -4 -36 Z" fill="#10b981" />
-                            <circle cx="0" cy="0" r="16" fill="#180d14" stroke="#fbbf24" stroke-width="1.8" />
-                            <circle cx="0" cy="0" r="4" fill="#fbbf24" />
-                            <!-- Bola blanca -->
-                            <circle cx="28" cy="-24" r="4.2" fill="#ffffff" />
-                          </g>
-                          <!-- Gráfica dientes de sierra + caída abrupta -->
-                          <path d="M 162 122 L 176 116 L 176 118 L 190 110 L 190 112 L 204 103 L 204 105 L 218 96 L 218 98 L 232 90 L 240 156 L 296 156" stroke="#34d399" stroke-width="2.2" stroke-linejoin="round" fill="none" />
-                          <path d="M 232 90 L 240 156 L 296 156" stroke="#f43f5e" stroke-width="2.6" stroke-linejoin="round" fill="none" />
-                          <circle cx="240" cy="156" r="3.5" fill="#f43f5e" />
-                          <text x="20" y="28" fill="#f43f5e" font-family="monospace" font-size="11" letter-spacing="1">RULETA · MARTINGALA</text>
-                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.85" font-family="monospace" font-size="10">-2.70%</text>
-                        </svg>
-                      )}
-                      {project.id === 'problema-100-prisioneros' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#091614" />
-                          <!-- Ciclo cerrado de cajas conectadas -->
-                          <circle cx="160" cy="94" r="54" stroke="#3fe0b5" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.45" />
-                          <!-- 5 Cajas en ciclo -->
-                          <g transform="translate(145, 32)">
-                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
-                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">12</text>
-                          </g>
-                          <g transform="translate(202, 72)">
-                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
-                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">47</text>
-                          </g>
-                          <g transform="translate(182, 128)">
-                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
-                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">83</text>
-                          </g>
-                          <g transform="translate(108, 128)">
-                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#3fe0b5" stroke-width="1.8" />
-                            <text x="15" y="16" fill="#3fe0b5" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">05</text>
-                          </g>
-                          <g transform="translate(88, 72)">
-                            <rect width="30" height="24" rx="4" fill="#102a25" stroke="#fbbf24" stroke-width="2" />
-                            <text x="15" y="16" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">12</text>
-                          </g>
-                          <!-- Flechas de ciclo -->
-                          <path d="M 178 48 L 204 68" stroke="#38bdf8" stroke-width="1.8" />
-                          <path d="M 212 99 L 200 124" stroke="#38bdf8" stroke-width="1.8" />
-                          <path d="M 179 140 L 141 140" stroke="#38bdf8" stroke-width="1.8" />
-                          <path d="M 118 124 L 106 99" stroke="#38bdf8" stroke-width="1.8" />
-                          <path d="M 118 68 L 142 48" stroke="#fbbf24" stroke-width="1.8" />
-
-                          <text x="20" y="28" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">100 PRISIONEROS · CICLOS</text>
-                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">31.18%</text>
-                        </svg>
-                      )}
-                      {project.id === 'paradoja-cumpleanos' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#091322" />
-                          <!-- Mini calendario estilizado -->
-                          <rect x="24" y="42" width="146" height="114" rx="8" fill="#102036" stroke="#38bdf8" stroke-width="1.5" opacity="0.9" />
-                          <rect x="24" y="42" width="146" height="22" rx="8" fill="#163254" />
-                          <text x="97" y="57" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">CALENDARIO 365 DÍAS</text>
-                          <!-- Casillas de días -->
-                          <rect x="36" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="58" y="74" width="16" height="14" rx="3" fill="#38bdf8" />
-                          <rect x="80" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="102" y="74" width="16" height="14" rx="3" fill="#38bdf8" />
-                          <rect x="124" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="146" y="74" width="16" height="14" rx="3" fill="#1e3a5f" />
-
-                          <rect x="36" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="58" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <!-- Día con colisión en ámbar/rojo -->
-                          <rect x="80" y="96" width="16" height="14" rx="3" fill="#fbbf24" stroke="#f43f5e" stroke-width="1.8" />
-                          <rect x="102" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="124" y="96" width="16" height="14" rx="3" fill="#38bdf8" />
-                          <rect x="146" y="96" width="16" height="14" rx="3" fill="#1e3a5f" />
-
-                          <rect x="36" y="118" width="16" height="14" rx="3" fill="#38bdf8" />
-                          <rect x="58" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="80" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="102" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="124" y="118" width="16" height="14" rx="3" fill="#1e3a5f" />
-                          <rect x="146" y="118" width="16" height="14" rx="3" fill="#38bdf8" />
-
-                          <!-- Curva S de probabilidad a la derecha -->
-                          <path d="M 188 148 C 215 148, 224 100, 245 78 C 266 56, 285 52, 300 50" stroke="#3fe0b5" stroke-width="2.5" fill="none" />
-                          <line x1="188" y1="98" x2="300" y2="98" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4 3" opacity="0.7" />
-                          <circle cx="228" cy="98" r="4.5" fill="#fbbf24" />
-                          <text x="236" y="112" fill="#fbbf24" font-family="monospace" font-size="9.5" font-weight="bold">n=23 (50.7%)</text>
-
-                          <text x="20" y="28" fill="#38bdf8" font-family="monospace" font-size="11" letter-spacing="1">CUMPLEAÑOS · COLISIÓN</text>
-                          <text x="300" y="28" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">C(23,2)=253</text>
-                        </svg>
-                      )}
-                      {project.id === 'juego-nim' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#130d1e" />
-                          <!-- 4 Montones de fichas (1, 3, 5, 7) -->
-                          <!-- Montón 1 (1 ficha) -->
-                          <rect x="34" y="132" width="34" height="11" rx="4" fill="#c084fc" />
-                          <!-- Montón 2 (3 fichas) -->
-                          <rect x="82" y="132" width="34" height="11" rx="4" fill="#38bdf8" />
-                          <rect x="82" y="117" width="34" height="11" rx="4" fill="#38bdf8" />
-                          <rect x="82" y="102" width="34" height="11" rx="4" fill="#38bdf8" />
-                          <!-- Montón 3 (5 fichas) -->
-                          <rect x="130" y="132" width="34" height="11" rx="4" fill="#3fe0b5" />
-                          <rect x="130" y="117" width="34" height="11" rx="4" fill="#3fe0b5" />
-                          <rect x="130" y="102" width="34" height="11" rx="4" fill="#3fe0b5" />
-                          <rect x="130" y="87" width="34" height="11" rx="4" fill="#3fe0b5" />
-                          <rect x="130" y="72" width="34" height="11" rx="4" fill="#fbbf24" />
-                          <!-- Matriz Binaria XOR a la derecha -->
-                          <rect x="184" y="54" width="116" height="94" rx="8" fill="#1d1430" stroke="#c084fc" stroke-width="1.5" />
-                          <text x="242" y="72" fill="#c084fc" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">VISIÓN XOR (⊕)</text>
-                          <text x="242" y="90" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">1 = 0 0 1</text>
-                          <text x="242" y="106" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">3 = 0 1 1</text>
-                          <text x="242" y="122" fill="#e2e8f0" font-family="monospace" font-size="11" text-anchor="middle">5 = 1 0 1</text>
-                          <line x1="196" y1="128" x2="288" y2="128" stroke="#c084fc" stroke-width="1" opacity="0.6" />
-                          <text x="242" y="141" fill="#3fe0b5" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">⊕ = 1 1 1</text>
-
-                          <text x="20" y="28" fill="#c084fc" font-family="monospace" font-size="11" letter-spacing="1">JUEGO DE NIM · BINARIO</text>
-                          <text x="300" y="28" text-anchor="end" fill="#3fe0b5" opacity="0.9" font-family="monospace" font-size="10">XOR = 0</text>
-                        </svg>
-                      )}
-                      {project.id === 'radar-cartesiano' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#071514" />
-                          <!-- Ejes cartesianos -->
-                          <line x1="28" y1="92" x2="292" y2="92" stroke="#3fe0b5" stroke-width="1" opacity="0.35" />
-                          <line x1="160" y1="24" x2="160" y2="168" stroke="#3fe0b5" stroke-width="1" opacity="0.35" />
-                          <!-- Círculos de radar -->
-                          <circle cx="160" cy="92" r="28" stroke="#3fe0b5" stroke-width="1" opacity="0.2" />
-                          <circle cx="160" cy="92" r="56" stroke="#3fe0b5" stroke-width="1" opacity="0.2" />
-                          <!-- Sonda circunferencia -->
-                          <circle cx="192" cy="84" r="44" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5 3" fill="rgba(56, 189, 248, 0.08)" />
-                          <circle cx="192" cy="84" r="4" fill="#38bdf8" />
-                          <!-- Sonda recta y = mx + n -->
-                          <line x1="56" y1="154" x2="274" y2="34" stroke="#fbbf24" stroke-width="2.2" />
-                          <circle cx="110" cy="124" r="4.5" fill="#fbbf24" />
-                          <circle cx="220" cy="64" r="4.5" fill="#fbbf24" />
-                          <!-- Tesoro en intersección -->
-                          <circle cx="224" cy="62" r="7" fill="none" stroke="#f43f5e" stroke-width="2" />
-                          <circle cx="224" cy="62" r="2.8" fill="#f43f5e" />
-
-                          <text x="20" y="26" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">RADAR CARTESIANO</text>
-                          <text x="300" y="26" text-anchor="end" fill="#fbbf24" opacity="0.9" font-family="monospace" font-size="10">y = mx + n</text>
-                        </svg>
-                      )}
-                      {project.id === 'sierpinski-chaos' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#091518" />
-                          <!-- Triángulo de Sierpinski recursivo estilizado -->
-                          <polygon points="160,34 86,154 234,154" stroke="#3fe0b5" stroke-width="1.6" fill="rgba(63, 224, 181, 0.06)" />
-                          <polygon points="160,34 123,94 197,94" stroke="#38bdf8" stroke-width="1.2" fill="rgba(56, 189, 248, 0.14)" />
-                          <polygon points="123,94 86,154 160,154" stroke="#fbbf24" stroke-width="1.2" fill="rgba(251, 191, 36, 0.14)" />
-                          <polygon points="197,94 160,154 234,154" stroke="#c084fc" stroke-width="1.2" fill="rgba(192, 132, 252, 0.14)" />
-                          <!-- Vértices -->
-                          <circle cx="160" cy="34" r="4.5" fill="#38bdf8" />
-                          <circle cx="86" cy="154" r="4.5" fill="#fbbf24" />
-                          <circle cx="234" cy="154" r="4.5" fill="#c084fc" />
-                          <!-- Puntos del juego del caos -->
-                          <circle cx="160" cy="64" r="1.6" fill="#38bdf8" />
-                          <circle cx="142" cy="79" r="1.6" fill="#38bdf8" />
-                          <circle cx="178" cy="79" r="1.6" fill="#38bdf8" />
-                          <circle cx="123" cy="124" r="1.6" fill="#fbbf24" />
-                          <circle cx="105" cy="139" r="1.6" fill="#fbbf24" />
-                          <circle cx="197" cy="124" r="1.6" fill="#c084fc" />
-                          <circle cx="215" cy="139" r="1.6" fill="#c084fc" />
-
-                          <text x="20" y="26" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">JUEGO DEL CAOS · IFS</text>
-                          <text x="300" y="26" text-anchor="end" fill="#38bdf8" opacity="0.9" font-family="monospace" font-size="10">D = 1.585</text>
-                        </svg>
-                      )}
-                      {project.id === 'demolicion-fiq' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="url(#fiq-grad)" />
-                          <defs>
-                            <linearGradient id="fiq-grad" x1="0" y1="0" x2="1" y2="1">
-                              <stop offset="0%" stop-color="#1b1216" />
-                              <stop offset="100%" stop-color="#2a1618" />
-                            </linearGradient>
-                          </defs>
-                          <line x1="20" y1="150" x2="300" y2="150" stroke="#ff8a5b" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4" />
-                          <!-- Cañón / Lanzador -->
-                          <circle cx="50" cy="140" r="14" stroke="#ff8a5b" stroke-width="2" />
-                          <line x1="50" y1="140" x2="82" y2="114" stroke="#ff8a5b" stroke-width="4" stroke-linecap="round" />
-                          <!-- Arco de parábola balística -->
-                          <path d="M 82 114 Q 160 30, 240 120" stroke="#ff8a5b" stroke-width="2" stroke-dasharray="6 4" />
-                          <circle cx="160" cy="50" r="4" fill="#ff8a5b" />
-                          <!-- Estructura de bloques destructibles -->
-                          <rect x="220" y="115" width="22" height="35" stroke="#ff8a5b" stroke-width="1.5" fill="#ff8a5b22" />
-                          <rect x="246" y="100" width="22" height="50" stroke="#ff8a5b" stroke-width="1.5" fill="#ff8a5b22" />
-                          <rect x="220" y="85" width="48" height="12" stroke="#ff8a5b" stroke-width="1.5" fill="#ff8a5b33" />
-                          <!-- Destellos de impacto -->
-                          <circle cx="240" cy="85" r="8" stroke="#ffb88c" stroke-width="1" opacity="0.8" />
-                          <text x="20" y="32" fill="#ff8a5b" font-family="monospace" font-size="11" letter-spacing="1">DEMOLICIÓN · FIQ</text>
-                        </svg>
-                      )}
-                      {project.id === 'math-dojo-arcade' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#181310" />
-                          <circle cx="160" cy="92" r="58" stroke="#ff8a5b" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.3" />
-                          <circle cx="160" cy="92" r="42" stroke="#ff8a5b" stroke-width="0.8" opacity="0.2" />
-                          <!-- Icono Oficial Math Dojo: Torii Japonés -->
-                          <g transform="translate(160, 92) scale(1.15) translate(-50, -50)">
-                            <!-- Viga superior curvada kasagi -->
-                            <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" fill="#ff8a5b" />
-                            <path d="M18 28h64l-2 5H20l-2-5Z" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
-                            <!-- Viga transversal nuki y puntal central -->
-                            <rect x="17" y="42" width="66" height="6" rx="2" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
-                            <rect x="46" y="33" width="8" height="9" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b" />
-                            <!-- Pilares inclinados y basas -->
-                            <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" stroke="#ff8a5b" stroke-width="2.5" fill="#251610" />
-                            <rect x="21" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b35" />
-                            <rect x="65" y="76" width="14" height="8" rx="1.5" stroke="#ffb88c" stroke-width="2" fill="#ff8a5b35" />
-                            <path d="M12 84h76" stroke="#ff8a5b" stroke-width="2" stroke-linecap="round" />
-                          </g>
-                          <text x="20" y="32" fill="#ff8a5b" font-family="monospace" font-size="11" letter-spacing="1">MATH DOJO · ARENA</text>
-                          <text x="300" y="32" text-anchor="end" fill="#ff8a5b" opacity="0.6" font-family="monospace" font-size="10">DOJO</text>
-                        </svg>
-                      )}
-                      {project.id === 'math-dojo-junior' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#0d1622" />
-                          <circle cx="160" cy="92" r="58" stroke="#38c8ff" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.3" />
-                          <circle cx="160" cy="92" r="42" stroke="#38c8ff" stroke-width="0.8" opacity="0.2" />
-                          <!-- Icono Oficial Math Dojo Jr: Pequeño Ninja -->
-                          <g transform="translate(160, 92) scale(1.15) translate(-50, -50)">
-                            <!-- Cintas de la bandana -->
-                            <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" stroke="#7dd3fc" stroke-width="2.5" fill="#38c8ff35" />
-                            <!-- Katanas cruzadas -->
-                            <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
-                            <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" />
-                            <!-- Cabeza y máscara Ninja -->
-                            <circle cx="50" cy="36" r="19" stroke="#38c8ff" stroke-width="2.5" fill="#132338" />
-                            <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" stroke="#7dd3fc" stroke-width="2.2" fill="#38c8ff" />
-                            <!-- Hombros y kimono cruzado -->
-                            <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" stroke="#38c8ff" stroke-width="2.5" fill="#132338" />
-                            <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" />
-                          </g>
-                          <text x="20" y="32" fill="#38c8ff" font-family="monospace" font-size="11" letter-spacing="1">MATH DOJO · JUNIOR</text>
-                          <text x="300" y="32" text-anchor="end" fill="#38c8ff" opacity="0.6" font-family="monospace" font-size="10">NINJA</text>
-                        </svg>
-                      )}
-                      {project.id === 'orbital-gravity' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#0f1422" />
-                          <ellipse cx="160" cy="90" rx="100" ry="46" stroke="#4d94ff" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6" transform="rotate(-15 160 90)" />
-                          <circle cx="130" cy="85" r="14" fill="#ffc14d" />
-                          <circle cx="230" cy="62" r="6" fill="#4d94ff" />
-                          <line x1="230" y1="62" x2="210" y2="44" stroke="#4d94ff" stroke-width="1.5" />
-                          <text x="20" y="32" fill="#4d94ff" font-family="monospace" font-size="11" letter-spacing="1">ORBITAL · KEPLER</text>
-                        </svg>
-                      )}
-                      {project.id === 'voxel-polyhedra' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#181422" />
-                          <!-- Cubo isométrico 3D -->
-                          <g transform="translate(160, 90)">
-                            <path d="M 0 -45 L 38 -22 L 0 0 L -38 -22 Z" stroke="#b48cff" stroke-width="1.5" fill="#b48cff22" />
-                            <path d="M -38 -22 L 0 0 L 0 45 L -38 22 Z" stroke="#b48cff" stroke-width="1.5" fill="#b48cff15" />
-                            <path d="M 0 0 L 38 -22 L 38 22 L 0 45 Z" stroke="#b48cff" stroke-width="1.5" fill="#b48cff33" />
-                          </g>
-                          <text x="20" y="32" fill="#b48cff" font-family="monospace" font-size="11" letter-spacing="1">VÓXEL · 3D</text>
-                        </svg>
-                      )}
-                      {project.id === 'sierpinski-chaos' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#101d19" />
-                          <polygon points="160,35 90,150 230,150" stroke="#3fe0b5" stroke-width="1.5" fill="none" opacity="0.6" />
-                          <polygon points="160,150 125,92 195,92" stroke="#3fe0b5" stroke-width="1.5" fill="#3fe0b522" />
-                          <text x="20" y="32" fill="#3fe0b5" font-family="monospace" font-size="11" letter-spacing="1">FRACTAL · CAOS</text>
-                        </svg>
-                      )}
-                      {(project.id === 'galaxy-pong' || project.id === 'vector-pong') && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#140f24" />
-                          <circle cx="60" cy="35" r="1" fill="#ffffff" opacity="0.6" />
-                          <circle cx="260" cy="140" r="1.5" fill="#e68aff" opacity="0.8" />
-                          <circle cx="220" cy="30" r="1" fill="#38bdf8" opacity="0.7" />
-                          <circle cx="45" cy="135" r="1.2" fill="#ffffff" opacity="0.5" />
-                          <circle cx="160" cy="90" r="55" stroke="#e68aff" stroke-width="1" stroke-dasharray="3 6" opacity="0.25" />
-                          <ellipse cx="160" cy="90" rx="95" ry="32" transform="rotate(-18 160 90)" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 6" opacity="0.3" />
-                          <rect x="28" y="55" width="7" height="65" rx="3.5" fill="#38bdf8" />
-                          <rect x="285" y="70" width="7" height="65" rx="3.5" fill="#e68aff" />
-                          <line x1="160" y1="15" x2="160" y2="165" stroke="#e68aff" stroke-width="1.2" stroke-dasharray="6 6" opacity="0.3" />
-                          <line x1="85" y1="115" x2="135" y2="82" stroke="#e68aff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5" />
-                          <circle cx="135" cy="82" r="6" fill="#ffffff" />
-                          <circle cx="135" cy="82" r="12" fill="#e68aff" opacity="0.3" />
-                          <line x1="135" y1="82" x2="175" y2="58" stroke="#3fe0b5" stroke-width="2" stroke-linecap="round" />
-                          <polygon points="180,55 171,56 174,64" fill="#3fe0b5" />
-                          <text x="20" y="32" fill="#e68aff" font-family="monospace" font-size="11" letter-spacing="1">GALAXY · PONG</text>
-                        </svg>
-                      )}
-                      {project.id === 'game-theory-dilemma' && (
-                        <svg class="preview-svg" viewBox="0 0 320 180" fill="none">
-                          <rect width="320" height="180" fill="#201a10" />
-                          <rect x="110" y="55" width="48" height="34" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d22" />
-                          <rect x="162" y="55" width="48" height="34" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d15" />
-                          <rect x="110" y="93" width="48" height="34" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d15" />
-                          <rect x="162" y="93" width="48" height="34" stroke="#ffc14d" stroke-width="1.2" fill="#ffc14d22" />
-                          <text x="126" y="76" fill="#ffc14d" font-family="monospace" font-size="11">R,R</text>
-                          <text x="178" y="76" fill="#ffc14d" font-family="monospace" font-size="11">S,T</text>
-                          <text x="126" y="114" fill="#ffc14d" font-family="monospace" font-size="11">T,S</text>
-                          <text x="178" y="114" fill="#ffc14d" font-family="monospace" font-size="11">P,P</text>
-                          <text x="20" y="32" fill="#ffc14d" font-family="monospace" font-size="11" letter-spacing="1">NASH · DILEMA</text>
-                        </svg>
-                      )}
-                    </div>
-                  )}
-
-                  <!-- Insignia sutil de estado o lanzamiento al pasar el ratón -->
-                  <div class="card-top-badges">
-                    {project.status === 'beta' && <span class="badge-beta">BETA</span>}
-                    {project.status === 'prototype' && <span class="badge-proto">PRÓXIMAMENTE</span>}
-                    {project.url !== '#' && (
-                      <span class="card-hover-arrow" aria-hidden="true">↗</span>
-                    )}
-                  </div>
-                </div>
-
-                <!-- Panel Cristal inferior minimalista: Autor, Título y Frase corta -->
-                <div class="card-crystal-panel">
-                  <div class="card-author-row">
-                    {project.authorType === 'student' ? (
-                      <span class="author-chip is-student">
-                        <span class="chip-dot" aria-hidden="true"></span>
-                        <span>{project.authorName} · {project.schoolOrCourse || 'Alumno'}</span>
-                      </span>
-                    ) : (
-                      <span class="author-chip is-teacher">
-                        <span class="chip-dot" aria-hidden="true"></span>
-                        <span>{project.authorName}</span>
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 class="card-title">{project.title}</h2>
-                  <p class="card-description">{project.shortDescription || project.description}</p>
-
-                  <!-- Etiquetas técnicas ocultas (activas para buscador y accesibilidad) -->
-                  <div class="card-tags-hidden" hidden aria-hidden="true">
-                    {project.tags.map((tag) => (
-                      <span>#{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              </a>
-            ))
-          }
-        </div>
-
-        <!-- Estado vacío si el filtro no coincide con nada -->
-        <div class="craft-empty-state" data-craft-empty hidden>
-          <div class="empty-icon">🔍</div>
-          <h3>No se han encontrado juegos con esos criterios</h3>
-          <p>Prueba a cambiar el autor seleccionado o borrar el texto de búsqueda.</p>
-          <button type="button" class="empty-reset-btn" data-reset-filters>
-            Restablecer todos los filtros
-          </button>
         </div>
       </div>
     </section>
 
-    <!-- Sección de Colaboración: Invitación a alumnos a proponer juegos -->
-    <section class="craft-submit-band section-band is-drawn" id="colabora">
-      <span class="section-rule" aria-hidden="true"></span>
-      <div class="section-frame">
-        <span class="tick tick-half tick-left" aria-hidden="true"></span>
-        <span class="tick tick-half tick-right" aria-hidden="true"></span>
-
-        <div class="section-eyebrow">
-          <span>
-            <span class="eyebrow-num">08.2</span>
-            <span class="eyebrow-sep" aria-hidden="true">/</span>
-            Comunidad y Taller Abierto
-          </span>
-          <span class="eyebrow-right">Publica tu proyecto en Math Gaming</span>
+    <!-- Catálogo de Juegos por Estanterías de Cristal -->
+    <div class="craft-catalog-wrapper craft-container">
+      
+      <!-- ESTANTERÍA 1: PASTILLA ESPECIAL DOJOS (Sección propia en la web) -->
+      <section class="game-shelf shelf-dojos" id="shelf-dojos" data-shelf="dojos" style="--shelf-accent: #f59e0b;">
+        <div class="shelf-header">
+          <div class="shelf-title-wrap">
+            <div class="shelf-glass-pill is-gold">
+              <span class="pill-badge-icon">🥋</span>
+              <span class="pill-badge-title">MATH DOJOS</span>
+              <span class="pill-badge-sep" aria-hidden="true">·</span>
+              <span class="pill-badge-subtitle">Entrenamiento & Agilidad Mental</span>
+            </div>
+            <h2 class="shelf-title">Gimnasios de Cálculo y Agilidad Mental</h2>
+            <p class="shelf-desc">
+              Los buques insignia del cálculo mental, la agilidad numérica y la superación personal en Math Universe con sección propia oficial.
+            </p>
+          </div>
+          <span class="shelf-count-badge" data-shelf-count>{dojoProjects.length} dojos</span>
         </div>
 
-        <div class="collab-box section-body">
-          <div class="collab-left">
-            <span class="collab-kicker">¿Eres alumno y has programado un juego?</span>
-            <h2>Haz que tu proyecto forme parte de <em>Math Gaming.</em></h2>
-            <p>
-              Si has creado una simulación, juego o herramienta en Canvas, Phaser, Godot Web, Three.js, p5.js o Scratch
-              con base matemática o física (colisiones, trigonometría, álgebra, cinemática...), queremos darte espacio.
-            </p>
-            <ul class="collab-checklist">
-              <li>✓ Acreditación con tu nombre y centro educativo o curso.</li>
-              <li>✓ Enlace directo a tu web o despliegue (ej. Vercel, Netlify, GitHub Pages o Itch.io).</li>
-              <li>✓ Revisión y soporte técnico para optimizarlo.</li>
-            </ul>
-          </div>
+        <div class="dojos-grid">
+          {dojoProjects.map((project) => (
+            <article
+              class="dojo-card"
+              data-craft-tile
+              data-id={project.id}
+              data-author={project.authorType}
+              data-title={project.title.toLowerCase()}
+              data-desc={project.description.toLowerCase()}
+              data-topic={project.mathTopic.toLowerCase()}
+              data-tags={project.tags.join(',').toLowerCase()}
+              data-author-name={project.authorName.toLowerCase()}
+              style={`--accent-color:${project.color}`}
+            >
+              <div class="dojo-card-glow" aria-hidden="true"></div>
+              
+              <div class="dojo-card-header">
+                <CraftAppIcon id={project.id} class="dojo-app-icon" />
+                <div class="dojo-card-headings">
+                  <div class="dojo-title-row">
+                    <h3 class="dojo-title">
+                      <a href={project.url} target="_blank" rel="noopener noreferrer" class="stretched-link">
+                        {project.title}
+                      </a>
+                    </h3>
+                    <button
+                      type="button"
+                      class="fav-star-btn"
+                      data-fav-btn={project.id}
+                      title="Guardar en favoritos"
+                      aria-label={`Añadir ${project.title} a favoritos`}
+                    >
+                      <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </button>
+                  </div>
+                  <span class="dojo-course-badge">{project.schoolOrCourse}</span>
+                </div>
+              </div>
 
-          <div class="collab-right">
-            <div class="collab-card">
-              <h3>Envía tu propuesta</h3>
-              <p>Envíanos un correo a <strong>mathuniverse.web@gmail.com</strong> o compártelo en clase indicando el enlace del proyecto, tu nombre y una breve descripción de las matemáticas que utiliza.</p>
+              <p class="dojo-card-desc">
+                {project.id === 'math-dojo-arcade'
+                  ? 'Desafíos contrarreloj de cálculo mental y operativa rápida. Supera los 9 cinturones de maestría matemática.'
+                  : 'Aventura gamificada para afianzar tablas de multiplicar, jerarquía operativa y confianza numérica visual.'}
+              </p>
+
+              <div class="dojo-card-footer">
+                <div class="dojo-pills">
+                  {project.tags.slice(0, 3).map((tag) => (
+                    <span class="dojo-tag">{tag}</span>
+                  ))}
+                </div>
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="dojo-cta-btn"
+                  tabindex="-1"
+                >
+                  <span>Entrenar en el Dojo</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arrow-icon">
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- ESTANTERÍA 2: ARCADES DE ACCIÓN & REFLEJOS ("Juegos de verdad") -->
+      <section class="game-shelf shelf-arcades" id="shelf-arcades" data-shelf="arcades" style="--shelf-accent: #0ea5e9;">
+        <div class="shelf-header">
+          <div class="shelf-title-wrap">
+            <div class="shelf-glass-pill is-cyan">
+              <span class="pill-badge-icon">🕹️</span>
+              <span class="pill-badge-title">ARCADES DE ACCIÓN</span>
+              <span class="pill-badge-sep" aria-hidden="true">·</span>
+              <span class="pill-badge-subtitle">Física 2D, Dinámica & Reflejos</span>
+            </div>
+            <h2 class="shelf-title">Arcades de Acción & Reflejos</h2>
+            <p class="shelf-desc">
+              Juegos interactivos donde la física balística, los vectores de rebote y el cálculo contrarreloj deciden la partida.
+            </p>
+          </div>
+          <span class="shelf-count-badge" data-shelf-count>{arcadeProjects.length} juegos</span>
+        </div>
+
+        <div class="app-tiles-grid">
+          {arcadeProjects.map((project) => (
+            <article
+              class="app-tile"
+              data-craft-tile
+              data-id={project.id}
+              data-author={project.authorType}
+              data-title={project.title.toLowerCase()}
+              data-desc={project.description.toLowerCase()}
+              data-topic={project.mathTopic.toLowerCase()}
+              data-tags={project.tags.join(',').toLowerCase()}
+              data-author-name={project.authorName.toLowerCase()}
+              style={`--accent-color:${project.color}`}
+            >
+              <div class="tile-icon-container">
+                <CraftAppIcon id={project.id} />
+              </div>
+              
+              <div class="tile-info">
+                <div class="tile-top-row">
+                  <h3 class="tile-title">
+                    <a
+                      href={project.url}
+                      target={project.isExternal ? '_blank' : undefined}
+                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
+                      class="stretched-link"
+                    >
+                      {project.title}
+                    </a>
+                  </h3>
+                  <button
+                    type="button"
+                    class="fav-star-btn"
+                    data-fav-btn={project.id}
+                    title="Guardar en favoritos"
+                    aria-label={`Añadir ${project.title} a favoritos`}
+                  >
+                    <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
+                </div>
+
+                <p class="tile-desc" title={project.shortDescription || project.description}>
+                  {project.shortDescription || project.description}
+                </p>
+
+                <div class="tile-meta-row">
+                  <span class={`author-badge ${project.authorType === 'student' ? 'is-student' : 'is-teacher'}`}>
+                    {project.authorType === 'student' ? `🎒 Alumno: ${project.authorName}` : 'Profesor'}
+                  </span>
+                  <span class="topic-tag">{project.mathTopic.split(',')[0]}</span>
+                  <span class="tile-play-indicator" aria-hidden="true">
+                    <span>Jugar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- ESTANTERÍA 3: PARADOJAS, PROBABILIDAD & ESTRATEGIA -->
+      <section class="game-shelf shelf-paradoxes" id="shelf-paradoxes" data-shelf="paradoxes" style="--shelf-accent: #10b981;">
+        <div class="shelf-header">
+          <div class="shelf-title-wrap">
+            <div class="shelf-glass-pill is-emerald">
+              <span class="pill-badge-icon">🎲</span>
+              <span class="pill-badge-title">PARADOJAS & ESTRATEGIA</span>
+              <span class="pill-badge-sep" aria-hidden="true">·</span>
+              <span class="pill-badge-subtitle">Intuición vs Probabilidad Matemática</span>
+            </div>
+            <h2 class="shelf-title">Paradojas, Probabilidad & Estrategia</h2>
+            <p class="shelf-desc">
+              Retos contraintuitivos, simuladores Monte Carlo y teoría de juegos donde descubrirás la verdad oculta tras el azar.
+            </p>
+          </div>
+          <span class="shelf-count-badge" data-shelf-count>{paradoxProjects.length} juegos</span>
+        </div>
+
+        <div class="app-tiles-grid">
+          {paradoxProjects.map((project) => (
+            <article
+              class="app-tile"
+              data-craft-tile
+              data-id={project.id}
+              data-author={project.authorType}
+              data-title={project.title.toLowerCase()}
+              data-desc={project.description.toLowerCase()}
+              data-topic={project.mathTopic.toLowerCase()}
+              data-tags={project.tags.join(',').toLowerCase()}
+              data-author-name={project.authorName.toLowerCase()}
+              style={`--accent-color:${project.color}`}
+            >
+              <div class="tile-icon-container">
+                <CraftAppIcon id={project.id} />
+              </div>
+              
+              <div class="tile-info">
+                <div class="tile-top-row">
+                  <h3 class="tile-title">
+                    <a
+                      href={project.url}
+                      target={project.isExternal ? '_blank' : undefined}
+                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
+                      class="stretched-link"
+                    >
+                      {project.title}
+                    </a>
+                  </h3>
+                  <button
+                    type="button"
+                    class="fav-star-btn"
+                    data-fav-btn={project.id}
+                    title="Guardar en favoritos"
+                    aria-label={`Añadir ${project.title} a favoritos`}
+                  >
+                    <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
+                </div>
+
+                <p class="tile-desc" title={project.shortDescription || project.description}>
+                  {project.shortDescription || project.description}
+                </p>
+
+                <div class="tile-meta-row">
+                  <span class={`author-badge ${project.authorType === 'student' ? 'is-student' : 'is-teacher'}`}>
+                    {project.authorType === 'student' ? `🎒 Alumno: ${project.authorName}` : 'Profesor'}
+                  </span>
+                  <span class="topic-tag">{project.mathTopic.split(',')[0]}</span>
+                  <span class="tile-play-indicator" aria-hidden="true">
+                    <span>Jugar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- ESTANTERÍA 4: GEOMETRÍA, CAOS & ESPACIO 3D -->
+      <section class="game-shelf shelf-geometry" id="shelf-geometry" data-shelf="geometry" style="--shelf-accent: #a855f7;">
+        <div class="shelf-header">
+          <div class="shelf-title-wrap">
+            <div class="shelf-glass-pill is-purple">
+              <span class="pill-badge-icon">📐</span>
+              <span class="pill-badge-title">GEOMETRÍA & ESPACIO 3D</span>
+              <span class="pill-badge-sep" aria-hidden="true">·</span>
+              <span class="pill-badge-subtitle">Modelado 3D, Caos & Recursión</span>
+            </div>
+            <h2 class="shelf-title">Geometría, Caos & Espacio 3D</h2>
+            <p class="shelf-desc">
+              Fractales iterativos, leyes planetarias de Kepler, recursión algorítmica y exploración poliedral en tres dimensiones.
+            </p>
+          </div>
+          <span class="shelf-count-badge" data-shelf-count>{geometryProjects.length} juegos</span>
+        </div>
+
+        <div class="app-tiles-grid">
+          {geometryProjects.map((project) => (
+            <article
+              class="app-tile"
+              data-craft-tile
+              data-id={project.id}
+              data-author={project.authorType}
+              data-title={project.title.toLowerCase()}
+              data-desc={project.description.toLowerCase()}
+              data-topic={project.mathTopic.toLowerCase()}
+              data-tags={project.tags.join(',').toLowerCase()}
+              data-author-name={project.authorName.toLowerCase()}
+              style={`--accent-color:${project.color}`}
+            >
+              <div class="tile-icon-container">
+                <CraftAppIcon id={project.id} />
+              </div>
+              
+              <div class="tile-info">
+                <div class="tile-top-row">
+                  <h3 class="tile-title">
+                    <a
+                      href={project.url}
+                      target={project.isExternal ? '_blank' : undefined}
+                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
+                      class="stretched-link"
+                    >
+                      {project.title}
+                    </a>
+                  </h3>
+                  <button
+                    type="button"
+                    class="fav-star-btn"
+                    data-fav-btn={project.id}
+                    title="Guardar en favoritos"
+                    aria-label={`Añadir ${project.title} a favoritos`}
+                  >
+                    <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
+                </div>
+
+                <p class="tile-desc" title={project.shortDescription || project.description}>
+                  {project.shortDescription || project.description}
+                </p>
+
+                <div class="tile-meta-row">
+                  <span class={`author-badge ${project.authorType === 'student' ? 'is-student' : 'is-teacher'}`}>
+                    {project.authorType === 'student' ? `🎒 Alumno: ${project.authorName}` : 'Profesor'}
+                  </span>
+                  <span class="topic-tag">{project.mathTopic.split(',')[0]}</span>
+                  <span class="tile-play-indicator" aria-hidden="true">
+                    <span>Jugar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- Mensaje cuando la búsqueda no devuelve resultados -->
+      <div class="craft-empty-state" data-empty-state hidden>
+        <div class="empty-icon">🔍</div>
+        <h3 class="empty-title">No se han encontrado juegos</h3>
+        <p class="empty-desc">
+          No hay ningún juego o simulación que coincida con tus criterios de búsqueda o filtros seleccionados.
+        </p>
+        <button type="button" class="empty-reset-btn" data-reset-filters>
+          Restablecer filtros
+        </button>
+      </div>
+
+      <!-- Mensaje cuando el filtro de favoritos está activo y no hay favoritos guardados -->
+      <div class="craft-empty-favs" data-empty-favs hidden>
+        <div class="empty-icon">⭐</div>
+        <h3 class="empty-title">Aún no tienes juegos favoritos</h3>
+        <p class="empty-desc">
+          Pulsa en la estrella (☆) en la esquina superior de cualquier juego para guardarlo aquí y acceder en un clic.
+        </p>
+        <button type="button" class="empty-reset-btn" data-show-all-from-favs>
+          Ver todos los juegos
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Sección Colabora / Proponer Juego -->
+    <section class="craft-colabora-section section-band" id="colabora">
+      <div class="craft-container">
+        <div class="colabora-card">
+          <div class="colabora-content">
+            <span class="colabora-tag">✨ TALLER ABIERTO</span>
+            <h2 class="colabora-title">¿Has programado un juego matemático?</h2>
+            <p class="colabora-desc">
+              Si eres alumno, profesor o apasionado de las matemáticas y has programado un juego o simulación interactiva, podemos incluirlo con tu autoría oficial y ficha educativa en Math Gaming.
+            </p>
+            <div class="colabora-actions">
               <a
-                href="mailto:mathuniverse.web@gmail.com?subject=Propuesta%20de%20Juego%20para%20Math%20Gaming&body=Hola%2C%0A%0AQuiero%20proponer%20mi%20juego%20para%20Math%20Gaming%3A%0A-%20Nombre%20del%20juego%3A%0A-%20Enlace%20web%20(Vercel%2FGitHub%2FItch)%3A%0A-%20Nombre%20del%20alumno%20o%20equipo%3A%0A-%20Curso%20o%20centro%3A%0A-%20Tema%20matem%C3%A1tico%20o%20f%C3%ADsico%20utilizado%3A%0A%0A%C2%A1Gracias!"
-                class="collab-action-btn"
+                href="mailto:xalsina@escolapiaolot.cat?subject=Propuesta%20de%20Juego%20para%20Math%20Gaming"
+                class="colabora-primary-btn"
               >
-                <span>✉ Enviar juego por correo</span>
+                <span>Enviar propuesta</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </a>
-              <span class="collab-note">O contacta directamente a través del profesor en clase.</span>
+              <span class="colabora-note">Aceptamos proyectos en HTML5/JS, Canvas, Three.js, Astro o Vercel.</span>
             </div>
           </div>
         </div>
@@ -740,822 +573,1212 @@ const totalCount = craftProjects.length;
 </BaseLayout>
 
 <style>
-  /* ---------------------------------------------------- */
-  /* CABECERA TOP ACTIONS                                */
-  /* ---------------------------------------------------- */
-  .craft-top-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .craft-top-btn {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--ink);
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    padding: 0.28rem 0.65rem;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.15s ease;
-  }
-
-  .craft-top-btn:hover {
-    border-color: var(--line-strong);
-    background: var(--bg-raised);
-    color: var(--ink-strong);
-  }
-
-  .craft-top-btn.is-accent {
-    border-color: #b48cff66;
-    color: #b48cff;
-    background: #b48cff12;
-  }
-
-  .craft-top-btn.is-accent:hover {
-    border-color: #b48cff;
-    background: #b48cff22;
-  }
-
-  @media (max-width: 680px) {
-    .craft-top-actions {
-      padding: 0 0.4rem;
-      gap: 0.25rem;
-    }
-
-    .craft-top-btn {
-      padding: 0.25rem 0.45rem;
-    }
-
-    .craft-top-btn .btn-text {
-      display: none;
-    }
-  }
-
-
-
-  /* ---------------------------------------------------- */
-  /* HERO BAND ESTILO STUDIO                              */
-  /* ---------------------------------------------------- */
-  .craft-hero-band {
-    position: relative;
+  /* -------------------------------------------------------------
+     VARIABLES & RESET TÉCNICO
+     ------------------------------------------------------------- */
+  .craft-main-wrapper {
     width: 100%;
-    max-width: 100vw;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-sunken);
-    overflow: hidden;
-    overflow-x: clip;
+    min-height: 100vh;
+    background-color: var(--bg);
+    color: var(--ink);
+    padding-bottom: 5rem;
   }
 
-  /* ---------------------------------------------------- */
-  /* CONTROLES Y FILTROS DEL CATÁLOGO                     */
-  /* ---------------------------------------------------- */
-  .craft-catalog-band {
-    border-bottom: 1px solid var(--line);
+  .craft-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
   }
 
-  .craft-controls-bar {
-    padding: 1.5rem 1.5rem 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--line);
+  /* -------------------------------------------------------------
+     BARRA DE HERRAMIENTAS (TOOLBAR)
+     ------------------------------------------------------------- */
+  .craft-toolbar-section {
+    position: relative;
+    z-index: 10;
+    margin-top: -2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .craft-toolbar-card {
+    background: color-mix(in srgb, var(--bg-raised) 82%, transparent);
+    border: 1px solid var(--line-strong);
+    border-radius: 20px;
+    padding: 1rem 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.15rem;
+    gap: 0.9rem;
+    box-shadow: 
+      0 12px 36px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
 
-  /* Barra de Autor (Profesor vs Alumnos) */
-  .author-toggle-group {
+  .toolbar-top-row {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.85rem;
   }
 
-  .filter-group-label {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-right: 0.25rem;
+  @media (min-width: 860px) {
+    .toolbar-top-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
   }
 
-  .author-btn {
-    appearance: none;
-    border: 1px solid var(--line);
-    background: var(--bg-raised);
-    color: var(--ink-soft);
-    font-family: var(--mono);
-    font-size: 0.76rem;
-    padding: 0.4rem 0.85rem;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.15s ease;
-  }
-
-  .author-btn:hover {
-    border-color: var(--line-strong);
-    color: var(--ink-strong);
-    background: var(--bg);
-  }
-
-  .author-btn.is-active {
-    background: var(--ink-strong);
-    border-color: var(--ink-strong);
-    color: var(--bg);
-    font-weight: 600;
-  }
-
-  :root[data-theme='dark'] .author-btn.is-active {
-    background: #f3f2ec;
-    border-color: #f3f2ec;
-    color: #101116;
-  }
-
-  .author-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-
-  .author-dot.is-teacher { background: #b48cff; box-shadow: 0 0 6px #b48cff88; }
-  .author-dot.is-student { background: #38c8ff; box-shadow: 0 0 6px #38c8ff88; }
-
-  .author-count {
-    font-size: 0.7rem;
-    padding: 0.08rem 0.35rem;
-    border-radius: 4px;
-    background: rgba(128, 128, 128, 0.18);
-  }
-
-  .author-btn.is-active .author-count {
-    background: rgba(0, 0, 0, 0.2);
-    color: inherit;
-  }
-
-  /* Fila secundaria: Buscador y Categorías */
-  .craft-secondary-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .craft-search-box {
+  /* Buscador */
+  .toolbar-search-box {
     position: relative;
-    min-width: 280px;
-    flex: 1 1 320px;
+    display: flex;
+    align-items: center;
+    flex: 1;
     max-width: 480px;
   }
 
-  .search-icon {
+  .search-svg {
     position: absolute;
-    left: 0.85rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 15px;
-    height: 15px;
+    left: 1rem;
+    width: 17px;
+    height: 17px;
     color: var(--muted);
     pointer-events: none;
   }
 
   .craft-search-input {
     width: 100%;
-    padding: 0.45rem 2rem 0.45rem 2.25rem;
-    background: var(--bg);
+    padding: 0.65rem 2.25rem 0.65rem 2.5rem;
+    background: var(--bg-sunken);
     border: 1px solid var(--line);
-    border-radius: 6px;
-    color: var(--ink-strong);
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    outline: none;
-    transition: border-color 0.15s ease;
+    border-radius: 12px;
+    color: var(--ink);
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
   }
 
   .craft-search-input:focus {
-    border-color: #b48cff;
-    box-shadow: 0 0 0 2px rgba(180, 140, 255, 0.15);
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    background: var(--bg-raised);
   }
 
   .search-clear-btn {
     position: absolute;
-    right: 0.6rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
+    right: 0.75rem;
+    background: none;
     border: none;
     color: var(--muted);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 0.2rem 0.3rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: 6px;
   }
 
   .search-clear-btn:hover {
-    color: var(--ink-strong);
+    color: var(--ink);
+    background: var(--line);
   }
 
-  .category-chips-row {
+  /* Píldoras de Navegación Rápida a Secciones */
+  .section-nav-pills {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    overflow-x: auto;
-    padding-bottom: 0.2rem;
     flex-wrap: wrap;
   }
 
-  .cat-chip {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    padding: 0.35rem 0.65rem;
+  .shelf-nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 999px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    white-space: nowrap;
-    transition: all 0.15s ease;
-  }
-
-  .cat-chip:hover {
-    color: var(--ink);
-    border-color: var(--line-strong);
-    background: var(--bg-raised);
-  }
-
-  .cat-chip.is-active {
-    background: #b48cff18;
-    border-color: #b48cff;
-    color: #b48cff;
+    font-size: 0.78rem;
     font-weight: 600;
-  }
-
-  /* ---------------------------------------------------- */
-  /* REJILLA DE TARJETAS CUADRADAS SIMPLIFICADAS (CRISTAL)*/
-  /* ---------------------------------------------------- */
-  [hidden] {
-    display: none !important;
-  }
-
-  .craft-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
-    gap: 1.15rem;
-    padding: 1.5rem;
-  }
-
-  .craft-card {
-    aspect-ratio: 1 / 1;
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
     text-decoration: none;
-    color: inherit;
-    position: relative;
-    scroll-margin-top: 5rem;
-    transition:
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.2s ease,
-      box-shadow 0.24s ease;
-  }
-
-  .craft-card.is-upcoming {
-    opacity: 0.78;
-    cursor: default;
-  }
-
-  .craft-card:target {
-    border-color: var(--card-accent, #b48cff);
-    box-shadow: 0 0 0 2px var(--card-accent, #b48cff), 0 12px 32px rgba(0, 0, 0, 0.4);
-    animation: targetPulse 1.6s ease;
-  }
-
-  @keyframes targetPulse {
-    0%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-4px); }
-  }
-
-  .craft-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--card-accent, #b48cff);
-    box-shadow:
-      0 14px 32px rgba(0, 0, 0, 0.24),
-      0 0 0 1px color-mix(in srgb, var(--card-accent, #b48cff) 35%, transparent);
-  }
-
-  /* Marco visual superior dentro del cuadrado */
-  .card-media-frame {
-    position: relative;
-    width: 100%;
-    flex: 1 1 56%;
-    min-height: 0;
+    color: var(--ink);
     background: var(--bg-sunken);
-    overflow: hidden;
+    border: 1px solid var(--line);
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
-  .card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  .shelf-nav-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
-  .craft-card:hover .card-img {
-    transform: scale(1.05);
+  .nav-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
   }
 
-  .card-placeholder-art {
-    width: 100%;
-    height: 100%;
+  .shelf-nav-pill.is-gold .nav-pill-dot { background: #f59e0b; }
+  .shelf-nav-pill.is-gold:hover {
+    border-color: #f59e0b;
+    background: color-mix(in srgb, #f59e0b 14%, var(--bg-raised));
+    color: #d97706;
+  }
+  :root.theme-dark .shelf-nav-pill.is-gold:hover { color: #fbbf24; }
+
+  .shelf-nav-pill.is-cyan .nav-pill-dot { background: #0ea5e9; }
+  .shelf-nav-pill.is-cyan:hover {
+    border-color: #0ea5e9;
+    background: color-mix(in srgb, #0ea5e9 14%, var(--bg-raised));
+    color: #0284c7;
+  }
+  :root.theme-dark .shelf-nav-pill.is-cyan:hover { color: #38bdf8; }
+
+  .shelf-nav-pill.is-emerald .nav-pill-dot { background: #10b981; }
+  .shelf-nav-pill.is-emerald:hover {
+    border-color: #10b981;
+    background: color-mix(in srgb, #10b981 14%, var(--bg-raised));
+    color: #059669;
+  }
+  :root.theme-dark .shelf-nav-pill.is-emerald:hover { color: #34d399; }
+
+  .shelf-nav-pill.is-purple .nav-pill-dot { background: #a855f7; }
+  .shelf-nav-pill.is-purple:hover {
+    border-color: #a855f7;
+    background: color-mix(in srgb, #a855f7 14%, var(--bg-raised));
+    color: #9333ea;
+  }
+  :root.theme-dark .shelf-nav-pill.is-purple:hover { color: #c084fc; }
+
+  /* Fila Inferior de Toolbar */
+  .toolbar-bottom-row {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--line);
   }
 
-  .preview-svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .craft-card:hover .preview-svg {
-    transform: scale(1.04);
-  }
-
-  /* Badges superiores sutiles */
-  .card-top-badges {
-    position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
-    z-index: 2;
+  .toolbar-filters-left {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
   }
 
-  .card-hover-arrow {
-    width: 26px;
-    height: 26px;
-    border-radius: 9999px;
+  /* Botón de Favoritos */
+  .toolbar-fav-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(15, 18, 28, 0.72);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #ffffff;
-    font-size: 0.85rem;
-    font-weight: 700;
-    opacity: 0;
-    transform: translate(-3px, 3px);
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .craft-card:hover .card-hover-arrow {
-    opacity: 1;
-    transform: translate(0, 0);
-    background: var(--card-accent, #b48cff);
-    border-color: var(--card-accent, #b48cff);
-    color: #0b0d14;
+  .toolbar-fav-btn .star-icon {
+    width: 15px;
+    height: 15px;
+    color: var(--muted);
+    transition: all 0.2s ease;
   }
 
-  .badge-beta,
-  .badge-proto {
+  .toolbar-fav-btn:hover {
+    border-color: #fbbf24;
+    color: #b45309;
+  }
+
+  :root.theme-dark .toolbar-fav-btn:hover {
+    color: #fde047;
+  }
+
+  .toolbar-fav-btn.is-active {
+    background: color-mix(in srgb, #fbbf24 16%, var(--bg-raised));
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  :root.theme-dark .toolbar-fav-btn.is-active {
+    color: #fde047;
+  }
+
+  .toolbar-fav-btn.is-active .star-icon {
+    fill: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .fav-count-pill {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--line);
+    color: var(--ink);
     font-family: var(--mono);
-    font-size: 0.56rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.45rem;
-    border-radius: 5px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
-  .badge-beta {
-    background: rgba(255, 193, 77, 0.22);
-    color: #ffc14d;
-    border: 1px solid #ffc14d66;
+  .toolbar-fav-btn.is-active .fav-count-pill {
+    background: #f59e0b;
+    color: #fff;
   }
 
-  .badge-proto {
-    background: rgba(180, 140, 255, 0.22);
-    color: #d8b4fe;
-    border: 1px solid #b48cff66;
-  }
-
-  /* PANEL CRISTAL INFERIOR */
-  .card-crystal-panel {
-    position: relative;
-    padding: 0.8rem 0.95rem 0.85rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.3rem;
-    background: linear-gradient(
-      180deg,
-      rgba(22, 26, 40, 0.82) 0%,
-      rgba(15, 18, 29, 0.96) 100%
-    );
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  :global([data-theme='light']) .card-crystal-panel,
-  :root[data-theme='light'] .card-crystal-panel {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.88) 0%,
-      rgba(248, 250, 252, 0.98) 100%
-    );
-    border-top: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  }
-
-  :global([data-theme='light']) .card-hover-arrow,
-  :root[data-theme='light'] .card-hover-arrow {
-    background: rgba(255, 255, 255, 0.88);
-    border-color: rgba(15, 23, 42, 0.15);
-    color: #0f172a;
-  }
-
-  .card-author-row {
-    display: flex;
+  /* Pills de Autor */
+  .author-pills-group {
+    display: inline-flex;
     align-items: center;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.2rem;
+    gap: 0.2rem;
   }
 
-  .author-chip {
+  .author-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    padding: 0.32rem 0.65rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
     color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .author-pill:hover {
+    color: var(--ink);
+  }
+
+  .author-pill.is-active {
+    background: var(--bg-raised);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .author-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .author-dot.is-teacher {
+    background: #0ea5e9;
+  }
+
+  .author-dot.is-student {
+    background: #ec4899;
+  }
+
+  .pill-count {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .author-pill.is-active .pill-count {
+    color: var(--accent);
+  }
+
+  /* Badge de Contador */
+  .toolbar-status-badge {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    padding-left: 0.5rem;
+  }
+
+  /* -------------------------------------------------------------
+     ESTANTERÍAS DE CRISTAL (FROSTED GLASS CAPSULES)
+     ------------------------------------------------------------- */
+  .craft-catalog-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .game-shelf {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid color-mix(in srgb, var(--shelf-accent) 32%, var(--line-strong));
+    border-radius: 24px;
+    padding: 1.85rem;
+    box-shadow: 
+      0 14px 40px -10px rgba(0, 0, 0, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.18),
+      0 0 35px -8px color-mix(in srgb, var(--shelf-accent) 18%, transparent);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  /* Borde de brillo superior (reflejo especular de cristal) */
+  .game-shelf::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--shelf-accent) 70%, #fff), transparent);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  .game-shelf[hidden] {
+    display: none;
+  }
+
+  .shelf-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1rem;
+    gap: 1rem;
+  }
+
+  .shelf-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  /* PÍLDORA DESTACADA DE CADA SECCIÓN (GLASS PILL) */
+  .shelf-glass-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.32rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    width: fit-content;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+  }
+
+  .shelf-glass-pill.is-gold {
+    background: color-mix(in srgb, #f59e0b 16%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, #f59e0b 45%, transparent);
+    color: #b45309;
+  }
+  :root.theme-dark .shelf-glass-pill.is-gold {
+    color: #fbbf24;
+  }
+
+  .shelf-glass-pill.is-cyan {
+    background: color-mix(in srgb, #0ea5e9 16%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, #0ea5e9 45%, transparent);
+    color: #0284c7;
+  }
+  :root.theme-dark .shelf-glass-pill.is-cyan {
+    color: #38bdf8;
+  }
+
+  .shelf-glass-pill.is-emerald {
+    background: color-mix(in srgb, #10b981 16%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, #10b981 45%, transparent);
+    color: #059669;
+  }
+  :root.theme-dark .shelf-glass-pill.is-emerald {
+    color: #34d399;
+  }
+
+  .shelf-glass-pill.is-purple {
+    background: color-mix(in srgb, #a855f7 16%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, #a855f7 45%, transparent);
+    color: #7e22ce;
+  }
+  :root.theme-dark .shelf-glass-pill.is-purple {
+    color: #c084fc;
+  }
+
+  .pill-badge-icon {
+    font-size: 0.9rem;
+  }
+
+  .pill-badge-title {
+    text-transform: uppercase;
+  }
+
+  .pill-badge-sep {
+    opacity: 0.45;
+  }
+
+  .pill-badge-subtitle {
+    font-weight: 500;
+    opacity: 0.9;
+  }
+
+  .shelf-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .shelf-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    max-width: 780px;
+    line-height: 1.45;
+  }
+
+  .shelf-count-badge {
+    font-size: 0.75rem;
+    font-family: var(--mono);
+    color: var(--muted);
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    padding: 0.25rem 0.65rem;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* -------------------------------------------------------------
+     SECCIÓN DOJOS: TARJETAS PANORÁMICAS DE CRISTAL
+     ------------------------------------------------------------- */
+  .dojos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 820px) {
+    .dojos-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .dojo-card {
+    position: relative;
+    background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 25%, var(--line-strong));
+    border-radius: 18px;
+    padding: 1.45rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+  }
+
+  .dojo-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-color);
+    box-shadow: 
+      0 12px 34px rgba(0, 0, 0, 0.12),
+      0 0 0 1px var(--accent-color),
+      inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  }
+
+  .dojo-card-glow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-color) 25%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .dojo-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+  }
+
+  .dojo-card-headings {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .dojo-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .dojo-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .dojo-course-badge {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .dojo-card-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+    flex: 1;
+  }
+
+  .dojo-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .dojo-pills {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .dojo-tag {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .dojo-cta-btn {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-color) 35%, transparent);
+  }
+
+  .dojo-cta-btn .arrow-icon {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+  }
+
+  .dojo-card:hover .dojo-cta-btn .arrow-icon {
+    transform: translate(2px, -2px);
+  }
+
+  /* -------------------------------------------------------------
+     REJILLA DE APP TILES (DISEÑO TIPO APP LAUNCHPAD DE CRISTAL)
+     ------------------------------------------------------------- */
+  .app-tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .app-tiles-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .app-tiles-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .app-tile {
+    position: relative;
+    background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 22%, var(--line));
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.95rem;
+    transition: all 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .app-tile:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+    box-shadow: 
+      0 10px 28px rgba(0, 0, 0, 0.12),
+      0 0 0 1px var(--accent-color),
+      inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    background: color-mix(in srgb, var(--accent-color) 9%, var(--bg-raised));
+  }
+
+  .app-tile:hover .craft-app-icon {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  }
+
+  .tile-icon-container {
+    flex-shrink: 0;
+  }
+
+  .tile-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .tile-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+
+  .tile-title {
+    font-size: 0.96rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .chip-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .author-chip.is-teacher .chip-dot {
-    background: #b48cff;
-    box-shadow: 0 0 6px #b48cffaa;
-  }
-
-  .author-chip.is-student .chip-dot {
-    background: #38c8ff;
-    box-shadow: 0 0 6px #38c8ffaa;
-  }
-
-  .author-chip.is-student {
-    color: #38c8ff;
-  }
-
-  :global([data-theme='light']) .author-chip.is-student,
-  :root[data-theme='light'] .author-chip.is-student {
-    color: #0284c7;
-  }
-
-  /* Título */
-  .card-title {
-    font-family: var(--display);
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.22;
-    margin: 0;
-    color: var(--ink-strong);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    transition: color 0.15s ease;
-  }
-
-  .craft-card:hover .card-title {
-    color: var(--card-accent, #b48cff);
-  }
-
-  /* Descripción cristal corta */
-  .card-description {
-    font-family: var(--sans);
-    font-size: 0.75rem;
-    line-height: 1.38;
-    color: var(--ink-soft);
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* ESTADO VACÍO */
-  .craft-empty-state {
-    padding: 3.5rem 1.5rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .empty-icon {
-    font-size: 2rem;
-    margin-bottom: 0.2rem;
-  }
-
-  .craft-empty-state h3 {
-    font-family: var(--display);
-    font-size: 1.25rem;
-    color: var(--ink-strong);
-    margin: 0;
-  }
-
-  .craft-empty-state p {
-    font-family: var(--sans);
-    font-size: 0.88rem;
+  .tile-desc {
+    font-size: 0.82rem;
     color: var(--muted);
-    margin: 0 0 1rem 0;
-  }
-
-  .empty-reset-btn {
-    appearance: none;
-    background: var(--bg-raised);
-    border: 1px solid var(--line-strong);
-    color: var(--ink-strong);
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    padding: 0.45rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .empty-reset-btn:hover {
-    border-color: #b48cff;
-    color: #b48cff;
-  }
-
-  /* ---------------------------------------------------- */
-  /* SECCIÓN DE COLABORACIÓN / ALUMNOS                    */
-  /* ---------------------------------------------------- */
-  .craft-submit-band {
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-sunken);
-  }
-
-  .collab-box {
-    display: grid;
-    grid-template-columns: 1.2fr 0.9fr;
-    gap: 2.5rem;
-    padding: 2.5rem 1.5rem;
-    align-items: center;
-  }
-
-  .collab-kicker {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: #38c8ff;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-
-  .collab-left h2 {
-    font-family: var(--display);
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-    line-height: 1.12;
-    color: var(--ink-strong);
-    margin: 0 0 1rem 0;
-  }
-
-  .collab-left h2 em {
-    font-family: var(--serif);
-    font-style: italic;
-    font-weight: 400;
-    color: #b48cff;
-  }
-
-  .collab-left p {
-    font-family: var(--sans);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--ink-soft);
-    margin: 0 0 1.25rem 0;
-  }
-
-  .collab-checklist {
-    list-style: none;
-    padding: 0;
     margin: 0;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tile-meta-row {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
+    font-size: 0.75rem;
+    margin-top: 0.15rem;
   }
 
-  .collab-checklist li {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--ink-soft);
+  .author-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.45rem;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: 600;
   }
 
-  .collab-card {
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 1.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+  .author-badge.is-teacher {
+    background: color-mix(in srgb, #0ea5e9 12%, transparent);
+    color: #0284c7;
+    border: 1px solid color-mix(in srgb, #0ea5e9 25%, transparent);
   }
 
-  .collab-card h3 {
-    font-family: var(--display);
-    font-size: 1.25rem;
-    margin: 0;
-    color: var(--ink-strong);
+  :root.theme-dark .author-badge.is-teacher {
+    color: #38bdf8;
   }
 
-  .collab-card p {
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    line-height: 1.5;
+  .author-badge.is-student {
+    background: color-mix(in srgb, #ec4899 15%, transparent);
+    color: #db2777;
+    border: 1px solid color-mix(in srgb, #ec4899 30%, transparent);
+  }
+
+  :root.theme-dark .author-badge.is-student {
+    color: #f472b6;
+  }
+
+  .topic-tag {
     color: var(--muted);
-    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    max-width: 110px;
   }
 
-  .collab-action-btn {
+  .tile-play-indicator {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.18s ease;
+  }
+
+  .tile-play-indicator svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .app-tile:hover .tile-play-indicator {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Botón de Estrella Favorito */
+  .fav-star-btn {
+    position: relative;
+    z-index: 3;
+    background: transparent;
+    border: none;
+    padding: 0.25rem;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.65rem 1.2rem;
-    background: #b48cff;
-    color: #101116;
-    border-radius: 6px;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+  }
+
+  .fav-star-btn .star-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s ease, color 0.2s ease;
+  }
+
+  .fav-star-btn:hover {
+    color: #fbbf24;
+    background: color-mix(in srgb, #fbbf24 15%, transparent);
+  }
+
+  .fav-star-btn.is-starred {
+    color: #f59e0b;
+  }
+
+  .fav-star-btn.is-starred .star-icon {
+    fill: #f59e0b;
+  }
+
+  .fav-star-btn:active .star-icon {
+    transform: scale(1.3);
+  }
+
+  /* Stretched link pattern */
+  .stretched-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .stretched-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 16px;
+  }
+
+  /* -------------------------------------------------------------
+     ESTADOS VACÍOS
+     ------------------------------------------------------------- */
+  .craft-empty-state,
+  .craft-empty-favs {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    background: var(--bg-sunken);
+    border: 1px dashed var(--line-strong);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+
+  .craft-empty-state[hidden],
+  .craft-empty-favs[hidden] {
+    display: none;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .empty-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .empty-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    max-width: 440px;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .empty-reset-btn {
+    margin-top: 0.5rem;
+    padding: 0.55rem 1.2rem;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .empty-reset-btn:hover {
+    opacity: 0.88;
+  }
+
+  /* -------------------------------------------------------------
+     SECCIÓN COLABORA (FOOTER CALLOUT)
+     ------------------------------------------------------------- */
+  .craft-colabora-section {
+    margin-top: 3rem;
+  }
+
+  .colabora-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: 20px;
+    padding: 2.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .colabora-content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .colabora-tag {
+    font-size: 0.72rem;
     font-family: var(--mono);
-    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .colabora-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .colabora-desc {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .colabora-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .colabora-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--accent);
+    color: var(--accent-ink, #000);
+    border-radius: 10px;
+    font-size: 0.9rem;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
-  .collab-action-btn:hover {
-    background: #c7a8ff;
+  .colabora-primary-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  .colabora-primary-btn:hover {
+    opacity: 0.9;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(180, 140, 255, 0.35);
   }
 
-  .collab-note {
-    font-family: var(--mono);
-    font-size: 0.68rem;
+  .colabora-primary-btn:hover svg {
+    transform: translateX(3px);
+  }
+
+  .colabora-note {
+    font-size: 0.8rem;
     color: var(--muted);
-    text-align: center;
   }
 
-  /* ---------------------------------------------------- */
-  /* RESPONSIVE                                           */
-  /* ---------------------------------------------------- */
-  @media (max-width: 860px) {
-    .collab-box {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    .craft-secondary-bar {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .craft-search-box {
-      max-width: 100%;
-    }
+  /* Header extra button */
+  .craft-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    background: var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    transition: all 0.2s ease;
   }
 
-  @media (max-width: 640px) {
-    .craft-cards-grid {
-      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-      gap: 0.85rem;
-      padding: 1rem;
-    }
-
-    .card-crystal-panel {
-      padding: 0.65rem 0.75rem 0.75rem;
-    }
-
-    .card-title {
-      font-size: 0.92rem;
-    }
-
-    .craft-hud-stats {
-      gap: 0.8rem;
-      padding: 0.6rem 1rem;
-    }
-
-    .hud-stat-sep {
-      display: none;
-    }
-
-    .hud-stat-cell {
-      flex: 1 1 40%;
-    }
+  .craft-top-btn.is-accent {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   }
 
-  @media (max-width: 420px) {
-    .craft-cards-grid {
-      grid-template-columns: 1fr;
-    }
+  .craft-top-btn:hover {
+    background: var(--accent);
+    color: var(--accent-ink, #000);
   }
 </style>
 
 <script>
-  function initCraftCatalog() {
-    let currentAuthor = 'all';
-    let currentCategory = 'all';
-    let currentSearch = '';
+  // =========================================================================
+  // GESTOR INTERACTIVO DE MATH GAMING: BÚSQUEDA, FILTROS Y FAVORITOS
+  // =========================================================================
 
-    const authorButtons = document.querySelectorAll<HTMLButtonElement>('[data-author-filter]');
-    const categoryChips = document.querySelectorAll<HTMLButtonElement>('[data-category-filter]');
+  function initCraftGaming() {
     const searchInput = document.querySelector<HTMLInputElement>('[data-craft-search]');
     const clearBtn = document.querySelector<HTMLButtonElement>('[data-search-clear]');
-    const statusCounter = document.querySelector('[data-craft-status-counter]');
-    const emptyState = document.querySelector('[data-craft-empty]');
-    const resetFiltersBtn = document.querySelector('[data-reset-filters]');
-    const cards = document.querySelectorAll<HTMLElement>('[data-craft-card]');
+    const authorButtons = document.querySelectorAll<HTMLButtonElement>('[data-author-filter]');
+    const favFilterBtn = document.querySelector<HTMLButtonElement>('[data-fav-filter-btn]');
+    const favCounter = document.querySelector<HTMLElement>('[data-fav-count]');
+    const statusCounter = document.querySelector<HTMLElement>('[data-craft-status-counter]');
+    const emptyState = document.querySelector<HTMLElement>('[data-empty-state]');
+    const emptyFavsState = document.querySelector<HTMLElement>('[data-empty-favs]');
+    const resetFiltersBtn = document.querySelector<HTMLButtonElement>('[data-reset-filters]');
+    const showAllFromFavsBtn = document.querySelector<HTMLButtonElement>('[data-show-all-from-favs]');
 
-    function filterCards() {
-      let visibleCount = 0;
-      const q = currentSearch.trim().toLowerCase();
+    const allTiles = Array.from(document.querySelectorAll<HTMLElement>('[data-craft-tile]'));
+    const allShelves = Array.from(document.querySelectorAll<HTMLElement>('[data-shelf]'));
+    const allFavBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-fav-btn]'));
 
-      cards.forEach((card) => {
-        const author = card.getAttribute('data-author') || '';
-        const category = card.getAttribute('data-category') || '';
-        const title = card.getAttribute('data-title') || '';
-        const authorName = card.getAttribute('data-author-name') || '';
-        const desc = card.getAttribute('data-desc') || '';
-        const topic = card.getAttribute('data-topic') || '';
-        const tags = card.getAttribute('data-tags') || '';
+    // Estado local
+    let currentSearch = '';
+    let currentAuthor = 'all';
+    let isFavFilterActive = false;
 
-        // Comprobación de autor
-        const matchAuthor = currentAuthor === 'all' || author === currentAuthor;
+    // Cargar favoritos de localStorage
+    const STORAGE_KEY = 'math_gaming_favs_v1';
+    let favorites = new Set<string>();
 
-        // Comprobación de categoría temática
-        const matchCategory = currentCategory === 'all' || category === currentCategory;
-
-        // Comprobación de búsqueda de texto
-        let matchSearch = true;
-        if (q) {
-          const haystack = `${title} ${authorName} ${desc} ${topic} ${tags}`.toLowerCase();
-          matchSearch = haystack.includes(q);
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const arr = JSON.parse(stored);
+        if (Array.isArray(arr)) {
+          favorites = new Set(arr);
         }
+      }
+    } catch (e) {
+      console.warn('No se pudo acceder a localStorage para favoritos', e);
+    }
 
-        const isVisible = matchAuthor && matchCategory && matchSearch;
-        card.style.display = isVisible ? '' : 'none';
-
-        if (isVisible) visibleCount++;
+    // Actualizar visualización de estrellas
+    function renderFavButtons() {
+      allFavBtns.forEach((btn) => {
+        const id = btn.getAttribute('data-fav-btn');
+        if (id && favorites.has(id)) {
+          btn.classList.add('is-starred');
+          btn.setAttribute('aria-pressed', 'true');
+          btn.setAttribute('title', 'Quitar de favoritos');
+        } else {
+          btn.classList.remove('is-starred');
+          btn.setAttribute('aria-pressed', 'false');
+          btn.setAttribute('title', 'Guardar en favoritos');
+        }
       });
 
-      // Actualizar contador
+      if (favCounter) {
+        favCounter.textContent = String(favorites.size);
+      }
+    }
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(favorites)));
+      } catch (e) {
+        console.warn('Error guardando favoritos', e);
+      }
+    }
+
+    // Toggle de favorito
+    allFavBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const id = btn.getAttribute('data-fav-btn');
+        if (!id) return;
+
+        if (favorites.has(id)) {
+          favorites.delete(id);
+        } else {
+          favorites.add(id);
+        }
+
+        saveFavorites();
+        renderFavButtons();
+        filterTiles();
+      });
+    });
+
+    // Filtrar tarjetas
+    function filterTiles() {
+      const query = currentSearch.trim().toLowerCase();
+      let totalVisible = 0;
+
+      // Evaluar cada tarjeta
+      allTiles.forEach((tile) => {
+        const id = tile.getAttribute('data-id') || '';
+        const author = tile.getAttribute('data-author') || 'teacher';
+        const title = tile.getAttribute('data-title') || '';
+        const desc = tile.getAttribute('data-desc') || '';
+        const topic = tile.getAttribute('data-topic') || '';
+        const tags = tile.getAttribute('data-tags') || '';
+        const authorName = tile.getAttribute('data-author-name') || '';
+
+        // Filtro de autor
+        let matchAuthor = true;
+        if (currentAuthor === 'teacher') matchAuthor = author === 'teacher';
+        if (currentAuthor === 'student') matchAuthor = author === 'student';
+
+        // Filtro de favoritos
+        let matchFav = true;
+        if (isFavFilterActive) {
+          matchFav = favorites.has(id);
+        }
+
+        // Filtro de texto
+        let matchSearch = true;
+        if (query.length > 0) {
+          matchSearch =
+            title.includes(query) ||
+            desc.includes(query) ||
+            topic.includes(query) ||
+            tags.includes(query) ||
+            authorName.includes(query);
+        }
+
+        const isVisible = matchAuthor && matchFav && matchSearch;
+        if (isVisible) {
+          tile.removeAttribute('hidden');
+          tile.style.display = '';
+          totalVisible++;
+        } else {
+          tile.setAttribute('hidden', '');
+          tile.style.display = 'none';
+        }
+      });
+
+      // Actualizar visibilidad y conteos de cada estantería
+      allShelves.forEach((shelf) => {
+        const tilesInShelf = Array.from(shelf.querySelectorAll<HTMLElement>('[data-craft-tile]'));
+        const visibleInShelf = tilesInShelf.filter((t) => !t.hasAttribute('hidden')).length;
+        const countBadge = shelf.querySelector<HTMLElement>('[data-shelf-count]');
+
+        if (countBadge) {
+          const isDojos = shelf.getAttribute('data-shelf') === 'dojos';
+          countBadge.textContent = `${visibleInShelf} ${isDojos ? 'dojos' : 'juegos'}`;
+        }
+
+        if (visibleInShelf === 0) {
+          shelf.setAttribute('hidden', '');
+          shelf.style.display = 'none';
+        } else {
+          shelf.removeAttribute('hidden');
+          shelf.style.display = '';
+        }
+      });
+
+      // Actualizar contador del toolbar
       if (statusCounter) {
-        statusCounter.textContent = `Mostrando ${visibleCount} de ${cards.length} juegos`;
+        statusCounter.textContent = `${totalVisible} juegos disponibles`;
       }
 
-      // Mostrar estado vacío si no hay coincidencias
-      if (emptyState) {
-        if (visibleCount === 0) {
-          emptyState.removeAttribute('hidden');
+      // Gestión de estados vacíos
+      if (emptyState && emptyFavsState) {
+        if (totalVisible === 0) {
+          if (isFavFilterActive && favorites.size === 0) {
+            emptyFavsState.removeAttribute('hidden');
+            emptyState.setAttribute('hidden', '');
+          } else {
+            emptyState.removeAttribute('hidden');
+            emptyFavsState.setAttribute('hidden', '');
+          }
         } else {
           emptyState.setAttribute('hidden', '');
+          emptyFavsState.setAttribute('hidden', '');
         }
       }
     }
 
-    // Eventos de botones de autor
+    // Toggle de botón favoritos en toolbar
+    if (favFilterBtn) {
+      favFilterBtn.addEventListener('click', () => {
+        isFavFilterActive = !isFavFilterActive;
+        favFilterBtn.classList.toggle('is-active', isFavFilterActive);
+        favFilterBtn.setAttribute('aria-pressed', isFavFilterActive ? 'true' : 'false');
+        filterTiles();
+      });
+    }
+
+    // Filtro por autor
     authorButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         authorButtons.forEach((b) => {
@@ -1565,25 +1788,11 @@ const totalCount = craftProjects.length;
         btn.classList.add('is-active');
         btn.setAttribute('aria-pressed', 'true');
         currentAuthor = btn.getAttribute('data-author-filter') || 'all';
-        filterCards();
+        filterTiles();
       });
     });
 
-    // Eventos de chips de categoría
-    categoryChips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        categoryChips.forEach((c) => {
-          c.classList.remove('is-active');
-          c.setAttribute('aria-selected', 'false');
-        });
-        chip.classList.add('is-active');
-        chip.setAttribute('aria-selected', 'true');
-        currentCategory = chip.getAttribute('data-category-filter') || 'all';
-        filterCards();
-      });
-    });
-
-    // Eventos de búsqueda
+    // Búsqueda
     if (searchInput) {
       searchInput.addEventListener('input', () => {
         currentSearch = searchInput.value;
@@ -1594,7 +1803,7 @@ const totalCount = craftProjects.length;
             clearBtn.setAttribute('hidden', '');
           }
         }
-        filterCards();
+        filterTiles();
       });
     }
 
@@ -1604,18 +1813,23 @@ const totalCount = craftProjects.length;
         currentSearch = '';
         clearBtn.setAttribute('hidden', '');
         searchInput.focus();
-        filterCards();
+        filterTiles();
       });
     }
 
-    // Botón de restablecer filtros en estado vacío
+    // Restablecer filtros
     if (resetFiltersBtn) {
       resetFiltersBtn.addEventListener('click', () => {
         currentAuthor = 'all';
-        currentCategory = 'all';
         currentSearch = '';
+        isFavFilterActive = false;
         if (searchInput) searchInput.value = '';
         if (clearBtn) clearBtn.setAttribute('hidden', '');
+
+        if (favFilterBtn) {
+          favFilterBtn.classList.remove('is-active');
+          favFilterBtn.setAttribute('aria-pressed', 'false');
+        }
 
         authorButtons.forEach((b) => {
           const isAll = b.getAttribute('data-author-filter') === 'all';
@@ -1623,22 +1837,31 @@ const totalCount = craftProjects.length;
           b.setAttribute('aria-pressed', isAll ? 'true' : 'false');
         });
 
-        categoryChips.forEach((c) => {
-          const isAll = c.getAttribute('data-category-filter') === 'all';
-          c.classList.toggle('is-active', isAll);
-          c.setAttribute('aria-selected', isAll ? 'true' : 'false');
-        });
-
-        filterCards();
+        filterTiles();
       });
     }
+
+    if (showAllFromFavsBtn) {
+      showAllFromFavsBtn.addEventListener('click', () => {
+        isFavFilterActive = false;
+        if (favFilterBtn) {
+          favFilterBtn.classList.remove('is-active');
+          favFilterBtn.setAttribute('aria-pressed', 'false');
+        }
+        filterTiles();
+      });
+    }
+
+    // Primera ejecución
+    renderFavButtons();
+    filterTiles();
   }
 
-  // Inicialización
+  // Inicialización multi-navegación Astro
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCraftCatalog);
+    document.addEventListener('DOMContentLoaded', initCraftGaming);
   } else {
-    initCraftCatalog();
+    initCraftGaming();
   }
-  document.addEventListener('astro:page-load', initCraftCatalog);
+  document.addEventListener('astro:page-load', initCraftGaming);
 </script>

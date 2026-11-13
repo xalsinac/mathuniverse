@@ -1,0 +1,450 @@
+---
+interface Props {
+  id: string;
+  class?: string;
+}
+
+const { id, class: className = '' } = Astro.props;
+---
+
+<div class={`craft-app-icon icon-${id} ${className}`} aria-hidden="true">
+  {id === 'math-dojo-arcade' && (
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="g-dojo-arcade" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff7a45" />
+          <stop offset="100%" stop-color="#ea580c" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="24" fill="url(#g-dojo-arcade)" />
+      <rect x="1" y="1" width="98" height="98" rx="23" stroke="rgba(255,255,255,0.32)" stroke-width="2" />
+      <!-- Canonical Torii del Home (MathGlyph) -->
+      <circle cx="50" cy="50" r="38" stroke="rgba(255,255,255,0.22)" stroke-width="1.8" />
+      <path d="M12 20c25 6 51 6 76 0l-3 8H15l-3-8Z" fill="#fff" />
+      <path d="M18 28h64l-2 5H20l-2-5Z" fill="#fff" opacity="0.9" />
+      <rect x="17" y="42" width="66" height="6" rx="2" fill="#fff" />
+      <rect x="46" y="33" width="8" height="9" fill="#fde047" />
+      <path d="M27 33h9l-3 43H24l3-43ZM64 33h9l3 43h-9l-3-43Z" fill="#fff" />
+      <rect x="21" y="76" width="14" height="8" rx="1.5" fill="#fde047" />
+      <rect x="65" y="76" width="14" height="8" rx="1.5" fill="#fde047" />
+      <path d="M12 84h76" stroke="#fde047" stroke-width="3" stroke-linecap="round" />
+    </svg>
+  )}
+
+  {id === 'math-dojo-junior' && (
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="g-dojo-jr" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#38c8ff" />
+          <stop offset="100%" stop-color="#0284c7" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="24" fill="url(#g-dojo-jr)" />
+      <rect x="1" y="1" width="98" height="98" rx="23" stroke="rgba(255,255,255,0.32)" stroke-width="2" />
+      <!-- Canonical Pequeño Ninja del Home (MathGlyph) -->
+      <circle cx="50" cy="50" r="38" stroke="rgba(255,255,255,0.22)" stroke-width="1.8" />
+      <path d="M68 28c7-6 14-7 19-6-3 5-7 9-14 11 5 0 10 2 13 5-5 3-12 2-18-2" fill="#fde047" />
+      <path d="M29 58 15 42a3.5 3.5 0 0 1 5-5l14 16M21 49l8-7" stroke="#fde047" stroke-width="2.8" stroke-linecap="round" />
+      <path d="M71 58 85 42a3.5 3.5 0 0 0-5-5L66 53M79 49l-8-7" stroke="#fde047" stroke-width="2.8" stroke-linecap="round" />
+      <circle cx="50" cy="36" r="19" fill="#fff" />
+      <path d="M35 37V32c0-3.5 3.5-6 8-6h14c4.5 0 8 2.5 8 6v5c-10-3-20-3-30 0Z" fill="#0c4a6e" />
+      <path d="M18 82l5-17c2-5 7-8 13-8h28c6 0 11 3 13 8l5 17H18Z" fill="#fff" />
+      <path d="M34 57 56 82M42 57l20 25M64 57 48 73M30 71l-2 11M70 71l2 11" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" />
+    </svg>
+  )}
+
+  {id === 'galaxy-pong' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-pong" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#9333ea" />
+          <stop offset="50%" stop-color="#ec4899" />
+          <stop offset="100%" stop-color="#f97316" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-pong)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Left paddle -->
+      <rect x="12" y="20" width="4" height="20" rx="2" fill="#fff" />
+      <!-- Right paddle -->
+      <rect x="48" y="28" width="4" height="20" rx="2" fill="#fff" />
+      <!-- Center dotted net -->
+      <line x1="32" y1="12" x2="32" y2="52" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4" />
+      <!-- Cosmic bouncing ball with laser motion trail -->
+      <path d="M16 28 Q 28 38 40 22" stroke="#fde047" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 3" opacity="0.8" />
+      <circle cx="40" cy="22" r="4" fill="#fff" />
+      <circle cx="40" cy="22" r="6" stroke="#fde047" stroke-width="1.5" opacity="0.7" />
+    </svg>
+  )}
+
+  {id === 'demolicion-fiq' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-demolicion" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ea580c" />
+          <stop offset="100%" stop-color="#e11d48" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-demolicion)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Parabola trajectory -->
+      <path d="M14 48 Q 26 14 46 26" stroke="#fff" stroke-width="2.5" stroke-dasharray="3 3" stroke-linecap="round" opacity="0.85" />
+      <!-- Cannon base -->
+      <circle cx="14" cy="48" r="6" fill="#1e293b" stroke="#fff" stroke-width="1.5" />
+      <!-- Ball with momentum -->
+      <circle cx="46" cy="26" r="5" fill="#fde047" stroke="#fff" stroke-width="1.5" />
+      <!-- Impact target blocks falling -->
+      <rect x="46" y="38" width="6" height="12" rx="1" fill="#fff" opacity="0.9" transform="rotate(15 46 38)" />
+      <rect x="52" y="44" width="6" height="8" rx="1" fill="#fff" opacity="0.7" transform="rotate(-25 52 44)" />
+    </svg>
+  )}
+
+  {id === 'astro-raya' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-astroraya" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0284c7" />
+          <stop offset="100%" stop-color="#6366f1" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-astroraya)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- 3x3 Grid -->
+      <line x1="26" y1="15" x2="26" y2="49" stroke="#fff" stroke-width="2" opacity="0.4" stroke-linecap="round" />
+      <line x1="38" y1="15" x2="38" y2="49" stroke="#fff" stroke-width="2" opacity="0.4" stroke-linecap="round" />
+      <line x1="15" y1="26" x2="49" y2="26" stroke="#fff" stroke-width="2" opacity="0.4" stroke-linecap="round" />
+      <line x1="15" y1="38" x2="49" y2="38" stroke="#fff" stroke-width="2" opacity="0.4" stroke-linecap="round" />
+      <!-- Winning diagonal crosses -->
+      <path d="M17 17 L23 23 M23 17 L17 23" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M29 29 L35 35 M35 29 L29 35" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M41 41 L47 47 M47 41 L41 47" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
+      <!-- Circles -->
+      <circle cx="44" cy="20" r="3.5" stroke="#f472b6" stroke-width="2" />
+      <circle cx="20" cy="44" r="3.5" stroke="#f472b6" stroke-width="2" />
+      <!-- Laser victory stroke -->
+      <line x1="15" y1="15" x2="49" y2="49" stroke="#4ade80" stroke-width="2.2" stroke-linecap="round" opacity="0.9" />
+    </svg>
+  )}
+
+  {id === 'radar-cartesiano' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-radar" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#059669" />
+          <stop offset="100%" stop-color="#0284c7" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-radar)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Concentric radar circles -->
+      <circle cx="32" cy="32" r="20" stroke="#fff" stroke-width="1.5" opacity="0.3" />
+      <circle cx="32" cy="32" r="12" stroke="#fff" stroke-width="1.5" opacity="0.45" />
+      <circle cx="32" cy="32" r="4" fill="#fff" opacity="0.8" />
+      <!-- Cartesian Axes -->
+      <line x1="10" y1="32" x2="54" y2="32" stroke="#fff" stroke-width="1.8" opacity="0.7" />
+      <line x1="32" y1="10" x2="32" y2="54" stroke="#fff" stroke-width="1.8" opacity="0.7" />
+      <!-- Sweep beam -->
+      <line x1="32" y1="32" x2="48" y2="16" stroke="#a7f3d0" stroke-width="2.5" stroke-linecap="round" />
+      <!-- Blip target -->
+      <circle cx="44" cy="20" r="3" fill="#fde047" />
+      <circle cx="44" cy="20" r="5" stroke="#fde047" stroke-width="1" opacity="0.8" />
+    </svg>
+  )}
+
+  {id === 'monty-hall' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-monty" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#047857" />
+          <stop offset="100%" stop-color="#10b981" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-monty)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- 3 Doors -->
+      <rect x="11" y="20" width="11" height="26" rx="2" fill="#fff" opacity="0.85" />
+      <circle cx="20" cy="33" r="1.2" fill="#047857" />
+      
+      <!-- Middle Open Door (goat reveal) -->
+      <rect x="26" y="20" width="11" height="26" rx="2" fill="#1e293b" stroke="#fff" stroke-width="1.2" />
+      <text x="31.5" y="36" fill="#f43f5e" font-size="10" text-anchor="middle" font-family="system-ui">🐐</text>
+
+      <!-- Door 3 (winner car 2/3) -->
+      <rect x="41" y="20" width="11" height="26" rx="2" fill="#fde047" stroke="#fff" stroke-width="1.2" />
+      <circle cx="50" cy="33" r="1.2" fill="#1e293b" />
+      
+      <!-- Bayes indicator badge: 2/3 -->
+      <rect x="18" y="10" width="28" height="8" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="1" />
+      <text x="32" y="16.5" fill="#34d399" font-size="7.5" font-weight="bold" text-anchor="middle" font-family="monospace">P = 2/3</text>
+    </svg>
+  )}
+
+  {id === 'problema-100-prisioneros' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-100p" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0369a1" />
+          <stop offset="100%" stop-color="#38bdf8" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-100p)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Circular permutation loop with numbered boxes -->
+      <circle cx="32" cy="30" r="16" stroke="#fff" stroke-width="2" stroke-dasharray="3 3" opacity="0.6" />
+      <!-- Box 1 -->
+      <rect x="27" y="10" width="10" height="8" rx="2" fill="#fff" />
+      <text x="32" y="16" fill="#0369a1" font-size="6" font-weight="bold" text-anchor="middle" font-family="monospace">1</text>
+      <!-- Box 2 -->
+      <rect x="42" y="28" width="10" height="8" rx="2" fill="#fff" />
+      <text x="47" y="34" fill="#0369a1" font-size="6" font-weight="bold" text-anchor="middle" font-family="monospace">42</text>
+      <!-- Box 3 -->
+      <rect x="27" y="38" width="10" height="8" rx="2" fill="#fff" />
+      <text x="32" y="44" fill="#0369a1" font-size="6" font-weight="bold" text-anchor="middle" font-family="monospace">50</text>
+      <!-- Box 4 -->
+      <rect x="12" y="28" width="10" height="8" rx="2" fill="#fff" />
+      <text x="17" y="34" fill="#0369a1" font-size="6" font-weight="bold" text-anchor="middle" font-family="monospace">17</text>
+      <!-- Probability badge 31.2% -->
+      <rect x="17" y="50" width="30" height="9" rx="4.5" fill="#0c4a6e" stroke="#7dd3fc" stroke-width="1" />
+      <text x="32" y="57" fill="#7dd3fc" font-size="7" font-weight="bold" text-anchor="middle" font-family="monospace">31.18%</text>
+    </svg>
+  )}
+
+  {id === 'paradoja-cumpleanos' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-cumple" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#c026d3" />
+          <stop offset="100%" stop-color="#7c3aed" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-cumple)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Calendar Frame -->
+      <rect x="14" y="15" width="36" height="36" rx="4" fill="#fff" />
+      <!-- Calendar Header red -->
+      <rect x="14" y="15" width="36" height="10" rx="4" fill="#ec4899" />
+      <line x1="22" y1="12" x2="22" y2="17" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+      <line x1="42" y1="12" x2="42" y2="17" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+      <!-- Big match number "23" -->
+      <text x="32" y="41" fill="#7c3aed" font-size="19" font-weight="900" text-anchor="middle" font-family="system-ui">23</text>
+      <!-- Coincidence sparkles -->
+      <circle cx="21" cy="30" r="2.5" fill="#fde047" />
+      <circle cx="43" cy="30" r="2.5" fill="#fde047" />
+      <!-- Badge: > 50% -->
+      <rect x="19" y="45" width="26" height="7" rx="3.5" fill="#4c1d95" />
+      <text x="32" y="50.5" fill="#f472b6" font-size="6.5" font-weight="bold" text-anchor="middle" font-family="monospace">P &gt; 50%</text>
+    </svg>
+  )}
+
+  {id === 'ruleta-martingala' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-ruleta" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#be123c" />
+          <stop offset="100%" stop-color="#f43f5e" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-ruleta)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Wheel segments -->
+      <circle cx="32" cy="32" r="21" fill="#1e293b" stroke="#fff" stroke-width="2" />
+      <path d="M32 32 L32 11 A21 21 0 0 1 53 32 Z" fill="#e11d48" opacity="0.9" />
+      <path d="M32 32 L53 32 A21 21 0 0 1 32 53 Z" fill="#1e293b" />
+      <path d="M32 32 L32 53 A21 21 0 0 1 11 32 Z" fill="#e11d48" opacity="0.9" />
+      <path d="M32 32 L11 32 A21 21 0 0 1 32 11 Z" fill="#1e293b" />
+      <circle cx="32" cy="32" r="9" fill="#0f172a" stroke="#fff" stroke-width="1.5" />
+      <!-- Doubling chip "2×" -->
+      <circle cx="32" cy="32" r="7" fill="#fbbf24" />
+      <text x="32" y="35" fill="#78350f" font-size="9" font-weight="900" text-anchor="middle" font-family="system-ui">2×</text>
+      <!-- Small ball -->
+      <circle cx="43" cy="20" r="2.2" fill="#fff" />
+    </svg>
+  )}
+
+  {id === 'simulador-loteria' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-lotto" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#d97706" />
+          <stop offset="100%" stop-color="#fbbf24" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-lotto)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Lottery golden sphere -->
+      <circle cx="32" cy="30" r="18" fill="#fff" opacity="0.25" stroke="#fff" stroke-width="2" />
+      <!-- Bouncing lotto balls -->
+      <circle cx="23" cy="32" r="6" fill="#fff" stroke="#b45309" stroke-width="1.2" />
+      <text x="23" y="35" fill="#b45309" font-size="7" font-weight="bold" text-anchor="middle" font-family="monospace">07</text>
+      <circle cx="41" cy="32" r="6" fill="#fff" stroke="#b45309" stroke-width="1.2" />
+      <text x="41" y="35" fill="#b45309" font-size="7" font-weight="bold" text-anchor="middle" font-family="monospace">49</text>
+      <circle cx="32" cy="22" r="7" fill="#fef08a" stroke="#b45309" stroke-width="1.5" />
+      <text x="32" y="25.5" fill="#78350f" font-size="8.5" font-weight="900" text-anchor="middle" font-family="monospace">€</text>
+      <!-- Negative expectation tag -->
+      <rect x="16" y="47" width="32" height="8" rx="4" fill="#78350f" />
+      <text x="32" y="53" fill="#fde68a" font-size="6.5" font-weight="bold" text-anchor="middle" font-family="monospace">E[X] &lt; 0</text>
+    </svg>
+  )}
+
+  {id === 'juego-nim' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-nim" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#6d28d9" />
+          <stop offset="100%" stop-color="#a855f7" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-nim)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Matchstick piles -->
+      <rect x="16" y="24" width="4" height="22" rx="2" fill="#fff" />
+      <circle cx="18" cy="22" r="3" fill="#fbbf24" />
+      
+      <rect x="25" y="18" width="4" height="28" rx="2" fill="#fff" />
+      <circle cx="27" cy="16" r="3" fill="#fbbf24" />
+      <rect x="32" y="18" width="4" height="28" rx="2" fill="#fff" />
+      <circle cx="34" cy="16" r="3" fill="#fbbf24" />
+
+      <rect x="42" y="26" width="4" height="20" rx="2" fill="#fff" />
+      <circle cx="44" cy="24" r="3" fill="#fbbf24" />
+      <!-- XOR badge: ⊕ -->
+      <circle cx="50" cy="46" r="8" fill="#4c1d95" stroke="#c084fc" stroke-width="1.5" />
+      <line x1="45" y1="46" x2="55" y2="46" stroke="#fff" stroke-width="1.5" />
+      <line x1="50" y1="41" x2="50" y2="51" stroke="#fff" stroke-width="1.5" />
+    </svg>
+  )}
+
+  {id === 'game-theory-dilemma' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-dilemma" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#c2410c" />
+          <stop offset="100%" stop-color="#f97316" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-dilemma)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- 2x2 Matrix grid -->
+      <rect x="15" y="15" width="34" height="34" rx="4" fill="rgba(0,0,0,0.2)" stroke="#fff" stroke-width="2" />
+      <line x1="32" y1="15" x2="32" y2="49" stroke="#fff" stroke-width="1.8" />
+      <line x1="15" y1="32" x2="49" y2="32" stroke="#fff" stroke-width="1.8" />
+      <!-- Cells: (3,3), (0,5), (5,0), (1,1) Nash equilibrium highlighted -->
+      <text x="23.5" y="26" fill="#fff" font-size="7.5" font-weight="bold" text-anchor="middle" font-family="monospace">3, 3</text>
+      <text x="40.5" y="26" fill="#fff" opacity="0.6" font-size="7.5" font-weight="bold" text-anchor="middle" font-family="monospace">0, 5</text>
+      <text x="23.5" y="43" fill="#fff" opacity="0.6" font-size="7.5" font-weight="bold" text-anchor="middle" font-family="monospace">5, 0</text>
+      <!-- Nash cell highlighted -->
+      <rect x="33" y="33" width="15" height="15" rx="2" fill="#fde047" />
+      <text x="40.5" y="43" fill="#78350f" font-size="7.5" font-weight="900" text-anchor="middle" font-family="monospace">1, 1</text>
+    </svg>
+  )}
+
+  {id === 'sierpinski-chaos' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-sierpinski" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#047857" />
+          <stop offset="100%" stop-color="#10b981" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-sierpinski)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Sierpinski Triangle Recursive -->
+      <polygon points="32,12 12,48 52,48" stroke="#fff" stroke-width="2" fill="none" />
+      <polygon points="32,48 22,30 42,30" fill="#fff" />
+      <!-- Subtle stipple points -->
+      <circle cx="32" cy="22" r="1.2" fill="#a7f3d0" />
+      <circle cx="27" cy="40" r="1.2" fill="#a7f3d0" />
+      <circle cx="37" cy="40" r="1.2" fill="#a7f3d0" />
+    </svg>
+  )}
+
+  {id === 'torres-hanoi' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-hanoi" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0284c7" />
+          <stop offset="100%" stop-color="#60a5fa" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-hanoi)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Base & 3 pegs -->
+      <rect x="10" y="47" width="44" height="4" rx="2" fill="#fff" opacity="0.9" />
+      <line x1="18" y1="20" x2="18" y2="47" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="32" y1="20" x2="32" y2="47" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="46" y1="20" x2="46" y2="47" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+      <!-- Discs on peg 1 & moving disc -->
+      <rect x="11" y="42" width="14" height="4" rx="2" fill="#f43f5e" />
+      <rect x="13" y="37" width="10" height="4" rx="2" fill="#fbbf24" />
+      <!-- Flying disc on the way to peg 3 -->
+      <rect x="28" y="16" width="8" height="4" rx="2" fill="#4ade80" stroke="#fff" stroke-width="1" transform="rotate(-10 32 18)" />
+      <path d="M22 28 Q 32 14 42 28" stroke="#fde047" stroke-width="1.5" stroke-dasharray="2 2" fill="none" opacity="0.8" />
+    </svg>
+  )}
+
+  {id === 'orbital-gravity' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-kepler" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1d4ed8" />
+          <stop offset="100%" stop-color="#38bdf8" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-kepler)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Central glowing Sun -->
+      <circle cx="26" cy="32" r="7" fill="#fbbf24" />
+      <circle cx="26" cy="32" r="11" stroke="#fde047" stroke-width="1.5" opacity="0.4" />
+      <!-- Keplerian Elliptical Orbit -->
+      <ellipse cx="34" cy="32" rx="20" ry="13" stroke="#fff" stroke-width="2" stroke-dasharray="3 3" opacity="0.75" transform="rotate(-15 34 32)" />
+      <!-- Planet on orbit -->
+      <circle cx="49" cy="24" r="4.5" fill="#38bdf8" stroke="#fff" stroke-width="1.5" />
+      <!-- Area wedge sector (2nd law) -->
+      <path d="M26 32 L40 21 A20 13 0 0 1 49 24 Z" fill="rgba(255,255,255,0.25)" />
+    </svg>
+  )}
+
+  {id === 'voxel-polyhedra' && (
+    <svg viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="g-voxel" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#7e22ce" />
+          <stop offset="100%" stop-color="#c084fc" />
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="15" fill="url(#g-voxel)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" />
+      <!-- Isometric 3D Cube / Polyhedron -->
+      <!-- Top Face -->
+      <polygon points="32,15 48,24 32,33 16,24" fill="#e9d5ff" stroke="#fff" stroke-width="1.8" />
+      <!-- Left Face -->
+      <polygon points="16,24 32,33 32,49 16,40" fill="#a855f7" stroke="#fff" stroke-width="1.8" />
+      <!-- Right Face -->
+      <polygon points="32,33 48,24 48,40 32,49" fill="#7e22ce" stroke="#fff" stroke-width="1.8" />
+      <!-- Internal grid lines / voxel division -->
+      <line x1="24" y1="19.5" x2="40" y2="28.5" stroke="#fff" stroke-width="1.2" opacity="0.6" />
+      <line x1="40" y1="19.5" x2="24" y2="28.5" stroke="#fff" stroke-width="1.2" opacity="0.6" />
+    </svg>
+  )}
+</div>
+
+<style>
+  .craft-app-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
+  }
+
+  .craft-app-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 15px;
+  }
+</style>
