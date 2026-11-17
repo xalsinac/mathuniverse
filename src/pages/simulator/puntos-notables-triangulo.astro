@@ -1,0 +1,1071 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`Puntos Notables del Triángulo y Recta de Euler — Math Simulator | ${site.name}`}
+  description="Construcción geométrica interactiva de los 4 puntos notables de un triángulo: Baricentro (medianas y centro de masa), Circuncentro (mediatrices), Incentro (bisectrices) y Ortocentro (alturas), más la Recta de Euler."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Puntos Notables" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="tri-page">
+    <!-- CABECERA -->
+    <header class="tri-top-bar">
+      <div class="tt-left">
+        <div class="tt-kicker">
+          <span class="pulse-dot"></span>
+          <span>GEOMETRÍA SINTÉTICA · CONSTRUCCIÓN CON REGLA Y COMPÁS</span>
+        </div>
+        <h1>Puntos Notables del Triángulo &amp; Recta de Euler</h1>
+      </div>
+      <div class="tt-right">
+        <button type="button" class="btn-open-guide" id="btnOpenGuide">
+          <span>📖 Datos Curiosos y Geometría</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- BANCO DE TRABAJO -->
+    <div class="tri-workbench">
+      <!-- LIENZO INTERACTIVO -->
+      <section class="tri-stage-card">
+        <div class="stage-toolbar">
+          <div class="mode-pills" role="tablist" aria-label="Punto notable a construir">
+            <button type="button" class="mode-btn active" data-mode="baricentro">
+              <span class="dot" style="--dc:#38bdf8;"></span> Baricentro (G)
+            </button>
+            <button type="button" class="mode-btn" data-mode="circuncentro">
+              <span class="dot" style="--dc:#a855f7;"></span> Circuncentro (O)
+            </button>
+            <button type="button" class="mode-btn" data-mode="incentro">
+              <span class="dot" style="--dc:#10b981;"></span> Incentro (I)
+            </button>
+            <button type="button" class="mode-btn" data-mode="ortocentro">
+              <span class="dot" style="--dc:#fb7185;"></span> Ortocentro (H)
+            </button>
+            <button type="button" class="mode-btn" data-mode="euler">
+              <span class="dot" style="--dc:#fbbf24;"></span> Todos + Recta de Euler
+            </button>
+          </div>
+
+          <div class="stage-actions">
+            <button type="button" class="act-btn primary" id="btnAnimateBuild" title="Ver paso a paso cómo se trazan las 3 rectas">
+              ▶ Animar Trazado
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="triCanvas"></canvas>
+          <div class="drag-hint">💡 Arrastra los vértices <strong>A</strong>, <strong>B</strong> o <strong>C</strong> para deformar el triángulo en tiempo real</div>
+        </div>
+      </section>
+
+      <!-- PANEL DERECHO -->
+      <aside class="tri-sidebar">
+        <!-- FORMAS PREDEFINIDAS -->
+        <div class="ctrl-card">
+          <h2 class="card-heading">📐 Tipos de Triángulo</h2>
+          <div class="preset-grid">
+            <button type="button" class="preset-btn active" data-preset="acutangulo">Acutángulo</button>
+            <button type="button" class="preset-btn" data-preset="obtusangulo">Obtusángulo</button>
+            <button type="button" class="preset-btn" data-preset="rectangulo">Rectángulo (90°)</button>
+            <button type="button" class="preset-btn" data-preset="isosceles">Isósceles</button>
+            <button type="button" class="preset-btn" data-preset="equilatero">Equilátero</button>
+          </div>
+        </div>
+
+        <!-- CAPAS Y CONSTRUCCIÓN -->
+        <div class="ctrl-card">
+          <h2 class="card-heading">👁️ Elementos Geométricos</h2>
+          <div class="toggles-list">
+            <label class="toggle-item">
+              <input type="checkbox" id="chkAngles" checked />
+              <span>Mostrar ángulos (Â, B̂, Ĉ) y marcas 90°</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkCircles" checked />
+              <span>Mostrar circunferencias (Inscrita / Circunscrita)</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkEulerLine" checked />
+              <span>Mostrar Recta de Euler (H − G − O)</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkGrid" checked />
+              <span>Rejilla milimetrada</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- DATO CURIOSO Y EXPLICACIÓN CONTEXTUAL -->
+        <div class="ctrl-card fact-card" id="factCard">
+          <div class="fact-tag" id="factTag">BARICENTRO (G) · MEDIANAS</div>
+          <h3 id="factTitle">El Centro de Masa Físico</h3>
+          <p id="factDesc">
+            Las <strong>medianas</strong> unen cada vértice con el punto medio del lado opuesto. Siempre se cortan dentro del triángulo en el punto <strong>G</strong>, dividiendo cada mediana en proporción 2:1.
+          </p>
+          <div class="fact-curiosity" id="factCuriosity">
+            <strong>💡 Dato curioso:</strong> Si recortas este triángulo en cartón y lo apoyas sobre la punta de un alfiler en <strong>G</strong>, ¡quedará en equilibrio horizontal perfecto!
+          </div>
+        </div>
+
+        <!-- TELEMETRÍA EN VIVO -->
+        <div class="ctrl-card">
+          <h2 class="card-heading">📏 Medidas &amp; Recta de Euler</h2>
+          <div class="tele-grid">
+            <div class="tele-item">
+              <span class="tl-lbl">Clasificación</span>
+              <strong class="tl-val" id="teleType">Acutángulo</strong>
+            </div>
+            <div class="tele-item">
+              <span class="tl-lbl">Ángulos (Suma 180°)</span>
+              <strong class="tl-val" id="teleAngles">62° · 58° · 60°</strong>
+            </div>
+            <div class="tele-item">
+              <span class="tl-lbl">Razón Euler HG / GO</span>
+              <strong class="tl-val hl-amber" id="teleEulerRatio">2.000 (Exacto)</strong>
+            </div>
+            <div class="tele-item">
+              <span class="tl-lbl">Radios (R vs r)</span>
+              <strong class="tl-val hl-cyan" id="teleRadii">R = 1.0 · r = 0.5</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- DRAWER DIDÁCTICO -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div>
+          <span class="gh-badge">ENCICLOPEDIA GEOMÉTRICA</span>
+          <h2>Los 4 Puntos Notables y sus Secretos</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide">✕</button>
+      </div>
+      <div class="guide-body" id="guideBody"></div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('triCanvas') as HTMLCanvasElement;
+    const canvasWrap = document.getElementById('canvasWrap') as HTMLElement;
+    if (!canvas || !canvasWrap) return;
+    const ctx = canvas.getContext('2d')!;
+
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    type Pt = { x: number; y: number };
+    type Mode = 'baricentro' | 'circuncentro' | 'incentro' | 'ortocentro' | 'euler';
+
+    const state = {
+      mode: 'baricentro' as Mode,
+      showAngles: true,
+      showCircles: true,
+      showEulerLine: true,
+      showGrid: true,
+      animProgress: 1, // 0..1 para animar el trazado paso a paso
+      isAnimating: false,
+    };
+
+    let W = 800, H = 580;
+    let A: Pt = { x: 400, y: 110 };
+    let B: Pt = { x: 180, y: 450 };
+    let C: Pt = { x: 630, y: 430 };
+
+    const applyPreset = (name: string) => {
+      const cx = W / 2;
+      const cy = H / 2 + 20;
+      const scale = Math.min(W, H) * 0.36;
+
+      if (name === 'acutangulo') {
+        A = { x: cx - scale * 0.15, y: cy - scale * 0.95 };
+        B = { x: cx - scale * 1.05, y: cy + scale * 0.7 };
+        C = { x: cx + scale * 1.05, y: cy + scale * 0.62 };
+      } else if (name === 'obtusangulo') {
+        A = { x: cx - scale * 0.75, y: cy - scale * 0.65 };
+        B = { x: cx - scale * 1.05, y: cy + scale * 0.65 };
+        C = { x: cx + scale * 1.15, y: cy + scale * 0.65 };
+      } else if (name === 'rectangulo') {
+        A = { x: cx - scale * 0.85, y: cy - scale * 0.85 };
+        B = { x: cx - scale * 0.85, y: cy + scale * 0.65 };
+        C = { x: cx + scale * 0.95, y: cy + scale * 0.65 };
+      } else if (name === 'isosceles') {
+        A = { x: cx, y: cy - scale * 1.0 };
+        B = { x: cx - scale * 0.85, y: cy + scale * 0.7 };
+        C = { x: cx + scale * 0.85, y: cy + scale * 0.7 };
+      } else if (name === 'equilatero') {
+        const h = scale * 1.65 * (Math.sqrt(3) / 2);
+        A = { x: cx, y: cy - h * 0.58 };
+        B = { x: cx - scale * 0.825, y: cy + h * 0.42 };
+        C = { x: cx + scale * 0.825, y: cy + h * 0.42 };
+      }
+      updateFactsAndTelemetry();
+    };
+
+    const resize = () => {
+      const rect = canvasWrap.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const oldW = W, oldH = H;
+      W = Math.max(320, rect.width);
+      H = Math.max(460, Math.min(680, window.innerHeight - 200));
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (oldW > 0 && oldH > 0) {
+        const sx = W / oldW, sy = H / oldH;
+        A = { x: A.x * sx, y: A.y * sy };
+        B = { x: B.x * sx, y: B.y * sy };
+        C = { x: C.x * sx, y: C.y * sy };
+      }
+    };
+    window.addEventListener('resize', resize);
+
+    // Utilidades geométricas
+    const dist = (p: Pt, q: Pt) => Math.hypot(p.x - q.x, p.y - q.y);
+    const mid = (p: Pt, q: Pt): Pt => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+    const projPointOnLine = (p: Pt, l1: Pt, l2: Pt): Pt => {
+      const dx = l2.x - l1.x, dy = l2.y - l1.y;
+      const len2 = dx * dx + dy * dy || 1;
+      const t = ((p.x - l1.x) * dx + (p.y - l1.y) * dy) / len2;
+      return { x: l1.x + t * dx, y: l1.y + t * dy };
+    };
+    const angleBetween = (center: Pt, p1: Pt, p2: Pt) => {
+      const v1x = p1.x - center.x, v1y = p1.y - center.y;
+      const v2x = p2.x - center.x, v2y = p2.y - center.y;
+      const dot = v1x * v2x + v1y * v2y;
+      const m = (Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y)) || 1;
+      return Math.acos(Math.max(-1, Math.min(1, dot / m)));
+    };
+
+    const computeGeometry = () => {
+      const a = dist(B, C), b = dist(A, C), c = dist(A, B);
+      const perim = a + b + c || 1;
+      const angA = angleBetween(A, B, C);
+      const angB = angleBetween(B, A, C);
+      const angC = angleBetween(C, A, B);
+
+      // 1. Baricentro G
+      const G: Pt = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+      const Ma = mid(B, C), Mb = mid(A, C), Mc = mid(A, B);
+
+      // 2. Incentro I y radio inscrito r
+      const I: Pt = {
+        x: (a * A.x + b * B.x + c * C.x) / perim,
+        y: (a * A.y + b * B.y + c * C.y) / perim,
+      };
+      const s = perim / 2;
+      const area = Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / 2;
+      const rIn = area / s;
+
+      // 3. Circuncentro O y radio circunscrito R
+      const D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) || 1e-6;
+      const A2 = A.x * A.x + A.y * A.y;
+      const B2 = B.x * B.x + B.y * B.y;
+      const C2 = C.x * C.x + C.y * C.y;
+      const O: Pt = {
+        x: (A2 * (B.y - C.y) + B2 * (C.y - A.y) + C2 * (A.y - B.y)) / D,
+        y: (A2 * (C.x - B.x) + B2 * (A.x - C.x) + C2 * (B.x - A.x)) / D,
+      };
+      const ROut = dist(O, A);
+
+      // 4. Ortocentro H (Propiedad de Euler: H = A + B + C - 2O)
+      const Hpt: Pt = {
+        x: A.x + B.x + C.x - 2 * O.x,
+        y: A.y + B.y + C.y - 2 * O.y,
+      };
+      const Ha = projPointOnLine(A, B, C);
+      const Hb = projPointOnLine(B, A, C);
+      const Hc = projPointOnLine(C, A, B);
+
+      return { a, b, c, angA, angB, angC, G, Ma, Mb, Mc, I, rIn, O, ROut, Hpt, Ha, Hb, Hc };
+    };
+
+    // Textos informativos por modo
+    const FACTS: Record<Mode, { tag: string; title: string; desc: string; curiosity: string }> = {
+      baricentro: {
+        tag: 'BARICENTRO (G) · MEDIANAS',
+        title: 'El Centro de Masa Físico',
+        desc: 'Las <strong>medianas</strong> unen cada vértice con el punto medio del lado opuesto. Siempre se cortan dentro del triángulo en <strong>G</strong>, dividiendo cada mediana en proporción exacta <strong>2 : 1</strong>.',
+        curiosity: '💡 Dato curioso: Si recortas este triángulo en cartón y lo apoyas sobre la punta de un lápiz en G, ¡quedará en equilibrio perfecto!',
+      },
+      circuncentro: {
+        tag: 'CIRCUNCENTRO (O) · MEDIATRICES',
+        title: 'El Centro Equidistante de los 3 Vértices',
+        desc: 'Las <strong>mediatrices</strong> son rectas perpendiculares (90°) que pasan por el punto medio de cada lado. Su intersección <strong>O</strong> es el centro de la circunferencia circunscrita.',
+        curiosity: '💡 Dato curioso: Si tienes 3 pueblos en A, B y C, el circuncentro O es el punto exacto para poner una antena a igual distancia de los tres. ¡Si el triángulo es obtusángulo, O sale fuera!',
+      },
+      incentro: {
+        tag: 'INCENTRO (I) · BISECTRICES',
+        title: 'El Centro del Mayor Círculo Interior',
+        desc: 'Las <strong>bisectrices</strong> dividen cada ángulo interior en dos mitades iguales. Se cortan en <strong>I</strong>, que está a la misma distancia perpendicular de los tres lados.',
+        curiosity: '💡 Dato curioso: A diferencia del ortocentro o circuncentro, el incentro I jamás puede salir fuera del triángulo.',
+      },
+      ortocentro: {
+        tag: 'ORTOCENTRO (H) · ALTURAS',
+        title: 'La Intersección de las 3 Alturas',
+        desc: 'Las <strong>alturas</strong> son segmentos perpendiculares (90°) desde cada vértice al lado opuesto (o a su prolongación en triángulos obtusángulos).',
+        curiosity: '💡 Dato curioso: En un triángulo rectángulo, el ortocentro coincide exactamente con el vértice de 90°. ¡Comprueba el botón "Rectángulo"!',
+      },
+      euler: {
+        tag: 'LA RECTA DE EULER (H − G − O)',
+        title: 'La Alineación Secreta de Leonhard Euler (1765)',
+        desc: 'En cualquier triángulo no equilátero, el <strong>Ortocentro (H)</strong>, el <strong>Baricentro (G)</strong> y el <strong>Circuncentro (O)</strong> están siempre perfectamente alineados sobre una misma recta.',
+        curiosity: '💡 Dato curioso: La distancia entre H y G es siempre el doble exacto que entre G y O (HG = 2·GO). El Incentro I solo entra en la recta si el triángulo es isósceles.',
+      },
+    };
+
+    const factTag = document.getElementById('factTag') as HTMLElement;
+    const factTitle = document.getElementById('factTitle') as HTMLElement;
+    const factDesc = document.getElementById('factDesc') as HTMLElement;
+    const factCuriosity = document.getElementById('factCuriosity') as HTMLElement;
+    const teleType = document.getElementById('teleType') as HTMLElement;
+    const teleAngles = document.getElementById('teleAngles') as HTMLElement;
+    const teleEulerRatio = document.getElementById('teleEulerRatio') as HTMLElement;
+    const teleRadii = document.getElementById('teleRadii') as HTMLElement;
+
+    const updateFactsAndTelemetry = () => {
+      const f = FACTS[state.mode];
+      if (factTag) factTag.textContent = f.tag;
+      if (factTitle) factTitle.textContent = f.title;
+      if (factDesc) factDesc.innerHTML = f.desc;
+      if (factCuriosity) factCuriosity.innerHTML = f.curiosity;
+
+      const geo = computeGeometry();
+      const degA = Math.round((geo.angA * 180) / Math.PI);
+      const degB = Math.round((geo.angB * 180) / Math.PI);
+      const degC = 180 - degA - degB;
+      const maxAng = Math.max(degA, degB, degC);
+
+      if (teleType) {
+        teleType.textContent = Math.abs(maxAng - 90) <= 1 ? 'Rectángulo (90°)' : maxAng > 90 ? 'Obtusángulo' : 'Acutángulo';
+      }
+      if (teleAngles) teleAngles.textContent = `${degA}° · ${degB}° · ${degC}°`;
+
+      const dHG = dist(geo.Hpt, geo.G);
+      const dGO = dist(geo.G, geo.O);
+      if (teleEulerRatio) {
+        teleEulerRatio.textContent = dGO < 1.5 ? 'Colapsados (Equilátero)' : `${(dHG / dGO).toFixed(3)} (2:1)`;
+      }
+      if (teleRadii) {
+        teleRadii.textContent = `R=${(geo.ROut / 50).toFixed(2)} · r=${(geo.rIn / 50).toFixed(2)}`;
+      }
+    };
+
+    // Interacción arrastrar vértices A, B, C
+    let dragVertex: 'A' | 'B' | 'C' | null = null;
+    const getPointerPos = (e: MouseEvent | TouchEvent): Pt => {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    };
+
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const p = getPointerPos(e);
+      if (dist(p, A) < 22) dragVertex = 'A';
+      else if (dist(p, B) < 22) dragVertex = 'B';
+      else if (dist(p, C) < 22) dragVertex = 'C';
+    };
+
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      if (!dragVertex) return;
+      if ('touches' in e) e.preventDefault();
+      const p = getPointerPos(e);
+      const clamped = {
+        x: Math.max(30, Math.min(W - 30, p.x)),
+        y: Math.max(30, Math.min(H - 30, p.y)),
+      };
+      if (dragVertex === 'A') A = clamped;
+      else if (dragVertex === 'B') B = clamped;
+      else C = clamped;
+      updateFactsAndTelemetry();
+    };
+
+    const onUp = () => { dragVertex = null; };
+
+    canvas.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    canvas.addEventListener('touchstart', onDown, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+
+    // Controles UI
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.getAttribute('data-mode') as Mode;
+        state.animProgress = 1;
+        state.isAnimating = false;
+        updateFactsAndTelemetry();
+      });
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyPreset(btn.getAttribute('data-preset') || 'acutangulo');
+      });
+    });
+
+    const bindChk = (id: string, key: keyof typeof state) => {
+      const el = document.getElementById(id) as HTMLInputElement;
+      el?.addEventListener('change', () => { (state as any)[key] = el.checked; });
+    };
+    bindChk('chkAngles', 'showAngles');
+    bindChk('chkCircles', 'showCircles');
+    bindChk('chkEulerLine', 'showEulerLine');
+    bindChk('chkGrid', 'showGrid');
+
+    document.getElementById('btnAnimateBuild')?.addEventListener('click', () => {
+      state.animProgress = 0;
+      state.isAnimating = true;
+    });
+
+    // Guía Didáctica
+    const guideDrawer = document.getElementById('guideDrawer');
+    const guideBody = document.getElementById('guideBody');
+    document.getElementById('btnOpenGuide')?.addEventListener('click', () => guideDrawer?.classList.add('open'));
+    document.getElementById('btnCloseGuide')?.addEventListener('click', () => guideDrawer?.classList.remove('open'));
+
+    if (guideBody) {
+      guideBody.innerHTML = `
+        <article class="guide-article">
+          <section class="guide-section">
+            <h3>1. Baricentro (G) — Medianas</h3>
+            <p>Une cada vértice con el punto medio del lado opuesto. Es el único punto que representa el <strong>centro de gravedad</strong> físico de una placa triangular homogénea.</p>
+            <div class="math-center">${renderMathClient(String.raw`G = \frac{A + B + C}{3}`, true)}</div>
+          </section>
+          <section class="guide-section">
+            <h3>2. Circuncentro (O) — Mediatrices</h3>
+            <p>Rectas perpendiculares en los puntos medios. El circuncentro es el centro de la circunferencia que pasa por $A, B, C$.</p>
+          </section>
+          <section class="guide-section">
+            <h3>3. Incentro (I) — Bisectrices</h3>
+            <p>Rectas que dividen por la mitad cada ángulo interno. Es el centro de la circunferencia inscrita tangente a los tres lados.</p>
+          </section>
+          <section class="guide-section">
+            <h3>4. Ortocentro (H) — Alturas</h3>
+            <p>Rectas perpendiculares desde cada vértice al lado opuesto (o su prolongación). Cumple la identidad vectorial:</p>
+            <div class="math-center">${renderMathClient(String.raw`H = A + B + C - 2O \quad\Longrightarrow\quad \overrightarrow{HG} = 2\,\overrightarrow{GO}`, true)}</div>
+          </section>
+        </article>
+      `;
+    }
+
+    resize();
+    applyPreset('acutangulo');
+
+    // Helpers de dibujo
+    const drawPartialLine = (p1: Pt, p2: Pt, progress: number, color: string, width = 1.8, dash: number[] = []) => {
+      if (progress <= 0) return;
+      const t = Math.min(1, progress);
+      const end = { x: p1.x + (p2.x - p1.x) * t, y: p1.y + (p2.y - p1.y) * t };
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const drawRightAngleMark = (vertex: Pt, dir1: Pt, dir2: Pt, color: string, sz = 11) => {
+      const m1 = Math.hypot(dir1.x, dir1.y) || 1;
+      const m2 = Math.hypot(dir2.x, dir2.y) || 1;
+      const u1 = { x: (dir1.x / m1) * sz, y: (dir1.y / m1) * sz };
+      const u2 = { x: (dir2.x / m2) * sz, y: (dir2.y / m2) * sz };
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(vertex.x + u1.x, vertex.y + u1.y);
+      ctx.lineTo(vertex.x + u1.x + u2.x, vertex.y + u1.y + u2.y);
+      ctx.lineTo(vertex.x + u2.x, vertex.y + u2.y);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const drawDot = (p: Pt, r: number, color: string, label?: string, labelCol?: string) => {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      if (label) {
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = labelCol || color;
+        ctx.font = 'bold 13px ui-sans-serif, system-ui, sans-serif';
+        ctx.fillText(label, p.x + 10, p.y - 10);
+      }
+      ctx.restore();
+    };
+
+    // Loop de renderizado
+    let lastT = performance.now();
+    const render = (now: number) => {
+      const dt = Math.min(0.05, (now - lastT) / 1000);
+      lastT = now;
+
+      if (state.isAnimating) {
+        state.animProgress = Math.min(1, state.animProgress + dt * 0.45);
+        if (state.animProgress >= 1) state.isAnimating = false;
+      }
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+      ctx.clearRect(0, 0, W, H);
+
+      // Rejilla sutil
+      if (state.showGrid) {
+        ctx.save();
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.05)' : 'rgba(148, 163, 184, 0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 35) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 35) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      const geo = computeGeometry();
+      const prog = state.animProgress;
+      const p1 = Math.min(1, prog * 3);
+      const p2 = Math.min(1, Math.max(0, prog * 3 - 1));
+      const p3 = Math.min(1, Math.max(0, prog * 3 - 2));
+
+      // Relleno sutil del triángulo
+      ctx.save();
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.05)' : 'rgba(56, 189, 248, 0.05)';
+      ctx.beginPath();
+      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.lineTo(C.x, C.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      const showBari = state.mode === 'baricentro' || state.mode === 'euler';
+      const showCirc = state.mode === 'circuncentro' || state.mode === 'euler';
+      const showInce = state.mode === 'incentro' || state.mode === 'euler';
+      const showOrto = state.mode === 'ortocentro' || state.mode === 'euler';
+
+      // 1. BARICENTRO (Medianas)
+      if (showBari) {
+        const col = isLight ? '#0284c7' : '#38bdf8';
+        drawPartialLine(A, geo.Ma, p1, col, 1.8);
+        drawPartialLine(B, geo.Mb, p2, col, 1.8);
+        drawPartialLine(C, geo.Mc, p3, col, 1.8);
+        if (prog > 0.3) {
+          [geo.Ma, geo.Mb, geo.Mc].forEach(m => {
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(m.x, m.y, 3.5, 0, Math.PI * 2); ctx.fill();
+          });
+        }
+        if (prog > 0.95) drawDot(geo.G, 6.5, col, 'G (Baricentro)');
+      }
+
+      // 2. CIRCUNCENTRO (Mediatrices + Circunferencia Circunscrita)
+      if (showCirc) {
+        const col = isLight ? '#7c3aed' : '#a855f7';
+        const drawMed = (m: Pt, s1: Pt, s2: Pt, pr: number) => {
+          const dx = s2.x - s1.x, dy = s2.y - s1.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = -dy / len, ny = dx / len;
+          const ext = 260;
+          drawPartialLine({ x: m.x - nx * ext, y: m.y - ny * ext }, { x: m.x + nx * ext, y: m.y + ny * ext }, pr, col, 1.6, [5, 5]);
+          if (state.showAngles && pr > 0.5) {
+            drawRightAngleMark(m, { x: dx, y: dy }, { x: geo.O.x - m.x, y: geo.O.y - m.y }, col, 9);
+          }
+        };
+        drawMed(geo.Ma, B, C, p1);
+        drawMed(geo.Mb, A, C, p2);
+        drawMed(geo.Mc, A, B, p3);
+
+        if (state.showCircles && prog > 0.85) {
+          ctx.save();
+          ctx.strokeStyle = isLight ? 'rgba(124, 58, 237, 0.45)' : 'rgba(168, 85, 247, 0.45)';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.arc(geo.O.x, geo.O.y, geo.ROut, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (prog > 0.95) drawDot(geo.O, 6.5, col, 'O (Circuncentro)');
+      }
+
+      // 3. INCENTRO (Bisectrices + Circunferencia Inscrita)
+      if (showInce) {
+        const col = isLight ? '#059669' : '#10b981';
+        drawPartialLine(A, geo.I, p1, col, 1.8);
+        drawPartialLine(B, geo.I, p2, col, 1.8);
+        drawPartialLine(C, geo.I, p3, col, 1.8);
+
+        if (state.showCircles && prog > 0.85) {
+          ctx.save();
+          ctx.strokeStyle = isLight ? 'rgba(5, 150, 105, 0.55)' : 'rgba(16, 185, 129, 0.55)';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.arc(geo.I.x, geo.I.y, geo.rIn, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (prog > 0.95) drawDot(geo.I, 6.5, col, 'I (Incentro)');
+      }
+
+      // 4. ORTOCENTRO (Alturas + Pies de altura 90°)
+      if (showOrto) {
+        const col = isLight ? '#e11d48' : '#fb7185';
+        const drawAlt = (v: Pt, hPt: Pt, s1: Pt, s2: Pt, pr: number) => {
+          drawPartialLine(v, hPt, pr, col, 1.8);
+          if (pr > 0.7) {
+            drawPartialLine(hPt, geo.Hpt, 1, col, 1.2, [3, 3]);
+            // Prolongación del lado si H está fuera
+            drawPartialLine(s1, hPt, 1, isLight ? 'rgba(15,23,42,0.2)' : 'rgba(148,163,184,0.25)', 1, [3, 4]);
+          }
+          if (state.showAngles && pr > 0.5) {
+            drawRightAngleMark(hPt, { x: s2.x - s1.x, y: s2.y - s1.y }, { x: v.x - hPt.x, y: v.y - hPt.y }, col, 9);
+          }
+        };
+        drawAlt(A, geo.Ha, B, C, p1);
+        drawAlt(B, geo.Hb, A, C, p2);
+        drawAlt(C, geo.Hc, A, B, p3);
+        if (prog > 0.95) drawDot(geo.Hpt, 6.5, col, 'H (Ortocentro)');
+      }
+
+      // 5. RECTA DE EULER (H - G - O)
+      if (state.showEulerLine && (state.mode === 'euler' || (showBari && showCirc && showOrto)) && prog > 0.95) {
+        const dHO = dist(geo.Hpt, geo.O);
+        if (dHO > 3) {
+          const dx = (geo.O.x - geo.Hpt.x) / dHO;
+          const dy = (geo.O.y - geo.Hpt.y) / dHO;
+          const colEul = isLight ? '#d97706' : '#fbbf24';
+          drawPartialLine(
+            { x: geo.Hpt.x - dx * 90, y: geo.Hpt.y - dy * 90 },
+            { x: geo.O.x + dx * 90, y: geo.O.y + dy * 90 },
+            1,
+            colEul,
+            2.4,
+            [7, 5]
+          );
+        }
+      }
+
+      // Lados principales del triángulo ABC
+      ctx.save();
+      ctx.strokeStyle = isLight ? '#0f172a' : '#f1f5f9';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.lineTo(C.x, C.y);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+
+      // Arcos de ángulos en A, B, C
+      if (state.showAngles) {
+        const drawAngleArc = (v: Pt, p1: Pt, p2: Pt, label: string, angRad: number) => {
+          const a1 = Math.atan2(p1.y - v.y, p1.x - v.x);
+          const a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+          let diff = a2 - a1;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          ctx.save();
+          ctx.strokeStyle = isLight ? 'rgba(2, 132, 199, 0.5)' : 'rgba(56, 189, 248, 0.5)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(v.x, v.y, 24, a1, a1 + diff, diff < 0);
+          ctx.stroke();
+
+          const midA = a1 + diff / 2;
+          ctx.fillStyle = isLight ? '#0369a1' : '#7dd3fc';
+          ctx.font = '600 11px ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${Math.round((angRad * 180) / Math.PI)}°`, v.x + Math.cos(midA) * 38, v.y + Math.sin(midA) * 38);
+          ctx.restore();
+        };
+        drawAngleArc(A, B, C, 'A', geo.angA);
+        drawAngleArc(B, A, C, 'B', geo.angB);
+        drawAngleArc(C, A, B, 'C', geo.angC);
+      }
+
+      // Vértices arrastrables A, B, C
+      const vCol = isLight ? '#0284c7' : '#38bdf8';
+      drawDot(A, 8, vCol, 'A', isLight ? '#0f172a' : '#f8fafc');
+      drawDot(B, 8, vCol, 'B', isLight ? '#0f172a' : '#f8fafc');
+      drawDot(C, 8, vCol, 'C', isLight ? '#0f172a' : '#f8fafc');
+
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
+  })();
+</script>
+
+<style>
+  .tri-page {
+    min-height: calc(100vh - 64px);
+    background: #060913;
+    color: #e2e8f0;
+    padding: 1.25rem 1.75rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .tri-top-bar {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .tt-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 0.35rem;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+  }
+
+  .tri-top-bar h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .btn-open-guide {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #e9d5ff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .tri-workbench {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    gap: 1.35rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .tri-workbench { grid-template-columns: 1fr; }
+  }
+
+  .tri-stage-card {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  .stage-toolbar {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    background: rgba(15, 23, 42, 0.65);
+  }
+
+  .mode-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .mode-btn {
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.6);
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .mode-btn.active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dc);
+    box-shadow: 0 0 6px var(--dc);
+  }
+
+  .act-btn.primary {
+    padding: 0.42rem 0.85rem;
+    border-radius: 8px;
+    border: none;
+    background: #a855f7;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .canvas-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  #triCanvas {
+    display: block;
+    width: 100%;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .drag-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.74rem;
+    color: #94a3b8;
+    background: rgba(13, 20, 36, 0.75);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* SIDEBAR */
+  .tri-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ctrl-card {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    padding: 1.05rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-heading {
+    font-size: 0.85rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f1f5f9;
+  }
+
+  .preset-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .preset-btn {
+    padding: 0.32rem 0.65rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(30, 41, 59, 0.65);
+    color: #94a3b8;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .preset-btn.active, .preset-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: #a855f7;
+    color: #f3e8ff;
+  }
+
+  .toggles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .fact-card {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.05);
+  }
+
+  .fact-tag {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #fbbf24;
+  }
+
+  .fact-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #f8fafc;
+  }
+
+  .fact-card p {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+  }
+
+  .fact-curiosity {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.1);
+    color: #fde68a;
+  }
+
+  .tele-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .tele-item {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 0.5rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tl-lbl { font-size: 0.64rem; color: #94a3b8; text-transform: uppercase; }
+  .tl-val { font-family: ui-monospace, monospace; font-size: 0.82rem; color: #f1f5f9; }
+  .hl-amber { color: #fbbf24; }
+  .hl-cyan { color: #38bdf8; }
+
+  /* DRAWER */
+  .guide-drawer {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: min(560px, 92vw);
+    background: rgba(10, 15, 28, 0.97);
+    border-right: 1px solid rgba(168, 85, 247, 0.35);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+  .guide-drawer.open { transform: translateX(0); }
+  .guide-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding-bottom: 1rem; margin-bottom: 1.25rem; }
+  .gh-badge { font-size: 0.68rem; font-weight: 800; color: #a855f7; letter-spacing: 0.12em; }
+  .guide-header h2 { margin: 0.2rem 0 0; font-size: 1.3rem; color: #f8fafc; }
+  .btn-close-guide { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(148,163,184,0.2); color: #cbd5e1; cursor: pointer; }
+  .guide-article { display: flex; flex-direction: column; gap: 1.4rem; }
+  .guide-section h3 { margin: 0 0 0.4rem; color: #f1f5f9; font-size: 1.05rem; }
+  .guide-section p { margin: 0 0 0.5rem; font-size: 0.88rem; line-height: 1.55; color: #cbd5e1; }
+  .math-center { display: flex; justify-content: center; margin: 0.45rem 0; color: #a855f7; }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .tri-page { background: #f2f0ea; color: #0f172a; }
+  :global([data-theme="light"]) .tri-top-bar h1,
+  :global([data-theme="light"]) .card-heading,
+  :global([data-theme="light"]) .fact-card h3,
+  :global([data-theme="light"]) .tl-val { color: #0f172a; }
+  :global([data-theme="light"]) .tri-stage-card,
+  :global([data-theme="light"]) .ctrl-card { background: rgba(255, 255, 255, 0.92); border-color: #cbd5e1; box-shadow: 0 12px 32px rgba(0,0,0,0.06); }
+  :global([data-theme="light"]) .stage-toolbar { background: #f8fafc; border-color: #e2e8f0; }
+  :global([data-theme="light"]) .mode-btn,
+  :global([data-theme="light"]) .preset-btn,
+  :global([data-theme="light"]) .tele-item,
+  :global([data-theme="light"]) .drag-hint { background: #f1f5f9; border-color: #cbd5e1; color: #334155; }
+  :global([data-theme="light"]) .mode-btn.active { background: rgba(2, 132, 199, 0.14); border-color: #0284c7; color: #0369a1; }
+  :global([data-theme="light"]) .preset-btn.active { background: rgba(124, 58, 237, 0.14); border-color: #7c3aed; color: #5b21b6; }
+  :global([data-theme="light"]) .toggle-item,
+  :global([data-theme="light"]) .fact-card p { color: #334155; }
+  :global([data-theme="light"]) .fact-curiosity { background: rgba(217, 119, 6, 0.1); color: #92400e; }
+  :global([data-theme="light"]) .guide-drawer { background: #ffffff; border-right-color: #cbd5e1; }
+  :global([data-theme="light"]) .guide-header h2, :global([data-theme="light"]) .guide-section h3 { color: #0f172a; }
+  :global([data-theme="light"]) .guide-section p { color: #334155; }
+</style>

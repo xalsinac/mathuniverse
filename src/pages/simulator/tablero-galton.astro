@@ -1,0 +1,1214 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`Tablero de Galton & Campana de Gauss en Vivo — Math Simulator | ${site.name}`}
+  description="Simulador físico e interactivo del Tablero de Galton (Plinko): observa cómo decisiones binarias aleatorias convergen en la Distribución Binomial, el Triángulo de Pascal y la Campana de Gauss (Teorema Central del Límite)."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Tablero de Galton" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="galton-page">
+    <!-- CABECERA COMPACTA -->
+    <header class="galton-top-bar">
+      <div class="gt-left">
+        <div class="gt-kicker">
+          <span class="pulse-dot"></span>
+          <span>PROBABILIDAD &amp; ESTOCÁSTICA · TEOREMA CENTRAL DEL LÍMITE</span>
+        </div>
+        <h1>Tablero de Galton &amp; Campana de Gauss</h1>
+      </div>
+      <div class="gt-right">
+        <button type="button" class="btn-open-guide" id="btnOpenGuide">
+          <span>📖 ¿Por qué surge la Campana de Gauss?</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- BANCO DE TRABAJO PRINCIPAL -->
+    <div class="galton-workbench">
+      <!-- PANEL IZQUIERDO: LIENZO FÍSICO DEL TABLERO -->
+      <section class="galton-stage-card">
+        <!-- BARRA DE ACCIONES RÁPIDAS -->
+        <div class="stage-toolbar">
+          <div class="st-actions">
+            <button type="button" class="act-btn primary" id="btnPlayPause">
+              <span id="playIcon">⏸</span>
+              <span id="playText">Pausar Lluvia</span>
+            </button>
+            <button type="button" class="act-btn" id="btnDropOne" title="Soltar 1 canica para seguir su trayectoria">
+              <span>• Soltar 1</span>
+            </button>
+            <button type="button" class="act-btn" id="btnDrop50">+50 Canicas</button>
+            <button type="button" class="act-btn" id="btnDrop200">+200 Canicas</button>
+          </div>
+          <div class="st-meta">
+            <span class="counter-pill">Canicas: <strong id="lblTotalBalls">0</strong></span>
+            <button type="button" class="act-btn danger" id="btnResetBoard" title="Vaciar tablero">↺ Reiniciar</button>
+          </div>
+        </div>
+
+        <!-- CANVAS FÍSICO -->
+        <div class="canvas-box" id="canvasBox">
+          <canvas id="galtonCanvas"></canvas>
+        </div>
+      </section>
+
+      <!-- PANEL DERECHO: CONTROLES Y TELEMETRÍA EN VIVO -->
+      <aside class="galton-sidebar">
+        <!-- CONTROLES DE EXPERIMENTO -->
+        <div class="ctrl-card">
+          <h2 class="card-heading">🎛️ Parámetros del Experimento</h2>
+
+          <div class="ctl-group">
+            <div class="ctl-row">
+              <label for="slRows">Filas de clavos (<span class="math-sym">N</span>):</label>
+              <strong id="valRows">10 filas</strong>
+            </div>
+            <input type="range" id="slRows" min="5" max="15" step="1" value="10" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-row">
+              <label for="slProb">Probabilidad derecha (<span class="math-sym">p</span>):</label>
+              <strong id="valProb">0.50 (50%)</strong>
+            </div>
+            <input type="range" id="slProb" min="0.15" max="0.85" step="0.01" value="0.50" />
+            <div class="preset-row">
+              <button type="button" class="chip-btn" id="btnProbLeft">p = 0.30 (Sesgo Izq)</button>
+              <button type="button" class="chip-btn active" id="btnProbCenter">p = 0.50 (Simétrico)</button>
+              <button type="button" class="chip-btn" id="btnProbRight">p = 0.70 (Sesgo Der)</button>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-row">
+              <label for="slRate">Caudal de caída:</label>
+              <strong id="valRate">18 / seg</strong>
+            </div>
+            <input type="range" id="slRate" min="2" max="60" step="2" value="18" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-row">
+              <label for="slSpeed">Velocidad física:</label>
+              <strong id="valSpeed">1.2×</strong>
+            </div>
+            <input type="range" id="slSpeed" min="0.5" max="2.5" step="0.1" value="1.2" />
+          </div>
+        </div>
+
+        <!-- CAPAS VISUALES -->
+        <div class="ctrl-card">
+          <h2 class="card-heading">👁️ Capas Matemáticas</h2>
+          <div class="toggles-list">
+            <label class="toggle-item">
+              <input type="checkbox" id="chkGauss" checked />
+              <span class="dot" style="--dc: #f59e0b;"></span>
+              <span>Campana de Gauss Teórica</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkBinomial" checked />
+              <span class="dot" style="--dc: #ec4899;"></span>
+              <span>Puntos Binomiales Exactos</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkSigma" checked />
+              <span class="dot" style="--dc: #10b981;"></span>
+              <span>Bandas μ ± 1σ y ± 2σ (68% / 95%)</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkPascal" />
+              <span class="dot" style="--dc: #a855f7;"></span>
+              <span>Triángulo de Pascal en Clavos</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="chkTrails" checked />
+              <span class="dot" style="--dc: #38bdf8;"></span>
+              <span>Estela de Trayectoria</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TELEMETRÍA ESTADÍSTICA EN VIVO -->
+        <div class="ctrl-card tele-card">
+          <h2 class="card-heading">📊 Estadística Empírica vs. Teórica</h2>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="sb-lbl">Media Empírica x̄</span>
+              <strong class="sb-val" id="statMeanEmp">—</strong>
+              <span class="sb-sub" id="statMeanTheo">Teórica μ = 5.00</span>
+            </div>
+            <div class="stat-box">
+              <span class="sb-lbl">Desv. Típica s</span>
+              <strong class="sb-val" id="statStdEmp">—</strong>
+              <span class="sb-sub" id="statStdTheo">Teórica σ = 1.58</span>
+            </div>
+            <div class="stat-box">
+              <span class="sb-lbl">Dentro de μ ± 1σ</span>
+              <strong class="sb-val hl-green" id="statPct1Sigma">—</strong>
+              <span class="sb-sub">Teórico: 68.27%</span>
+            </div>
+            <div class="stat-box">
+              <span class="sb-lbl">Dentro de μ ± 2σ</span>
+              <strong class="sb-val hl-cyan" id="statPct2Sigma">—</strong>
+              <span class="sb-sub">Teórico: 95.45%</span>
+            </div>
+          </div>
+          <div class="formula-live-box" id="formulaLiveBox"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- DRAWER DIDÁCTICO -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div>
+          <span class="gh-badge">TEORÍA DE PROBABILIDAD</span>
+          <h2>Del Caos Individual a la Campana de Gauss</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide">✕</button>
+      </div>
+      <div class="guide-body" id="guideBody"></div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('galtonCanvas') as HTMLCanvasElement;
+    const canvasBox = document.getElementById('canvasBox') as HTMLElement;
+    if (!canvas || !canvasBox) return;
+    const ctx = canvas.getContext('2d')!;
+
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    // Estado del simulador
+    const state = {
+      rows: 10,
+      prob: 0.5,
+      rate: 18,
+      speed: 1.2,
+      playing: true,
+      showGauss: true,
+      showBinomial: true,
+      showSigma: true,
+      showPascal: false,
+      showTrails: true,
+    };
+
+    // Geometría y física
+    let W = 720, H = 640;
+    let pegs: { x: number; y: number; row: number; col: number; flash: number; pascal: number }[] = [];
+    let bins: number[] = [];
+    let totalDropped = 0;
+
+    interface Ball {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      r: number;
+      rowPassed: number;
+      rightCount: number;
+      targetBin: number;
+      trail: { x: number; y: number }[];
+      color: string;
+    }
+    let activeBalls: Ball[] = [];
+
+    // Precalcular combinaciones para Triángulo de Pascal y Binomial
+    const comb = (n: number, k: number): number => {
+      if (k < 0 || k > n) return 0;
+      if (k === 0 || k === n) return 1;
+      let res = 1;
+      for (let i = 1; i <= Math.min(k, n - k); i++) {
+        res = (res * (n - i + 1)) / i;
+      }
+      return Math.round(res);
+    };
+
+    const binomProb = (n: number, k: number, p: number): number => {
+      return comb(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+    };
+
+    // Dimensiones del tablero
+    let topY = 55;
+    let pegZoneH = 290;
+    let binBaseY = 600;
+    let binMaxH = 210;
+    let dxSpacing = 38;
+    let dySpacing = 26;
+    let pegRadius = 4;
+    let ballRadius = 4.5;
+
+    const rebuildBoard = (clearData = true) => {
+      const N = state.rows;
+      topY = 52;
+      pegZoneH = Math.min(H * 0.48, 310);
+      binBaseY = H - 36;
+      binMaxH = Math.max(130, H - (topY + pegZoneH + 55));
+
+      dxSpacing = Math.min((W - 90) / (N + 2), 42);
+      dySpacing = pegZoneH / (N + 0.5);
+      pegRadius = Math.max(2.5, Math.min(4.5, dxSpacing * 0.11));
+      ballRadius = Math.max(3.0, Math.min(5.2, dxSpacing * 0.13));
+
+      pegs = [];
+      for (let r = 0; r < N; r++) {
+        const y = topY + (r + 1) * dySpacing;
+        const count = r + 1;
+        const startX = W / 2 - ((count - 1) * dxSpacing) / 2;
+        for (let c = 0; c < count; c++) {
+          pegs.push({
+            x: startX + c * dxSpacing,
+            y,
+            row: r,
+            col: c,
+            flash: 0,
+            pascal: comb(r, c),
+          });
+        }
+      }
+
+      if (clearData) {
+        bins = new Array(N + 1).fill(0);
+        totalDropped = 0;
+        activeBalls = [];
+        updateTelemetry();
+      }
+    };
+
+    const resize = () => {
+      const rect = canvasBox.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = Math.max(340, rect.width);
+      H = Math.max(540, Math.min(720, window.innerHeight - 180));
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      rebuildBoard(false);
+    };
+    window.addEventListener('resize', resize);
+
+    const spawnBall = (highlight = false) => {
+      const jitter = (Math.random() - 0.5) * 1.5;
+      activeBalls.push({
+        x: W / 2 + jitter,
+        y: topY - 12,
+        vx: 0,
+        vy: 40,
+        r: ballRadius,
+        rowPassed: 0,
+        rightCount: 0,
+        targetBin: 0,
+        trail: [],
+        color: highlight ? '#fbbf24' : '#38bdf8',
+      });
+    };
+
+    // Actualizar estadísticas
+    const lblTotalBalls = document.getElementById('lblTotalBalls') as HTMLElement;
+    const statMeanEmp = document.getElementById('statMeanEmp') as HTMLElement;
+    const statMeanTheo = document.getElementById('statMeanTheo') as HTMLElement;
+    const statStdEmp = document.getElementById('statStdEmp') as HTMLElement;
+    const statStdTheo = document.getElementById('statStdTheo') as HTMLElement;
+    const statPct1Sigma = document.getElementById('statPct1Sigma') as HTMLElement;
+    const statPct2Sigma = document.getElementById('statPct2Sigma') as HTMLElement;
+    const formulaLiveBox = document.getElementById('formulaLiveBox') as HTMLElement;
+
+    const updateTelemetry = () => {
+      const N = state.rows;
+      const p = state.prob;
+      const mu = N * p;
+      const sigma = Math.sqrt(N * p * (1 - p));
+
+      if (lblTotalBalls) lblTotalBalls.textContent = String(totalDropped);
+      if (statMeanTheo) statMeanTheo.textContent = `Teórica μ = ${mu.toFixed(2)}`;
+      if (statStdTheo) statStdTheo.textContent = `Teórica σ = ${sigma.toFixed(2)}`;
+
+      if (totalDropped > 0) {
+        let sum = 0;
+        for (let k = 0; k <= N; k++) sum += k * bins[k];
+        const meanEmp = sum / totalDropped;
+
+        let sqDiff = 0;
+        for (let k = 0; k <= N; k++) sqDiff += bins[k] * Math.pow(k - meanEmp, 2);
+        const stdEmp = Math.sqrt(sqDiff / totalDropped);
+
+        let in1 = 0, in2 = 0;
+        for (let k = 0; k <= N; k++) {
+          if (Math.abs(k - mu) <= sigma) in1 += bins[k];
+          if (Math.abs(k - mu) <= 2 * sigma) in2 += bins[k];
+        }
+
+        if (statMeanEmp) statMeanEmp.textContent = meanEmp.toFixed(2);
+        if (statStdEmp) statStdEmp.textContent = stdEmp.toFixed(2);
+        if (statPct1Sigma) statPct1Sigma.textContent = `${((in1 / totalDropped) * 100).toFixed(1)}%`;
+        if (statPct2Sigma) statPct2Sigma.textContent = `${((in2 / totalDropped) * 100).toFixed(1)}%`;
+      } else {
+        if (statMeanEmp) statMeanEmp.textContent = '—';
+        if (statStdEmp) statStdEmp.textContent = '—';
+        if (statPct1Sigma) statPct1Sigma.textContent = '—';
+        if (statPct2Sigma) statPct2Sigma.textContent = '—';
+      }
+
+      if (formulaLiveBox) {
+        formulaLiveBox.innerHTML = renderMathClient(
+          String.raw`B(${N}, ${p.toFixed(2)}) \approx \mathcal{N}\big(\mu=${mu.toFixed(1)},\; \sigma=${sigma.toFixed(2)}\big)`,
+          false
+        );
+      }
+    };
+
+    // Controles DOM
+    const slRows = document.getElementById('slRows') as HTMLInputElement;
+    const valRows = document.getElementById('valRows') as HTMLElement;
+    const slProb = document.getElementById('slProb') as HTMLInputElement;
+    const valProb = document.getElementById('valProb') as HTMLElement;
+    const slRate = document.getElementById('slRate') as HTMLInputElement;
+    const valRate = document.getElementById('valRate') as HTMLElement;
+    const slSpeed = document.getElementById('slSpeed') as HTMLInputElement;
+    const valSpeed = document.getElementById('valSpeed') as HTMLElement;
+
+    slRows?.addEventListener('input', () => {
+      state.rows = parseInt(slRows.value, 10);
+      if (valRows) valRows.textContent = `${state.rows} filas`;
+      rebuildBoard(true);
+    });
+
+    const setProb = (p: number) => {
+      state.prob = p;
+      if (slProb) slProb.value = p.toFixed(2);
+      if (valProb) valProb.textContent = `${p.toFixed(2)} (${Math.round(p * 100)}%)`;
+      document.getElementById('btnProbLeft')?.classList.toggle('active', Math.abs(p - 0.3) < 0.02);
+      document.getElementById('btnProbCenter')?.classList.toggle('active', Math.abs(p - 0.5) < 0.02);
+      document.getElementById('btnProbRight')?.classList.toggle('active', Math.abs(p - 0.7) < 0.02);
+      rebuildBoard(true);
+    };
+    slProb?.addEventListener('input', () => setProb(parseFloat(slProb.value)));
+    document.getElementById('btnProbLeft')?.addEventListener('click', () => setProb(0.30));
+    document.getElementById('btnProbCenter')?.addEventListener('click', () => setProb(0.50));
+    document.getElementById('btnProbRight')?.addEventListener('click', () => setProb(0.70));
+
+    slRate?.addEventListener('input', () => {
+      state.rate = parseInt(slRate.value, 10);
+      if (valRate) valRate.textContent = `${state.rate} / seg`;
+    });
+    slSpeed?.addEventListener('input', () => {
+      state.speed = parseFloat(slSpeed.value);
+      if (valSpeed) valSpeed.textContent = `${state.speed.toFixed(1)}×`;
+    });
+
+    // Toggles
+    const bindChk = (id: string, key: keyof typeof state) => {
+      const el = document.getElementById(id) as HTMLInputElement;
+      el?.addEventListener('change', () => { (state as any)[key] = el.checked; });
+    };
+    bindChk('chkGauss', 'showGauss');
+    bindChk('chkBinomial', 'showBinomial');
+    bindChk('chkSigma', 'showSigma');
+    bindChk('chkPascal', 'showPascal');
+    bindChk('chkTrails', 'showTrails');
+
+    // Botones de acción
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const playIcon = document.getElementById('playIcon');
+    const playText = document.getElementById('playText');
+    btnPlayPause?.addEventListener('click', () => {
+      state.playing = !state.playing;
+      if (playIcon) playIcon.textContent = state.playing ? '⏸' : '▶';
+      if (playText) playText.textContent = state.playing ? 'Pausar Lluvia' : 'Reanudar Lluvia';
+    });
+
+    document.getElementById('btnDropOne')?.addEventListener('click', () => spawnBall(true));
+    document.getElementById('btnDrop50')?.addEventListener('click', () => {
+      for (let i = 0; i < 50; i++) setTimeout(() => spawnBall(false), i * 18);
+    });
+    document.getElementById('btnDrop200')?.addEventListener('click', () => {
+      for (let i = 0; i < 200; i++) setTimeout(() => spawnBall(false), i * 6);
+    });
+    document.getElementById('btnResetBoard')?.addEventListener('click', () => rebuildBoard(true));
+
+    // Guía Didáctica
+    const guideDrawer = document.getElementById('guideDrawer');
+    const guideBody = document.getElementById('guideBody');
+    document.getElementById('btnOpenGuide')?.addEventListener('click', () => guideDrawer?.classList.add('open'));
+    document.getElementById('btnCloseGuide')?.addEventListener('click', () => guideDrawer?.classList.remove('open'));
+
+    if (guideBody) {
+      guideBody.innerHTML = `
+        <article class="guide-article">
+          <section class="guide-section">
+            <h3>1. ¿Cómo nace el orden de decisiones aleatorias?</h3>
+            <p>
+              Cada canica cae desde el centro y al chocar contra cada clavo toma una decisión binaria independiente: ir a la <strong>derecha</strong> con probabilidad $p$, o a la <strong>izquierda</strong> con probabilidad $1-p$.
+            </p>
+            <p>
+              Tras superar $N$ filas de clavos, el contenedor $k$ en el que aterriza depende únicamente de cuántas veces giró a la derecha ($k = 0, 1, \dots, N$). Esto sigue exactamente una <strong>Distribución Binomial</strong>:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`P(X = k) = \binom{N}{k} p^k (1-p)^{N-k}`, true)}</div>
+          </section>
+          <section class="guide-section">
+            <h3>2. La conexión secreta con el Triángulo de Pascal</h3>
+            <p>
+              Activa la capa <strong>Triángulo de Pascal en Clavos</strong>: verás el número $\binom{n}{k}$ de caminos distintos que llegan a cada clavo. Para llegar a los extremos solo hay 1 ruta posible, mientras que para llegar al centro hay cientos de rutas diferentes que se suman!
+            </p>
+          </section>
+          <section class="guide-section">
+            <h3>3. El Teorema Central del Límite y la Campana de Gauss</h3>
+            <p>
+              Cuando $N$ y el número de canicas crecen, la distribución binomial converge hacia la <strong>Distribución Normal Gaussiana</strong>:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)`, true)}</div>
+            <p>
+              En cualquier distribución normal, aproximadamente el <strong>68.27%</strong> de los datos cae dentro de $\mu \pm 1\sigma$ y el <strong>95.45%</strong> dentro de $\mu \pm 2\sigma$.
+            </p>
+          </section>
+        </article>
+      `;
+    }
+
+    // Inicializar tamaño
+    resize();
+    rebuildBoard(true);
+
+    // =========================================================================
+    // LOOP FÍSICO Y RENDERIZADO
+    // =========================================================================
+    let lastTime = performance.now();
+    let spawnAccumulator = 0;
+
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - lastTime) / 1000) * state.speed;
+      lastTime = now;
+
+      const isLight = document.documentElement.dataset.theme === 'light';
+
+      // Emisión continua de canicas
+      if (state.playing && activeBalls.length < 320) {
+        spawnAccumulator += state.rate * dt;
+        while (spawnAccumulator >= 1) {
+          spawnBall(false);
+          spawnAccumulator -= 1;
+        }
+      }
+
+      const N = state.rows;
+      const p = state.prob;
+      const gravity = 460;
+      const pegZoneBottom = topY + N * dySpacing + dySpacing * 0.6;
+
+      // Actualizar física de canicas activas
+      for (let i = activeBalls.length - 1; i >= 0; i--) {
+        const b = activeBalls[i];
+        b.vy += gravity * dt;
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+
+        if (state.showTrails) {
+          b.trail.push({ x: b.x, y: b.y });
+          if (b.trail.length > 14) b.trail.shift();
+        }
+
+        // Comprobar colisión guiada con la fila actual de clavos
+        if (b.rowPassed < N) {
+          const targetRowY = topY + (b.rowPassed + 1) * dySpacing;
+          if (b.y + b.r >= targetRowY) {
+            // Decisión estocástica con probabilidad p de ir a la derecha
+            const goRight = Math.random() < p;
+            if (goRight) b.rightCount++;
+
+            // Iluminar el clavo golpeado
+            const pegIdx = (b.rowPassed * (b.rowPassed + 1)) / 2 + (b.rightCount - (goRight ? 1 : 0));
+            if (pegs[pegIdx]) pegs[pegIdx].flash = 1.0;
+
+            const dir = goRight ? 1 : -1;
+            const nextX = W / 2 + (b.rightCount - (b.rowPassed + 1) / 2) * dxSpacing;
+            b.vx = (nextX - b.x) * 4.2 + dir * 12;
+            b.vy = Math.max(20, b.vy * 0.35);
+            b.y = targetRowY - b.r;
+            b.rowPassed++;
+          }
+        } else {
+          // Canalización suave al contenedor exacto k = b.rightCount
+          const binCenterX = W / 2 + (b.rightCount - N / 2) * dxSpacing;
+          b.vx += (binCenterX - b.x) * 12 * dt;
+          b.vx *= 0.92;
+        }
+
+        // Llegada al fondo del histograma
+        if (b.y >= binBaseY - 4) {
+          const k = Math.max(0, Math.min(N, b.rightCount));
+          bins[k]++;
+          totalDropped++;
+          activeBalls.splice(i, 1);
+          if (totalDropped % 3 === 0 || totalDropped < 30) updateTelemetry();
+        }
+      }
+
+      // Renderizar
+      ctx.clearRect(0, 0, W, H);
+
+      const binAreaStartX = W / 2 - ((N + 1) * dxSpacing) / 2;
+      const binWidth = dxSpacing;
+      const maxBinCount = Math.max(12, ...bins, totalDropped * binomProb(N, Math.round(N * p), p) * 1.15);
+      const scaleY = binMaxH / maxBinCount;
+
+      // 1. Bandas de Desviación Típica ±1σ y ±2σ
+      if (state.showSigma) {
+        const mu = N * p;
+        const sigma = Math.sqrt(N * p * (1 - p));
+        const xMu = W / 2 + (mu - N / 2) * dxSpacing;
+        const x1L = W / 2 + (mu - sigma - N / 2) * dxSpacing;
+        const x1R = W / 2 + (mu + sigma - N / 2) * dxSpacing;
+        const x2L = W / 2 + (mu - 2 * sigma - N / 2) * dxSpacing;
+        const x2R = W / 2 + (mu + 2 * sigma - N / 2) * dxSpacing;
+
+        ctx.save();
+        ctx.fillStyle = isLight ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.09)';
+        ctx.fillRect(x2L, pegZoneBottom, x2R - x2L, binBaseY - pegZoneBottom);
+        ctx.fillStyle = isLight ? 'rgba(16, 185, 129, 0.14)' : 'rgba(16, 185, 129, 0.14)';
+        ctx.fillRect(x1L, pegZoneBottom, x1R - x1L, binBaseY - pegZoneBottom);
+
+        ctx.strokeStyle = isLight ? 'rgba(5, 150, 105, 0.5)' : 'rgba(52, 211, 153, 0.45)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(xMu, pegZoneBottom);
+        ctx.lineTo(xMu, binBaseY);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 2. Separadores de contenedores inferiores e Histograma empírico
+      for (let k = 0; k <= N; k++) {
+        const bx = binAreaStartX + k * binWidth;
+        const count = bins[k];
+        const barH = count * scaleY;
+
+        if (barH > 0) {
+          const grad = ctx.createLinearGradient(0, binBaseY - barH, 0, binBaseY);
+          grad.addColorStop(0, isLight ? '#0284c7' : '#38bdf8');
+          grad.addColorStop(1, isLight ? 'rgba(2, 132, 199, 0.35)' : 'rgba(56, 189, 248, 0.25)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(bx + 2, binBaseY - barH, binWidth - 4, barH);
+
+          ctx.strokeStyle = isLight ? '#0369a1' : '#7dd3fc';
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(bx + 2, binBaseY - barH, binWidth - 4, barH);
+        }
+
+        // Divisores verticales de contenedores
+        ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.18)' : 'rgba(148, 163, 184, 0.22)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(bx, pegZoneBottom);
+        ctx.lineTo(bx, binBaseY);
+        ctx.stroke();
+
+        // Etiqueta índice k
+        ctx.fillStyle = isLight ? '#475569' : '#94a3b8';
+        ctx.font = '10px ui-monospace, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(k), bx + binWidth / 2, binBaseY + 15);
+      }
+
+      // Borde derecho final del último contenedor y suelo
+      ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.28)';
+      ctx.beginPath();
+      ctx.moveTo(binAreaStartX + (N + 1) * binWidth, pegZoneBottom);
+      ctx.lineTo(binAreaStartX + (N + 1) * binWidth, binBaseY);
+      ctx.moveTo(binAreaStartX, binBaseY);
+      ctx.lineTo(binAreaStartX + (N + 1) * binWidth, binBaseY);
+      ctx.stroke();
+
+      // 3. Curva Campana de Gauss Teórica
+      if (state.showGauss && totalDropped > 0) {
+        const mu = N * p;
+        const sigma = Math.sqrt(N * p * (1 - p));
+        ctx.save();
+        ctx.strokeStyle = isLight ? '#d97706' : '#fbbf24';
+        ctx.lineWidth = 2.8;
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+        ctx.shadowBlur = isLight ? 0 : 10;
+        ctx.beginPath();
+
+        for (let px = binAreaStartX; px <= binAreaStartX + (N + 1) * binWidth; px += 3) {
+          const kVal = (px - W / 2) / dxSpacing + N / 2;
+          const gaussPdf = (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((kVal - mu) / sigma, 2));
+          const expectedCount = totalDropped * gaussPdf;
+          const py = binBaseY - expectedCount * scaleY;
+          if (px === binAreaStartX) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 4. Puntos Binomiales Exactos
+      if (state.showBinomial && totalDropped > 0) {
+        ctx.save();
+        for (let k = 0; k <= N; k++) {
+          const cx = binAreaStartX + (k + 0.5) * binWidth;
+          const expCount = totalDropped * binomProb(N, k, p);
+          const cy = binBaseY - expCount * scaleY;
+          ctx.fillStyle = isLight ? '#db2777' : '#f472b6';
+          ctx.beginPath();
+          ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = isLight ? '#ffffff' : '#0f172a';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // 5. Clavos (y Triángulo de Pascal opcional)
+      pegs.forEach(peg => {
+        if (peg.flash > 0) peg.flash = Math.max(0, peg.flash - dt * 3.5);
+
+        ctx.save();
+        if (peg.flash > 0.05) {
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 12 * peg.flash;
+          ctx.fillStyle = '#38bdf8';
+        } else {
+          ctx.fillStyle = isLight ? '#475569' : '#cbd5e1';
+        }
+        ctx.beginPath();
+        ctx.arc(peg.x, peg.y, pegRadius + peg.flash * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (state.showPascal) {
+          ctx.fillStyle = isLight ? '#7c3aed' : '#c084fc';
+          ctx.font = 'bold 9.5px ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(String(peg.pascal), peg.x, peg.y - pegRadius - 5);
+        }
+      });
+
+      // 6. Canicas activas y estelas
+      activeBalls.forEach(b => {
+        if (state.showTrails && b.trail.length > 1) {
+          ctx.save();
+          ctx.strokeStyle = b.color === '#fbbf24' ? 'rgba(251, 191, 36, 0.7)' : 'rgba(56, 189, 248, 0.35)';
+          ctx.lineWidth = b.color === '#fbbf24' ? 2.5 : 1.5;
+          ctx.beginPath();
+          ctx.moveTo(b.trail[0].x, b.trail[0].y);
+          for (let j = 1; j < b.trail.length; j++) ctx.lineTo(b.trail[j].x, b.trail[j].y);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.save();
+        ctx.fillStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      requestAnimationFrame(loop);
+    };
+
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  .galton-page {
+    min-height: calc(100vh - 64px);
+    background: #060913;
+    color: #e2e8f0;
+    padding: 1.25rem 1.75rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .galton-top-bar {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .gt-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 0.35rem;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+  }
+
+  .galton-top-bar h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f8fafc;
+  }
+
+  .btn-open-guide {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fde68a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(245, 158, 11, 0.28);
+    color: #ffffff;
+  }
+
+  /* WORKBENCH */
+  .galton-workbench {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    gap: 1.35rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .galton-workbench {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .galton-stage-card {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  .stage-toolbar {
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    background: rgba(15, 23, 42, 0.65);
+  }
+
+  .st-actions, .st-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .act-btn {
+    padding: 0.42rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.15s ease;
+  }
+
+  .act-btn:hover {
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+
+  .act-btn.primary {
+    background: #06b6d4;
+    border-color: #06b6d4;
+    color: #020617;
+    font-weight: 700;
+  }
+
+  .act-btn.danger:hover {
+    border-color: #fb7185;
+    color: #fb7185;
+  }
+
+  .counter-pill {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .counter-pill strong {
+    color: #38bdf8;
+    font-family: ui-monospace, monospace;
+  }
+
+  .canvas-box {
+    width: 100%;
+    position: relative;
+    background: radial-gradient(circle at 50% 35%, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
+  }
+
+  #galtonCanvas {
+    display: block;
+    width: 100%;
+  }
+
+  /* SIDEBAR DERECHO */
+  .galton-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ctrl-card {
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .card-heading {
+    font-size: 0.85rem;
+    font-weight: 800;
+    margin: 0;
+    color: #f1f5f9;
+    letter-spacing: 0.02em;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .ctl-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .ctl-row strong {
+    font-family: ui-monospace, monospace;
+    color: #38bdf8;
+  }
+
+  .math-sym {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #f59e0b;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #f59e0b;
+    cursor: pointer;
+  }
+
+  .preset-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+  }
+
+  .chip-btn {
+    padding: 0.3rem 0.25rem;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .chip-btn.active, .chip-btn:hover {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #f59e0b;
+    color: #fde68a;
+  }
+
+  .toggles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dc);
+    box-shadow: 0 0 6px var(--dc);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .stat-box {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sb-lbl {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+  }
+
+  .sb-val {
+    font-family: ui-monospace, monospace;
+    font-size: 1rem;
+    color: #f1f5f9;
+  }
+
+  .hl-green { color: #34d399; }
+  .hl-cyan { color: #38bdf8; }
+
+  .sb-sub {
+    font-size: 0.68rem;
+    color: #64748b;
+  }
+
+  .formula-live-box {
+    padding-top: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    display: flex;
+    justify-content: center;
+    color: #fde68a;
+    font-size: 0.85rem;
+  }
+
+  /* DRAWER */
+  .guide-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(560px, 92vw);
+    background: rgba(10, 15, 28, 0.97);
+    border-right: 1px solid rgba(245, 158, 11, 0.35);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  .guide-drawer.open { transform: translateX(0); }
+
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .gh-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #f59e0b;
+    letter-spacing: 0.12em;
+  }
+
+  .guide-header h2 {
+    margin: 0.2rem 0 0;
+    font-size: 1.3rem;
+    color: #f8fafc;
+  }
+
+  .btn-close-guide {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
+  .guide-article {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .guide-section h3 {
+    margin: 0 0 0.5rem;
+    color: #f1f5f9;
+    font-size: 1.1rem;
+  }
+
+  .guide-section p {
+    margin: 0 0 0.65rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .math-center {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0;
+    color: #fbbf24;
+  }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .galton-page {
+    background: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .galton-top-bar h1,
+  :global([data-theme="light"]) .card-heading,
+  :global([data-theme="light"]) .sb-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .galton-stage-card,
+  :global([data-theme="light"]) .ctrl-card {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme="light"]) .stage-toolbar {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .act-btn,
+  :global([data-theme="light"]) .chip-btn,
+  :global([data-theme="light"]) .counter-pill,
+  :global([data-theme="light"]) .stat-box {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .act-btn.primary {
+    background: #0284c7;
+    border-color: #0284c7;
+    color: #ffffff;
+  }
+
+  :global([data-theme="light"]) .chip-btn.active {
+    background: rgba(217, 119, 6, 0.14);
+    border-color: #d97706;
+    color: #92400e;
+  }
+
+  :global([data-theme="light"]) .ctl-row,
+  :global([data-theme="light"]) .toggle-item {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .formula-live-box {
+    color: #92400e;
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .btn-open-guide {
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.35);
+    color: #92400e;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: #ffffff;
+    border-right-color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .guide-header h2,
+  :global([data-theme="light"]) .guide-section h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .guide-section p {
+    color: #334155;
+  }
+</style>

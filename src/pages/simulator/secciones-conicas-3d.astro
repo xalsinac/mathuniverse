@@ -1,0 +1,2825 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`Secciones Cónicas en 3D: Cono de Apolonio & Esferas de Dandelin — Math Simulator | ${site.name}`}
+  description="Laboratorio 3D interactivo para descubrir las secciones cónicas cortando un cono doble: circunferencia, elipse, parábola e hipérbola con botones directos, definición foco-directriz y esferas de Dandelin."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Cónicas 3D" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="conic-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="conic-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE -->
+    <header class="conic-header">
+      <div class="conic-kicker">
+        <span class="pulse-dot"></span>
+        <span>GEOMETRÍA DEL ESPACIO · APOLONIO &amp; DANDELIN</span>
+      </div>
+      <h1 class="conic-title">Secciones Cónicas en 3D</h1>
+      <p class="conic-desc" id="brandDesc">
+        Una sola familia de curvas une el círculo, la elipse, la parábola y la hipérbola. Corta el cono doble con un plano oblicuo o usa los botones directos para fijar cada cónica al instante.
+      </p>
+    </header>
+
+    <!-- BARRA SUPERIOR DE ACCESO RÁPIDO A CÓNICAS (ESTABLECER VISUALMENTE) -->
+    <nav class="conic-presets-bar" aria-label="Selección rápida de cónica">
+      <div class="presets-label">
+        <span class="p-icon">🎯</span>
+        <span>Fijar Cónica:</span>
+      </div>
+      <div class="presets-buttons-group">
+        <button type="button" class="preset-btn active" data-conic="circle" id="presetCircle">
+          <span class="preset-icon">⭕</span>
+          <span class="preset-name">Circunferencia</span>
+          <span class="preset-sub">e = 0 · β = 0°</span>
+        </button>
+        <button type="button" class="preset-btn" data-conic="ellipse" id="presetEllipse">
+          <span class="preset-icon">⬭</span>
+          <span class="preset-name">Elipse</span>
+          <span class="preset-sub">e = 0.58 · β = 30°</span>
+        </button>
+        <button type="button" class="preset-btn" data-conic="parabola" id="presetParabola">
+          <span class="preset-icon">∪</span>
+          <span class="preset-name">Parábola</span>
+          <span class="preset-sub">e = 1.00 · β = 45°</span>
+        </button>
+        <button type="button" class="preset-btn" data-conic="hyperbola" id="presetHyperbola">
+          <span class="preset-icon">)(</span>
+          <span class="preset-name">Hipérbola</span>
+          <span class="preset-sub">e = 1.73 · β = 60°</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- SELECTOR DE LAS 3 ESCENAS / PESTAÑAS -->
+    <nav class="conic-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="conic-tab-btn active" data-tab="slice" id="tabSliceBtn">
+        <span class="tab-icon">📐</span>
+        <span>1. Cono de Apolonio (Corte 3D)</span>
+      </button>
+      <button type="button" class="conic-tab-btn" data-tab="focus" id="tabFocusBtn">
+        <span class="tab-icon">🎯</span>
+        <span>2. Foco &amp; Directriz (Definición Polar)</span>
+      </button>
+      <button type="button" class="conic-tab-btn" data-tab="dandelin" id="tabDandelinBtn">
+        <span class="tab-icon">🔮</span>
+        <span>3. Esferas de Dandelin (1822)</span>
+      </button>
+    </nav>
+
+    <!-- BOTÓN PARA DESPLEGAR EL TRATADO DIDÁCTICO -->
+    <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+      <span>📖 Deducción y Explicación Paso a Paso</span>
+    </button>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO DIDÁCTICO</span>
+          <h2 id="guideModalTitle">¿Cómo nacen las secciones cónicas?</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+
+      <div class="guide-body" id="guideContent">
+        <!-- Contenido dinámico según la pestaña activa -->
+      </div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE PARÁMETROS -->
+    <aside class="conic-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+        
+        <!-- PARÁMETROS PESTAÑA 1 (CORTE DEL CONO 3D) -->
+        <div class="ctl-section tab-slice-only">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Ángulo de Inclinación del Plano</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rBeta">Inclinación del plano <span class="math-sym">β</span></label>
+              <span class="ctl-val" id="vBeta">0.0°</span>
+            </div>
+            <div class="slider-row-with-btns">
+              <button type="button" class="btn-step" id="btnBetaMinus" title="Disminuir 1°">−1°</button>
+              <input type="range" id="rBeta" min="0" max="75" step="0.5" value="0" />
+              <button type="button" class="btn-step" id="btnBetaPlus" title="Aumentar 1°">+1°</button>
+            </div>
+            <div class="slider-marks">
+              <span class="s-mark" style="left: 0%;">0° (Círculo)</span>
+              <span class="s-mark" style="left: 40%;">30° (Elipse)</span>
+              <span class="s-mark s-mark-crit" style="left: 60%;">45° (Parábola)</span>
+              <span class="s-mark" style="left: 80%;">60° (Hip.)</span>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rOffset">Altura / Desplazamiento del plano <span class="math-sym">d</span></label>
+              <span class="ctl-val" id="vOffset">1.00</span>
+            </div>
+            <input type="range" id="rOffset" min="0.2" max="2.0" step="0.05" value="1.0" />
+          </div>
+        </div>
+
+        <!-- PARÁMETROS PESTAÑA 2 (FOCO Y DIRECTRIZ) -->
+        <div class="ctl-section tab-focus-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Definición Polar Unificada</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rEcc">Excentricidad <span class="math-sym">e</span></label>
+              <span class="ctl-val" id="vEcc">0.60</span>
+            </div>
+            <input type="range" id="rEcc" min="0.0" max="2.2" step="0.02" value="0.60" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rSemiLatus">Parámetro focal <span class="math-sym">p</span> (semi-latus rectum)</label>
+              <span class="ctl-val" id="vSemiLatus">1.50</span>
+            </div>
+            <input type="range" id="rSemiLatus" min="0.5" max="3.0" step="0.1" value="1.50" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rProbeAngle">Posición del punto <span class="math-sym">P(θ)</span></label>
+              <span class="ctl-val" id="vProbeAngle">45°</span>
+            </div>
+            <input type="range" id="rProbeAngle" min="-170" max="170" step="1" value="45" />
+          </div>
+        </div>
+
+        <!-- PARÁMETROS PESTAÑA 3 (ESFERAS DE DANDELIN) -->
+        <div class="ctl-section tab-dandelin-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Geometría de Tangencias</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rDandelinAngle">Inclinación del plano elíptico <span class="math-sym">β</span></label>
+              <span class="ctl-val" id="vDandelinAngle">30°</span>
+            </div>
+            <input type="range" id="rDandelinAngle" min="15" max="38" step="1" value="30" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rPointPos">Punto <span class="math-sym">P</span> sobre la elipse</label>
+              <span class="ctl-val" id="vPointPos">45°</span>
+            </div>
+            <input type="range" id="rPointPos" min="0" max="360" step="2" value="45" />
+          </div>
+
+          <div class="quick-chips-row">
+            <button type="button" class="chip-btn" id="btnToggleAnimDandelin">
+              <span id="animDandelinIcon">▶</span>
+              <span id="animDandelinText">Animar Punto P</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TOGGLES COMUNES Y AYUDAS DE CÁMARA -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Opciones de Renderizado 3D:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="cDoubleCone" checked />
+              <span class="color-dot" style="--dot-c: #38bdf8;"></span>
+              <span>Doble Cono</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cPlane" checked />
+              <span class="color-dot" style="--dot-c: #a855f7;"></span>
+              <span>Plano Secante</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cCurve" checked />
+              <span class="color-dot" style="--dot-c: #f59e0b;"></span>
+              <span>Curva Cónica</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cFoci" checked />
+              <span class="color-dot" style="--dot-c: #10b981;"></span>
+              <span>Focos &amp; Eje</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- SELECTOR DE VISTAS DE CÁMARA RÁPIDAS -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara Predefinidas:</span>
+          <div class="cam-btns-grid">
+            <button type="button" class="cam-btn active" data-view="iso">Perspectiva 3D</button>
+            <button type="button" class="cam-btn" data-view="front">Frontal (X-Z)</button>
+            <button type="button" class="cam-btn" data-view="top">Planta (Superior)</button>
+            <button type="button" class="cam-btn" data-view="plane">Normal al Plano</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- TARJETA FLOTANTE DE TELEMETRÍA Y ECUACIÓN EN VIVO -->
+    <div class="telemetry-badge" id="telemetryCard">
+      <div class="tele-top">
+        <span class="tele-type-pill" id="teleConicPill">CIRCUNFERENCIA</span>
+        <span class="tele-condition" id="teleCondition">β = 0° (Plano Horizontal)</span>
+      </div>
+      <div class="tele-metrics-row">
+        <div class="tm-item">
+          <span class="tm-label">Inclinación β</span>
+          <span class="tm-val" id="tmBeta">0.0°</span>
+        </div>
+        <div class="tm-item">
+          <span class="tm-label">Semiángulo α</span>
+          <span class="tm-val">45.0°</span>
+        </div>
+        <div class="tm-item">
+          <span class="tm-label">Excentricidad e</span>
+          <span class="tm-val tm-highlight" id="tmEcc">0.000</span>
+        </div>
+      </div>
+      <div class="tele-eq-box" id="teleEqBox">
+        <!-- Ecuación en vivo generada con KaTeX -->
+      </div>
+    </div>
+
+    <!-- HINT FLOTANTE INFERIOR DE CÁMARA 3D -->
+    <div class="cam-hint" id="camHint">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 3D</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Centrar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Elementos DOM
+    const rBeta = document.getElementById('rBeta') as HTMLInputElement;
+    const vBeta = document.getElementById('vBeta') as HTMLElement;
+    const btnBetaMinus = document.getElementById('btnBetaMinus') as HTMLButtonElement;
+    const btnBetaPlus = document.getElementById('btnBetaPlus') as HTMLButtonElement;
+    const rOffset = document.getElementById('rOffset') as HTMLInputElement;
+    const vOffset = document.getElementById('vOffset') as HTMLElement;
+
+    const rEcc = document.getElementById('rEcc') as HTMLInputElement;
+    const vEcc = document.getElementById('vEcc') as HTMLElement;
+    const rSemiLatus = document.getElementById('rSemiLatus') as HTMLInputElement;
+    const vSemiLatus = document.getElementById('vSemiLatus') as HTMLElement;
+    const rProbeAngle = document.getElementById('rProbeAngle') as HTMLInputElement;
+    const vProbeAngle = document.getElementById('vProbeAngle') as HTMLElement;
+
+    const rDandelinAngle = document.getElementById('rDandelinAngle') as HTMLInputElement;
+    const vDandelinAngle = document.getElementById('vDandelinAngle') as HTMLElement;
+    const rPointPos = document.getElementById('rPointPos') as HTMLInputElement;
+    const vPointPos = document.getElementById('vPointPos') as HTMLElement;
+    const btnToggleAnimDandelin = document.getElementById('btnToggleAnimDandelin') as HTMLButtonElement;
+    const animDandelinIcon = document.getElementById('animDandelinIcon') as HTMLElement;
+    const animDandelinText = document.getElementById('animDandelinText') as HTMLElement;
+
+    // Presets
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    const tabBtns = document.querySelectorAll('.conic-tab-btn');
+    const camBtns = document.querySelectorAll('.cam-btn');
+
+    // Toggles
+    const cDoubleCone = document.getElementById('cDoubleCone') as HTMLInputElement;
+    const cPlane = document.getElementById('cPlane') as HTMLInputElement;
+    const cCurve = document.getElementById('cCurve') as HTMLInputElement;
+    const cFoci = document.getElementById('cFoci') as HTMLInputElement;
+
+    // Telemetría
+    const teleConicPill = document.getElementById('teleConicPill') as HTMLElement;
+    const teleCondition = document.getElementById('teleCondition') as HTMLElement;
+    const tmBeta = document.getElementById('tmBeta') as HTMLElement;
+    const tmEcc = document.getElementById('tmEcc') as HTMLElement;
+    const teleEqBox = document.getElementById('teleEqBox') as HTMLElement;
+
+    // Guía Drawer
+    const btnOpenGuide = document.getElementById('btnOpenGuide') as HTMLButtonElement;
+    const btnCloseGuide = document.getElementById('btnCloseGuide') as HTMLButtonElement;
+    const guideDrawer = document.getElementById('guideDrawer') as HTMLElement;
+    const guideModalTitle = document.getElementById('guideModalTitle') as HTMLElement;
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+
+    // Plegado del panel
+    const btnFold = document.getElementById('btnFold') as HTMLButtonElement;
+    const panel = document.getElementById('panel') as HTMLElement;
+
+    let isPanelFolded = false;
+    btnFold.addEventListener('click', () => {
+      isPanelFolded = !isPanelFolded;
+      panel.classList.toggle('folded', isPanelFolded);
+      btnFold.textContent = isPanelFolded ? '+' : '−';
+    });
+
+    // Pestaña activa: 'slice' | 'focus' | 'dandelin'
+    type SceneTab = 'slice' | 'focus' | 'dandelin';
+    let activeTab: SceneTab = 'slice';
+
+    // Animación automática Dandelin
+    let isDandelinAnimating = false;
+    let dandelinAnimAngle = 45;
+
+    // Estado del plano secante
+    let betaDeg = 0; // Inclinación en grados respecto a la base horizontal (0 = horizontal = círculo)
+    let planeOffset = 1.0; // Desplazamiento z0 en el eje vertical
+    let targetBetaDeg: number | null = null;
+    let betaTweenStart = 0;
+    let betaTweenFrom = 0;
+    let betaTweenDur = 450;
+
+    // Estado de la definición foco-directriz
+    let eccValue = 0.60;
+    let semiLatusValue = 1.50;
+    let probeAngleDeg = 45;
+
+    // Estado de Dandelin
+    let dandelinBetaDeg = 30;
+    let dandelinPointDeg = 45;
+
+    // Ángulo del cono (semiángulo vertical fijo de 45° = π/4)
+    const ALPHA = Math.PI / 4; // 45°
+    const TAN_ALPHA = 1.0;     // tan(45°) = 1
+
+    // =========================================================================
+    // VISTAS Y CÁMARA 3D
+    // =========================================================================
+    const VIEWS = {
+      slice: {
+        iso:   { az: -0.85, el: 0.35, dist: 9.8, tx: 0, ty: 0.3, tz: 0 },
+        front: { az: 0.0,   el: 0.0,  dist: 9.5, tx: 0, ty: 0.3, tz: 0 },
+        top:   { az: 0.0,   el: 1.53, dist: 9.8, tx: 0, ty: 0.3, tz: 0 },
+        plane: { az: -1.57, el: 0.52, dist: 9.0, tx: 0, ty: 0.5, tz: 0 }
+      },
+      focus: {
+        iso:   { az: -0.001, el: 1.56, dist: 8.5, tx: 0.5, ty: 0, tz: 0 },
+        front: { az: 0.0,    el: 0.0,  dist: 8.5, tx: 0.5, ty: 0, tz: 0 },
+        top:   { az: -0.001, el: 1.56, dist: 8.5, tx: 0.5, ty: 0, tz: 0 },
+        plane: { az: -0.5,   el: 0.4,  dist: 9.0, tx: 0.5, ty: 0, tz: 0 }
+      },
+      dandelin: {
+        iso:   { az: -1.05, el: 0.28, dist: 10.5, tx: 0, ty: 0.8, tz: 0 },
+        front: { az: 0.0,   el: 0.05, dist: 10.0, tx: 0, ty: 0.8, tz: 0 },
+        top:   { az: 0.0,   el: 1.53, dist: 10.5, tx: 0, ty: 0.8, tz: 0 },
+        plane: { az: -1.57, el: 0.52, dist: 9.5,  tx: 0, ty: 0.8, tz: 0 }
+      }
+    };
+
+    let cam = { ...VIEWS.slice.iso };
+    let camTween: { from: typeof cam; to: typeof cam; start: number; dur: number } | null = null;
+
+    // Dimensiones y proyección
+    let W = 0, H = 0, DPR = 1, FOCAL = 850, CX = 0, CY = 0;
+
+    const resize = () => {
+      DPR = Math.min(2.5, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * DPR);
+      canvas.height = Math.round(H * DPR);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      CX = W / 2;
+      CY = H / 2;
+      FOCAL = 1.15 * Math.min(H, W * 1.05);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Matemáticas vectoriales 3D
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const add = (a: Pt3, b: Pt3): Pt3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    const scale = (a: Pt3, s: number): Pt3 => [a[0] * s, a[1] * s, a[2] * s];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+    const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      // Espacio 3D: X hacia derecha, Y vertical (hacia arriba), Z en profundidad
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const project = (p: Pt3, c: ReturnType<typeof makeCam>): { p2: Pt2; z: number; visible: boolean } => {
+      const d = sub(p, c.eye);
+      const zCam = dot3(d, c.f);
+      if (zCam <= 0.05) return { p2: [0, 0], z: zCam, visible: false };
+      const xCam = dot3(d, c.r);
+      const yCam = dot3(d, c.u);
+      const s = FOCAL / zCam;
+      return {
+        p2: [CX + xCam * s, CY - yCam * s],
+        z: zCam,
+        visible: true,
+      };
+    };
+
+    // =========================================================================
+    // DIBUJADO PRIMITIVAS 2D / 3D
+    // =========================================================================
+    const line3 = (
+      C: ReturnType<typeof makeCam>,
+      a: Pt3,
+      b: Pt3,
+      col: string,
+      w = 1.5,
+      dash: number[] = []
+    ) => {
+      const pa = project(a, C);
+      const pb = project(b, C);
+      if (!pa.visible && !pb.visible) return;
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = w;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(pa.p2[0], pa.p2[1]);
+      ctx.lineTo(pb.p2[0], pb.p2[1]);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const dot3D = (
+      C: ReturnType<typeof makeCam>,
+      p: Pt3,
+      r: number,
+      fill: string,
+      stroke = '#ffffff',
+      sw = 1.5
+    ) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = sw;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      if (sw > 0) ctx.stroke();
+      ctx.restore();
+    };
+
+    const label3D = (
+      C: ReturnType<typeof makeCam>,
+      p: Pt3,
+      txt: string,
+      col = '#f8fafc',
+      bg = 'rgba(15, 23, 42, 0.75)',
+      font = '12px system-ui'
+    ) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.font = font;
+      const tw = ctx.measureText(txt).width;
+      const x = pp.p2[0] + 8;
+      const y = pp.p2[1] - 8;
+      if (bg) {
+        ctx.fillStyle = bg;
+        ctx.fillRect(x - 4, y - 11, tw + 8, 16);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x - 4, y - 11, tw + 8, 16);
+      }
+      ctx.fillStyle = col;
+      ctx.fillText(txt, x, y + 1);
+      ctx.restore();
+    };
+
+    // =========================================================================
+    // DIBUJO DEL CONO DOBLE (ESCENA 1)
+    // =========================================================================
+    const drawDoubleCone = (C: ReturnType<typeof makeCam>) => {
+      const H_CONE = 2.4;
+      const NUM_GENERATORS = 16;
+      const R_MAX = H_CONE * TAN_ALPHA; // 2.4
+
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const genColor = isDark ? 'rgba(56, 189, 248, 0.22)' : 'rgba(2, 132, 199, 0.25)';
+      const ringColor = isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(2, 132, 199, 0.18)';
+      const axisColor = isDark ? 'rgba(148, 163, 184, 0.35)' : 'rgba(100, 116, 139, 0.4)';
+
+      // Eje vertical principal (Y)
+      line3(C, [0, -H_CONE * 1.15, 0], [0, H_CONE * 1.15, 0], axisColor, 1.2, [4, 4]);
+      label3D(C, [0, H_CONE * 1.2, 0], 'Eje del Cono (Y)', isDark ? '#94a3b8' : '#475569');
+
+      // Vértice central en el origen (0, 0, 0)
+      dot3D(C, [0, 0, 0], 4, '#38bdf8', '#ffffff', 1.5);
+      label3D(C, [0, 0, 0], 'Vértice (0,0,0)', '#38bdf8');
+
+      // Generatrices (rectas que pasan por el vértice y van desde el cono inferior al superior)
+      for (let i = 0; i < NUM_GENERATORS; i++) {
+        const theta = (i / NUM_GENERATORS) * Math.PI * 2;
+        const cosT = Math.cos(theta);
+        const sinT = Math.sin(theta);
+
+        const topPt: Pt3 = [R_MAX * cosT, H_CONE, R_MAX * sinT];
+        const botPt: Pt3 = [-R_MAX * cosT, -H_CONE, -R_MAX * sinT];
+
+        // Manto superior
+        line3(C, [0, 0, 0], topPt, genColor, 1.0);
+        // Manto inferior (si está habilitado)
+        if (cDoubleCone.checked) {
+          line3(C, [0, 0, 0], botPt, genColor, 0.8, [3, 3]);
+        }
+      }
+
+      // Anillos circulares en diferentes alturas
+      const yRings = [0.6, 1.2, 1.8, H_CONE];
+      const SAMPLES = 48;
+
+      yRings.forEach((y) => {
+        const r = y * TAN_ALPHA;
+        // Anillo superior
+        ctx.save();
+        ctx.strokeStyle = ringColor;
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        let first = true;
+        for (let j = 0; j <= SAMPLES; j++) {
+          const t = (j / SAMPLES) * Math.PI * 2;
+          const pt: Pt3 = [r * Math.cos(t), y, r * Math.sin(t)];
+          const pr = project(pt, C);
+          if (pr.visible) {
+            if (first) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              first = false;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Anillo inferior
+        if (cDoubleCone.checked) {
+          ctx.save();
+          ctx.strokeStyle = ringColor;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          first = true;
+          for (let j = 0; j <= SAMPLES; j++) {
+            const t = (j / SAMPLES) * Math.PI * 2;
+            const pt: Pt3 = [r * Math.cos(t), -y, r * Math.sin(t)];
+            const pr = project(pt, C);
+            if (pr.visible) {
+              if (first) {
+                ctx.moveTo(pr.p2[0], pr.p2[1]);
+                first = false;
+              } else {
+                ctx.lineTo(pr.p2[0], pr.p2[1]);
+              }
+            }
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+    };
+
+    // =========================================================================
+    // DIBUJO DEL PLANO SECANTE Y DE LA CURVA CÓNICA (ESCENA 1)
+    // =========================================================================
+    const drawCuttingPlaneAndConic = (C: ReturnType<typeof makeCam>) => {
+      const betaRad = (betaDeg * Math.PI) / 180;
+      const cosB = Math.cos(betaRad);
+      const sinB = Math.sin(betaRad);
+
+      // En nuestro espacio 3D:
+      // Cono con eje vertical Y: x^2 + z^2 = y^2
+      // El plano tiene inclinación β respecto al plano horizontal X-Z.
+      // Cuando β = 0°, el plano es horizontal: y = offset.
+      // Normal del plano: n = (-sinβ, cosβ, 0) o girado en X: n = (0, cosβ, -sinβ)
+      // Tomamos inclinación a lo largo de X:
+      // Ecuación del plano: y cosβ - x sinβ = offset * cosβ = d
+      // Por tanto: y = d/cosβ + x tanβ = y0 + x tanβ
+      const y0 = planeOffset; // altura en el centro x = 0
+
+      // Polígono del plano para visualización (cuadrilátero 3D)
+      if (cPlane.checked) {
+        const halfWidthZ = 2.4;
+        const halfLengthX = 2.6;
+
+        // Vector longitudinal del plano: u = (cosβ, sinβ, 0)
+        // Vector transversal: v = (0, 0, 1)
+        // Centro del plano en X = 0: C_plane = (0, y0, 0)
+        const p1: Pt3 = [-halfLengthX * cosB, y0 - halfLengthX * sinB, -halfWidthZ];
+        const p2: Pt3 = [ halfLengthX * cosB, y0 + halfLengthX * sinB, -halfWidthZ];
+        const p3: Pt3 = [ halfLengthX * cosB, y0 + halfLengthX * sinB,  halfWidthZ];
+        const p4: Pt3 = [-halfLengthX * cosB, y0 - halfLengthX * sinB,  halfWidthZ];
+
+        const pr1 = project(p1, C);
+        const pr2 = project(p2, C);
+        const pr3 = project(p3, C);
+        const pr4 = project(p4, C);
+
+        if (pr1.visible && pr2.visible && pr3.visible && pr4.visible) {
+          ctx.save();
+          // Relleno translúcido
+          ctx.fillStyle = 'rgba(168, 85, 247, 0.14)';
+          ctx.beginPath();
+          ctx.moveTo(pr1.p2[0], pr1.p2[1]);
+          ctx.lineTo(pr2.p2[0], pr2.p2[1]);
+          ctx.lineTo(pr3.p2[0], pr3.p2[1]);
+          ctx.lineTo(pr4.p2[0], pr4.p2[1]);
+          ctx.closePath();
+          ctx.fill();
+
+          // Borde del plano
+          ctx.strokeStyle = 'rgba(168, 85, 247, 0.65)';
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
+
+          // Línea central de máxima pendiente del plano
+          const pCenterA: Pt3 = [-halfLengthX * cosB, y0 - halfLengthX * sinB, 0];
+          const pCenterB: Pt3 = [ halfLengthX * cosB, y0 + halfLengthX * sinB, 0];
+          line3(C, pCenterA, pCenterB, 'rgba(192, 132, 252, 0.45)', 1.0, [4, 4]);
+
+          ctx.restore();
+        }
+      }
+
+      // =======================================================================
+      // CURVA DE INTERSECCIÓN (CÓNICA EXACTA EN 3D)
+      // =======================================================================
+      if (cCurve.checked) {
+        // Cono: x^2 + z^2 = y^2 => radio r en el plano X-Z a la altura y es r = |y|
+        // Para cada rayo del cono con azimut θ en el plano X-Z:
+        // x = t cosθ, z = t sinθ, y = t (para cono superior t > 0, inferior t < 0)
+        // Intersección con el plano y cosβ - x sinβ = y0 cosβ:
+        // t cosβ - t cosθ sinβ = y0 cosβ
+        // t (cosβ - sinβ cosθ) = y0 cosβ
+        // => t(θ) = (y0 cosβ) / (cosβ - sinβ cosθ) = y0 / (1 - tanβ cosθ)
+        // ¡Esta es exactamente la ecuación polar unificada con excentricidad e = tanβ / tanα = tanβ!
+        const tanB = Math.tan(betaRad);
+        const ecc = tanB; // dado que tan(α) = tan(45°) = 1
+
+        const SAMPLES = 200;
+        const upperPts: Pt3[] = [];
+        const lowerPts: Pt3[] = [];
+        const Y_MAX_CLIP = 2.6;
+
+        if (betaDeg < 44.5) {
+          // ================= ELIPSE O CÍRCULO (CURVA CERRADA) =================
+          for (let i = 0; i <= SAMPLES; i++) {
+            const theta = (i / SAMPLES) * Math.PI * 2;
+            const denom = 1 - tanB * Math.cos(theta);
+            if (denom > 0.001) {
+              const t = y0 / denom;
+              if (t > 0 && t <= Y_MAX_CLIP * 1.5) {
+                upperPts.push([t * Math.cos(theta), t, t * Math.sin(theta)]);
+              }
+            }
+          }
+        } else if (betaDeg >= 44.5 && betaDeg <= 45.5) {
+          // ================= PARÁBOLA (CURVA ABIERTA) =================
+          // denom = 1 - cosθ. Tiende a infinito en θ = 0.
+          for (let i = 1; i < SAMPLES; i++) {
+            const theta = -Math.PI + (i / SAMPLES) * (Math.PI * 2);
+            if (Math.abs(theta) > 0.1) {
+              const denom = 1 - Math.cos(theta);
+              const t = y0 / denom;
+              if (t > 0 && t <= Y_MAX_CLIP) {
+                upperPts.push([t * Math.cos(theta), t, t * Math.sin(theta)]);
+              }
+            }
+          }
+        } else {
+          // ================= HIPÉRBOLA (DOS RAMAS: SUPERIOR E INFERIOR) =================
+          // denom = 1 - tanβ cosθ = 0 cuando cosθ = 1 / tanβ
+          const thetaCrit = Math.acos(1 / tanB);
+
+          // Rama superior (t > 0, manto superior del cono): |θ| > thetaCrit
+          for (let i = 0; i <= SAMPLES; i++) {
+            const f = i / SAMPLES;
+            // De thetaCrit + eps a 2π - thetaCrit - eps
+            const theta = (thetaCrit + 0.03) + f * (Math.PI * 2 - 2 * thetaCrit - 0.06);
+            const denom = 1 - tanB * Math.cos(theta);
+            if (denom > 0.001) {
+              const t = y0 / denom;
+              if (t > 0 && t <= Y_MAX_CLIP) {
+                upperPts.push([t * Math.cos(theta), t, t * Math.sin(theta)]);
+              }
+            }
+          }
+
+          // Rama inferior (t < 0, manto inferior del cono): |θ| < thetaCrit
+          if (cDoubleCone.checked) {
+            for (let i = 0; i <= SAMPLES; i++) {
+              const f = i / SAMPLES;
+              const theta = -(thetaCrit - 0.03) + f * 2 * (thetaCrit - 0.03);
+              const denom = 1 - tanB * Math.cos(theta);
+              if (denom < -0.001) {
+                const t = y0 / denom; // t es negativo
+                if (Math.abs(t) <= Y_MAX_CLIP) {
+                  lowerPts.push([t * Math.cos(theta), t, t * Math.sin(theta)]);
+                }
+              }
+            }
+          }
+        }
+
+        // Trazado de la rama superior
+        if (upperPts.length > 1) {
+          ctx.save();
+          ctx.strokeStyle = '#f59e0b'; // Ámbar brillante neón
+          ctx.lineWidth = 3.5;
+          ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          let started = false;
+          upperPts.forEach((p) => {
+            const pr = project(p, C);
+            if (pr.visible) {
+              if (!started) {
+                ctx.moveTo(pr.p2[0], pr.p2[1]);
+                started = true;
+              } else {
+                ctx.lineTo(pr.p2[0], pr.p2[1]);
+              }
+            } else {
+              started = false;
+            }
+          });
+          if (betaDeg < 44.5 && upperPts.length > 20) {
+            ctx.closePath();
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Trazado de la rama inferior (en hipérbola)
+        if (lowerPts.length > 1) {
+          ctx.save();
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 3.5;
+          ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          let started = false;
+          lowerPts.forEach((p) => {
+            const pr = project(p, C);
+            if (pr.visible) {
+              if (!started) {
+                ctx.moveTo(pr.p2[0], pr.p2[1]);
+                started = true;
+              } else {
+                ctx.lineTo(pr.p2[0], pr.p2[1]);
+              }
+            } else {
+              started = false;
+            }
+          });
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Focos y centro sobre el plano (cuando cFoci está activo)
+        if (cFoci.checked) {
+          if (betaDeg < 44.5) {
+            // Elipse o círculo
+            // Centro de la elipse
+            const tMin = y0 / (1 + tanB); // en θ = π
+            const tMax = y0 / (1 - tanB); // en θ = 0
+            const xA = -tMin, yA = tMin;
+            const xB =  tMax, yB = tMax;
+            const xCenter = (xA + xB) / 2;
+            const yCenter = (yA + yB) / 2;
+            const centerPt: Pt3 = [xCenter, yCenter, 0];
+
+            dot3D(C, centerPt, 3.5, '#a855f7', '#ffffff', 1.5);
+            label3D(C, centerPt, 'Centro', '#c084fc');
+
+            if (betaDeg > 2) {
+              // Semieje mayor a
+              const a = (tMax + tMin) / 2;
+              const cDist = a * ecc; // c = a * e
+              // Los focos están a lo largo del vector u del plano
+              const uSlope: Pt3 = [cosB, sinB, 0];
+              const f1: Pt3 = add(centerPt, scale(uSlope, cDist));
+              const f2: Pt3 = add(centerPt, scale(uSlope, -cDist));
+
+              dot3D(C, f1, 4, '#10b981', '#ffffff', 1.5);
+              label3D(C, f1, 'F₁ (Foco)', '#34d399');
+
+              dot3D(C, f2, 4, '#10b981', '#ffffff', 1.5);
+              label3D(C, f2, 'F₂ (Foco)', '#34d399');
+            }
+          } else if (betaDeg >= 44.5 && betaDeg <= 45.5) {
+            // Parábola: un único foco
+            const fPt: Pt3 = [0, y0 * 0.75, 0];
+            dot3D(C, fPt, 4.5, '#10b981', '#ffffff', 1.5);
+            label3D(C, fPt, 'Foco (F)', '#34d399');
+          } else {
+            // Hipérbola: dos focos (uno en cada rama)
+            const f1: Pt3 = [1.2 * cosB, y0 + 1.2 * sinB, 0];
+            const f2: Pt3 = [-0.6 * cosB, y0 - 0.6 * sinB, 0];
+            dot3D(C, f1, 4, '#10b981', '#ffffff', 1.5);
+            label3D(C, f1, 'F₁ (Foco sup)', '#34d399');
+            if (cDoubleCone.checked) {
+              dot3D(C, f2, 4, '#10b981', '#ffffff', 1.5);
+              label3D(C, f2, 'F₂ (Foco inf)', '#34d399');
+            }
+          }
+        }
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 2: DEFINICIÓN POLAR FOCO & DIRECTRIZ
+    // =========================================================================
+    const drawFocusDirectrixScene = (C: ReturnType<typeof makeCam>) => {
+      // Dibujamos en el plano 2D centrado en el foco F = (0, 0, 0)
+      // Ecuación polar: r(θ) = p / (1 + e cosθ)
+      // Directriz en x = p / e
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const axisColor = isDark ? 'rgba(148, 163, 184, 0.3)' : 'rgba(100, 116, 139, 0.35)';
+
+      // Ejes coordenados cartesianos
+      line3(C, [-4.5, 0, 0], [4.5, 0, 0], axisColor, 1.2);
+      line3(C, [0, -4.0, 0], [0, 4.0, 0], axisColor, 1.2);
+      label3D(C, [4.6, 0, 0], 'Eje Polar / Focal (X)', isDark ? '#94a3b8' : '#475569');
+      label3D(C, [0, 4.1, 0], 'Y', isDark ? '#94a3b8' : '#475569');
+
+      // Foco en el origen
+      const focusPt: Pt3 = [0, 0, 0];
+      dot3D(C, focusPt, 5, '#10b981', '#ffffff', 2);
+      label3D(C, focusPt, 'Foco Principal F (0,0)', '#34d399');
+
+      // Directriz vertical: x = p / e
+      if (eccValue > 0.05) {
+        const xDir = semiLatusValue / eccValue;
+        const dirTop: Pt3 = [xDir, 3.8, 0];
+        const dirBot: Pt3 = [xDir, -3.8, 0];
+        line3(C, dirBot, dirTop, '#ef4444', 2.0, [6, 4]);
+        label3D(C, dirTop, `Directriz: x = p/e = ${xDir.toFixed(2)}`, '#f87171');
+      }
+
+      // Trazado de la cónica
+      const SAMPLES = 240;
+      const conicPts: Pt3[] = [];
+      const lowerBranchPts: Pt3[] = [];
+
+      if (eccValue < 0.99) {
+        // Círculo o Elipse (curva cerrada)
+        for (let i = 0; i <= SAMPLES; i++) {
+          const theta = (i / SAMPLES) * Math.PI * 2;
+          const r = semiLatusValue / (1 + eccValue * Math.cos(theta));
+          conicPts.push([r * Math.cos(theta), r * Math.sin(theta), 0]);
+        }
+      } else if (eccValue >= 0.99 && eccValue <= 1.01) {
+        // Parábola
+        for (let i = 1; i < SAMPLES; i++) {
+          const theta = -Math.PI + (i / SAMPLES) * (Math.PI * 2);
+          if (Math.abs(theta) > 0.15) {
+            const r = semiLatusValue / (1 + Math.cos(theta));
+            if (r < 8.0) {
+              conicPts.push([r * Math.cos(theta), r * Math.sin(theta), 0]);
+            }
+          }
+        }
+      } else {
+        // Hipérbola (dos ramas)
+        const thetaAsymptote = Math.acos(-1 / eccValue);
+        // Rama izquierda (rodea al foco F)
+        for (let i = 0; i <= SAMPLES; i++) {
+          const f = i / SAMPLES;
+          const theta = -(thetaAsymptote - 0.08) + f * 2 * (thetaAsymptote - 0.08);
+          const r = semiLatusValue / (1 + eccValue * Math.cos(theta));
+          if (r > 0 && r < 8.0) {
+            conicPts.push([r * Math.cos(theta), r * Math.sin(theta), 0]);
+          }
+        }
+        // Segunda rama
+        for (let i = 0; i <= SAMPLES; i++) {
+          const f = i / SAMPLES;
+          const theta = (thetaAsymptote + 0.08) + f * (Math.PI * 2 - 2 * thetaAsymptote - 0.16);
+          const r = semiLatusValue / (1 + eccValue * Math.cos(theta));
+          if (r < 0 && Math.abs(r) < 8.0) {
+            lowerBranchPts.push([r * Math.cos(theta), r * Math.sin(theta), 0]);
+          }
+        }
+      }
+
+      // Dibujar curva
+      if (conicPts.length > 1) {
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3.5;
+        ctx.shadowColor = 'rgba(245, 158, 11, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        let started = false;
+        conicPts.forEach((p) => {
+          const pr = project(p, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        });
+        if (eccValue < 0.99) ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (lowerBranchPts.length > 1) {
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3.5;
+        ctx.shadowColor = 'rgba(245, 158, 11, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        let started = false;
+        lowerBranchPts.forEach((p) => {
+          const pr = project(p, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        });
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Punto interactivo P(θ)
+      const probeRad = (probeAngleDeg * Math.PI) / 180;
+      const denomP = 1 + eccValue * Math.cos(probeRad);
+      if (Math.abs(denomP) > 0.05) {
+        const rP = semiLatusValue / denomP;
+        if (Math.abs(rP) < 7.0) {
+          const px = rP * Math.cos(probeRad);
+          const py = rP * Math.sin(probeRad);
+          const ptP: Pt3 = [px, py, 0];
+
+          // Distancia al foco d1 = |P - F| = rP
+          const d1 = Math.abs(rP);
+          line3(C, focusPt, ptP, '#38bdf8', 2.0); // Segmento al foco
+
+          // Distancia a la directriz d2 = |x_dir - px|
+          let d2 = 0;
+          if (eccValue > 0.05) {
+            const xDir = semiLatusValue / eccValue;
+            const ptD: Pt3 = [xDir, py, 0];
+            d2 = Math.abs(xDir - px);
+            line3(C, ptP, ptD, '#ef4444', 2.0, [4, 4]); // Segmento a directriz
+            dot3D(C, ptD, 4, '#ef4444', '#ffffff', 1.5);
+            label3D(C, ptD, `D (${xDir.toFixed(2)}, ${py.toFixed(2)})`, '#f87171');
+          }
+
+          dot3D(C, ptP, 6, '#f59e0b', '#ffffff', 2);
+          label3D(C, ptP, `P (${px.toFixed(2)}, ${py.toFixed(2)})`, '#fbbf24');
+
+          // Razón e = d1 / d2
+          const ratio = d2 > 0.001 ? (d1 / d2).toFixed(3) : '∞';
+          label3D(
+            C,
+            [px, py + 0.35, 0],
+            `d₁ = ${d1.toFixed(2)} | d₂ = ${d2.toFixed(2)} | d₁/d₂ = ${ratio}`,
+            '#f8fafc',
+            'rgba(15, 23, 42, 0.85)'
+          );
+        }
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 3: ESFERAS DE DANDELIN (DEMOSTRACIÓN DE 1822)
+    // =========================================================================
+    const drawDandelinScene = (C: ReturnType<typeof makeCam>) => {
+      const betaRad = (dandelinBetaDeg * Math.PI) / 180;
+      const cosB = Math.cos(betaRad);
+      const sinB = Math.sin(betaRad);
+      const tanB = Math.tan(betaRad);
+
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const genColor = isDark ? 'rgba(56, 189, 248, 0.20)' : 'rgba(2, 132, 199, 0.22)';
+
+      // 1. Cono de referencia
+      const H_CONE = 2.8;
+      const R_MAX = H_CONE; // dado que alpha = 45°
+      for (let i = 0; i < 16; i++) {
+        const theta = (i / 16) * Math.PI * 2;
+        const topPt: Pt3 = [R_MAX * Math.cos(theta), H_CONE, R_MAX * Math.sin(theta)];
+        line3(C, [0, 0, 0], topPt, genColor, 1.0);
+      }
+
+      // 2. Plano secante elíptico en y0 = 1.3
+      const y0 = 1.3;
+      const halfL = 2.0;
+      const halfW = 1.8;
+      const pl1: Pt3 = [-halfL * cosB, y0 - halfL * sinB, -halfW];
+      const pl2: Pt3 = [ halfL * cosB, y0 + halfL * sinB, -halfW];
+      const pl3: Pt3 = [ halfL * cosB, y0 + halfL * sinB,  halfW];
+      const pl4: Pt3 = [-halfL * cosB, y0 - halfL * sinB,  halfW];
+
+      const pr1 = project(pl1, C);
+      const pr2 = project(pl2, C);
+      const pr3 = project(pl3, C);
+      const pr4 = project(pl4, C);
+
+      if (pr1.visible && pr2.visible && pr3.visible && pr4.visible) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
+        ctx.beginPath();
+        ctx.moveTo(pr1.p2[0], pr1.p2[1]);
+        ctx.lineTo(pr2.p2[0], pr2.p2[1]);
+        ctx.lineTo(pr3.p2[0], pr3.p2[1]);
+        ctx.lineTo(pr4.p2[0], pr4.p2[1]);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 3. Trazado de la elipse de corte
+      const SAMPLES = 90;
+      const ellipsePts: Pt3[] = [];
+      for (let i = 0; i <= SAMPLES; i++) {
+        const theta = (i / SAMPLES) * Math.PI * 2;
+        const denom = 1 - tanB * Math.cos(theta);
+        if (denom > 0.05) {
+          const t = y0 / denom;
+          ellipsePts.push([t * Math.cos(theta), t, t * Math.sin(theta)]);
+        }
+      }
+
+      if (ellipsePts.length > 2) {
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3.0;
+        ctx.beginPath();
+        let started = false;
+        ellipsePts.forEach((p) => {
+          const pr = project(p, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        });
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 4. Esferas de Dandelin inscritas en el cono
+      // Esfera Superior (grande): inscrita por encima del plano
+      // Esfera Inferior (pequeña): inscrita por debajo del plano
+      // En un cono de 45°: centro en (0, y_s, 0), radio r_s = y_s * sin(45°) = y_s / sqrt(2)
+      // Tangencia al plano secante da las alturas exactas:
+      const y_upper = y0 * 1.55;
+      const r_upper = y_upper * 0.7071;
+      const y_lower = y0 * 0.62;
+      const r_lower = y_lower * 0.7071;
+
+      // Dibujar wireframe de las dos esferas de Dandelin
+      const drawSphereWireframe = (centerY: number, radius: number, strokeCol: string) => {
+        const rings = 4;
+        for (let k = -rings + 1; k < rings; k++) {
+          const phi = (k / rings) * (Math.PI / 2);
+          const rRing = radius * Math.cos(phi);
+          const yRing = centerY + radius * Math.sin(phi);
+
+          ctx.save();
+          ctx.strokeStyle = strokeCol;
+          ctx.lineWidth = 0.9;
+          ctx.beginPath();
+          let started = false;
+          for (let j = 0; j <= 36; j++) {
+            const th = (j / 36) * Math.PI * 2;
+            const pt: Pt3 = [rRing * Math.cos(th), yRing, rRing * Math.sin(th)];
+            const pr = project(pt, C);
+            if (pr.visible) {
+              if (!started) {
+                ctx.moveTo(pr.p2[0], pr.p2[1]);
+                started = true;
+              } else {
+                ctx.lineTo(pr.p2[0], pr.p2[1]);
+              }
+            }
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+      };
+
+      drawSphereWireframe(y_upper, r_upper, 'rgba(56, 189, 248, 0.35)');
+      drawSphereWireframe(y_lower, r_lower, 'rgba(16, 185, 129, 0.35)');
+
+      // Círculos de contacto de las esferas con el cono (C1 y C2)
+      const drawContactCircle = (y: number, col: string, name: string) => {
+        const r = y;
+        ctx.save();
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        let started = false;
+        for (let j = 0; j <= 48; j++) {
+          const th = (j / 48) * Math.PI * 2;
+          const pt: Pt3 = [r * Math.cos(th), y, r * Math.sin(th)];
+          const pr = project(pt, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        }
+        ctx.stroke();
+        label3D(C, [r, y, 0], name, col);
+        ctx.restore();
+      };
+
+      drawContactCircle(y_upper * 0.7071 * 1.414, '#38bdf8', 'Círculo Contacto C₁');
+      drawContactCircle(y_lower * 0.7071 * 1.414, '#10b981', 'Círculo Contacto C₂');
+
+      // Puntos de tangencia de las esferas con el plano (Focos F1 y F2)
+      // Centro de la elipse
+      const tMin = y0 / (1 + tanB);
+      const tMax = y0 / (1 - tanB);
+      const a = (tMax + tMin) / 2;
+      const cEcc = a * tanB;
+      const xMid = (tMax - tMin) / 2;
+      const yMid = y0 + xMid * tanB;
+      const centerEl: Pt3 = [xMid, yMid, 0];
+
+      const uDir: Pt3 = [cosB, sinB, 0];
+      const f1: Pt3 = add(centerEl, scale(uDir, cEcc));
+      const f2: Pt3 = add(centerEl, scale(uDir, -cEcc));
+
+      dot3D(C, f1, 5, '#38bdf8', '#ffffff', 2);
+      label3D(C, f1, 'F₁ (Tangencia Esfera Sup)', '#38bdf8');
+
+      dot3D(C, f2, 5, '#10b981', '#ffffff', 2);
+      label3D(C, f2, 'F₂ (Tangencia Esfera Inf)', '#10b981');
+
+      // 5. Punto P dinámico sobre la elipse
+      const pRad = (dandelinPointDeg * Math.PI) / 180;
+      const tP = y0 / (1 - tanB * Math.cos(pRad));
+      const ptP: Pt3 = [tP * Math.cos(pRad), tP, tP * Math.sin(pRad)];
+
+      // Rayo generatriz que pasa por P
+      const genTop: Pt3 = [H_CONE * Math.cos(pRad), H_CONE, H_CONE * Math.sin(pRad)];
+      line3(C, [0, 0, 0], genTop, 'rgba(251, 191, 36, 0.4)', 1.2, [3, 3]);
+
+      // Segmentos focales PF1 y PF2
+      line3(C, ptP, f1, '#38bdf8', 2.2);
+      line3(C, ptP, f2, '#10b981', 2.2);
+
+      dot3D(C, ptP, 6, '#f59e0b', '#ffffff', 2);
+      label3D(C, ptP, 'P (Punto sobre la Elipse)', '#fbbf24');
+
+      // Distancias exactas
+      const distF1 = Math.hypot(ptP[0] - f1[0], ptP[1] - f1[1], ptP[2] - f1[2]);
+      const distF2 = Math.hypot(ptP[0] - f2[0], ptP[1] - f2[1], ptP[2] - f2[2]);
+      const sumDist = distF1 + distF2;
+
+      label3D(
+        C,
+        [ptP[0], ptP[1] + 0.3, ptP[2]],
+        `|PF₁| + |PF₂| = ${distF1.toFixed(2)} + ${distF2.toFixed(2)} = ${sumDist.toFixed(2)} (CONSTANTE 2a)`,
+        '#f8fafc',
+        'rgba(15, 23, 42, 0.88)'
+      );
+    };
+
+    // =========================================================================
+    // ACTUALIZACIÓN DE TELEMETRÍA Y FÓRMULAS LATEX
+    // =========================================================================
+    const updateTelemetry = () => {
+      if (activeTab === 'slice') {
+        const betaRad = (betaDeg * Math.PI) / 180;
+        const ecc = Math.tan(betaRad);
+        tmBeta.textContent = `${betaDeg.toFixed(1)}°`;
+        tmEcc.textContent = ecc.toFixed(3);
+
+        let conicType = 'CIRCUNFERENCIA';
+        let conditionText = 'β = 0° (Plano horizontal, corte perpendicular al eje)';
+        let latexEq = '';
+
+        if (betaDeg < 1.0) {
+          conicType = 'CIRCUNFERENCIA';
+          conditionText = 'β = 0° < α = 45° · Excentricidad e = 0';
+          latexEq = String.raw`x^2 + y^2 = r^2 \quad \Longleftrightarrow \quad e = 0`;
+        } else if (betaDeg < 44.5) {
+          conicType = 'ELIPSE';
+          conditionText = `β = ${betaDeg.toFixed(1)}° < α = 45° · Excentricidad 0 < e < 1`;
+          latexEq = String.raw`\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 \quad \Longleftrightarrow \quad e = \tan\beta \approx ${ecc.toFixed(2)}`;
+        } else if (betaDeg >= 44.5 && betaDeg <= 45.5) {
+          conicType = 'PARÁBOLA';
+          conditionText = 'β = α = 45° (Plano paralelo a la generatriz) · e = 1';
+          latexEq = String.raw`y^2 = 4px \quad \Longleftrightarrow \quad e = \tan(45^\circ) = 1.000`;
+        } else {
+          conicType = 'HIPÉRBOLA';
+          conditionText = `β = ${betaDeg.toFixed(1)}° > α = 45° (Corta ambos mantos) · e > 1`;
+          latexEq = String.raw`\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 \quad \Longleftrightarrow \quad e = \tan\beta \approx ${ecc.toFixed(2)} > 1`;
+        }
+
+        teleConicPill.textContent = conicType;
+        teleCondition.textContent = conditionText;
+
+        // Actualizar badges en botones de preset
+        presetBtns.forEach((btn) => {
+          const c = btn.getAttribute('data-conic');
+          const isMatch =
+            (c === 'circle' && conicType === 'CIRCUNFERENCIA') ||
+            (c === 'ellipse' && conicType === 'ELIPSE') ||
+            (c === 'parabola' && conicType === 'PARÁBOLA') ||
+            (c === 'hyperbola' && conicType === 'HIPÉRBOLA');
+          btn.classList.toggle('active', isMatch);
+        });
+
+        try {
+          katex.render(latexEq, teleEqBox, { displayMode: true, throwOnError: false });
+        } catch {
+          teleEqBox.textContent = latexEq;
+        }
+      } else if (activeTab === 'focus') {
+        tmBeta.textContent = '—';
+        tmEcc.textContent = eccValue.toFixed(3);
+
+        let conicType = 'ELIPSE';
+        if (eccValue < 0.05) conicType = 'CIRCUNFERENCIA';
+        else if (eccValue < 0.99) conicType = 'ELIPSE';
+        else if (eccValue <= 1.01) conicType = 'PARÁBOLA';
+        else conicType = 'HIPÉRBOLA';
+
+        teleConicPill.textContent = conicType;
+        teleCondition.textContent = `Definición Unificada: d(P, F) / d(P, Directriz) = e = ${eccValue.toFixed(2)}`;
+
+        const latexEq = String.raw`r(\theta) = \frac{p}{1 + e\cos\theta} = \frac{${semiLatusValue.toFixed(2)}}{1 + ${eccValue.toFixed(2)}\cos\theta}`;
+        try {
+          katex.render(latexEq, teleEqBox, { displayMode: true, throwOnError: false });
+        } catch {
+          teleEqBox.textContent = latexEq;
+        }
+      } else {
+        // Dandelin
+        tmBeta.textContent = `${dandelinBetaDeg}°`;
+        tmEcc.textContent = Math.tan((dandelinBetaDeg * Math.PI) / 180).toFixed(3);
+        teleConicPill.textContent = 'ESFERAS DE DANDELIN';
+        teleCondition.textContent = 'Demostración Geométrica de los Focos (1822)';
+
+        const latexEq = String.raw`|PF_1| + |PF_2| = |PQ_1| + |PQ_2| = \text{dist}(C_1, C_2) = 2a = \text{cte}`;
+        try {
+          katex.render(latexEq, teleEqBox, { displayMode: true, throwOnError: false });
+        } catch {
+          teleEqBox.textContent = latexEq;
+        }
+      }
+    };
+
+    // =========================================================================
+    // GESTIÓN DE PRESETS DE CÓNICAS (ESTABLECER VISUALMENTE)
+    // =========================================================================
+    const setConicPreset = (conic: 'circle' | 'ellipse' | 'parabola' | 'hyperbola') => {
+      // Si estamos en otra pestaña, cambiamos a la pestaña 1 (corte del cono)
+      if (activeTab !== 'slice') {
+        switchTab('slice');
+      }
+
+      let targetBeta = 0;
+      if (conic === 'circle') targetBeta = 0;
+      else if (conic === 'ellipse') targetBeta = 30;
+      else if (conic === 'parabola') targetBeta = 45;
+      else if (conic === 'hyperbola') targetBeta = 60;
+
+      // Iniciar tween suave
+      targetBetaDeg = targetBeta;
+      betaTweenFrom = betaDeg;
+      betaTweenStart = performance.now();
+      betaTweenDur = 500;
+    };
+
+    presetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const conic = btn.getAttribute('data-conic') as 'circle' | 'ellipse' | 'parabola' | 'hyperbola';
+        setConicPreset(conic);
+      });
+    });
+
+    // =========================================================================
+    // EVENTOS DE CONTROLES SLIDERS
+    // =========================================================================
+    rBeta.addEventListener('input', () => {
+      targetBetaDeg = null; // cancelar tween si el usuario arrastra manualmente
+      betaDeg = parseFloat(rBeta.value);
+      vBeta.textContent = `${betaDeg.toFixed(1)}°`;
+      updateTelemetry();
+    });
+
+    btnBetaMinus.addEventListener('click', () => {
+      betaDeg = Math.max(0, betaDeg - 1);
+      rBeta.value = betaDeg.toString();
+      vBeta.textContent = `${betaDeg.toFixed(1)}°`;
+      updateTelemetry();
+    });
+
+    btnBetaPlus.addEventListener('click', () => {
+      betaDeg = Math.min(75, betaDeg + 1);
+      rBeta.value = betaDeg.toString();
+      vBeta.textContent = `${betaDeg.toFixed(1)}°`;
+      updateTelemetry();
+    });
+
+    rOffset.addEventListener('input', () => {
+      planeOffset = parseFloat(rOffset.value);
+      vOffset.textContent = planeOffset.toFixed(2);
+    });
+
+    rEcc.addEventListener('input', () => {
+      eccValue = parseFloat(rEcc.value);
+      vEcc.textContent = eccValue.toFixed(2);
+      updateTelemetry();
+    });
+
+    rSemiLatus.addEventListener('input', () => {
+      semiLatusValue = parseFloat(rSemiLatus.value);
+      vSemiLatus.textContent = semiLatusValue.toFixed(2);
+      updateTelemetry();
+    });
+
+    rProbeAngle.addEventListener('input', () => {
+      probeAngleDeg = parseFloat(rProbeAngle.value);
+      vProbeAngle.textContent = `${probeAngleDeg}°`;
+    });
+
+    rDandelinAngle.addEventListener('input', () => {
+      dandelinBetaDeg = parseFloat(rDandelinAngle.value);
+      vDandelinAngle.textContent = `${dandelinBetaDeg}°`;
+      updateTelemetry();
+    });
+
+    rPointPos.addEventListener('input', () => {
+      dandelinPointDeg = parseFloat(rPointPos.value);
+      vPointPos.textContent = `${dandelinPointDeg}°`;
+    });
+
+    btnToggleAnimDandelin.addEventListener('click', () => {
+      isDandelinAnimating = !isDandelinAnimating;
+      btnToggleAnimDandelin.classList.toggle('active', isDandelinAnimating);
+      animDandelinIcon.textContent = isDandelinAnimating ? '⏸' : '▶';
+      animDandelinText.textContent = isDandelinAnimating ? 'Pausar Punto P' : 'Animar Punto P';
+    });
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE PESTAÑAS
+    // =========================================================================
+    const switchTab = (tab: SceneTab) => {
+      activeTab = tab;
+      tabBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+
+      document.querySelectorAll('.tab-slice-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'slice' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-focus-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'focus' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-dandelin-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'dandelin' ? 'block' : 'none';
+      });
+
+      // Animar cámara a la vista iso por defecto de la pestaña
+      const targetCam = VIEWS[tab].iso;
+      camTween = {
+        from: { ...cam },
+        to: { ...targetCam },
+        start: performance.now(),
+        dur: 600,
+      };
+
+      camBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-view') === 'iso'));
+      updateTelemetry();
+      renderGuideContent();
+    };
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab') as SceneTab;
+        switchTab(tab);
+      });
+    });
+
+    // =========================================================================
+    // SELECTOR DE VISTAS DE CÁMARA
+    // =========================================================================
+    camBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const view = btn.getAttribute('data-view') as 'iso' | 'front' | 'top' | 'plane';
+        camBtns.forEach((b) => b.classList.toggle('active', b === btn));
+        const target = VIEWS[activeTab][view] || VIEWS.slice.iso;
+        camTween = {
+          from: { ...cam },
+          to: { ...target },
+          start: performance.now(),
+          dur: 500,
+        };
+      });
+    });
+
+    // =========================================================================
+    // TRATADO DIDÁCTICO Y MODAL PEDAGÓGICO CON KATEX
+    // =========================================================================
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    const typesetMath = (html: string): string => {
+      // 1. Reemplazar bloques display $$ ... $$
+      let res = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        return `<div class="katex-display-wrapper">${renderMathClient(math.trim(), true)}</div>`;
+      });
+      // 2. Reemplazar expresiones inline $ ... $
+      res = res.replace(/\$([^\$\r\n]+?)\$/g, (_, math) => {
+        return renderMathClient(math.trim(), false);
+      });
+      return res;
+    };
+
+    const renderGuideContent = () => {
+      let rawHtml = '';
+
+      if (activeTab === 'slice') {
+        guideModalTitle.textContent = '1. Las Secciones Cónicas de Apolonio de Perge';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>¿Qué es una Sección Cónica?</h3>
+            <p>
+              Hacia el año 200 a.C., el matemático griego <strong>Apolonio de Perge</strong> descubrió en su obra cumbre <em>Las Cónicas</em> que cuatro curvas aparentemente distintas (la circunferencia, la elipse, la parábola y la hipérbola) son en realidad <strong>diferentes cortes de un mismo objeto tridimensional</strong>: el cono circular recto de dos hojas.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>El Criterio Fundamental de los Ángulos: $\\beta$ vs $\\alpha$</h3>
+            <p>
+              Sea $\\alpha$ el semiángulo de apertura del cono (en este simulador $\\alpha = 45^\\circ$, con $\\tan\\alpha = 1$) y $\\beta$ el ángulo de inclinación del plano secante respecto a la base horizontal:
+            </p>
+            <ul class="guide-list">
+              <li>
+                <strong>⭕ Circunferencia ($\\beta = 0^\\circ$):</strong>
+                El plano es estrictamente perpendicular al eje vertical del cono. Corta todas las generatrices a la misma altura, creando una curva simétrica perfecta con radio constante $r = y_0$. Excentricidad $e = 0$.
+              </li>
+              <li>
+                <strong>⬭ Elipse ($0 < \\beta < 45^\\circ$):</strong>
+                El plano está inclinado pero su pendiente es menor que la de las generatrices del cono ($\\beta < \\alpha$). Corta una sola hoja del cono en una curva ovalada completamente cerrada. Excentricidad $0 < e < 1$.
+              </li>
+              <li>
+                <strong>∪ Parábola ($\\beta = 45^\\circ = \\alpha$):</strong>
+                El plano es <em>rigurosamente paralelo</em> a una de las generatrices del cono. Por tanto, el corte nunca llega a cerrarse en el infinito superior; la curva se abre hacia abajo sin cruzarse jamás con la generatriz opuesta. Excentricidad $e = 1$.
+              </li>
+              <li>
+                <strong>)( Hipérbola ($\\beta > 45^\\circ$):</strong>
+                El plano tiene más pendiente que las generatrices del cono. En consecuencia, el plano atraviesa y corta <strong>ambas hojas del cono doble</strong> (superior e inferior), generando dos ramas abiertas simétricas que se extienden al infinito. Excentricidad $e > 1$.
+              </li>
+            </ul>
+          </div>
+
+          <div class="guide-card">
+            <h3>La Excentricidad Unificada $e$</h3>
+            <p>
+              Analíticamente, la excentricidad de la sección cónica viene dada por la razón trigonométrica:
+            </p>
+            <div class="math-callout">
+              $$e = \\frac{\\tan\\beta}{\\tan\\alpha} = \\tan\\beta \\quad (\\text{para } \\alpha = 45^\\circ)$$
+            </div>
+            <p>
+              Esta fórmula unifica el estudio algebraico y geométrico: un simple cambio de inclinación en el plano físico barre todo el espectro de excentricidades desde $e = 0$ (órbita circular) hasta $e > 1$ (trayectoria hiperbólica de escape gravitatorio).
+            </p>
+          </div>
+        `;
+      } else if (activeTab === 'focus') {
+        guideModalTitle.textContent = '2. Definición Geométrica Unificada: Foco y Directriz';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>Una Única Definición para Todas las Cónicas</h3>
+            <p>
+              Pappus de Alejandría (siglo IV d.C.) formuló la definición métrica universal que rige a todas las cónicas planas:
+            </p>
+            <div class="math-callout">
+              $$\\frac{d(P, \\text{Foco } F)}{d(P, \\text{Directriz } d)} = e = \\text{constante}$$
+            </div>
+            <p>
+              Para cualquier punto $P$ de la curva, la distancia al foco $F$ dividida entre su distancia perpendicular a la recta directriz $d$ es exactamente la <strong>excentricidad $e$</strong>.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>Ecuación en Coordenadas Polares</h3>
+            <p>
+              Colocando el origen en el foco principal $F(0,0)$ y el eje polar apuntando hacia el perihelio (o vértice más cercano), la ecuación toma la forma más elegante de la física y la astronomía:
+            </p>
+            <div class="math-callout">
+              $$r(\\theta) = \\frac{p}{1 + e\\cos\\theta}$$
+            </div>
+            <p>
+              Donde $p$ es el <em>semi-latus rectum</em> (la distancia focal perpendicular en $\\theta = 90^\\circ$). Esta es la ecuación exacta con la que <strong>Johannes Kepler</strong> e <strong>Isaac Newton</strong> dedujeron y demostraron las órbitas planetarias celestes.
+            </p>
+          </div>
+        `;
+      } else {
+        guideModalTitle.textContent = '3. Las Esferas de Dandelin (Germinal Dandelin, 1822)';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>Una de las Demostraciones Más Bellas de la Matemática</h3>
+            <p>
+              Durante más de 2000 años, se conocían dos definiciones separadas de la elipse:
+            </p>
+            <ol class="guide-list">
+              <li>El corte de un cono por un plano oblicuo (Apolonio).</li>
+              <li>El lugar geométrico de puntos cuya suma de distancias a dos focos es constante: $|PF_1| + |PF_2| = 2a$.</li>
+            </ol>
+            <p>
+              En 1822, el matemático belga <strong>Germinal Pierre Dandelin</strong> demostró de forma visual y fulminante por qué ambas definiciones son idénticas utilizando dos esferas inscritas.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>El Argumento de las Tangencias a una Esfera</h3>
+            <p>
+              Inscribamos dentro del cono dos esferas que sean tangentes simultáneamente al cono y al plano de corte:
+            </p>
+            <ul class="guide-list">
+              <li>La <strong>Esfera Superior</strong> toca al cono a lo largo del círculo horizontal $C_1$ y toca al plano en el punto $F_1$.</li>
+              <li>La <strong>Esfera Inferior</strong> toca al cono a lo largo del círculo horizontal $C_2$ y toca al plano en el punto $F_2$.</li>
+            </ul>
+            <p>
+              Sea $P$ cualquier punto sobre la curva de intersección. Tracemos la generatriz del cono que pasa por $P$: esta recta toca al círculo $C_1$ en $Q_1$ y al círculo $C_2$ en $Q_2$.
+            </p>
+            <div class="math-callout">
+              $$|PF_1| = |PQ_1| \\quad \\text{y} \\quad |PF_2| = |PQ_2|$$
+            </div>
+            <p>
+              (porque las tangentes desde un punto exterior $P$ a una misma esfera tienen idéntica longitud). Sumando ambas igualdades:
+            </p>
+            <div class="math-callout">
+              $$|PF_1| + |PF_2| = |PQ_1| + |PQ_2| = \\text{distancia}(C_1, C_2) = 2a = \\text{Constante}$$
+            </div>
+            <p>
+              ¡La suma es constante independientemente de qué punto $P$ elijamos, porque la distancia entre dos círculos paralelos medida a lo largo de cualquier generatriz del cono es siempre idéntica!
+            </p>
+          </div>
+        `;
+      }
+
+      guideContent.innerHTML = typesetMath(rawHtml);
+    };
+
+    btnOpenGuide.addEventListener('click', () => {
+      renderGuideContent();
+      guideDrawer.classList.add('open');
+    });
+
+    btnCloseGuide.addEventListener('click', () => {
+      guideDrawer.classList.remove('open');
+    });
+
+    // =========================================================================
+    // CONTROLES DE INTERACCIÓN DE CÁMARA (MOUSE / TOUCH)
+    // =========================================================================
+    let isDragging = false;
+    let dragMode: 'orbit' | 'pan' = 'orbit';
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragMode = e.button === 2 || e.shiftKey ? 'pan' : 'orbit';
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      camTween = null;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (dragMode === 'orbit') {
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.45, Math.min(1.45, cam.el + dy * 0.007));
+      } else {
+        const panSpeed = cam.dist * 0.0015;
+        const C = makeCam();
+        cam.tx -= (C.r[0] * dx - C.u[0] * dy) * panSpeed;
+        cam.ty -= (C.r[1] * dx - C.u[1] * dy) * panSpeed;
+        cam.tz -= (C.r[2] * dx - C.u[2] * dy) * panSpeed;
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      camTween = null;
+      const zoomFactor = Math.exp(e.deltaY * 0.001);
+      cam.dist = Math.max(3.5, Math.min(26.0, cam.dist * zoomFactor));
+    }, { passive: false });
+
+    canvas.addEventListener('dblclick', () => {
+      const defaultView = VIEWS[activeTab].iso;
+      camTween = {
+        from: { ...cam },
+        to: { ...defaultView },
+        start: performance.now(),
+        dur: 500,
+      };
+      camBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-view') === 'iso'));
+    });
+
+    // Soporte táctil básico
+    let touchDist0 = 0;
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        dragMode = 'orbit';
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        isDragging = true;
+        dragMode = 'pan';
+        touchDist0 = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      if (e.touches.length === 1 && dragMode === 'orbit') {
+        const dx = e.touches[0].clientX - lastMouseX;
+        const dy = e.touches[0].clientY - lastMouseY;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.45, Math.min(1.45, cam.el + dy * 0.007));
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = touchDist0 / (dist || 1);
+        cam.dist = Math.max(3.5, Math.min(26.0, cam.dist * factor));
+        touchDist0 = dist;
+      }
+    });
+
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // =========================================================================
+    // LOOP PRINCIPAL DE ANIMACIÓN Y RENDERIZADO
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const loop = (now: number) => {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+
+      // Tween suave de inclinación beta al hacer clic en los presets
+      if (targetBetaDeg !== null) {
+        const progress = Math.min(1, (now - betaTweenStart) / betaTweenDur);
+        const k = ease(progress);
+        betaDeg = betaTweenFrom + (targetBetaDeg - betaTweenFrom) * k;
+        rBeta.value = betaDeg.toString();
+        vBeta.textContent = `${betaDeg.toFixed(1)}°`;
+        updateTelemetry();
+        if (progress >= 1) {
+          targetBetaDeg = null;
+        }
+      }
+
+      // Tween suave de cámara
+      if (camTween) {
+        const progress = Math.min(1, (now - camTween.start) / camTween.dur);
+        const k = ease(progress);
+        cam.az = camTween.from.az + (camTween.to.az - camTween.from.az) * k;
+        cam.el = camTween.from.el + (camTween.to.el - camTween.from.el) * k;
+        cam.dist = camTween.from.dist + (camTween.to.dist - camTween.from.dist) * k;
+        cam.tx = camTween.from.tx + (camTween.to.tx - camTween.from.tx) * k;
+        cam.ty = camTween.from.ty + (camTween.to.ty - camTween.from.ty) * k;
+        cam.tz = camTween.from.tz + (camTween.to.tz - camTween.from.tz) * k;
+        if (progress >= 1) camTween = null;
+      }
+
+      // Animación continua del punto P en la escena de Dandelin
+      if (isDandelinAnimating && activeTab === 'dandelin') {
+        dandelinPointDeg = (dandelinPointDeg + dt * 45) % 360;
+        rPointPos.value = dandelinPointDeg.toFixed(0);
+        vPointPos.textContent = `${Math.round(dandelinPointDeg)}°`;
+      }
+
+      // Limpiar lienzo
+      ctx.clearRect(0, 0, W, H);
+
+      // Dibujar fondo sutil con gradiente ambiental
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const bgGrad = ctx.createRadialGradient(CX, CY, 50, CX, CY, Math.max(W, H) * 0.7);
+      if (isDark) {
+        bgGrad.addColorStop(0, 'rgba(15, 23, 42, 0.98)');
+        bgGrad.addColorStop(1, 'rgba(2, 6, 23, 1)');
+      } else {
+        bgGrad.addColorStop(0, 'rgba(248, 250, 252, 0.98)');
+        bgGrad.addColorStop(1, 'rgba(241, 245, 249, 1)');
+      }
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      const C = makeCam();
+
+      try {
+        if (activeTab === 'slice') {
+          drawDoubleCone(C);
+          drawCuttingPlaneAndConic(C);
+        } else if (activeTab === 'focus') {
+          drawFocusDirectrixScene(C);
+        } else {
+          drawDandelinScene(C);
+        }
+      } catch (err) {
+        console.error('Error in render loop:', err);
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    // Inicialización
+    updateTelemetry();
+    renderGuideContent();
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS BASE Y CONTENEDOR PRINCIPAL
+     ========================================================================== */
+  .conic-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background-color: var(--bg-primary, #030712);
+    color: var(--text-primary, #f8fafc);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :global([data-theme="light"]) .conic-container {
+    background-color: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .conic-desc {
+    color: #475569;
+  }
+
+  .conic-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    z-index: 1;
+  }
+
+  .conic-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* ==========================================================================
+     CABECERA SUPERIOR FLOTANTE
+     ========================================================================== */
+  .conic-header {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    max-width: 520px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .conic-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-primary, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.45rem;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseGlow 2s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .conic-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :global([data-theme="light"]) .conic-title {
+    background: linear-gradient(135deg, #0f172a 30%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .conic-desc {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-secondary, #94a3b8);
+    margin: 0;
+  }
+
+  /* ==========================================================================
+     BARRA SUPERIOR DE ACCESO RÁPIDO A CÓNICAS (ESTABLECER VISUALMENTE)
+     ========================================================================== */
+  .conic-presets-bar {
+    position: absolute;
+    top: 5rem;
+    right: 23.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(15, 23, 42, 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.4rem 0.65rem;
+    border-radius: 14px;
+    z-index: 15;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .conic-presets-bar {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  }
+
+  .presets-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    padding-left: 0.25rem;
+  }
+
+  .presets-buttons-group {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+    padding: 0.35rem 0.75rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :global([data-theme="light"]) .preset-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #334155;
+  }
+
+  .preset-btn:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    transform: translateY(-1px);
+  }
+
+  .preset-btn.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(217, 119, 6, 0.12) 100%);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+  }
+
+  .preset-icon {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .preset-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .preset-sub {
+    font-size: 0.65rem;
+    opacity: 0.75;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  /* ==========================================================================
+     SELECTOR DE PESTAÑAS (SCENES)
+     ========================================================================== */
+  .conic-tabs-nav {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.35rem;
+    border-radius: 12px;
+    z-index: 15;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .conic-tabs-nav {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  }
+
+  .conic-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global([data-theme="light"]) .conic-tab-btn {
+    color: #64748b;
+  }
+
+  .conic-tab-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  :global([data-theme="light"]) .conic-tab-btn:hover {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .conic-tab-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  }
+
+  :global([data-theme="light"]) .conic-tab-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  }
+
+  /* ==========================================================================
+     BOTÓN ABRIR GUÍA DIDÁCTICA Y DRAWER PEDAGÓGICO
+     ========================================================================== */
+  .btn-open-guide {
+    position: absolute;
+    bottom: 2rem;
+    left: 35.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(168, 85, 247, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #c084fc;
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    z-index: 15;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(168, 85, 247, 0.28);
+    border-color: #c084fc;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.3);
+  }
+
+  .guide-drawer {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    width: 480px;
+    max-height: calc(100vh - 11rem);
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  .guide-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .guide-header {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .gh-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #c084fc;
+    text-transform: uppercase;
+  }
+
+  .guide-header h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0.25rem 0 0 0;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .guide-header h2 {
+    color: #0f172a;
+  }
+
+  .btn-close-guide {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-close-guide:hover {
+    color: #ffffff;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+  }
+
+  .guide-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :global([data-theme="light"]) .guide-body {
+    color: #334155;
+  }
+
+  .guide-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  :global([data-theme="light"]) .guide-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .guide-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .guide-list {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .math-callout {
+    background: rgba(56, 189, 248, 0.08);
+    border-left: 3px solid #38bdf8;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0.65rem 0;
+    font-size: 0.95rem;
+  }
+
+  .katex-display-wrapper {
+    margin: 0.35rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: center;
+  }
+
+  .katex-display-wrapper :global(.katex-display) {
+    margin: 0.25rem 0 !important;
+  }
+
+  .guide-body :global(.katex) {
+    font-size: 1.05em;
+  }
+
+  /* ==========================================================================
+     PANEL FLOTANTE DE PARÁMETROS DERECHA
+     ========================================================================== */
+  .conic-panel {
+    position: absolute;
+    top: 5rem;
+    right: 2rem;
+    width: 320px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    z-index: 20;
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+    transition: all 0.25s ease;
+  }
+
+  :global([data-theme="light"]) .conic-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.1);
+  }
+
+  .conic-panel.folded .panel-content {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .panel-header {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .ph-title-group {
+    color: #0f172a;
+  }
+
+  .btn-fold {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-fold:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .panel-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100vh - 12rem);
+    overflow-y: auto;
+  }
+
+  .ctl-header-bar {
+    margin-bottom: 0.65rem;
+  }
+
+  .sec-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+  }
+
+  .ctl-header label {
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .ctl-header label {
+    color: #334155;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .slider-row-with-btns {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .btn-step {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.45rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-step:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  input[type='range'] {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+    cursor: pointer;
+    accent-color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) input[type='range'] {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .slider-marks {
+    position: relative;
+    height: 14px;
+    margin-top: 0.2rem;
+  }
+
+  .s-mark {
+    position: absolute;
+    font-size: 0.62rem;
+    color: #64748b;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .s-mark-crit {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+
+  /* TOGGLES */
+  .toggles-box {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 0.85rem;
+  }
+
+  :global([data-theme="light"]) .toggles-box {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .tg-section-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+  }
+
+  .toggles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global([data-theme="light"]) .toggle-pill {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #334155;
+  }
+
+  .toggle-pill:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .toggle-pill input {
+    accent-color: #38bdf8;
+  }
+
+  .color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--dot-c, #38bdf8);
+    box-shadow: 0 0 6px var(--dot-c, #38bdf8);
+  }
+
+  /* VISTAS DE CÁMARA */
+  .camera-views-box {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 0.85rem;
+  }
+
+  :global([data-theme="light"]) .camera-views-box {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .cam-btns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .cam-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cam-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .cam-btn.active {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+  }
+
+  .quick-chips-row {
+    margin-top: 0.5rem;
+  }
+
+  .chip-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .chip-btn:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: #38bdf8;
+  }
+
+  .chip-btn.active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     TARJETA FLOTANTE DE TELEMETRÍA Y ECUACIONES EN VIVO
+     ========================================================================== */
+  .telemetry-badge {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 340px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 0.85rem 1.1rem;
+    z-index: 15;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  :global([data-theme="light"]) .telemetry-badge {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .tele-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tele-type-pill {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+  }
+
+  .tele-condition {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  :global([data-theme="light"]) .tele-condition {
+    color: #64748b;
+  }
+
+  .tele-metrics-row {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+  }
+
+  :global([data-theme="light"]) .tele-metrics-row {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .tm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .tm-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .tm-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .tm-val {
+    color: #0f172a;
+  }
+
+  .tm-highlight {
+    color: #f59e0b;
+  }
+
+  .tele-eq-box {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .tele-eq-box {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .tele-eq-box :global(.katex-display) {
+    margin: 0 !important;
+    font-size: 0.95rem;
+  }
+
+  /* ==========================================================================
+     HINT FLOTANTE INFERIOR
+     ========================================================================== */
+  .cam-hint {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  :global([data-theme="light"]) .cam-hint {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE DESIGN
+     ========================================================================== */
+  @media (max-width: 1280px) {
+    .conic-presets-bar {
+      top: 5rem;
+      right: auto;
+      left: 2rem;
+      transform: translateY(6.5rem);
+    }
+    .conic-header {
+      max-width: 440px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .conic-presets-bar {
+      position: static;
+      margin: 0.5rem 0;
+      transform: none;
+      width: fit-content;
+    }
+    .conic-panel {
+      width: 280px;
+      right: 1rem;
+      top: 5rem;
+    }
+    .telemetry-badge {
+      width: 300px;
+      right: 1rem;
+      bottom: 5.5rem;
+    }
+    .btn-open-guide {
+      left: 2rem;
+      bottom: 5.5rem;
+    }
+    .conic-tabs-nav {
+      left: 1rem;
+      bottom: 1rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .conic-header {
+      top: 4.5rem;
+      left: 1rem;
+      right: 1rem;
+      max-width: 100%;
+    }
+    .conic-presets-bar {
+      display: none; /* En móvil se controla vía panel */
+    }
+    .conic-panel {
+      top: auto;
+      bottom: 5rem;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+    }
+    .telemetry-badge {
+      display: none;
+    }
+    .guide-drawer {
+      left: 0;
+      right: 0;
+      width: 100%;
+      top: auto;
+      bottom: 0;
+      max-height: 80vh;
+      border-radius: 20px 20px 0 0;
+    }
+    .conic-tabs-nav {
+      bottom: 1rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      justify-content: space-around;
+    }
+    .btn-open-guide {
+      display: none;
+    }
+  }
+</style>

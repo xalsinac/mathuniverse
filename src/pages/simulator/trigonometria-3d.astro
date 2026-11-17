@@ -1,0 +1,1595 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`La Esencia de la Trigonometría en 3D — Math Simulator | ${site.name}`}
+  description="Visualización interactiva tridimensional de las funciones trigonométricas. El círculo unitario, el seno, el coseno y la tangente como proyecciones en el espacio y en el tiempo."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Trigonometría 3D" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="trig3d-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="trig-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE -->
+    <header class="trig-header">
+      <div class="trig-kicker">
+        <span class="pulse-dot"></span>
+        <span>LABORATORIO 3D · ESPACIO &amp; TIEMPO</span>
+      </div>
+      <h1 class="trig-title">La Esencia de la Trigonometría en 3D</h1>
+      <p class="trig-desc" id="brandDesc">
+        El círculo unitario, el seno y la tangente son tres medidas del <strong>mismo movimiento</strong>. Rota la cámara en 3D para descubrir cómo una hélice espacial genera las curvas al proyectarse en el tiempo.
+      </p>
+    </header>
+
+    <!-- SELECTOR DE PESTAÑAS SUPERIOR -->
+    <nav class="trig-tabs-nav" aria-label="Modo de simulación">
+      <button type="button" class="trig-tab-btn active" data-tab="sc" id="tab-sc-btn">
+        <span class="tab-icon">〰️</span>
+        <span>1. Seno &amp; Coseno</span>
+      </button>
+      <button type="button" class="trig-tab-btn" data-tab="tc" id="tab-tc-btn">
+        <span class="tab-icon">📐</span>
+        <span>2. Tangente &amp; Cotangente</span>
+      </button>
+    </nav>
+
+    <!-- PANEL LATERAL FLOTANTE DE CONTROLES -->
+    <aside class="trig-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Parámetros del Sistema</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+        <!-- SLIDERS -->
+        <div class="ctl-group">
+          <div class="ctl-header">
+            <label for="rOmega">Velocidad angular <span class="math-sym">ω</span></label>
+            <span class="ctl-val" id="vOmega">1.00 rad/s</span>
+          </div>
+          <input type="range" id="rOmega" min="0.2" max="3.5" step="0.05" value="1.0" />
+        </div>
+
+        <div class="ctl-group">
+          <div class="ctl-header">
+            <label for="rAmp">Amplitud / Radio <span class="math-sym">A</span></label>
+            <span class="ctl-val" id="vAmp">1.00</span>
+          </div>
+          <input type="range" id="rAmp" min="0.3" max="1.4" step="0.05" value="1.0" />
+        </div>
+
+        <div class="ctl-group">
+          <div class="ctl-header">
+            <label for="rPhi">Fase inicial <span class="math-sym">φ</span></label>
+            <span class="ctl-val" id="vPhi">0.00 rad</span>
+          </div>
+          <input type="range" id="rPhi" min="0" max="6.28" step="0.1" value="0.0" />
+        </div>
+
+        <div class="ctl-group">
+          <div class="ctl-header">
+            <label for="rSpeed">Avance temporal <span class="math-sym">v</span></label>
+            <span class="ctl-val" id="vSpeed">1.20</span>
+          </div>
+          <input type="range" id="rSpeed" min="0.5" max="2.4" step="0.05" value="1.2" />
+        </div>
+
+        <!-- REPRODUCTOR -->
+        <div class="play-controls-row">
+          <button type="button" class="btn-action play-btn" id="btnPlay">
+            <span id="playIcon">⏸</span>
+            <span id="playText">Pausar</span>
+          </button>
+          <button type="button" class="btn-action reset-btn" id="btnReset" title="Restablecer tiempo y valores">
+            <span>↺ Reiniciar</span>
+          </button>
+        </div>
+
+        <!-- TOGGLES MODO SENO/COSENO -->
+        <div class="toggles-box tab-sc-only">
+          <span class="tg-section-label">Curvas Visibles:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="cSin" checked />
+              <span class="color-dot" style="--dot-c: #fb7185;"></span>
+              <span>Onda Seno</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cCos" />
+              <span class="color-dot" style="--dot-c: #a78bfa;"></span>
+              <span>Onda Coseno</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cHelix" />
+              <span class="color-dot" style="--dot-c: #38bdf8;"></span>
+              <span>Hélice 3D</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TOGGLES MODO TANGENTE -->
+        <div class="toggles-box tab-tc-only" style="display: none;">
+          <span class="tg-section-label">Curvas de Corte:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="cTan" checked />
+              <span class="color-dot" style="--dot-c: #10b981;"></span>
+              <span>Tangente (x = A)</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cCot" />
+              <span class="color-dot" style="--dot-c: #f59e0b;"></span>
+              <span>Cotangente (y = A)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TOGGLES COMUNES -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Ayudas Geométricas:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="cGuides" checked />
+              <span class="color-dot" style="--dot-c: #fbbf24;"></span>
+              <span>Líneas Guía</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cGrid" checked />
+              <span class="color-dot" style="--dot-c: #64748b;"></span>
+              <span>Rejilla 3D</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- SELECTOR DE VISTAS DE CÁMARA (PRESETS) -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Perspectiva de Cámara:</span>
+          <div class="views-grid tab-sc-only">
+            <button type="button" class="btn-cam active" data-view="iso">3D Libre</button>
+            <button type="button" class="btn-cam" data-view="circle">Círculo (x·y)</button>
+            <button type="button" class="btn-cam" data-view="sine">Seno (y·t)</button>
+            <button type="button" class="btn-cam" data-view="cosv">Coseno (x·t)</button>
+          </div>
+          <div class="views-grid tab-tc-only" style="display: none;">
+            <button type="button" class="btn-cam active" data-view="iso">3D Libre</button>
+            <button type="button" class="btn-cam" data-view="circle">Círculo (x·y)</button>
+            <button type="button" class="btn-cam" data-view="tanv">Tangente (y·t)</button>
+            <button type="button" class="btn-cam" data-view="cotv">Cotangente (x·t)</button>
+          </div>
+        </div>
+
+        <!-- TELEMETRÍA EN TIEMPO REAL -->
+        <div class="telemetry-card">
+          <span class="tg-section-label">Telemetría en Vivo:</span>
+          <div class="telem-row">
+            <span class="telem-label">Ángulo <span class="math-sym">θ(t)</span>:</span>
+            <span class="telem-val" id="telTheta">0.00 rad (0°)</span>
+          </div>
+          <div class="telem-row tab-sc-only">
+            <span class="telem-label" style="color:#fb7185;">sin(θ):</span>
+            <strong class="telem-val" id="telSin" style="color:#fb7185;">+0.000</strong>
+          </div>
+          <div class="telem-row tab-sc-only">
+            <span class="telem-label" style="color:#a78bfa;">cos(θ):</span>
+            <strong class="telem-val" id="telCos" style="color:#a78bfa;">+1.000</strong>
+          </div>
+          <div class="telem-row tab-tc-only" style="display: none;">
+            <span class="telem-label" style="color:#10b981;">tan(θ):</span>
+            <strong class="telem-val" id="telTan" style="color:#10b981;">+0.000</strong>
+          </div>
+          <div class="telem-row tab-tc-only" style="display: none;">
+            <span class="telem-label" style="color:#f59e0b;">cot(θ):</span>
+            <strong class="telem-val" id="telCot" style="color:#f59e0b;">±∞</strong>
+          </div>
+          <div class="telem-identity" id="telIdentity" set:html={renderMath(String.raw`\sin^2\theta + \cos^2\theta = 1.00`)} />
+        </div>
+
+        <!-- AYUDA PEDAGÓGICA -->
+        <div class="tips-box" id="tipsText">
+          <strong>Tip pedagógico:</strong> Cambia a la vista <em>Seno (y·t)</em> y observa cómo el círculo 3D se aplasta en un segmento vertical oscilante. Al volver a <em>Círculo (x·y)</em>, la onda se oculta tras el disco. ¡Ambas son sombras de la misma hélice!
+        </div>
+      </div>
+    </aside>
+
+    <!-- INSTRUCCIONES INFERIORES DE NAVEGACIÓN -->
+    <div class="bottom-hint" aria-hidden="true">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar cámara</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⌨️ <strong>Shift + Arrastrar:</strong> Desplazar</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Vista por defecto</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Elementos del DOM
+    const rOmega = document.getElementById('rOmega') as HTMLInputElement;
+    const vOmega = document.getElementById('vOmega') as HTMLElement;
+    const rAmp = document.getElementById('rAmp') as HTMLInputElement;
+    const vAmp = document.getElementById('vAmp') as HTMLElement;
+    const rPhi = document.getElementById('rPhi') as HTMLInputElement;
+    const vPhi = document.getElementById('vPhi') as HTMLElement;
+    const rSpeed = document.getElementById('rSpeed') as HTMLInputElement;
+    const vSpeed = document.getElementById('vSpeed') as HTMLElement;
+
+    const btnPlay = document.getElementById('btnPlay') as HTMLButtonElement;
+    const playIcon = document.getElementById('playIcon') as HTMLElement;
+    const playText = document.getElementById('playText') as HTMLElement;
+    const btnReset = document.getElementById('btnReset') as HTMLButtonElement;
+    const btnFold = document.getElementById('btnFold') as HTMLButtonElement;
+    const panel = document.getElementById('panel') as HTMLElement;
+
+    const cSin = document.getElementById('cSin') as HTMLInputElement;
+    const cCos = document.getElementById('cCos') as HTMLInputElement;
+    const cHelix = document.getElementById('cHelix') as HTMLInputElement;
+    const cTan = document.getElementById('cTan') as HTMLInputElement;
+    const cCot = document.getElementById('cCot') as HTMLInputElement;
+    const cGuides = document.getElementById('cGuides') as HTMLInputElement;
+    const cGrid = document.getElementById('cGrid') as HTMLInputElement;
+
+    const tabScBtn = document.getElementById('tab-sc-btn') as HTMLButtonElement;
+    const tabTcBtn = document.getElementById('tab-tc-btn') as HTMLButtonElement;
+    const brandDesc = document.getElementById('brandDesc') as HTMLElement;
+    const tipsText = document.getElementById('tipsText') as HTMLElement;
+
+    const telTheta = document.getElementById('telTheta') as HTMLElement;
+    const telSin = document.getElementById('telSin') as HTMLElement;
+    const telCos = document.getElementById('telCos') as HTMLElement;
+    const telTan = document.getElementById('telTan') as HTMLElement;
+    const telCot = document.getElementById('telCot') as HTMLElement;
+    const telIdentity = document.getElementById('telIdentity') as HTMLElement;
+
+    const scElements = document.querySelectorAll('.tab-sc-only');
+    const tcElements = document.querySelectorAll('.tab-tc-only');
+
+    // Constantes matemáticas y de renderizado
+    const TAU = Math.PI * 2;
+    const WAVE_LEN = 8.0;   // Longitud en el eje z temporal
+    const NEAR = 0.15;      // Plano cercano de clipping
+    const CLIP = 3.2;       // Rango de corte visual para tan/cot
+    const EXT_SC = 2.0;     // Longitud de ejes en Sen/Cos
+    const EXT_TC = 3.4;     // Longitud de ejes en Tan/Cot
+
+    const FONT_MATH = 'KaTeX_Math, "Times New Roman", Georgia, serif';
+    const FONT_SANS = 'system-ui, -apple-system, sans-serif';
+
+    // Estado de la simulación
+    const state = {
+      omega: 1.0,
+      amp: 1.0,
+      phi: 0.0,
+      waveSpeed: 1.2,
+      running: true,
+      t: 0,
+      theta: 0,
+      showSin: true,
+      showCos: false,
+      showHelix: false,
+      showTan: true,
+      showCot: false,
+      showGuides: true,
+      showGrid: true,
+    };
+
+    let curTab: 'sc' | 'tc' = 'sc';
+    const samples: { t: number; x: number; y: number }[] = [];
+
+    // Vistas de cámara predefinidas (azimuth, elevation, distance, targetX, targetY, targetZ)
+    const VIEWS = {
+      sc: {
+        iso:    { az: -0.95,      el: 0.30,  dist: 11.2, tx: 0, ty: 0, tz: 3.0 },
+        circle: { az:  0.001,     el: 0.02,  dist: 7.6,  tx: 0, ty: 0, tz: 0.5 },
+        sine:   { az: -Math.PI/2, el: 0.001, dist: 11.5, tx: 0, ty: 0, tz: 3.5 },
+        cosv:   { az: -Math.PI/2, el: 1.52,  dist: 11.5, tx: 0, ty: 0, tz: 3.5 },
+      },
+      tc: {
+        iso:    { az: -0.95,      el: 0.30,  dist: 16.5, tx: 0, ty: 0, tz: 3.0 },
+        circle: { az:  0.001,     el: 0.02,  dist: 15.5, tx: 0, ty: 0, tz: 0.5 },
+        tanv:   { az: -Math.PI/2, el: 0.001, dist: 17.5, tx: 0, ty: 0, tz: 3.5 },
+        cotv:   { az: -Math.PI/2, el: 1.52,  dist: 17.5, tx: 0, ty: 0, tz: 3.5 },
+      }
+    };
+
+    // Cámara activa
+    let cam = { ...VIEWS.sc.iso };
+    let tween: { from: typeof cam; to: typeof cam; start: number; dur: number } | null = null;
+
+    // Dimensiones y proyección
+    let W = 0, H = 0, DPR = 1, FOCAL = 900, CX = 0, CY = 0;
+
+    const resize = () => {
+      DPR = Math.min(2.5, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * DPR);
+      canvas.height = Math.round(H * DPR);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      CX = W / 2;
+      CY = H / 2;
+      FOCAL = 1.15 * Math.min(H, W * 1.1);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // =========================================================================
+    // MATEMÁTICAS 3D Y CÁMARA
+    // =========================================================================
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+    const mod2pi = (a: number): number => {
+      a %= TAU;
+      if (a < 0) a += TAU;
+      return a;
+    };
+    const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const camPt = (C: ReturnType<typeof makeCam>, p: Pt3): Pt3 => {
+      const d = sub(p, C.eye);
+      return [dot3(d, C.r), dot3(d, C.u), dot3(d, C.f)];
+    };
+
+    const scr = (c: Pt3): Pt2 => [CX + (c[0] * FOCAL) / c[2], CY - (c[1] * FOCAL) / c[2]];
+
+    const proj = (C: ReturnType<typeof makeCam>, p: Pt3): Pt2 | null => {
+      const c = camPt(C, p);
+      return c[2] < NEAR ? null : scr(c);
+    };
+
+    const clipNear = (a: Pt3, b: Pt3): Pt3 => {
+      const t = (NEAR - a[2]) / (b[2] - a[2]);
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, NEAR];
+    };
+
+    const polyPath = (C: ReturnType<typeof makeCam>, pts: (Pt3 | null)[]): [Pt2, Pt2] | null => {
+      if (pts.length < 2) return null;
+      let head: Pt2 | null = null, tail: Pt2 | null = null, contin = false, prev: Pt3 | null = null;
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const P = pts[i];
+        if (P === null) {
+          prev = null;
+          contin = false;
+          continue;
+        }
+        const cur = camPt(C, P);
+        if (prev !== null) {
+          let a = prev, b = cur;
+          const av = a[2] >= NEAR, bv = b[2] >= NEAR;
+          if (av || bv) {
+            if (!av) a = clipNear(a, b);
+            if (!bv) b = clipNear(b, a);
+            const sA = scr(a), sB = scr(b);
+            if (!contin) ctx.moveTo(sA[0], sA[1]);
+            ctx.lineTo(sB[0], sB[1]);
+            if (!head) head = sA;
+            tail = sB;
+            contin = bv;
+          } else {
+            contin = false;
+          }
+        }
+        prev = cur;
+      }
+      return head && tail ? [head, tail] : null;
+    };
+
+    interface StrokeOptions {
+      width?: number;
+      color?: string;
+      alpha?: number;
+      dash?: number[];
+      fade?: [string, string];
+    }
+
+    const strokePoly = (C: ReturnType<typeof makeCam>, pts: (Pt3 | null)[], o: StrokeOptions) => {
+      const ht = polyPath(C, pts);
+      if (!ht) return;
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = o.width || 2;
+      if (o.alpha != null) ctx.globalAlpha = o.alpha;
+      if (o.dash) ctx.setLineDash(o.dash);
+      if (o.fade) {
+        const h = ht[0], t = ht[1];
+        if (Math.hypot(t[0] - h[0], t[1] - h[1]) < 2) {
+          ctx.strokeStyle = o.fade[0];
+        } else {
+          const g = ctx.createLinearGradient(h[0], h[1], t[0], t[1]);
+          g.addColorStop(0, o.fade[0]);
+          g.addColorStop(1, o.fade[1]);
+          ctx.strokeStyle = g;
+        }
+      } else {
+        ctx.strokeStyle = o.color || '#38bdf8';
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const line3 = (C: ReturnType<typeof makeCam>, a: Pt3, b: Pt3, o: StrokeOptions) => strokePoly(C, [a, b], o);
+
+    const glowDot = (s: Pt2, r: number, core: string, mid: string) => {
+      const g = ctx.createRadialGradient(s[0], s[1], 0, s[0], s[1], r);
+      g.addColorStop(0, core);
+      g.addColorStop(0.35, mid);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(s[0], s[1], r, 0, TAU);
+      ctx.fill();
+    };
+
+    const solidDot = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, color: string) => {
+      const s = proj(C, p);
+      if (!s) return;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(s[0], s[1], r, 0, TAU);
+      ctx.fill();
+    };
+
+    const label3 = (C: ReturnType<typeof makeCam>, p: Pt3, text: string, o: { font?: string; size?: number; color?: string; align?: CanvasTextAlign; dx?: number; dy?: number }) => {
+      const s = proj(C, p);
+      if (!s) return;
+      ctx.save();
+      ctx.font = o.font || `${o.size || 12}px ${FONT_SANS}`;
+      ctx.fillStyle = o.color || '#c4d2e6';
+      ctx.textAlign = o.align || 'left';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(text, s[0] + (o.dx || 0), s[1] + (o.dy || 0));
+      ctx.restore();
+    };
+
+    const arrowAt = (C: ReturnType<typeof makeCam>, tip3: Pt3, before3: Pt3, color: string) => {
+      const t = proj(C, tip3), b = proj(C, before3);
+      if (!t || !b) return;
+      const a = Math.atan2(t[1] - b[1], t[0] - b[0]);
+      const L = 9;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(t[0], t[1]);
+      ctx.lineTo(t[0] - L * Math.cos(a - 0.42), t[1] - L * Math.sin(a - 0.42));
+      ctx.moveTo(t[0], t[1]);
+      ctx.lineTo(t[0] - L * Math.cos(a + 0.42), t[1] - L * Math.sin(a + 0.42));
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // =========================================================================
+    // DIBUJO DE ELEMENTOS GEOMÉTRICOS Y ESCENA
+    // =========================================================================
+    const AXIS = 'rgba(159,176,200,0.85)';
+    const AXIS_DIM = 'rgba(159,176,200,0.45)';
+
+    const drawAxes = (C: ReturnType<typeof makeCam>, v: number, ex: number, ey: number, yTicks: number[], xTicks: number[]) => {
+      // Eje x
+      line3(C, [-ex, 0, 0], [ex, 0, 0], { width: 1.4, color: AXIS });
+      arrowAt(C, [ex, 0, 0], [ex - 0.2, 0, 0], AXIS);
+      label3(C, [ex + 0.22, 0, 0], 'x', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+
+      // Eje y
+      line3(C, [0, -ey, 0], [0, ey, 0], { width: 1.4, color: AXIS });
+      arrowAt(C, [0, ey, 0], [0, ey - 0.2, 0], AXIS);
+      label3(C, [0, ey + 0.18, 0], 'y', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+
+      // Eje t (tiempo hacia adelante en 3D)
+      line3(C, [0, 0, 0], [0, 0, WAVE_LEN + 0.5], { width: 1.4, color: AXIS });
+      arrowAt(C, [0, 0, WAVE_LEN + 0.5], [0, 0, WAVE_LEN + 0.3], AXIS);
+      label3(C, [0, 0, WAVE_LEN + 0.9], 't', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+
+      // Marcas y etiquetas de escala
+      for (const k of yTicks) {
+        for (const yv of [k, -k]) {
+          line3(C, [-0.05, yv, 0], [0.05, yv, 0], { width: 1.2, color: AXIS_DIM });
+          label3(C, [-0.13, yv, 0], (yv < 0 ? '−' : '') + Math.abs(yv), { size: 10, color: 'rgba(159,176,200,.7)', align: 'right' });
+        }
+      }
+      for (const k of xTicks) {
+        for (const xv of [k, -k]) {
+          line3(C, [xv, -0.05, 0], [xv, 0.05, 0], { width: 1.2, color: AXIS_DIM });
+          label3(C, [xv, -0.24, 0], (xv < 0 ? '−' : '') + Math.abs(xv), { size: 10, color: 'rgba(159,176,200,.55)', align: 'center' });
+        }
+      }
+      const every = v < 0.8 ? 2 : 1;
+      for (let k = 1; k * v <= WAVE_LEN + 1e-6; k++) {
+        line3(C, [0, -0.06, k * v], [0, 0.06, k * v], { width: 1.2, color: AXIS_DIM });
+        if (k % every === 0) {
+          label3(C, [0, -0.25, k * v], `${k}s`, { size: 10, color: 'rgba(159,176,200,.55)', align: 'center' });
+        }
+      }
+    };
+
+    const drawCircle = (C: ReturnType<typeof makeCam>, A: number) => {
+      const cpts: Pt3[] = [];
+      for (let i = 0; i <= 72; i++) {
+        const a = (i / 72) * TAU;
+        cpts.push([A * Math.cos(a), A * Math.sin(a), 0]);
+      }
+      strokePoly(C, cpts, { width: 6, color: 'rgba(6,182,212,0.15)' });
+      strokePoly(C, cpts, { width: 2, color: 'rgba(6,182,212,0.95)' });
+      for (let q = 0; q < 4; q++) {
+        const a = (q * Math.PI) / 2;
+        line3(C, [A * 0.95 * Math.cos(a), A * 0.95 * Math.sin(a), 0], [A * 1.06 * Math.cos(a), A * 1.06 * Math.sin(a), 0], { width: 1, color: 'rgba(6,182,212,0.5)' });
+      }
+      solidDot(C, [0, 0, 0], 2.5, 'rgba(159,176,200,0.9)');
+    };
+
+    const drawAngleArc = (C: ReturnType<typeof makeCam>, th: number, A: number) => {
+      const thm = mod2pi(th);
+      if (thm <= 0.03) return;
+      const r0 = Math.max(0.14, Math.min(0.34, 0.5 * A));
+      const n = Math.max(2, Math.ceil(thm / 0.06));
+      const apts: Pt3[] = [];
+      for (let j = 0; j <= n; j++) {
+        const a = (thm * j) / n;
+        apts.push([r0 * Math.cos(a), r0 * Math.sin(a), 0]);
+      }
+      strokePoly(C, apts, { width: 1.6, color: 'rgba(251,191,36,0.9)' });
+      label3(C, [(r0 + 0.15) * Math.cos(thm / 2), (r0 + 0.15) * Math.sin(thm / 2), 0], 'θ', { font: 'italic 13px ' + FONT_MATH, color: '#fbbf24', align: 'center' });
+    };
+
+    const drawPeriodBracket = (C: ReturnType<typeof makeCam>, Tsec: number, v: number, px: number, yb: number, text: string) => {
+      const zT = Tsec * v;
+      if (zT > WAVE_LEN + 0.01) return;
+      const amber = 'rgba(251,191,36,0.75)';
+      line3(C, [px, yb, 0], [px, yb, zT], { width: 1.2, color: amber });
+      line3(C, [px, yb - 0.06, 0], [px, yb + 0.06, 0], { width: 1.2, color: amber });
+      line3(C, [px, yb - 0.06, zT], [px, yb + 0.06, zT], { width: 1.2, color: amber });
+      label3(C, [px, yb - 0.2, zT / 2], text, { size: 10.5, color: 'rgba(251,191,36,.9)', align: 'center' });
+    };
+
+    // =========================================================================
+    // ESCENA 1: SENO & COSENO (SC)
+    // =========================================================================
+    const drawGridSC = (C: ReturnType<typeof makeCam>, A: number, v: number) => {
+      const gr = Math.max(1, Math.ceil(A * 2) / 2);
+      for (let i = -gr * 2; i <= gr * 2; i++) {
+        if (i === 0) continue;
+        const y = i / 2;
+        line3(C, [0, y, 0], [0, y, WAVE_LEN], { width: 1, color: 'rgba(148,163,184,0.08)' });
+      }
+      for (let k = 1; k * v <= WAVE_LEN + 1e-6; k++) {
+        line3(C, [0, -gr, k * v], [0, gr, k * v], { width: 1, color: 'rgba(148,163,184,0.06)' });
+      }
+      if (state.showCos) {
+        for (let i = -gr * 2; i <= gr * 2; i++) {
+          if (i === 0) continue;
+          const x = i / 2;
+          line3(C, [x, 0, 0], [x, 0, WAVE_LEN], { width: 1, color: 'rgba(148,163,184,0.06)' });
+        }
+      }
+    };
+
+    const drawSC = (C: ReturnType<typeof makeCam>) => {
+      const A = state.amp, v = state.waveSpeed;
+      const th = state.theta + state.phi;
+      const Px = A * Math.cos(th), Py = A * Math.sin(th);
+
+      if (state.showGrid) drawGridSC(C, A, v);
+
+      if (state.showGuides && state.showSin) {
+        line3(C, [0, A, 0], [0, A, WAVE_LEN], { width: 1, dash: [5, 6], color: 'rgba(251,113,133,0.22)' });
+        line3(C, [0, -A, 0], [0, -A, WAVE_LEN], { width: 1, dash: [5, 6], color: 'rgba(251,113,133,0.22)' });
+      }
+
+      drawAxes(C, v, EXT_SC, EXT_SC, [1], []);
+      if (state.showGuides) {
+        const T = TAU / state.omega;
+        drawPeriodBracket(C, T, v, 0, -(A + 0.38), `T = ${T.toFixed(2)} s`);
+      }
+
+      // Trazo de curvas históricas
+      const wavePts: Pt3[] = [], cosPts: Pt3[] = [], helixPts: Pt3[] = [];
+      for (let i = samples.length - 1; i >= 0; i--) {
+        const s = samples[i];
+        const z = (state.t - s.t) * v;
+        if (z > WAVE_LEN) break;
+        if (state.showSin) wavePts.push([0, s.y, z]);
+        if (state.showCos) cosPts.push([s.x, 0, z]);
+        if (state.showHelix) helixPts.push([s.x, s.y, z]);
+      }
+
+      if (helixPts.length > 1) {
+        strokePoly(C, helixPts, { width: 1.8, fade: ['rgba(56,189,248,0.95)', 'rgba(56,189,248,0)'] });
+      }
+      if (cosPts.length > 1) {
+        strokePoly(C, cosPts, { width: 5.5, color: 'rgba(167,139,250,0.14)' });
+        strokePoly(C, cosPts, { width: 2.2, fade: ['rgba(167,139,250,1)', 'rgba(167,139,250,0.05)'] });
+      }
+      if (wavePts.length > 1) {
+        strokePoly(C, wavePts, { width: 5.5, color: 'rgba(251,113,133,0.15)' });
+        strokePoly(C, wavePts, { width: 2.2, fade: ['rgba(251,113,133,1)', 'rgba(251,113,133,0.05)'] });
+      }
+
+      drawCircle(C, A);
+      if (state.showGuides) drawAngleArc(C, th, A);
+
+      // Radio vector rotatorio
+      line3(C, [0, 0, 0], [Px, Py, 0], { width: 2.2, color: 'rgba(241,245,249,0.95)' });
+
+      // Líneas de proyección ortogonal
+      if (state.showGuides) {
+        line3(C, [Px, Py, 0], [0, Py, 0], { width: 1.5, dash: [7, 7], color: 'rgba(251,113,133,0.85)' });
+        if (state.showCos) {
+          line3(C, [Px, Py, 0], [Px, 0, 0], { width: 1.5, dash: [7, 7], color: 'rgba(167,139,250,0.85)' });
+        }
+      }
+
+      // Puntos de contacto luminoso
+      if (state.showSin || state.showGuides) {
+        const s = proj(C, [0, Py, 0]);
+        if (s) glowDot(s, 9, '#ffffff', 'rgba(251,113,133,0.85)');
+      }
+      if (state.showCos) {
+        const s = proj(C, [Px, 0, 0]);
+        if (s) glowDot(s, 8, '#ffffff', 'rgba(167,139,250,0.85)');
+      }
+
+      // Punto activo sobre el disco P(t)
+      const sp = proj(C, [Px, Py, 0]);
+      if (sp) glowDot(sp, 14, '#ffffff', 'rgba(6,182,212,0.95)');
+
+      // Ecuaciones flotantes
+      const zl = Math.min(2.8, 1.6 * v + 0.6);
+      if (state.showSin) {
+        label3(C, [0, A + 0.26, zl], 'y = A·sin(ωt + φ)', { font: 'italic 13px ' + FONT_MATH, color: '#fb7185', align: 'center' });
+      }
+      if (state.showCos) {
+        label3(C, [A + 0.3, 0, zl], 'x = A·cos(ωt + φ)', { font: 'italic 13px ' + FONT_MATH, color: '#a78bfa', align: 'center' });
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 2: TANGENTE & COTANGENTE (TC)
+    // =========================================================================
+    const drawGridTC = (C: ReturnType<typeof makeCam>, A: number, v: number) => {
+      for (const y of [-2, -1, 1, 2]) {
+        line3(C, [A, y, 0], [A, y, WAVE_LEN], { width: 1, color: 'rgba(148,163,184,0.08)' });
+      }
+      for (let k = 1; k * v <= WAVE_LEN + 1e-6; k++) {
+        line3(C, [A, -CLIP, k * v], [A, CLIP, k * v], { width: 1, color: 'rgba(148,163,184,0.06)' });
+      }
+    };
+
+    const drawTC = (C: ReturnType<typeof makeCam>) => {
+      const A = state.amp, v = state.waveSpeed;
+      const th = state.theta + state.phi;
+      const Px = A * Math.cos(th), Py = A * Math.sin(th);
+      const c = Math.cos(th), s = Math.sin(th);
+
+      if (state.showGrid) drawGridTC(C, A, v);
+
+      drawAxes(C, v, EXT_TC, EXT_TC, [1, 2], [1, 2]);
+
+      // Recta tangente vertical x = A
+      line3(C, [A, -CLIP, 0], [A, CLIP, 0], { width: 1.6, color: 'rgba(16,185,129,0.7)' });
+      label3(C, [A + 0.1, CLIP + 0.2, 0], 'x = A (Tangente)', { size: 10.5, color: '#10b981' });
+
+      // Recta cotangente horizontal y = A
+      if (state.showCot) {
+        line3(C, [-CLIP, A, 0], [CLIP, A, 0], { width: 1.6, color: 'rgba(245,158,11,0.7)' });
+        label3(C, [CLIP + 0.2, A + 0.1, 0], 'y = A (Cotangente)', { size: 10.5, color: '#f59e0b' });
+      }
+
+      // Marcador de periodo de la tangente: T = pi / omega
+      if (state.showGuides) {
+        const Ttan = Math.PI / state.omega;
+        drawPeriodBracket(C, Ttan, v, A, -(A + 0.5), `T = ${Ttan.toFixed(2)} s (π/ω)`);
+      }
+
+      // Curva histórica de Tangente
+      if (state.showTan) {
+        const tanPts: (Pt3 | null)[] = [];
+        let prevY: number | null = null;
+        for (let i = samples.length - 1; i >= 0; i--) {
+          const sm = samples[i];
+          const z = (state.t - sm.t) * v;
+          if (z > WAVE_LEN) break;
+          const yVal = sm.x !== 0 ? (sm.y / sm.x) * A : 0;
+          if (Math.abs(yVal) > CLIP || (prevY !== null && Math.abs(yVal - prevY) > 2.0)) {
+            tanPts.push(null);
+          } else {
+            tanPts.push([A, yVal, z]);
+          }
+          prevY = yVal;
+        }
+        strokePoly(C, tanPts, { width: 5.5, color: 'rgba(16,185,129,0.15)' });
+        strokePoly(C, tanPts, { width: 2.2, fade: ['rgba(16,185,129,1)', 'rgba(16,185,129,0.05)'] });
+      }
+
+      drawCircle(C, A);
+      if (state.showGuides) drawAngleArc(C, th, A);
+
+      // Prolongación del radio vector hasta la recta tangente
+      if (Math.abs(c) > 0.05) {
+        const tanVal = (s / c) * A;
+        line3(C, [0, 0, 0], [A, tanVal, 0], { width: 2.2, color: 'rgba(241,245,249,0.92)' });
+        const sTan = proj(C, [A, tanVal, 0]);
+        if (sTan && Math.abs(tanVal) <= CLIP) {
+          glowDot(sTan, 12, '#ffffff', 'rgba(16,185,129,0.95)');
+          label3(C, [A + 0.15, tanVal, 0], `A·tan θ`, { size: 11, color: '#10b981' });
+        }
+      } else {
+        line3(C, [0, 0, 0], [Px, Py, 0], { width: 2.2, color: 'rgba(241,245,249,0.92)' });
+      }
+
+      // Punto activo sobre el disco P
+      const sp = proj(C, [Px, Py, 0]);
+      if (sp) glowDot(sp, 14, '#ffffff', 'rgba(6,182,212,0.95)');
+    };
+
+    // =========================================================================
+    // BUCLE PRINCIPAL DE ANIMACIÓN
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const loop = (now: number) => {
+      const dt = Math.min(0.08, (now - lastTime) / 1000);
+      lastTime = now;
+
+      // Animación de cámara suave (tween)
+      if (tween) {
+        const p = Math.min(1, (now - tween.start) / tween.dur);
+        const ep = ease(p);
+        cam.az = tween.from.az + (tween.to.az - tween.from.az) * ep;
+        cam.el = tween.from.el + (tween.to.el - tween.from.el) * ep;
+        cam.dist = tween.from.dist + (tween.to.dist - tween.from.dist) * ep;
+        cam.tx = tween.from.tx + (tween.to.tx - tween.from.tx) * ep;
+        cam.ty = tween.from.ty + (tween.to.ty - tween.from.ty) * ep;
+        cam.tz = tween.from.tz + (tween.to.tz - tween.from.tz) * ep;
+        if (p >= 1) tween = null;
+      }
+
+      if (state.running) {
+        state.t += dt;
+        state.theta += state.omega * dt;
+
+        // Muestreo histórico
+        const curAngle = state.theta + state.phi;
+        samples.push({
+          t: state.t,
+          x: state.amp * Math.cos(curAngle),
+          y: state.amp * Math.sin(curAngle),
+        });
+
+        // Purgar muestras antiguas fuera del campo visible
+        const maxAge = WAVE_LEN / state.waveSpeed + 0.5;
+        while (samples.length > 0 && state.t - samples[0].t > maxAge) {
+          samples.shift();
+        }
+      }
+
+      // Actualizar telemetría visual
+      updateTelemetry();
+
+      // Limpiar lienzo con gradiente espacial
+      ctx.clearRect(0, 0, W, H);
+      const isLight = document.documentElement.dataset.theme === 'light';
+      const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.85);
+      if (isLight) {
+        bgGrad.addColorStop(0, '#f8f6f1');
+        bgGrad.addColorStop(1, '#e8e5dc');
+      } else {
+        bgGrad.addColorStop(0, '#0d1527');
+        bgGrad.addColorStop(1, '#05070d');
+      }
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Renderizar escena 3D
+      const C = makeCam();
+      if (curTab === 'sc') {
+        drawSC(C);
+      } else {
+        drawTC(C);
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    const updateTelemetry = () => {
+      const th = mod2pi(state.theta + state.phi);
+      const deg = Math.round((th * 180) / Math.PI);
+      const radFrac = (th / Math.PI).toFixed(2);
+      telTheta.textContent = `${radFrac}π rad (${deg}°)`;
+
+      const sVal = Math.sin(th);
+      const cVal = Math.cos(th);
+      telSin.textContent = (sVal >= 0 ? '+' : '') + sVal.toFixed(3);
+      telCos.textContent = (cVal >= 0 ? '+' : '') + cVal.toFixed(3);
+
+      if (curTab === 'tc') {
+        if (Math.abs(cVal) < 0.001) {
+          telTan.textContent = '±∞ (Asíntota)';
+        } else {
+          const tVal = sVal / cVal;
+          telTan.textContent = (tVal >= 0 ? '+' : '') + tVal.toFixed(3);
+        }
+
+        if (Math.abs(sVal) < 0.001) {
+          telCot.textContent = '±∞ (Asíntota)';
+        } else {
+          const cotVal = cVal / sVal;
+          telCot.textContent = (cotVal >= 0 ? '+' : '') + cotVal.toFixed(3);
+        }
+      }
+
+      // Verificación de identidad pitagórica
+      const sum = (sVal * sVal + cVal * cVal).toFixed(2);
+      try {
+        katex.render(String.raw`\sin^2\theta + \cos^2\theta = ${sum}`, telIdentity, { displayMode: false, throwOnError: false });
+      } catch {}
+    };
+
+    // =========================================================================
+    // EVENTOS Y CONTROLES DE USUARIO
+    // =========================================================================
+    rOmega.addEventListener('input', () => {
+      state.omega = parseFloat(rOmega.value);
+      vOmega.textContent = `${state.omega.toFixed(2)} rad/s`;
+    });
+    rAmp.addEventListener('input', () => {
+      state.amp = parseFloat(rAmp.value);
+      vAmp.textContent = state.amp.toFixed(2);
+    });
+    rPhi.addEventListener('input', () => {
+      state.phi = parseFloat(rPhi.value);
+      vPhi.textContent = `${state.phi.toFixed(2)} rad`;
+    });
+    rSpeed.addEventListener('input', () => {
+      state.waveSpeed = parseFloat(rSpeed.value);
+      vSpeed.textContent = state.waveSpeed.toFixed(2);
+    });
+
+    btnPlay.addEventListener('click', () => {
+      state.running = !state.running;
+      playIcon.textContent = state.running ? '⏸' : '▶';
+      playText.textContent = state.running ? 'Pausar' : 'Reanudar';
+    });
+
+    btnReset.addEventListener('click', () => {
+      state.t = 0;
+      state.theta = 0;
+      samples.length = 0;
+      state.running = true;
+      playIcon.textContent = '⏸';
+      playText.textContent = 'Pausar';
+    });
+
+    btnFold.addEventListener('click', () => {
+      panel.classList.toggle('collapsed');
+      btnFold.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+    });
+
+    // Toggles de curvas
+    cSin.addEventListener('change', () => { state.showSin = cSin.checked; });
+    cCos.addEventListener('change', () => { state.showCos = cCos.checked; });
+    cHelix.addEventListener('change', () => { state.showHelix = cHelix.checked; });
+    cTan.addEventListener('change', () => { state.showTan = cTan.checked; });
+    cCot.addEventListener('change', () => { state.showCot = cCot.checked; });
+    cGuides.addEventListener('change', () => { state.showGuides = cGuides.checked; });
+    cGrid.addEventListener('change', () => { state.showGrid = cGrid.checked; });
+
+    // Cambio de pestañas
+    const switchTab = (tab: 'sc' | 'tc') => {
+      curTab = tab;
+      tabScBtn.classList.toggle('active', tab === 'sc');
+      tabTcBtn.classList.toggle('active', tab === 'tc');
+
+      scElements.forEach((el) => { (el as HTMLElement).style.display = tab === 'sc' ? '' : 'none'; });
+      tcElements.forEach((el) => { (el as HTMLElement).style.display = tab === 'tc' ? '' : 'none'; });
+
+      if (tab === 'sc') {
+        brandDesc.innerHTML = 'El círculo unitario, el seno y el coseno son proyecciones del <strong>mismo movimiento</strong>. Rota la cámara en 3D para descubrir cómo una hélice espacial genera las ondas al desplegarse en el tiempo.';
+        tipsText.innerHTML = '<strong>Tip pedagógico:</strong> Cambia a la vista <em>Seno (y·t)</em> y observa cómo el círculo 3D se aplasta en un segmento vertical oscilante. Al volver a <em>Círculo (x·y)</em>, la onda se oculta tras el disco.';
+        setCameraView(VIEWS.sc.iso);
+      } else {
+        brandDesc.innerHTML = 'Prolonga el radio vector hasta cortar la recta tangente vertical <span class="math-sym">x = A</span>: la altura de intersección es <span class="math-sym">A·tan(θ)</span>. ¡De aquí nace etimológicamente la palabra "Tangente"!';
+        tipsText.innerHTML = '<strong>Tip pedagógico:</strong> Cada vez que el radio gira perpendicular a la tangente (cos θ = 0), el punto de corte vuela hacia el infinito y surge una asíntota. El periodo de la tangente es π/ω (¡la mitad del seno!).';
+        setCameraView(VIEWS.tc.iso);
+      }
+    };
+
+    tabScBtn.addEventListener('click', () => switchTab('sc'));
+    tabTcBtn.addEventListener('click', () => switchTab('tc'));
+
+    // Botones de presets de cámara
+    const setCameraView = (targetView: typeof cam) => {
+      tween = {
+        from: { ...cam },
+        to: { ...targetView },
+        start: performance.now(),
+        dur: 600,
+      };
+    };
+
+    document.querySelectorAll('.btn-cam').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-cam').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const viewName = btn.getAttribute('data-view') as keyof typeof VIEWS['sc'] | keyof typeof VIEWS['tc'];
+        const viewSet = curTab === 'sc' ? VIEWS.sc : VIEWS.tc;
+        if (viewName in viewSet) {
+          setCameraView((viewSet as any)[viewName]);
+        }
+      });
+    });
+
+    // Control de órbita 3D con ratón y táctil
+    let isDragging = false;
+    let isPanning = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      isPanning = e.button === 2 || e.shiftKey;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      canvas.classList.add('dragging');
+      tween = null; // Interrumpir animación si el usuario toma el control
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (isPanning) {
+        cam.tx -= dx * 0.012;
+        cam.ty += dy * 0.012;
+      } else {
+        cam.az -= dx * 0.0075;
+        cam.el = Math.max(-1.5, Math.min(1.5, cam.el + dy * 0.0075));
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      canvas.classList.remove('dragging');
+    });
+
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Zoom con rueda del ratón
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      cam.dist = Math.max(3.5, Math.min(35, cam.dist * zoomFactor));
+    }, { passive: false });
+
+    // Doble clic para reajustar cámara
+    canvas.addEventListener('dblclick', () => {
+      const defaultView = curTab === 'sc' ? VIEWS.sc.iso : VIEWS.tc.iso;
+      setCameraView(defaultView);
+    });
+
+    // Atajos de teclado: barra espaciadora para pausar
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
+        e.preventDefault();
+        btnPlay.click();
+      }
+    });
+
+    // Iniciar loop de renderizado
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS DE LA SIMULACIÓN 3D DE TRIGONOMETRÍA
+     ========================================================================= */
+
+  .trig3d-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #05070d;
+    user-select: none;
+  }
+
+  .trig-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .trig-canvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* CABECERA FLOTANTE */
+  .trig-header {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    max-width: 480px;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .trig-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+    text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+    animation: pulseGlow 2s infinite ease-in-out;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .trig-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--text-main, #f3f2ec);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    line-height: 1.2;
+  }
+
+  .trig-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted, #94a3b8);
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  }
+
+  /* PESTAÑAS SUPERIORES */
+  .trig-tabs-nav {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(13, 20, 36, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 0.35rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .trig-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.5rem 1.15rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .trig-tab-btn:hover {
+    color: #f8fafc;
+  }
+
+  .trig-tab-btn.active {
+    background: rgba(6, 182, 212, 0.16);
+    border-color: rgba(6, 182, 212, 0.6);
+    color: #38bdf8;
+    box-shadow: 0 0 16px rgba(6, 182, 212, 0.25);
+  }
+
+  .trig-tab-btn[data-tab="tc"].active {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #34d399;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+  }
+
+  /* PANEL FLOTANTE DE CONTROLES */
+  .trig-panel {
+    position: absolute;
+    top: 5rem;
+    right: 2rem;
+    width: 320px;
+    max-height: calc(100vh - 7rem);
+    background: rgba(13, 20, 36, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ph-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-fold {
+    width: 26px;
+    height: 26px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .btn-fold:hover {
+    color: #fff;
+    border-color: #38bdf8;
+  }
+
+  .trig-panel.collapsed {
+    max-height: 56px;
+  }
+
+  .trig-panel.collapsed .panel-content {
+    display: none;
+  }
+
+  .panel-content {
+    padding: 1.15rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .panel-content::-webkit-scrollbar {
+    width: 5px;
+  }
+  .panel-content::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 999px;
+  }
+
+  /* SLIDERS */
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+  }
+
+  .math-sym {
+    font-family: var(--font-math, Georgia, serif);
+    font-style: italic;
+    color: #38bdf8;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.25);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #06b6d4;
+    border: 2px solid #0a0f1d;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  /* BOTONES DE ACCIÓN */
+  .play-controls-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-action {
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #f1f5f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-action:hover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+  }
+
+  .play-btn {
+    flex: 1;
+    background: rgba(6, 182, 212, 0.18);
+    border-color: rgba(6, 182, 212, 0.5);
+    color: #38bdf8;
+  }
+
+  /* TOGGLES */
+  .toggles-box, .camera-views-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.75rem;
+  }
+
+  .tg-section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .toggles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .toggle-pill:hover {
+    border-color: rgba(148, 163, 184, 0.4);
+  }
+
+  .toggle-pill input {
+    accent-color: #06b6d4;
+    cursor: pointer;
+  }
+
+  .color-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot-c);
+    box-shadow: 0 0 6px var(--dot-c);
+  }
+
+  /* VISTAS DE CÁMARA */
+  .views-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .btn-cam {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-cam:hover {
+    border-color: #38bdf8;
+    color: #fff;
+  }
+
+  .btn-cam.active {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: #06b6d4;
+    color: #38bdf8;
+  }
+
+  /* TELEMETRÍA */
+  .telemetry-card {
+    background: rgba(10, 15, 30, 0.8);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .telem-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-family: ui-monospace, monospace;
+  }
+
+  .telem-label {
+    color: #94a3b8;
+  }
+
+  .telem-val {
+    color: #f1f5f9;
+  }
+
+  .telem-identity {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed rgba(148, 163, 184, 0.2);
+    text-align: center;
+    color: #38bdf8;
+    font-size: 0.92rem;
+  }
+
+  /* TIP PEDAGÓGICO */
+  .tips-box {
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.3);
+    border-left: 3px solid #38bdf8;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* INSTRUCCIONES INFERIORES */
+  .bottom-hint {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(10, 15, 30, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 999px;
+    padding: 0.35rem 1.15rem;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 8;
+  }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .trig3d-container {
+    background: #f2f0ea;
+  }
+
+  :global([data-theme="light"]) .trig-title {
+    color: #0f172a;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .trig-desc {
+    color: #475569;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .trig-tabs-nav,
+  :global([data-theme="light"]) .trig-panel {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: #cbd5e1;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .ph-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ctl-header {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .toggle-pill {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .btn-cam {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .btn-cam.active {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .telemetry-card {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .telem-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .bottom-hint {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  @media (max-width: 900px) {
+    .trig-header {
+      top: 4.5rem;
+      left: 1rem;
+      right: 1rem;
+      max-width: 100%;
+    }
+    .trig-title {
+      font-size: 1.4rem;
+    }
+    .trig-desc {
+      display: none;
+    }
+    .trig-tabs-nav {
+      top: 7.2rem;
+      left: 1rem;
+      transform: none;
+    }
+    .trig-panel {
+      top: auto;
+      bottom: 1rem;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+      max-height: 55vh;
+    }
+    .bottom-hint {
+      display: none;
+    }
+  }
+</style>

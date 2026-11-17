@@ -1,0 +1,1982 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`La Esencia de e en 3D: Interés Compuesto, Autoderivada, Área 1/x y Hélice de Euler — Math Simulator | ${site.name}`}
+  description="Laboratorio 3D interactivo para descubrir la naturaleza del número de Euler (e ≈ 2.71828): interés compuesto continuo, la función que es su propia derivada, el área unitaria bajo 1/x, probabilidad 1/e y la hélice 3D de la fórmula de Euler e^(iθ)."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / La Esencia de e" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="e-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="e-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE IZQUIERDA -->
+    <header class="e-header">
+      <div class="e-kicker">
+        <span class="pulse-dot"></span>
+        <span>CÁLCULO &amp; CRECIMIENTO CONTINUO · LA FIRMA DE e</span>
+      </div>
+      <h1 class="e-title">La Esencia de e en 3D</h1>
+      <p class="e-desc" id="brandDesc">
+        El número <strong class="hl-e">e = 2.71828182...</strong> es la constante universal del crecimiento continuo: la única base exponencial cuya velocidad de cambio coincide exactamente con su propio tamaño (<span class="math-inline">y' = y</span>).
+      </p>
+      <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+        <span>📖 Deducción y Explicación Paso a Paso</span>
+      </button>
+    </header>
+
+    <!-- SELECTOR DE LAS 6 ESCENAS / PESTAÑAS (PARTE SUPERIOR CENTRAL) -->
+    <nav class="e-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="e-tab-btn active" data-tab="limit" id="tabLimitBtn">
+        <span class="tab-icon">🏦</span>
+        <span>1. Interés Compuesto</span>
+      </button>
+      <button type="button" class="e-tab-btn" data-tab="deriv" id="tabDerivBtn">
+        <span class="tab-icon">⚡</span>
+        <span>2. La Autoderivada</span>
+      </button>
+      <button type="button" class="e-tab-btn" data-tab="growth" id="tabGrowthBtn">
+        <span class="tab-icon">🌊</span>
+        <span>3. Campo dy/dx = y</span>
+      </button>
+      <button type="button" class="e-tab-btn" data-tab="area" id="tabAreaBtn">
+        <span class="tab-icon">📐</span>
+        <span>4. Área Unitaria 1/x</span>
+      </button>
+      <button type="button" class="e-tab-btn" data-tab="stat" id="tabStatBtn">
+        <span class="tab-icon">🎲</span>
+        <span>5. Azar &amp; Gauss</span>
+      </button>
+      <button type="button" class="e-tab-btn" data-tab="euler" id="tabEulerBtn">
+        <span class="tab-icon">🌀</span>
+        <span>6. Hélice de Euler e^(iθ)</span>
+      </button>
+    </nav>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO DIDÁCTICO</span>
+          <h2 id="guideModalTitle">¿Qué es en realidad el número e?</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+
+      <div class="guide-body" id="guideContent">
+        <!-- Contenido dinámico renderizado con KaTeX -->
+      </div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE CONTROLES DERECHA -->
+    <aside class="e-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+
+        <!-- =================== ESCENA 1: INTERÉS COMPUESTO =================== -->
+        <div class="ctl-section tab-limit-only">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Capitalización (1 + 1/n)ⁿ</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slLimitN">Periodos por año <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vLimitN">12 (Mensual)</span>
+            </div>
+            <input type="range" id="slLimitN" min="1" max="100" step="1" value="12" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnN1">n = 1 (Anual)</button>
+            <button type="button" class="preset-chip active" id="btnN12">n = 12 (Mensual)</button>
+            <button type="button" class="preset-chip" id="btnN100">n = 100 (Continuo)</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 2: AUTODERIVADA =================== -->
+        <div class="ctl-section tab-deriv-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Comparación aˣ vs ln(a)·aˣ</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slBaseA">Base exponencial <span class="math-sym">a</span></label>
+              <span class="ctl-val" id="vBaseA">2.00</span>
+            </div>
+            <input type="range" id="slBaseA" min="1.20" max="4.50" step="0.01" value="2.00" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slDerivX0">Punto de tangencia <span class="math-sym">x₀</span></label>
+              <span class="ctl-val" id="vDerivX0">0.70</span>
+            </div>
+            <input type="range" id="slDerivX0" min="-1.5" max="1.8" step="0.05" value="0.70" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnBase2">a = 2</button>
+            <button type="button" class="preset-chip" id="btnBaseE">a = e (2.7183)</button>
+            <button type="button" class="preset-chip" id="btnBase3">a = 3</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 3: CAMPO DE CRECIMIENTO =================== -->
+        <div class="ctl-section tab-growth-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Campo de Pendientes dy/dx = y</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slGrowthC">Valor inicial <span class="math-sym">y(0) = c</span></label>
+              <span class="ctl-val" id="vGrowthC">1.00</span>
+            </div>
+            <input type="range" id="slGrowthC" min="-1.5" max="1.5" step="0.05" value="1.00" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip active" id="btnGrowthPos">c = 1.0 (eˣ)</button>
+            <button type="button" class="preset-chip" id="btnGrowthHalf">c = 0.5</button>
+            <button type="button" class="preset-chip" id="btnGrowthNeg">c = −1.0</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 4: ÁREA UNITARIA 1/x =================== -->
+        <div class="ctl-section tab-area-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Integral ∫₁ᵇ (1/x) dx = ln(b)</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slAreaB">Límite superior <span class="math-sym">b</span></label>
+              <span class="ctl-val" id="vAreaB">2.72</span>
+            </div>
+            <input type="range" id="slAreaB" min="1.05" max="5.00" step="0.01" value="2.72" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnArea2">b = 2</button>
+            <button type="button" class="preset-chip active" id="btnAreaE">b = e (Área = 1)</button>
+            <button type="button" class="preset-chip" id="btnArea4">b = 4</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 5: AZAR & GAUSS =================== -->
+        <div class="ctl-section tab-stat-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Probabilidad (1 − 1/n)ⁿ → 1/e</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slStatN">Intentos <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vStatN">15</span>
+            </div>
+            <input type="range" id="slStatN" min="2" max="50" step="1" value="15" />
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 6: HÉLICE DE EULER =================== -->
+        <div class="ctl-section tab-euler-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Fórmula de Euler: e^(iθ) = cos θ + i sin θ</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slEulerOmega">Velocidad angular <span class="math-sym">ω</span></label>
+              <span class="ctl-val" id="vEulerOmega">1.00 rad/s</span>
+            </div>
+            <input type="range" id="slEulerOmega" min="0.2" max="2.5" step="0.1" value="1.0" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slEulerSpeed">Despliegue temporal <span class="math-sym">v</span></label>
+              <span class="ctl-val" id="vEulerSpeed">0.90</span>
+            </div>
+            <input type="range" id="slEulerSpeed" min="0.3" max="1.8" step="0.1" value="0.9" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnEulerPi">Fijar θ = π (e^iπ + 1 = 0)</button>
+            <button type="button" class="preset-chip active" id="btnEulerPlay">⏸ Pausar / Reanudar</button>
+          </div>
+        </div>
+
+        <!-- TOGGLES DINÁMICOS POR ESCENA -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Capas Visuales:</span>
+          <div class="toggles-grid" id="togglesContainer">
+            <!-- Toggles dinámicos generados según la pestaña -->
+          </div>
+        </div>
+
+        <!-- VISTAS DE CÁMARA PREDEFINIDAS -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara:</span>
+          <div class="cam-btns-grid">
+            <button type="button" class="cam-btn active" data-view="iso">Perspectiva 3D</button>
+            <button type="button" class="cam-btn" data-view="front">Frontal (X-Y)</button>
+            <button type="button" class="cam-btn" data-view="top">Planta (X-Z)</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- TARJETA FLOTANTE DE TELEMETRÍA (INFERIOR IZQUIERDA) -->
+    <div class="telemetry-badge" id="telemetryCard">
+      <div class="tele-top">
+        <span class="tele-type-pill" id="teleBadgePill">INTERÉS COMPUESTO</span>
+        <span class="tele-condition" id="teleCondition">Capitalización discreta convergiendo al crecimiento continuo e</span>
+      </div>
+      <div class="tele-metrics-row" id="teleMetricsRow">
+        <!-- Métricas dinámicas -->
+      </div>
+      <div class="tele-eq-box" id="teleEqBox">
+        <!-- Ecuación KaTeX -->
+      </div>
+    </div>
+
+    <!-- HINT FLOTANTE INFERIOR DE CÁMARA 3D -->
+    <div class="cam-hint" id="camHint">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 3D</span>
+      <span>•</span>
+      <span>⌨️ <strong>Shift + Arrastrar:</strong> Desplazar vista</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Reiniciar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    const E_REAL = Math.E;
+
+    // Paleta adaptativa Modo Oscuro / Modo Claro
+    let isLight = document.documentElement.dataset.theme === 'light';
+    let C_CYN = '#2dd4ea';
+    let C_ROSE = '#fb7185';
+    let C_VIO = '#a78bfa';
+    let C_EME = '#34d399';
+    let C_ORG = '#fb923c';
+    let C_AMB = '#fbbf24';
+    let AXIS = 'rgba(148, 163, 184, 0.45)';
+    let AXIS_DIM = 'rgba(148, 163, 184, 0.2)';
+    let COL_AXIS_LBL = '#c4d2e6';
+    let COL_TICK = 'rgba(159, 176, 200, 0.65)';
+    let COL_GRID = 'rgba(148, 163, 184, 0.08)';
+    let COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+    const FONT_MATH = 'Georgia, "Times New Roman", serif';
+
+    const syncThemeColors = () => {
+      isLight = document.documentElement.dataset.theme === 'light';
+      if (isLight) {
+        C_CYN = '#0891b2';
+        C_ROSE = '#e11d48';
+        C_VIO = '#7c3aed';
+        C_EME = '#059669';
+        C_ORG = '#ea580c';
+        C_AMB = '#d97706';
+        AXIS = 'rgba(51, 65, 85, 0.55)';
+        AXIS_DIM = 'rgba(51, 65, 85, 0.28)';
+        COL_AXIS_LBL = '#1e293b';
+        COL_TICK = 'rgba(51, 65, 85, 0.78)';
+        COL_GRID = 'rgba(15, 23, 42, 0.08)';
+        COL_VEC_MAIN = 'rgba(15, 23, 42, 0.88)';
+      } else {
+        C_CYN = '#2dd4ea';
+        C_ROSE = '#fb7185';
+        C_VIO = '#a78bfa';
+        C_EME = '#34d399';
+        C_ORG = '#fb923c';
+        C_AMB = '#fbbf24';
+        AXIS = 'rgba(148, 163, 184, 0.45)';
+        AXIS_DIM = 'rgba(148, 163, 184, 0.2)';
+        COL_AXIS_LBL = '#c4d2e6';
+        COL_TICK = 'rgba(159, 176, 200, 0.65)';
+        COL_GRID = 'rgba(148, 163, 184, 0.08)';
+        COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+      }
+    };
+    syncThemeColors();
+
+    const hexA = (hex: string, a: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    };
+
+    // Estado global
+    const state = {
+      tab: 'limit' as 'limit' | 'deriv' | 'growth' | 'area' | 'stat' | 'euler',
+      limitN: 12,
+      baseA: 2.0,
+      derivX0: 0.7,
+      growthC: 1.0,
+      areaB: 2.71828,
+      statN: 15,
+      eulerOmega: 1.0,
+      eulerSpeed: 0.9,
+      eulerTheta: 0,
+      eulerPlaying: true,
+      t: 0,
+      showGrid: true,
+      // Toggles
+      showAsymptote: true,
+      showDerivCurve: true,
+      showTangent: true,
+      showField: true,
+      showAreaFill: true,
+      showGauss: true,
+      showHelix: true,
+      showVel: true,
+      showSeries: false,
+      showWaves: true,
+    };
+
+    // Historial para la hélice de Euler
+    const WAVE_LEN = 5.5;
+    const samples: { t: number; th: number; ex: number; ey: number }[] = [];
+
+    // Cámara 3D
+    let W = 0, H = 0, CX = 0, CY = 0, FOCAL = 1000;
+    const cam = {
+      az: -0.65,
+      el: 0.32,
+      dist: 8.5,
+      tx: 0,
+      ty: 0,
+      tz: 0,
+    };
+
+    const resize = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const panelWidth = W > 1024 ? 330 : 0;
+      CX = Math.round((W - panelWidth) / 2);
+      CY = Math.round(H / 2);
+      FOCAL = 1.15 * Math.min(H, (W - panelWidth) * 1.05);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const project = (p: Pt3, c: ReturnType<typeof makeCam>): { p2: Pt2; z: number; visible: boolean } => {
+      const d = sub(p, c.eye);
+      const zCam = dot3(d, c.f);
+      if (zCam <= 0.05) return { p2: [0, 0], z: zCam, visible: false };
+      const xCam = dot3(d, c.r);
+      const yCam = dot3(d, c.u);
+      const s = FOCAL / zCam;
+      return {
+        p2: [CX + xCam * s, CY - yCam * s],
+        z: zCam,
+        visible: true,
+      };
+    };
+
+    const line3 = (C: ReturnType<typeof makeCam>, a: Pt3, b: Pt3, col: string, w = 1.5, dash: number[] = []) => {
+      const pa = project(a, C);
+      const pb = project(b, C);
+      if (!pa.visible && !pb.visible) return;
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = w;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(pa.p2[0], pa.p2[1]);
+      ctx.lineTo(pb.p2[0], pb.p2[1]);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const fillPoly3 = (C: ReturnType<typeof makeCam>, pts: Pt3[], col: string) => {
+      const p2s = pts.map(p => project(p, C)).filter(p => p.visible);
+      if (p2s.length < 3) return;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(p2s[0].p2[0], p2s[0].p2[1]);
+      for (let i = 1; i < p2s.length; i++) ctx.lineTo(p2s[i].p2[0], p2s[i].p2[1]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const dot3D = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, fill: string, stroke = '#ffffff', sw = 1.5) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = sw;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      if (sw > 0) ctx.stroke();
+      ctx.restore();
+    };
+
+    const glowDot = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, core: string, glow: string) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.shadowColor = glow;
+      ctx.shadowBlur = r * 1.5;
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const label3 = (C: ReturnType<typeof makeCam>, p: Pt3, text: string, col = '#ffffff', size = 11, align: CanvasTextAlign = 'center', dy = -10, fontStyle = '') => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.font = `${fontStyle ? fontStyle + ' ' : ''}${size}px ${fontStyle ? FONT_MATH : 'ui-sans-serif, system-ui, sans-serif'}`;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, pp.p2[0], pp.p2[1] + dy);
+      ctx.restore();
+    };
+
+    const arrowAt = (C: ReturnType<typeof makeCam>, tip: Pt3, tail: Pt3, col: string) => {
+      const pt = project(tip, C);
+      const pr = project(tail, C);
+      if (!pt.visible || !pr.visible) return;
+      const dx = pt.p2[0] - pr.p2[0];
+      const dy = pt.p2[1] - pr.p2[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 2) return;
+      const ux = dx / len, uy = dy / len;
+      const sz = 8;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(pt.p2[0], pt.p2[1]);
+      ctx.lineTo(pt.p2[0] - sz * ux + (sz * 0.45) * uy, pt.p2[1] - sz * uy - (sz * 0.45) * ux);
+      ctx.lineTo(pt.p2[0] - sz * ux - (sz * 0.45) * uy, pt.p2[1] - sz * uy + (sz * 0.45) * ux);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const gridRect = (C: ReturnType<typeof makeCam>, x0: number, x1: number, y0: number, y1: number, st = 0.5) => {
+      for (let x = Math.ceil(x0 / st) * st; x <= x1 + 1e-9; x += st) {
+        line3(C, [x, y0, 0], [x, y1, 0], COL_GRID, 1);
+      }
+      for (let y = Math.ceil(y0 / st) * st; y <= y1 + 1e-9; y += st) {
+        line3(C, [x0, y, 0], [x1, y, 0], COL_GRID, 1);
+      }
+    };
+
+    // UI Elements
+    const togglesContainer = document.getElementById('togglesContainer') as HTMLElement;
+    const teleBadgePill = document.getElementById('teleBadgePill') as HTMLElement;
+    const teleCondition = document.getElementById('teleCondition') as HTMLElement;
+    const teleMetricsRow = document.getElementById('teleMetricsRow') as HTMLElement;
+    const teleEqBox = document.getElementById('teleEqBox') as HTMLElement;
+
+    const updateTogglesUI = () => {
+      if (!togglesContainer) return;
+      togglesContainer.innerHTML = '';
+
+      type ToggleDef = { key: keyof typeof state; label: string; color: string };
+      let list: ToggleDef[] = [];
+
+      if (state.tab === 'limit') {
+        list = [
+          { key: 'showAsymptote', label: 'Asíntota e ≈ 2.71828', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'deriv') {
+        list = [
+          { key: 'showDerivCurve', label: 'Curva Derivada ln(a)·aˣ', color: C_ROSE },
+          { key: 'showTangent', label: 'Recta Tangente en x₀', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'growth') {
+        list = [
+          { key: 'showField', label: 'Campo de Pendientes dy/dx = y', color: C_CYN },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'area') {
+        list = [
+          { key: 'showAreaFill', label: 'Área Sombreada ∫₁ᵇ (1/x) dx', color: C_EME },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'stat') {
+        list = [
+          { key: 'showGauss', label: 'Campana de Gauss e^(−x²/2)', color: C_VIO },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else {
+        list = [
+          { key: 'showHelix', label: 'Hélice 3D e^(iθ)', color: C_ROSE },
+          { key: 'showVel', label: 'Velocidad i·e^(iθ) (90°)', color: C_VIO },
+          { key: 'showSeries', label: 'Espiral Serie Σ (iθ)ʲ/j!', color: C_EME },
+          { key: 'showWaves', label: 'Sombras cos θ y sin θ', color: C_ORG },
+          { key: 'showGrid', label: 'Rejilla Espacial', color: '#64748b' },
+        ];
+      }
+
+      list.forEach(t => {
+        const lbl = document.createElement('label');
+        lbl.className = 'toggle-pill';
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.checked = Boolean(state[t.key]);
+        inp.addEventListener('change', () => {
+          (state as any)[t.key] = inp.checked;
+        });
+        const dot = document.createElement('span');
+        dot.className = 'color-dot';
+        dot.style.setProperty('--dot-c', t.color);
+        const txt = document.createElement('span');
+        txt.textContent = t.label;
+
+        lbl.appendChild(inp);
+        lbl.appendChild(dot);
+        lbl.appendChild(txt);
+        togglesContainer.appendChild(lbl);
+      });
+    };
+
+    const updateTelemetry = () => {
+      if (state.tab === 'limit') {
+        const n = state.limitN;
+        const val = Math.pow(1 + 1 / n, n);
+        const err = Math.abs(E_REAL - val);
+        teleBadgePill.textContent = '1. INTERÉS COMPUESTO';
+        teleCondition.textContent = 'Al aumentar la frecuencia de capitalización n → ∞, la ganancia converge a e';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">(1 + 1/n)ⁿ</span>
+            <span class="tm-val tm-highlight">${val.toFixed(5)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Valor Real e</span>
+            <span class="tm-val" style="color: ${C_AMB};">2.71828</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Diferencia |ε|</span>
+            <span class="tm-val">${err.toFixed(5)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e \approx 2.718281828...`,
+          false
+        );
+      } else if (state.tab === 'deriv') {
+        const a = state.baseA;
+        const x0 = state.derivX0;
+        const y0 = Math.pow(a, x0);
+        const lna = Math.log(a);
+        const slope = lna * y0;
+        const isE = Math.abs(a - E_REAL) < 0.025;
+
+        teleBadgePill.textContent = '2. LA AUTODERIVADA';
+        teleCondition.textContent = isE
+          ? '¡Coincidencia exacta! Para a = e, la función y su derivada son idénticas'
+          : 'Solo cuando la base es e (ln e = 1), la curva y su pendiente coinciden';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Altura f(x₀)</span>
+            <span class="tm-val tm-highlight">${y0.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Pendiente f'(x₀)</span>
+            <span class="tm-val" style="color: ${C_ROSE};">${slope.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Factor ln(a)</span>
+            <span class="tm-val" style="color: ${isE ? C_AMB : C_VIO};">${lna.toFixed(3)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\frac{d}{dx}(a^x) = \ln(a) \cdot a^x \quad\Longrightarrow\quad \frac{d}{dx}(e^x) = e^x`,
+          false
+        );
+      } else if (state.tab === 'growth') {
+        const c = state.growthC;
+        teleBadgePill.textContent = '3. CAMPO DE CRECIMIENTO';
+        teleCondition.textContent = 'En todo instante, la tasa de crecimiento y\'(x) es exactamente igual al valor actual y(x)';
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Condición Inicial</span>
+            <span class="tm-val tm-highlight">y(0) = ${c.toFixed(2)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Razón y' / y</span>
+            <span class="tm-val" style="color: ${C_EME};">1.000 (Constante)</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\frac{dy}{dx} = y \quad\Longleftrightarrow\quad y(x) = c \cdot e^x`,
+          false
+        );
+      } else if (state.tab === 'area') {
+        const b = state.areaB;
+        const area = Math.log(b);
+        const isOne = Math.abs(area - 1) < 0.015;
+        teleBadgePill.textContent = '4. ÁREA UNITARIA (1/x)';
+        teleCondition.textContent = isOne
+          ? '¡Área = 1.000! El límite superior b define exactamente al número e'
+          : 'El logaritmo natural ln(b) mide el área bajo la hipérbola y = 1/x desde 1 hasta b';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Límite b</span>
+            <span class="tm-val tm-highlight">${b.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Área ∫₁ᵇ (1/x) dx</span>
+            <span class="tm-val" style="color: ${isOne ? C_AMB : C_EME};">${area.toFixed(4)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\int_1^e \frac{1}{x}\,dx = \ln(e) = 1`,
+          false
+        );
+      } else if (state.tab === 'stat') {
+        const n = state.statN;
+        const pZero = Math.pow(1 - 1 / n, n);
+        const target = 1 / E_REAL;
+        teleBadgePill.textContent = '5. AZAR Y CAMPANA DE GAUSS';
+        teleCondition.textContent = 'Probabilidad de fallo repetido (1 − 1/n)ⁿ → 1/e ≈ 36.79% y distribución normal';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">(1 − 1/n)ⁿ</span>
+            <span class="tm-val tm-highlight">${(pZero * 100).toFixed(2)}%</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Límite 1/e</span>
+            <span class="tm-val" style="color: ${C_AMB};">${(target * 100).toFixed(2)}%</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\lim_{n \to \infty} \left(1 - \frac{1}{n}\right)^n = \frac{1}{e} \approx 0.3679 \quad\text{y}\quad \phi(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2/2}`,
+          false
+        );
+      } else {
+        const th = ((state.eulerTheta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const cz = Math.cos(th), sz = Math.sin(th);
+        const nearPi = Math.abs(th - Math.PI) < 0.08;
+
+        teleBadgePill.textContent = '6. HÉLICE DE EULER';
+        teleCondition.textContent = nearPi
+          ? '¡Identidad de Euler alcanzada en θ = π: e^(iπ) + 1 = 0!'
+          : 'Interés compuesto pagado a 90° (e^(iθ)): el crecimiento se convierte en rotación pura';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Ángulo θ</span>
+            <span class="tm-val tm-highlight">${th.toFixed(2)} rad (${((th * 180) / Math.PI).toFixed(0)}°)</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">cos(θ) + i sin(θ)</span>
+            <span class="tm-val" style="color: ${C_ROSE};">${cz.toFixed(2)} ${sz >= 0 ? '+' : '−'} ${Math.abs(sz).toFixed(2)}i</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`e^{i\theta} = \cos\theta + i\sin\theta \quad\Longrightarrow\quad e^{i\pi} + 1 = 0`,
+          false
+        );
+      }
+    };
+
+    // Tratado Didáctico
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+    const populateGuide = () => {
+      if (!guideContent) return;
+      guideContent.innerHTML = `
+        <article class="guide-article">
+          <section class="guide-section">
+            <div class="sec-badge">1. EL ORIGEN FINANCIERO (BERNOULLI, 1683)</div>
+            <h3>¿Cuánto puede crecer 1 € en un año al 100% de interés?</h3>
+            <p>
+              Jacob Bernoulli se preguntó qué ocurre si un banco paga un 100% de interés anual, pero en lugar de abonarlo al final del año, lo divide en $n$ pagos iguales:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`\left(1 + \frac{1}{n}\right)^n`, true)}</div>
+            <p>
+              Si paga 1 vez al año ($n=1$), obtienes $2,00\text{ €}$. Si paga cada mes ($n=12$), obtienes $2,613\text{ €}$. Si paga cada segundo ($n \to \infty$), el capital no crece hasta el infinito: choca contra un techo natural universal, el número $e \approx 2,7182818...$
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">2. LA ÚNICA FUNCIÓN QUE ES SU PROPIA DERIVADA</div>
+            <h3>El lenguaje natural del cálculo</h3>
+            <p>
+              Cualquier función exponencial $a^x$ tiene una derivada proporcional a sí misma: $\frac{d}{dx}(a^x) = \ln(a) \cdot a^x$. Pero existe una base privilegiada en la naturaleza donde el factor de proporcionalidad es exactamente $1$:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`\frac{d}{dx}(e^x) = e^x`, true)}</div>
+            <p>
+              Esto significa que en cualquier punto de la curva $y = e^x$, su altura, su pendiente y el área bajo ella desde $-\infty$ valen exactamente lo mismo.
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">3. LA JOYA DE LA CORONA: LA FÓRMULA DE EULER</div>
+            <h3>Cuando el interés se paga en dirección imaginaria ($i$)</h3>
+            <p>
+              Si una tasa de crecimiento $1$ empuja hacia adelante ($e^t$), ¿qué ocurre si multiplicamos esa tasa de crecimiento por la unidad imaginaria $i$ (un giro constante de $90^\circ$)?
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`\frac{dz}{d\theta} = i \cdot z \quad\Longrightarrow\quad z(\theta) = e^{i\theta} = \cos\theta + i\sin\theta`, true)}</div>
+            <p>
+              La velocidad es siempre perpendicular al radio, así que el módulo nunca crece ($|e^{i\theta}| = 1$) y el crecimiento exponencial se transforma en una rotación circular uniforme. Al avanzar a lo largo del tiempo en 3D traza una <strong>hélice perfecta</strong> cuyas sombras son $\cos\theta$ y $\sin\theta$. Y en $\theta = \pi$ se cumple la famosa identidad que une las cinco constantes fundamentales:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`e^{i\pi} + 1 = 0`, true)}</div>
+          </section>
+        </article>
+      `;
+    };
+    populateGuide();
+
+    // Controladores UI
+    const tabBtns = document.querySelectorAll('.e-tab-btn');
+    const camBtns = document.querySelectorAll('.cam-btn');
+    const btnFold = document.getElementById('btnFold');
+    const panel = document.getElementById('panel');
+    const btnOpenGuide = document.getElementById('btnOpenGuide');
+    const btnCloseGuide = document.getElementById('btnCloseGuide');
+    const guideDrawer = document.getElementById('guideDrawer');
+
+    btnOpenGuide?.addEventListener('click', () => guideDrawer?.classList.add('open'));
+    btnCloseGuide?.addEventListener('click', () => guideDrawer?.classList.remove('open'));
+    btnFold?.addEventListener('click', () => {
+      panel?.classList.toggle('collapsed');
+      if (btnFold) btnFold.textContent = panel?.classList.contains('collapsed') ? '+' : '−';
+    });
+
+    const ctlSections = {
+      limit: document.querySelector('.tab-limit-only') as HTMLElement,
+      deriv: document.querySelector('.tab-deriv-only') as HTMLElement,
+      growth: document.querySelector('.tab-growth-only') as HTMLElement,
+      area: document.querySelector('.tab-area-only') as HTMLElement,
+      stat: document.querySelector('.tab-stat-only') as HTMLElement,
+      euler: document.querySelector('.tab-euler-only') as HTMLElement,
+    };
+
+    const setCameraForTab = (tab: typeof state.tab) => {
+      if (tab === 'euler') {
+        cam.az = -0.85; cam.el = 0.35; cam.dist = 10.5; cam.tx = 0; cam.ty = 0; cam.tz = 2.4;
+      } else {
+        cam.az = 0.001; cam.el = 0.02; cam.dist = 7.2; cam.tx = 0; cam.ty = 0.8; cam.tz = 0;
+      }
+    };
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.tab = btn.getAttribute('data-tab') as typeof state.tab;
+
+        Object.keys(ctlSections).forEach(k => {
+          const el = ctlSections[k as keyof typeof ctlSections];
+          if (el) el.style.display = k === state.tab ? 'block' : 'none';
+        });
+
+        setCameraForTab(state.tab);
+        updateTogglesUI();
+        updateTelemetry();
+      });
+    });
+
+    // Listeners sliders & presets
+    const slLimitN = document.getElementById('slLimitN') as HTMLInputElement;
+    const vLimitN = document.getElementById('vLimitN') as HTMLElement;
+    const setLimitN = (n: number) => {
+      state.limitN = n;
+      if (slLimitN) slLimitN.value = String(n);
+      if (vLimitN) vLimitN.textContent = n === 1 ? '1 (Anual)' : n === 12 ? '12 (Mensual)' : `${n}`;
+      updateTelemetry();
+    };
+    slLimitN?.addEventListener('input', () => setLimitN(parseInt(slLimitN.value, 10)));
+    document.getElementById('btnN1')?.addEventListener('click', () => setLimitN(1));
+    document.getElementById('btnN12')?.addEventListener('click', () => setLimitN(12));
+    document.getElementById('btnN100')?.addEventListener('click', () => setLimitN(100));
+
+    const slBaseA = document.getElementById('slBaseA') as HTMLInputElement;
+    const vBaseA = document.getElementById('vBaseA') as HTMLElement;
+    const slDerivX0 = document.getElementById('slDerivX0') as HTMLInputElement;
+    const vDerivX0 = document.getElementById('vDerivX0') as HTMLElement;
+    const setBaseA = (a: number) => {
+      state.baseA = a;
+      if (slBaseA) slBaseA.value = a.toFixed(2);
+      if (vBaseA) vBaseA.textContent = a.toFixed(2);
+      updateTelemetry();
+    };
+    slBaseA?.addEventListener('input', () => setBaseA(parseFloat(slBaseA.value)));
+    slDerivX0?.addEventListener('input', () => {
+      state.derivX0 = parseFloat(slDerivX0.value);
+      if (vDerivX0) vDerivX0.textContent = state.derivX0.toFixed(2);
+      updateTelemetry();
+    });
+    document.getElementById('btnBase2')?.addEventListener('click', () => setBaseA(2));
+    document.getElementById('btnBaseE')?.addEventListener('click', () => setBaseA(E_REAL));
+    document.getElementById('btnBase3')?.addEventListener('click', () => setBaseA(3));
+
+    const slGrowthC = document.getElementById('slGrowthC') as HTMLInputElement;
+    const vGrowthC = document.getElementById('vGrowthC') as HTMLElement;
+    const setGrowthC = (c: number) => {
+      state.growthC = c;
+      if (slGrowthC) slGrowthC.value = String(c);
+      if (vGrowthC) vGrowthC.textContent = c.toFixed(2);
+      updateTelemetry();
+    };
+    slGrowthC?.addEventListener('input', () => setGrowthC(parseFloat(slGrowthC.value)));
+    document.getElementById('btnGrowthPos')?.addEventListener('click', () => setGrowthC(1.0));
+    document.getElementById('btnGrowthHalf')?.addEventListener('click', () => setGrowthC(0.5));
+    document.getElementById('btnGrowthNeg')?.addEventListener('click', () => setGrowthC(-1.0));
+
+    const slAreaB = document.getElementById('slAreaB') as HTMLInputElement;
+    const vAreaB = document.getElementById('vAreaB') as HTMLElement;
+    const setAreaB = (b: number) => {
+      state.areaB = b;
+      if (slAreaB) slAreaB.value = b.toFixed(2);
+      if (vAreaB) vAreaB.textContent = b.toFixed(2);
+      updateTelemetry();
+    };
+    slAreaB?.addEventListener('input', () => setAreaB(parseFloat(slAreaB.value)));
+    document.getElementById('btnArea2')?.addEventListener('click', () => setAreaB(2));
+    document.getElementById('btnAreaE')?.addEventListener('click', () => setAreaB(E_REAL));
+    document.getElementById('btnArea4')?.addEventListener('click', () => setAreaB(4));
+
+    const slStatN = document.getElementById('slStatN') as HTMLInputElement;
+    const vStatN = document.getElementById('vStatN') as HTMLElement;
+    slStatN?.addEventListener('input', () => {
+      state.statN = parseInt(slStatN.value, 10);
+      if (vStatN) vStatN.textContent = String(state.statN);
+      updateTelemetry();
+    });
+
+    const slEulerOmega = document.getElementById('slEulerOmega') as HTMLInputElement;
+    const vEulerOmega = document.getElementById('vEulerOmega') as HTMLElement;
+    const slEulerSpeed = document.getElementById('slEulerSpeed') as HTMLInputElement;
+    const vEulerSpeed = document.getElementById('vEulerSpeed') as HTMLElement;
+    slEulerOmega?.addEventListener('input', () => {
+      state.eulerOmega = parseFloat(slEulerOmega.value);
+      if (vEulerOmega) vEulerOmega.textContent = `${state.eulerOmega.toFixed(2)} rad/s`;
+    });
+    slEulerSpeed?.addEventListener('input', () => {
+      state.eulerSpeed = parseFloat(slEulerSpeed.value);
+      if (vEulerSpeed) vEulerSpeed.textContent = state.eulerSpeed.toFixed(2);
+    });
+    document.getElementById('btnEulerPi')?.addEventListener('click', () => {
+      state.eulerPlaying = false;
+      state.eulerTheta = Math.PI;
+      updateTelemetry();
+    });
+    document.getElementById('btnEulerPlay')?.addEventListener('click', () => {
+      state.eulerPlaying = !state.eulerPlaying;
+    });
+
+    // Cámara Presets
+    camBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        camBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.getAttribute('data-view');
+        if (view === 'iso') {
+          setCameraForTab(state.tab);
+        } else if (view === 'front') {
+          cam.az = 0.001; cam.el = 0.02; cam.dist = 6.8; cam.tx = 0; cam.ty = state.tab === 'euler' ? 0 : 0.8; cam.tz = 0;
+        } else if (view === 'top') {
+          cam.az = -Math.PI / 2; cam.el = 1.52; cam.dist = 9.5; cam.tx = 0; cam.ty = 0; cam.tz = state.tab === 'euler' ? 2.5 : 0;
+        }
+      });
+    });
+
+    // Interacción ratón / táctil
+    let isDragging = false;
+    let isPanning = false;
+    let lastX = 0, lastY = 0;
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      isPanning = e.shiftKey || e.button === 2;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.classList.add('dragging');
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      isPanning = false;
+      canvas.classList.remove('dragging');
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      if (isPanning) {
+        cam.tx -= dx * 0.008 * (cam.dist / 8);
+        cam.ty += dy * 0.008 * (cam.dist / 8);
+      } else {
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.52, Math.min(1.52, cam.el + dy * 0.007));
+      }
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      cam.dist = Math.max(2.5, Math.min(25, cam.dist * zoomFactor));
+    }, { passive: false });
+
+    canvas.addEventListener('dblclick', () => setCameraForTab(state.tab));
+
+    setCameraForTab('limit');
+    updateTogglesUI();
+    updateTelemetry();
+
+    // =========================================================================
+    // LOOP DE RENDERIZADO
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const drawAxes2D = (C: ReturnType<typeof makeCam>, xMin: number, xMax: number, yMin: number, yMax: number, xlab = 'x', ylab = 'y') => {
+      line3(C, [xMin, 0, 0], [xMax, 0, 0], AXIS, 1.5);
+      arrowAt(C, [xMax, 0, 0], [xMax - 0.2, 0, 0], AXIS);
+      label3(C, [xMax + 0.25, 0, 0], xlab, COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+      line3(C, [0, yMin, 0], [0, yMax, 0], AXIS, 1.5);
+      arrowAt(C, [0, yMax, 0], [0, yMax - 0.2, 0], AXIS);
+      label3(C, [0, yMax + 0.25, 0], ylab, COL_AXIS_LBL, 13, 'center', 0, 'italic');
+    };
+
+    const render = (now: number) => {
+      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      state.t += dt;
+
+      if (state.tab === 'euler' && state.eulerPlaying) {
+        state.eulerTheta += state.eulerOmega * dt;
+        samples.push({
+          t: state.t,
+          th: state.eulerTheta,
+          ex: Math.cos(state.eulerTheta),
+          ey: Math.sin(state.eulerTheta),
+        });
+        while (samples.length > 0 && (state.t - samples[0].t) * state.eulerSpeed > WAVE_LEN + 0.5) {
+          samples.shift();
+        }
+        updateTelemetry();
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      syncThemeColors();
+      const C = makeCam();
+
+      // 1. ESCENA 1: INTERÉS COMPUESTO (1 + 1/n)^n → e
+      if (state.tab === 'limit') {
+        if (state.showGrid) gridRect(C, -0.5, 4.5, -0.2, 3.5, 0.5);
+        drawAxes2D(C, -0.5, 4.6, -0.2, 3.4, 'n', 'Capital');
+
+        const n = state.limitN;
+        // Barras de crecimiento progresivo desde k=1..min(n, 24) o muestra representativa
+        const maxBars = Math.min(n, 20);
+        const barW = 3.2 / maxBars;
+        for (let k = 1; k <= maxBars; k++) {
+          const nk = Math.round((k / maxBars) * n);
+          const val = Math.pow(1 + 1 / nk, nk);
+          const x0 = 0.2 + (k - 1) * barW;
+          const x1 = x0 + barW * 0.78;
+          fillPoly3(C, [[x0, 0, 0], [x1, 0, 0], [x1, val, 0], [x0, val, 0]], hexA(C_CYN, k === maxBars ? 0.55 : 0.22));
+          line3(C, [x0, val, 0], [x1, val, 0], C_CYN, 1.8);
+        }
+
+        const currentVal = Math.pow(1 + 1 / n, n);
+        glowDot(C, [3.4, currentVal, 0], 6, COL_VEC_MAIN, C_CYN);
+        label3(C, [3.4, currentVal + 0.22, 0], `(1+1/${n})^${n} = ${currentVal.toFixed(4)}`, C_CYN, 12, 'center', 0, 'italic');
+
+        if (state.showAsymptote) {
+          line3(C, [0, E_REAL, 0], [4.2, E_REAL, 0], C_AMB, 2, [6, 5]);
+          label3(C, [0.3, E_REAL + 0.2, 0], 'e ≈ 2.71828', C_AMB, 12.5, 'left', 0, 'italic');
+        }
+      }
+
+      // 2. ESCENA 2: LA AUTODERIVADA aˣ vs ln(a)·aˣ
+      else if (state.tab === 'deriv') {
+        if (state.showGrid) gridRect(C, -2.5, 2.5, -0.5, 3.8, 0.5);
+        drawAxes2D(C, -2.4, 2.6, -0.4, 3.6, 'x', 'y');
+
+        const a = state.baseA;
+        const x0 = state.derivX0;
+        const lna = Math.log(a);
+
+        // Curva a^x
+        for (let x = -2.0; x < 2.0; x += 0.06) {
+          const y1 = Math.pow(a, x);
+          const y2 = Math.pow(a, x + 0.06);
+          if (y1 <= 3.6 && y2 <= 3.6) {
+            line3(C, [x, y1, 0], [x + 0.06, y2, 0], C_CYN, 2.5);
+          }
+        }
+        label3(C, [-1.5, 1.2, 0], `f(x) = ${a.toFixed(2)}ˣ`, C_CYN, 13, 'center', 0, 'italic');
+
+        // Curva derivada ln(a)·a^x
+        if (state.showDerivCurve) {
+          for (let x = -2.0; x < 2.0; x += 0.06) {
+            const dy1 = lna * Math.pow(a, x);
+            const dy2 = lna * Math.pow(a, x + 0.06);
+            if (dy1 <= 3.6 && dy2 <= 3.6) {
+              line3(C, [x, dy1, 0], [x + 0.06, dy2, 0], C_ROSE, 2.2, [5, 4]);
+            }
+          }
+          label3(C, [1.5, 3.1, 0], `f'(x) = ln(a)·aˣ`, C_ROSE, 12.5, 'center', 0, 'italic');
+        }
+
+        // Punto de tangencia y pendiente
+        const y0 = Math.pow(a, x0);
+        const slope = lna * y0;
+        if (state.showTangent && y0 <= 3.6) {
+          line3(C, [x0 - 0.8, y0 - 0.8 * slope, 0], [x0 + 0.8, y0 + 0.8 * slope, 0], C_AMB, 2);
+          glowDot(C, [x0, y0, 0], 7, COL_VEC_MAIN, C_AMB);
+          label3(C, [x0 - 0.15, y0 + 0.25, 0], `m = ${slope.toFixed(2)}`, C_AMB, 11.5, 'right', 0, 'italic');
+        }
+      }
+
+      // 3. ESCENA 3: CAMPO DE PENDIENTES dy/dx = y
+      else if (state.tab === 'growth') {
+        if (state.showGrid) gridRect(C, -2.5, 2.5, -2.0, 3.2, 0.5);
+        drawAxes2D(C, -2.4, 2.6, -2.0, 3.2, 'x', 'y');
+
+        if (state.showField) {
+          for (let x = -2.0; x <= 2.0; x += 0.5) {
+            for (let y = -1.5; y <= 2.5; y += 0.5) {
+              const len = 0.18;
+              const ang = Math.atan(y);
+              const dx = len * Math.cos(ang), dy = len * Math.sin(ang);
+              line3(C, [x - dx, y - dy, 0], [x + dx, y + dy, 0], hexA(C_CYN, 0.45), 1.3);
+            }
+          }
+        }
+
+        const c = state.growthC;
+        for (let x = -2.0; x < 1.8; x += 0.06) {
+          const y1 = c * Math.exp(x);
+          const y2 = c * Math.exp(x + 0.06);
+          if (Math.abs(y1) <= 3.2 && Math.abs(y2) <= 3.2) {
+            line3(C, [x, y1, 0], [x + 0.06, y2, 0], C_EME, 2.8);
+          }
+        }
+        glowDot(C, [0, c, 0], 6.5, COL_VEC_MAIN, C_EME);
+        label3(C, [0.8, c * Math.exp(0.8) + 0.25, 0], `y = ${c.toFixed(1)}·eˣ`, C_EME, 13, 'center', 0, 'italic');
+      }
+
+      // 4. ESCENA 4: ÁREA UNITARIA BAJO 1/x
+      else if (state.tab === 'area') {
+        if (state.showGrid) gridRect(C, -0.5, 5.2, -0.2, 2.5, 0.5);
+        drawAxes2D(C, -0.4, 5.2, -0.2, 2.4, 'x', '1/x');
+
+        const b = state.areaB;
+        if (state.showAreaFill) {
+          const step = 0.08;
+          for (let x = 1.0; x < b; x += step) {
+            const xNext = Math.min(b, x + step);
+            fillPoly3(C, [[x, 0, 0], [xNext, 0, 0], [xNext, 1 / xNext, 0], [x, 1 / x, 0]], hexA(C_EME, 0.35));
+          }
+        }
+
+        for (let x = 0.45; x < 5.0; x += 0.05) {
+          line3(C, [x, 1 / x, 0], [x + 0.05, 1 / (x + 0.05), 0], C_CYN, 2.5);
+        }
+
+        line3(C, [1, 0, 0], [1, 1, 0], C_AMB, 2);
+        line3(C, [b, 0, 0], [b, 1 / b, 0], C_AMB, 2);
+        glowDot(C, [b, 0, 0], 6, COL_VEC_MAIN, C_AMB);
+        label3(C, [b, -0.22, 0], `b = ${b.toFixed(2)}`, C_AMB, 12, 'center', 0, 'italic');
+        label3(C, [(1 + b) / 2, 0.32, 0], `Área = ${Math.log(b).toFixed(3)}`, C_EME, 12.5, 'center', 0, 'italic');
+      }
+
+      // 5. ESCENA 5: AZAR & CAMPANA DE GAUSS
+      else if (state.tab === 'stat') {
+        if (state.showGrid) gridRect(C, -3.0, 3.0, -0.2, 2.0, 0.5);
+        drawAxes2D(C, -2.8, 2.8, -0.2, 1.8, 'x', 'P(x)');
+
+        if (state.showGauss) {
+          for (let x = -2.6; x < 2.6; x += 0.06) {
+            const y1 = Math.exp(-(x * x) / 2);
+            const y2 = Math.exp(-((x + 0.06) * (x + 0.06)) / 2);
+            line3(C, [x, y1, 0], [x + 0.06, y2, 0], C_VIO, 2.8);
+          }
+          label3(C, [1.3, 1.15, 0], 'e^(−x²/2)', C_VIO, 13, 'center', 0, 'italic');
+        }
+
+        const n = state.statN;
+        const pZero = Math.pow(1 - 1 / n, n);
+        line3(C, [-2.5, 1 / E_REAL, 0], [2.5, 1 / E_REAL, 0], C_AMB, 1.8, [5, 5]);
+        label3(C, [-1.8, 1 / E_REAL + 0.16, 0], '1/e ≈ 0.3679', C_AMB, 11.5, 'center', 0, 'italic');
+        glowDot(C, [0, pZero, 0], 6.5, COL_VEC_MAIN, C_CYN);
+      }
+
+      // 6. ESCENA 6: HÉLICE DE EULER e^(iθ)
+      else {
+        if (state.showGrid) {
+          gridRect(C, -1.6, 1.6, -1.6, 1.6, 0.5);
+          for (let z = 0; z <= WAVE_LEN; z += 0.5) {
+            line3(C, [-1.5, 0, z], [1.5, 0, z], COL_GRID, 1);
+          }
+        }
+
+        // Ejes del plano complejo y eje temporal Z
+        line3(C, [-1.8, 0, 0], [1.8, 0, 0], AXIS, 1.4);
+        label3(C, [2.0, 0, 0], 'Re', COL_AXIS_LBL, 12.5, 'center', 0, 'italic');
+        line3(C, [0, -1.8, 0], [0, 1.8, 0], AXIS, 1.4);
+        label3(C, [0, 2.0, 0], 'Im', COL_AXIS_LBL, 12.5, 'center', 0, 'italic');
+        line3(C, [0, 0, 0], [0, 0, WAVE_LEN], AXIS, 1.4);
+        label3(C, [0, 0, WAVE_LEN + 0.3], 'Tiempo θ', COL_AXIS_LBL, 12, 'center', 0, 'italic');
+
+        // Círculo unitario
+        for (let a = 0; a < Math.PI * 2; a += 0.08) {
+          line3(C, [Math.cos(a), Math.sin(a), 0], [Math.cos(a + 0.08), Math.sin(a + 0.08), 0], hexA(C_CYN, 0.45), 1.4);
+        }
+
+        const th = state.eulerTheta;
+        const cz = Math.cos(th), sz = Math.sin(th);
+
+        // Historial Hélice y Ondas proyectadas
+        if (samples.length > 1) {
+          for (let i = samples.length - 1; i > 0; i--) {
+            const s1 = samples[i];
+            const s0 = samples[i - 1];
+            const z1 = (state.t - s1.t) * state.eulerSpeed;
+            const z0 = (state.t - s0.t) * state.eulerSpeed;
+            if (z0 > WAVE_LEN) break;
+
+            if (state.showHelix) {
+              line3(C, [s1.ex, s1.ey, z1], [s0.ex, s0.ey, z0], hexA(C_ROSE, Math.max(0.1, 1 - z1 / WAVE_LEN)), 2.2);
+            }
+            if (state.showWaves) {
+              line3(C, [s1.ex, 0, z1], [s0.ex, 0, z0], hexA(C_ORG, Math.max(0.1, 0.85 - z1 / WAVE_LEN)), 1.6);
+              line3(C, [0, s1.ey, z1], [0, s0.ey, z0], hexA(C_ORG, Math.max(0.1, 0.85 - z1 / WAVE_LEN)), 1.6);
+            }
+          }
+        }
+
+        // Espiral de Taylor Σ(iθ)^j / j!
+        if (state.showSeries) {
+          const thetaPrincipal = Math.atan2(sz, cz);
+          let rx = 1, ry = 0, tx = 1, ty = 0;
+          let prev: Pt3 = [1, 0, 0];
+          for (let j = 1; j <= 12; j++) {
+            const nx = -ty * (thetaPrincipal / j);
+            const ny = tx * (thetaPrincipal / j);
+            tx = nx; ty = ny;
+            rx += tx; ry += ty;
+            const nextP: Pt3 = [rx, ry, 0];
+            line3(C, prev, nextP, C_EME, 1.8);
+            dot3D(C, nextP, 2.2, C_EME, 'transparent', 0);
+            prev = nextP;
+          }
+        }
+
+        // Radio y Vector Velocidad perpendicular i·e^(iθ)
+        line3(C, [0, 0, 0], [cz, sz, 0], C_ROSE, 2.2);
+        glowDot(C, [cz, sz, 0], 6.5, COL_VEC_MAIN, C_ROSE);
+
+        if (state.showVel) {
+          const L = 0.6;
+          const tip: Pt3 = [cz - L * sz, sz + L * cz, 0];
+          line3(C, [cz, sz, 0], tip, C_VIO, 2.2);
+          arrowAt(C, tip, [cz, sz, 0], C_VIO);
+          label3(C, [tip[0] - 0.15 * sz, tip[1] + 0.15 * cz, 0], 'i·e^(iθ)', C_VIO, 12, 'center', 0, 'italic');
+        }
+
+        if (state.showWaves) {
+          line3(C, [cz, sz, 0], [cz, 0, 0], hexA(C_ORG, 0.7), 1.4, [4, 4]);
+          line3(C, [cz, sz, 0], [0, sz, 0], hexA(C_ORG, 0.7), 1.4, [4, 4]);
+        }
+
+        const thMod = ((th % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        if (Math.abs(thMod - Math.PI) < 0.08) {
+          glowDot(C, [-1, 0, 0], 14 + 3 * Math.sin(state.t * 10), '#ffffff', C_AMB);
+          label3(C, [-1, -0.35, 0], 'e^(iπ) + 1 = 0', C_AMB, 13, 'center', 0, 'italic');
+        }
+      }
+
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
+  })();
+</script>
+
+<style>
+  .e-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #05070d;
+    color: #e2e8f0;
+    user-select: none;
+  }
+
+  .e-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .e-canvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* CABECERA */
+  .e-header {
+    position: absolute;
+    top: 76px;
+    left: 24px;
+    z-index: 10;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    pointer-events: auto;
+  }
+
+  .e-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    width: fit-content;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseGlow 1.8s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .e-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+    text-shadow: 0 2px 20px rgba(16, 185, 129, 0.35);
+  }
+
+  .e-desc {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(159, 176, 200, 0.85);
+    margin: 0;
+  }
+
+  .hl-e {
+    color: #10b981;
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+
+  .math-inline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #38bdf8;
+  }
+
+  .btn-open-guide {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 10px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #a7f3d0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(16, 185, 129, 0.28);
+    border-color: #10b981;
+    color: #ffffff;
+  }
+
+  /* PESTAÑAS SUPERIORES */
+  .e-tabs-nav {
+    position: absolute;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    display: flex;
+    gap: 0.3rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  }
+
+  .e-tab-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.38rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .e-tab-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .e-tab-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #a7f3d0;
+  }
+
+  /* PANEL DERECHO */
+  .e-panel {
+    position: absolute;
+    top: 76px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    transition: width 0.25s ease;
+  }
+
+  .e-panel.collapsed {
+    width: 48px;
+    overflow: hidden;
+  }
+
+  .e-panel.collapsed .panel-content {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .btn-fold {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .panel-content {
+    padding: 1rem 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .sec-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+    text-transform: uppercase;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .math-sym {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #10b981;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    color: #38bdf8;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #10b981;
+    cursor: pointer;
+  }
+
+  .quick-presets-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  .preset-chip {
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-chip:hover, .preset-chip.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #a7f3d0;
+  }
+
+  .toggles-box, .camera-views-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.85rem;
+  }
+
+  .tg-section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .toggles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    padding: 0.25rem 0.35rem;
+    border-radius: 6px;
+  }
+
+  .color-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot-c, #10b981);
+    box-shadow: 0 0 6px var(--dot-c, #10b981);
+  }
+
+  .cam-btns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+
+  .cam-btn {
+    padding: 0.35rem 0.3rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .cam-btn.active, .cam-btn:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #ffffff;
+  }
+
+  /* TELEMETRÍA */
+  .telemetry-badge {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    z-index: 15;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    padding: 0.85rem 1.15rem;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 480px;
+  }
+
+  .tele-top {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .tele-type-pill {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #a7f3d0;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+
+  .tele-condition {
+    font-size: 0.74rem;
+    color: #94a3b8;
+  }
+
+  .tele-metrics-row {
+    display: flex;
+    gap: 1.25rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding: 0.45rem 0;
+  }
+
+  .tm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tm-label {
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+  }
+
+  .tm-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    color: #f1f5f9;
+  }
+
+  .tm-highlight {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .tele-eq-box {
+    font-size: 0.85rem;
+    color: #a7f3d0;
+    overflow-x: auto;
+  }
+
+  /* CAM HINT */
+  .cam-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.74rem;
+    color: rgba(148, 163, 184, 0.6);
+    pointer-events: none;
+    background: rgba(13, 20, 36, 0.6);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  /* DRAWER PEDAGÓGICO */
+  .guide-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(600px, 92vw);
+    background: rgba(10, 15, 28, 0.96);
+    border-right: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+  }
+
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .gh-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #10b981;
+  }
+
+  .guide-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0.2rem 0 0;
+  }
+
+  .btn-close-guide {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .guide-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem 3rem;
+  }
+
+  .guide-article {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .guide-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .sec-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+  }
+
+  .guide-section h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0;
+  }
+
+  .guide-section p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(203, 213, 225, 0.85);
+    margin: 0;
+  }
+
+  .math-center {
+    display: flex;
+    justify-content: center;
+    margin: 0.65rem 0;
+    color: #38bdf8;
+  }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .e-container {
+    background: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .e-kicker {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+    border-color: rgba(5, 150, 105, 0.3);
+  }
+
+  :global([data-theme="light"]) .e-title {
+    color: #0f172a;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .e-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .hl-e {
+    color: #059669;
+  }
+
+  :global([data-theme="light"]) .btn-open-guide {
+    background: rgba(5, 150, 105, 0.1);
+    border-color: rgba(5, 150, 105, 0.35);
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .e-tabs-nav,
+  :global([data-theme="light"]) .e-panel,
+  :global([data-theme="light"]) .telemetry-badge,
+  :global([data-theme="light"]) .cam-hint {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .e-tab-btn {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .e-tab-btn.active {
+    background: rgba(5, 150, 105, 0.14);
+    border-color: #059669;
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .panel-header,
+  :global([data-theme="light"]) .toggles-box,
+  :global([data-theme="light"]) .camera-views-box,
+  :global([data-theme="light"]) .tele-metrics-row {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .ph-title-group,
+  :global([data-theme="light"]) .tm-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ctl-header,
+  :global([data-theme="light"]) .toggle-pill,
+  :global([data-theme="light"]) .cam-hint {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .preset-chip,
+  :global([data-theme="light"]) .cam-btn {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .preset-chip:hover,
+  :global([data-theme="light"]) .preset-chip.active,
+  :global([data-theme="light"]) .cam-btn.active {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: #059669;
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .tele-type-pill {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: rgba(5, 150, 105, 0.35);
+    color: #065f46;
+  }
+
+  :global([data-theme="light"]) .tele-eq-box {
+    color: #064e3b;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: rgba(255, 255, 255, 0.98);
+    border-right-color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .guide-header h2,
+  :global([data-theme="light"]) .guide-section h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .guide-section p {
+    color: #334155;
+  }
+
+  @media (max-width: 900px) {
+    .e-tabs-nav {
+      top: auto;
+      bottom: 80px;
+      left: 12px;
+      right: 12px;
+      transform: none;
+      overflow-x: auto;
+      border-radius: 14px;
+      justify-content: flex-start;
+    }
+    .e-header {
+      top: 65px;
+      left: 14px;
+      right: 14px;
+      max-width: none;
+    }
+    .e-panel {
+      top: auto;
+      bottom: 14px;
+      right: 14px;
+      width: calc(100vw - 28px);
+      max-height: 50vh;
+    }
+    .telemetry-badge, .cam-hint {
+      display: none;
+    }
+  }
+</style>

@@ -3,7 +3,7 @@ import LogoMark from './LogoMark.astro';
 import CommandPalette from './CommandPalette.astro';
 
 interface Props {
-  activePage?: 'home' | 'selectividad' | 'herramientas' | 'gym' | 'craft' | 'academy' | 'challenge';
+  activePage?: 'home' | 'selectividad' | 'herramientas' | 'gym' | 'craft' | 'academy' | 'challenge' | 'simulator';
   statusText?: string;
   ctaHref?: string;
   ctaLabel?: string;
@@ -216,7 +216,7 @@ const isHome = activePage === 'home';
         </a>
         <a href="/craft" class="mobile-drawer-chip">
           <span class="chip-dot" style="background:#38c8ff;"></span>
-          <span>08 · Math Gaming</span>
+          <span>03 · Math Gaming</span>
         </a>
         <a href="/gym" class="mobile-drawer-chip">
           <span class="chip-dot" style="background:#ff9838;"></span>

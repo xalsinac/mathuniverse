@@ -1,0 +1,2767 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+---
+
+<BaseLayout
+  title="Billar Vectorial: Cinemática, Geometría Analítica y Puntos Imagen | Math Universe"
+  description="Videojuego educativo de billar matemático. Aprende a aplicar el método del Punto Imagen, simetrías axiales, conservación del momento lineal y componentes vectoriales para embocar bolas en la mesa milimetrada."
+>
+  <SiteHeader activePage="craft" statusText="Math Gaming · Billar Vectorial" ctaHref="/craft" ctaLabel="Catálogo Juegos" />
+
+  <main class="game-wrapper" id="main-content">
+    
+    <!-- =========================================================================
+         1. PANTALLA DE PORTADA / START SCREEN (COMO UN JUEGO DE VERDAD)
+         ========================================================================= -->
+    <section class="title-screen" id="title-screen">
+      <div class="title-backdrop">
+        <div class="pool-glow"></div>
+        <div class="chalk-grid"></div>
+      </div>
+
+      <div class="title-content">
+        <div class="title-brand">
+          <div class="pill-kicker">MATH GAMING · FÍSICA &amp; GEOMETRÍA ANALÍTICA</div>
+          <h1 class="main-title">
+            <span class="word-billar">BILLAR</span>
+            <span class="word-vectorial">VECTORIAL</span>
+          </h1>
+          <p class="tagline">
+            El arte geométrico del taco: resuelve jugadas a una y dos bandas calculando vectores directores con el <strong>Método del Punto Imagen</strong>.
+          </p>
+        </div>
+
+        <!-- TARJETAS DE SELECCIÓN DE MODO -->
+        <div class="mode-cards-grid">
+          
+          <!-- TARJETA MODO VECTORIAL (ESTRELLA ACADÉMICA) -->
+          <div class="mode-card featured" id="card-launch-vectorial">
+            <div class="card-badge">RECOMENDADO · NIVEL ACADEMIA</div>
+            <div class="card-icon">📐</div>
+            <h2 class="card-title">Modo Vectorial</h2>
+            <p class="card-desc">
+              Mesa milimetrada con sistema de coordenadas $(X, Y)$. Sin ayudas mágicas: mide distancias, halla el punto simétrico $B'$, calcula componentes $(v_x, v_y)$ y teclea el vector a mano.
+            </p>
+            <ul class="card-bullets">
+              <li>✓ Mesa con reglas métricas graduadas (800 × 400 mm)</li>
+              <li>✓ Libreta de cálculo y fórmulas cinemáticas</li>
+              <li>✓ Diagnóstico y análisis de error tras cada tiro</li>
+            </ul>
+            <button type="button" class="btn-play-mode primary" id="btn-play-vectorial">
+              <span>JUGAR MODO VECTORIAL</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+
+          <!-- TARJETA MODO ARCADE -->
+          <div class="mode-card" id="card-launch-arcade">
+            <div class="card-badge arcade">PRÁCTICA LIBRE</div>
+            <div class="card-icon">🎮</div>
+            <h2 class="card-title">Modo Arcade</h2>
+            <p class="card-desc">
+              Experimentación dinámica en tiempo real. Utiliza deslizadores de fuerza y ángulo, activa la guía de tiro con raycasting predictivo y observa el rebote en bandas al instante.
+            </p>
+            <ul class="card-bullets">
+              <li>✓ Sliders tácticos de módulo y dirección</li>
+              <li>✓ Trayectoria previa proyectada</li>
+              <li>✓ Ritmo ágil para experimentar la física</li>
+            </ul>
+            <button type="button" class="btn-play-mode" id="btn-play-arcade">
+              <span>JUGAR MODO ARCADE</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- BOTÓN SECUNDARIO: MANUAL TEÓRICO DE LA UNAM -->
+        <div class="title-footer-nav">
+          <button type="button" class="btn-theory-guide" id="btn-open-theory">
+            <span class="g-icon">📖</span>
+            <span>Manual Teórico: El Método del Punto Imagen en el Billar</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         2. PANTALLA PRINCIPAL DE JUEGO (WORKBENCH ACTIVO)
+         ========================================================================= -->
+    <section class="gameplay-screen" id="gameplay-screen" style="display: none;">
+      
+      <!-- BARRA DE MANDO SUPERIOR DEL JUEGO -->
+      <nav class="game-navbar">
+        <div class="nav-cluster-left">
+          <button type="button" class="btn-back-menu" id="btn-back-menu" title="Volver al Menú Principal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Menú</span>
+          </button>
+          
+          <div class="nav-mode-pill">
+            <span class="mode-chip-icon" id="mode-chip-icon">📐</span>
+            <span class="mode-chip-name" id="mode-chip-name">Modo Vectorial</span>
+            <button type="button" class="btn-switch-mode" id="btn-switch-mode" title="Cambiar entre Vectorial y Arcade">Cambiar a Arcade</button>
+          </div>
+        </div>
+
+        <div class="nav-cluster-center">
+          <div class="level-indicator">
+            <span class="lvl-kicker" id="lvl-kicker">RETO 1 DE 5</span>
+            <span class="lvl-title" id="lvl-title">Tiro Directo a Tronera</span>
+          </div>
+        </div>
+
+        <div class="nav-cluster-right">
+          <select id="sel-game-level" class="game-select" aria-label="Seleccionar Reto">
+            <option value="0" selected>Reto 1: Tiro Directo &amp; Punto Fantasma</option>
+            <option value="1">Reto 2: 1 Banda con Punto Imagen (B')</option>
+            <option value="2">Reto 3: Choque Elástico a 90° (Momento)</option>
+            <option value="3">Reto 4: 2 Bandas con Doble Imagen (B'')</option>
+            <option value="4">Reto 5: Carambola Combinada en Cadena</option>
+            <option value="5">Mesa Libre Sandbox</option>
+          </select>
+          <button type="button" class="btn-game-icon" id="btn-game-sound" title="Sonido Sí/No">
+            <span id="sound-game-icon">🔊</span>
+          </button>
+          <button type="button" class="btn-game-ctrl" id="btn-game-reset" title="Reiniciar Reto (R)">
+            ↺ Reiniciar (R)
+          </button>
+        </div>
+      </nav>
+
+      <!-- ÁREA DE JUEGO PRINCIPAL: MESA + CONSOLA DE CÁLCULO -->
+      <div class="game-main-grid">
+
+        <!-- LADO IZQUIERDO: MESA DE BILLAR (CANVAS) -->
+        <div class="table-container-wrap">
+          <div class="pool-table-chassis">
+            <div class="canvas-viewport" id="canvas-viewport">
+              <canvas id="pool-canvas" width="880" height="480"></canvas>
+              
+              <!-- MODAL DE ÉXITO DE RETO -->
+              <div class="victory-overlay" id="victory-overlay" style="display: none;">
+                <div class="victory-box">
+                  <div class="v-star-badge">¡OBJETIVO CUMPLIDO!</div>
+                  <h3 class="v-heading">¡Tiro Magistral!</h3>
+                  <p class="v-summary" id="v-summary">Has ejecutado el vector exacto para embocar la bola objetivo.</p>
+                  <div class="v-metrics-row">
+                    <div class="v-metric">
+                      <span>Tiros empleados:</span>
+                      <strong id="v-shots-count">1</strong>
+                    </div>
+                    <div class="v-metric">
+                      <span>Precisión vectorial:</span>
+                      <strong id="v-prec-score">Excelente</strong>
+                    </div>
+                  </div>
+                  <div class="v-buttons">
+                    <button type="button" class="btn-v-next" id="btn-v-next">Siguiente Reto →</button>
+                    <button type="button" class="btn-v-retry" id="btn-v-retry">Repetir Tiro</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CHIPS DE TELEMETRÍA INFERIOR DE LA MESA -->
+            <div class="table-meta-bar">
+              <div class="meta-tag">Mesa: <strong>800 × 400 mm</strong></div>
+              <div class="meta-tag">Fricción paño: <strong>a = 160 px/s²</strong></div>
+              <div class="meta-tag">Tiros en este reto: <strong id="val-shots-made">0</strong></div>
+              <div class="meta-status" id="meta-status">
+                <span class="status-indicator ready" id="status-indicator"></span>
+                <span id="status-text">Bolas en reposo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LADO DERECHO: CONSOLA DE CONTROL TÁCTICO SEGÚN MODO -->
+        <aside class="control-console-wrap">
+
+          <!-- CONSOLA MODO VECTORIAL (CÁLCULO MANUAL Y LIBRETA) -->
+          <div class="console-card" id="console-vectorial">
+            <div class="console-head">
+              <span class="console-kicker">CUADERNO DE GEOMETRÍA ANALÍTICA</span>
+              <h2 class="console-title">Misión Vectorial</h2>
+            </div>
+
+            <p class="mission-brief" id="mission-brief">
+              Calcula las coordenadas de origen y destino en la mesa milimetrada para enviar la <strong>Bola 1</strong> a la tronera superior derecha.
+            </p>
+
+            <!-- COORDENADAS REGISTRADAS -->
+            <div class="co-register-box">
+              <div class="co-row">
+                <span class="co-label">⚪ Blanca A⃗:</span>
+                <strong class="co-val" id="disp-co-cue">(150, 260)</strong>
+              </div>
+              <div class="co-row">
+                <span class="co-label">🎯 Objetivo B⃗:</span>
+                <strong class="co-val" id="disp-co-target">(550, 140)</strong>
+              </div>
+              <div class="co-row">
+                <span class="co-label">🕳️ Tronera T⃗:</span>
+                <strong class="co-val" id="disp-co-pocket">TR (800, 0)</strong>
+              </div>
+            </div>
+
+            <!-- ENTRADA MANUAL DE VECTORES -->
+            <div class="input-workbench">
+              <div class="format-tabs">
+                <button type="button" class="f-tab is-active" id="btn-format-cartesian">Cartesianas (vx, vy)</button>
+                <button type="button" class="f-tab" id="btn-format-polar">Polares (||v||, θ)</button>
+              </div>
+
+              <!-- CAMPOS CARTESIANOS -->
+              <div class="fields-container" id="fields-cartesian">
+                <div class="inputs-two-col">
+                  <label class="field-item">
+                    <span>Componente <strong>vx</strong>:</span>
+                    <div class="input-box">
+                      <input type="number" id="inp-vx" step="5" placeholder="ej. 450" />
+                      <span class="unit">px/s</span>
+                    </div>
+                  </label>
+                  <label class="field-item">
+                    <span>Componente <strong>vy</strong>:</span>
+                    <div class="input-box">
+                      <input type="number" id="inp-vy" step="5" placeholder="ej. -135" />
+                      <span class="unit">px/s</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- CAMPOS POLARES -->
+              <div class="fields-container" id="fields-polar" style="display: none;">
+                <div class="inputs-two-col">
+                  <label class="field-item">
+                    <span>Fuerza <strong>||v||</strong>:</span>
+                    <div class="input-box">
+                      <input type="number" id="inp-force" min="50" max="900" step="10" placeholder="ej. 470" />
+                      <span class="unit">px/s</span>
+                    </div>
+                  </label>
+                  <label class="field-item">
+                    <span>Ángulo <strong>θ</strong>:</span>
+                    <div class="input-box">
+                      <input type="number" id="inp-angle" min="0" max="359.9" step="0.5" placeholder="ej. 343.3" />
+                      <span class="unit">°</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- BOTÓN DE GOLPEO MANUAL -->
+              <button type="button" class="btn-fire-vector" id="btn-fire-manual">
+                <span class="btn-bolt">⚡</span>
+                <span class="btn-action">EJECUTAR VECTOR MANUAL</span>
+                <span class="btn-key">[Enter]</span>
+              </button>
+            </div>
+
+            <!-- APUNTES Y PISTAS DEL MÉTODO DEL PUNTO IMAGEN -->
+            <div class="notebook-drawer">
+              <div class="drawer-header">
+                <span>📐 Fórmulas del Método del Punto Imagen:</span>
+              </div>
+              <div class="drawer-body">
+                <div class="eq-item">
+                  <span class="eq-title">1. Vector desplazamiento:</span>
+                  <code class="eq-code">Δx = x₂ − x₁, &nbsp; Δy = y₂ − y₁</code>
+                </div>
+                <div class="eq-item">
+                  <span class="eq-title">2. Ángulo de tiro:</span>
+                  <code class="eq-code">θ = arctan(Δy / Δx)</code>
+                </div>
+                <div class="eq-item">
+                  <span class="eq-title">3. Punto Imagen en Banda Superior (y = 0):</span>
+                  <code class="eq-code">B'(x_B, −y_B) &nbsp;→&nbsp; v⃗ = B' − A</code>
+                </div>
+                <div class="eq-item">
+                  <span class="eq-title">4. Fuerza estimada (cinemática):</span>
+                  <code class="eq-code">v₀ ≈ √(2 · a · d) &nbsp;(a = 160 px/s²)</code>
+                </div>
+              </div>
+            </div>
+
+            <!-- RECUADRO DE DIAGNÓSTICO DEL TIRO -->
+            <div class="shot-diagnosis" id="shot-diagnosis">
+              <div class="diag-title">Diagnóstico Analítico:</div>
+              <div class="diag-text" id="diag-text">
+                Mide las coordenadas sobre la mesa e introduce las componentes de v⃗ arriba.
+              </div>
+            </div>
+          </div>
+
+          <!-- CONSOLA MODO ARCADE (SLIDERS Y RAYCASTING) -->
+          <div class="console-card" id="console-arcade" style="display: none;">
+            <div class="console-head">
+              <span class="console-kicker">CONTROL DINÁMICO</span>
+              <h2 class="console-title">Modo Arcade</h2>
+            </div>
+
+            <div class="arcade-form">
+              <div class="slider-field">
+                <div class="s-label-row">
+                  <label for="sl-arc-power">Fuerza / Velocidad:</label>
+                  <strong class="s-val" id="lbl-arc-power">450 px/s</strong>
+                </div>
+                <input type="range" id="sl-arc-power" min="100" max="850" step="10" value="450" />
+                <div class="s-ticks">
+                  <span>Toque (100)</span>
+                  <span>Medio (450)</span>
+                  <span>Máx (850)</span>
+                </div>
+              </div>
+
+              <div class="slider-field">
+                <div class="s-label-row">
+                  <label for="sl-arc-ang">Ángulo de Tiro:</label>
+                  <strong class="s-val" id="lbl-arc-ang">343.3°</strong>
+                </div>
+                <input type="range" id="sl-arc-ang" min="0" max="359.5" step="0.5" value="343.3" />
+                <div class="pills-rumbos">
+                  <button type="button" class="pill-btn" data-r="0">0° (E)</button>
+                  <button type="button" class="pill-btn" data-r="45">45°</button>
+                  <button type="button" class="pill-btn" data-r="90">90° (S)</button>
+                  <button type="button" class="pill-btn" data-r="180">180° (O)</button>
+                  <button type="button" class="pill-btn" data-r="270">270° (N)</button>
+                  <button type="button" class="pill-btn" data-r="315">315°</button>
+                </div>
+              </div>
+
+              <div class="guide-toggle-box">
+                <label class="toggle-checkbox">
+                  <input type="checkbox" id="chk-arc-ray" checked />
+                  <span>Activar guía predictiva (Raycasting de rebote)</span>
+                </label>
+              </div>
+
+              <button type="button" class="btn-fire-vector arcade" id="btn-fire-arcade">
+                <span class="btn-bolt">⚡</span>
+                <span class="btn-action">LANZAR TIRO ARCADE</span>
+                <span class="btn-key">[Espacio]</span>
+              </button>
+
+              <div class="arcade-hud-card">
+                <div class="h-row">
+                  <span>Vector calculado:</span>
+                  <strong id="hud-arc-v">v = (430.7, -129.4) px/s</strong>
+                </div>
+                <div class="h-row">
+                  <span>Energía cinética estimada:</span>
+                  <strong id="hud-arc-e">101.3 kJ</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
+    </section>
+
+    <!-- =========================================================================
+         3. MODAL DE TEORÍA: EL MÉTODO DEL PUNTO IMAGEN (REFERENCIA UNAM)
+         ========================================================================= -->
+    <div class="theory-modal-backdrop" id="theory-modal" style="display: none;">
+      <div class="theory-card">
+        <header class="theory-header">
+          <div>
+            <span class="theory-kicker">FUNDAMENTO MATEMÁTICO · GEOMETRÍA ANALÍTICA</span>
+            <h2 class="theory-title">El Método del Punto Imagen en el Billar</h2>
+          </div>
+          <button type="button" class="btn-close-theory" id="btn-close-theory" aria-label="Cerrar modal">✕</button>
+        </header>
+
+        <div class="theory-scroll">
+          <section class="theory-sec">
+            <h3>1. El Tiro a 1 Banda como Simetría Axial (Ley de Reflexión)</h3>
+            <p>
+              En física, la bola rebota con un ángulo de incidencia igual al ángulo de reflexión (&theta;<sub>inc</sub> = &theta;<sub>ref</sub>). Resolver esto directamente hacia adelante suele requerir ecuaciones complejas.
+            </p>
+            <p>
+              Sin embargo, la <strong>geometría analítica</strong> proporciona un método infalible: <em>reflejar la bola objetivo al otro lado de la banda como si fuera un espejo</em>.
+            </p>
+            <div class="diagram-box">
+              <svg viewBox="0 0 600 200" class="theory-svg">
+                <!-- Banda superior y = 0 -->
+                <line x1="40" y1="50" x2="560" y2="50" stroke="#f59e0b" stroke-width="3" />
+                <text x="50" y="42" fill="#f59e0b" font-size="11" font-weight="bold">BANDA SUPERIOR (y = 0)</text>
+                
+                <!-- Punto real A (Blanca) -->
+                <circle cx="100" cy="150" r="12" fill="#fff" stroke="#94a3b8" stroke-width="2" />
+                <text x="100" y="154" font-size="10" font-weight="bold" fill="#000" text-anchor="middle">A</text>
+                
+                <!-- Punto real B (Objetivo) -->
+                <circle cx="480" cy="140" r="12" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+                <text x="480" y="144" font-size="10" font-weight="bold" fill="#000" text-anchor="middle">B</text>
+
+                <!-- Punto Imagen B' (Reflejado respecto a y = 0) -->
+                <circle cx="480" cy="-40" r="12" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="3 3" />
+                <text x="480" y="-36" font-size="10" font-weight="bold" fill="#facc15" text-anchor="middle">B'</text>
+
+                <!-- Línea recta directa de A hacia B' -->
+                <line x1="100" y1="150" x2="480" y2="-40" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 4" />
+                
+                <!-- Punto de impacto P en la banda -->
+                <circle cx="300" cy="50" r="5" fill="#ef4444" />
+                <text x="300" y="70" font-size="11" font-weight="bold" fill="#ef4444" text-anchor="middle">P (Impacto)</text>
+
+                <!-- Trayectoria real con rebote -->
+                <line x1="100" y1="150" x2="300" y2="50" stroke="#38bdf8" stroke-width="3" />
+                <line x1="300" y1="50" x2="480" y2="140" stroke="#38bdf8" stroke-width="3" />
+              </svg>
+            </div>
+            <p>
+              Al trazar la <strong>línea recta directa</strong> desde la bola blanca A hasta el punto simétrico B', la recta corta la banda exactamente en el <strong>punto de impacto P</strong>. El vector de tiro no es más que:
+            </p>
+            <div class="math-banner">
+              v⃗ = B' − A = (x<sub>B</sub> − x<sub>A</sub>, −y<sub>B</sub> − y<sub>A</sub>)
+            </div>
+          </section>
+
+          <section class="theory-sec">
+            <h3>2. Jugadas a 2 Bandas (Doble Isometría)</h3>
+            <p>
+              Si la bola debe rebotar en la banda superior y luego en la banda lateral derecha, simplemente reflejamos el punto B primero respecto a la banda lateral (B'), y luego ese resultado respecto a la banda superior (B''). La trayectoria completa se reduce a la recta directa A → B''.
+            </p>
+          </section>
+
+          <section class="theory-sec">
+            <h3>3. El Punto Fantasma de Colisión</h3>
+            <p>
+              Para embocar una bola en una tronera $T$, el vector de salida de la bola impactada debe ir en la dirección de la tronera. Como ambas bolas tienen radio $R$, el centro de la bola blanca debe llegar exactamente al punto fantasma $G$, situado a una distancia de $2R$ por detrás de la bola objetivo.
+            </p>
+          </section>
+        </div>
+
+        <footer class="theory-footer">
+          <button type="button" class="btn-modal-close-action" id="btn-close-theory-action">¡Entendido! Volver al Juego</button>
+        </footer>
+      </div>
+    </div>
+
+  </main>
+</BaseLayout>
+
+<script>
+  // =========================================================================
+  // MOTOR DEL JUEGO · BILLAR VECTORIAL
+  // =========================================================================
+
+  (() => {
+    // Referencias DOM principales
+    const titleScreen = document.getElementById('title-screen') as HTMLElement;
+    const gameplayScreen = document.getElementById('gameplay-screen') as HTMLElement;
+    const cardLaunchVectorial = document.getElementById('card-launch-vectorial') as HTMLElement;
+    const cardLaunchArcade = document.getElementById('card-launch-arcade') as HTMLElement;
+    const btnPlayVectorial = document.getElementById('btn-play-vectorial') as HTMLButtonElement;
+    const btnPlayArcade = document.getElementById('btn-play-arcade') as HTMLButtonElement;
+    const btnBackMenu = document.getElementById('btn-back-menu') as HTMLButtonElement;
+    const btnSwitchMode = document.getElementById('btn-switch-mode') as HTMLButtonElement;
+
+    const modeChipIcon = document.getElementById('mode-chip-icon') as HTMLElement;
+    const modeChipName = document.getElementById('mode-chip-name') as HTMLElement;
+    const consoleVectorial = document.getElementById('console-vectorial') as HTMLElement;
+    const consoleArcade = document.getElementById('console-arcade') as HTMLElement;
+
+    // Modal de Teoría
+    const theoryModal = document.getElementById('theory-modal') as HTMLElement;
+    const btnOpenTheory = document.getElementById('btn-open-theory') as HTMLButtonElement;
+    const btnCloseTheory = document.getElementById('btn-close-theory') as HTMLButtonElement;
+    const btnCloseTheoryAction = document.getElementById('btn-close-theory-action') as HTMLButtonElement;
+
+    // Elementos de la Mesa y Controles
+    const canvas = document.getElementById('pool-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Geometría del tapete: Área de juego 800 x 400 mm
+    // Margen de banda de madera: 40 px en cada lado (Canvas 880 x 480)
+    const CUSHION = 40;
+    const PLAY_X0 = CUSHION;
+    const PLAY_Y0 = CUSHION;
+    const PLAY_W = 800;
+    const PLAY_H = 400;
+    const PLAY_X1 = PLAY_X0 + PLAY_W;
+    const PLAY_Y1 = PLAY_Y0 + PLAY_H;
+
+    const BALL_R = 14;
+    const POCKET_R = 25;
+    const ACCEL_FRICTION = 160; // Desaceleración suave en px/s²
+    const CUSHION_RESTITUTION = 0.78;
+    const BALL_RESTITUTION = 0.95;
+
+    const POCKETS = [
+      { id: 'TL', x: PLAY_X0, y: PLAY_Y0 },
+      { id: 'TM', x: PLAY_X0 + PLAY_W / 2, y: PLAY_Y0 },
+      { id: 'TR', x: PLAY_X1, y: PLAY_Y0 },
+      { id: 'BL', x: PLAY_X0, y: PLAY_Y1 },
+      { id: 'BM', x: PLAY_X0 + PLAY_W / 2, y: PLAY_Y1 },
+      { id: 'BR', x: PLAY_X1, y: PLAY_Y1 },
+    ];
+
+    interface Ball {
+      id: number;
+      label: string;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      color: string;
+      isCue: boolean;
+      isTarget: boolean;
+      isObstacle?: boolean;
+      inPocket: boolean;
+      sinking: boolean;
+      sinkProgress: number;
+    }
+
+    interface Challenge {
+      title: string;
+      kicker: string;
+      desc: string;
+      targetDesc: string;
+      pocketDesc: string;
+      cue: { x: number; y: number };
+      balls: Array<{ id: number; label: string; x: number; y: number; color: string; isTarget: boolean; isObstacle?: boolean }>;
+      optimalVx: number;
+      optimalVy: number;
+    }
+
+    const CHALLENGES: Challenge[] = [
+      {
+        title: 'Tiro Directo a Tronera',
+        kicker: 'RETO 1 DE 5 · DIRECTO & PUNTO FANTASMA',
+        desc: 'Calcula las coordenadas de origen A(150, 260) y destino B(550, 140). Obtén el vector directo v⃗ = B − A y calcula la velocidad necesaria para vencer la fricción.',
+        targetDesc: 'B(550, 140)',
+        pocketDesc: 'TR (800, 0)',
+        cue: { x: 150, y: 260 },
+        balls: [{ id: 1, label: '1', x: 550, y: 140, color: '#facc15', isTarget: true }],
+        optimalVx: 450,
+        optimalVy: -135
+      },
+      {
+        title: '1 Banda con Punto Imagen (B\')',
+        kicker: 'RETO 2 DE 5 · EL MÉTODO DEL ESPEJO',
+        desc: 'Un obstáculo en (400, 240) bloquea el paso directo. Refleja la bola B(620, 240) respecto a la banda superior (y = 0) para hallar B\'(620, −240). El vector v⃗ = B\' − A te dará el tiro exacto.',
+        targetDesc: 'B(620, 240)',
+        pocketDesc: 'BR (800, 400)',
+        cue: { x: 180, y: 240 },
+        balls: [
+          { id: 99, label: 'X', x: 400, y: 240, color: '#64748b', isTarget: false, isObstacle: true },
+          { id: 2, label: '2', x: 620, y: 240, color: '#38bdf8', isTarget: true }
+        ],
+        optimalVx: 340,
+        optimalVy: -370
+      },
+      {
+        title: 'Choque Elástico a 90° (Momento Lineal)',
+        kicker: 'RETO 3 DE 5 · DISPERSIÓN ORTOGONAL',
+        desc: 'Al impactar de forma oblicua, las direcciones de salida forman un ángulo ortogonal de 90°. Ajusta el impacto para empujar la Bola 3 a la tronera central BM(400, 400).',
+        targetDesc: 'B(380, 220)',
+        pocketDesc: 'BM (400, 400)',
+        cue: { x: 200, y: 140 },
+        balls: [{ id: 3, label: '3', x: 380, y: 220, color: '#f43f5e', isTarget: true }],
+        optimalVx: 320,
+        optimalVy: 140
+      },
+      {
+        title: '2 Bandas con Doble Imagen (B\'\')',
+        kicker: 'RETO 4 DE 5 · DOBLE ISOMETRÍA',
+        desc: 'Refleja el objetivo B respecto a la banda derecha y luego respecto a la banda superior. El vector hacia la doble imagen B\'\' sorteará la barrera de defensa.',
+        targetDesc: 'B(600, 320)',
+        pocketDesc: 'BL (0, 400)',
+        cue: { x: 240, y: 320 },
+        balls: [
+          { id: 98, label: 'X', x: 440, y: 300, color: '#64748b', isTarget: false, isObstacle: true },
+          { id: 99, label: 'X', x: 440, y: 340, color: '#64748b', isTarget: false, isObstacle: true },
+          { id: 4, label: '4', x: 600, y: 320, color: '#c084fc', isTarget: true }
+        ],
+        optimalVx: 480,
+        optimalVy: -420
+      },
+      {
+        title: 'Carambola Combinada en Cadena',
+        kicker: 'RETO 5 DE 5 · CARAMBOLA',
+        desc: 'Transfiere el momento lineal en serie: la bola blanca impacta a la Bola 5 y esta emboca a la Bola 8 en la tronera de la esquina.',
+        targetDesc: 'Bola 5 -> Bola 8',
+        pocketDesc: 'TR (800, 0)',
+        cue: { x: 140, y: 200 },
+        balls: [
+          { id: 5, label: '5', x: 360, y: 200, color: '#fb923c', isTarget: false },
+          { id: 8, label: '8', x: 580, y: 200, color: '#090d16', isTarget: true }
+        ],
+        optimalVx: 620,
+        optimalVy: 0
+      },
+      {
+        title: 'Mesa Libre (Sandbox)',
+        kicker: 'MODO LIBRE · SANDBOX',
+        desc: 'Experimenta cualquier tiro sin límites. Puedes recolocar la bola blanca haciendo clic en el tapete.',
+        targetDesc: 'Práctica libre',
+        pocketDesc: 'Cualquier tronera',
+        cue: { x: 200, y: 200 },
+        balls: [
+          { id: 1, label: '1', x: 460, y: 150, color: '#facc15', isTarget: true },
+          { id: 2, label: '2', x: 490, y: 260, color: '#38bdf8', isTarget: true },
+          { id: 8, label: '8', x: 580, y: 200, color: '#090d16', isTarget: true }
+        ],
+        optimalVx: 400,
+        optimalVy: -100
+      }
+    ];
+
+    // Estado del juego
+    let activeMode: 'vectorial' | 'arcade' = 'vectorial';
+    let currentLvl = 0;
+    let balls: Ball[] = [];
+    let cueBall: Ball;
+    let isMoving = false;
+    let shotsTaken = 0;
+    let soundEnabled = true;
+
+    // Vector de tiro activo en px/s
+    let currentVx = 450;
+    let currentVy = -135;
+
+    // Elementos UI del Reto
+    const lvlKicker = document.getElementById('lvl-kicker') as HTMLElement;
+    const lvlTitle = document.getElementById('lvl-title') as HTMLElement;
+    const missionBrief = document.getElementById('mission-brief') as HTMLElement;
+    const dispCoCue = document.getElementById('disp-co-cue') as HTMLElement;
+    const dispCoTarget = document.getElementById('disp-co-target') as HTMLElement;
+    const dispCoPocket = document.getElementById('disp-co-pocket') as HTMLElement;
+
+    const valShotsMade = document.getElementById('val-shots-made') as HTMLElement;
+    const statusIndicator = document.getElementById('status-indicator') as HTMLElement;
+    const statusText = document.getElementById('status-text') as HTMLElement;
+
+    const selGameLevel = document.getElementById('sel-game-level') as HTMLSelectElement;
+    const btnGameSound = document.getElementById('btn-game-sound') as HTMLButtonElement;
+    const soundGameIcon = document.getElementById('sound-game-icon') as HTMLElement;
+    const btnGameReset = document.getElementById('btn-game-reset') as HTMLButtonElement;
+
+    // Inputs Vectorial
+    const btnFormatCartesian = document.getElementById('btn-format-cartesian') as HTMLButtonElement;
+    const btnFormatPolar = document.getElementById('btn-format-polar') as HTMLButtonElement;
+    const fieldsCartesian = document.getElementById('fields-cartesian') as HTMLElement;
+    const fieldsPolar = document.getElementById('fields-polar') as HTMLElement;
+    const inpVx = document.getElementById('inp-vx') as HTMLInputElement;
+    const inpVy = document.getElementById('inp-vy') as HTMLInputElement;
+    const inpForce = document.getElementById('inp-force') as HTMLInputElement;
+    const inpAngle = document.getElementById('inp-angle') as HTMLInputElement;
+    const btnFireManual = document.getElementById('btn-fire-manual') as HTMLButtonElement;
+    const diagText = document.getElementById('diag-text') as HTMLElement;
+
+    // Inputs Arcade
+    const slArcPower = document.getElementById('sl-arc-power') as HTMLInputElement;
+    const lblArcPower = document.getElementById('lbl-arc-power') as HTMLElement;
+    const slArcAng = document.getElementById('sl-arc-ang') as HTMLInputElement;
+    const lblArcAng = document.getElementById('lbl-arc-ang') as HTMLElement;
+    const chkArcRay = document.getElementById('chk-arc-ray') as HTMLInputElement;
+    const btnFireArcade = document.getElementById('btn-fire-arcade') as HTMLButtonElement;
+    const hudArcV = document.getElementById('hud-arc-v') as HTMLElement;
+    const hudArcE = document.getElementById('hud-arc-e') as HTMLElement;
+
+    // Modal Victoria
+    const victoryOverlay = document.getElementById('victory-overlay') as HTMLElement;
+    const vSummary = document.getElementById('v-summary') as HTMLElement;
+    const vShotsCount = document.getElementById('v-shots-count') as HTMLElement;
+    const btnVNext = document.getElementById('btn-v-next') as HTMLButtonElement;
+    const btnVRetry = document.getElementById('btn-v-retry') as HTMLButtonElement;
+
+    // =========================================================================
+    // AUDIO SYNTH (WEB AUDIO API)
+    // =========================================================================
+    let audioCtx: AudioContext | null = null;
+    const getAC = () => {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    };
+
+    const playHitSound = (pwr: number) => {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        if (!ac) return;
+        const now = ac.currentTime;
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
+        const vol = Math.min(0.7, Math.max(0.12, pwr / 850));
+        g.gain.setValueAtTime(vol, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      } catch (_) {}
+    };
+
+    const playBallClick = (force: number) => {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        if (!ac) return;
+        const now = ac.currentTime;
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1150, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.035);
+        const vol = Math.min(0.6, Math.max(0.08, force / 500));
+        g.gain.setValueAtTime(vol, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      } catch (_) {}
+    };
+
+    const playCushionBounce = (spd: number) => {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        if (!ac) return;
+        const now = ac.currentTime;
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(55, now + 0.06);
+        const vol = Math.min(0.4, Math.max(0.05, spd / 500));
+        g.gain.setValueAtTime(vol, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } catch (_) {}
+    };
+
+    const playPocketSink = () => {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        if (!ac) return;
+        const now = ac.currentTime;
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(310, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.25);
+        g.gain.setValueAtTime(0.5, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + 0.26);
+      } catch (_) {}
+    };
+
+    const playWinFanfare = () => {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        if (!ac) return;
+        [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+          const osc = ac.createOscillator();
+          const g = ac.createGain();
+          const t = ac.currentTime + idx * 0.11;
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.35, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+          osc.connect(g);
+          g.connect(ac.destination);
+          osc.start(t);
+          osc.stop(t + 0.32);
+        });
+      } catch (_) {}
+    };
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE PANTALLAS (PORTADA <-> JUEGO)
+    // =========================================================================
+    const showScreen = (screen: 'title' | 'game') => {
+      if (screen === 'title') {
+        titleScreen.style.display = 'flex';
+        gameplayScreen.style.display = 'none';
+        isMoving = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        titleScreen.style.display = 'none';
+        gameplayScreen.style.display = 'flex';
+        if (!cueBall || balls.length === 0) {
+          loadLevel(currentLvl);
+        } else {
+          render();
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    const setPlayMode = (mode: 'vectorial' | 'arcade') => {
+      activeMode = mode;
+      if (mode === 'vectorial') {
+        modeChipIcon.textContent = '📐';
+        modeChipName.textContent = 'Modo Vectorial';
+        btnSwitchMode.textContent = 'Cambiar a Arcade';
+        consoleVectorial.style.display = 'flex';
+        consoleArcade.style.display = 'none';
+      } else {
+        modeChipIcon.textContent = '🎮';
+        modeChipName.textContent = 'Modo Arcade';
+        btnSwitchMode.textContent = 'Cambiar a Vectorial';
+        consoleArcade.style.display = 'flex';
+        consoleVectorial.style.display = 'none';
+      }
+      if (cueBall) {
+        render();
+      }
+    };
+
+    const handleSelectVectorial = (e?: Event) => {
+      if (e) e.stopPropagation();
+      setPlayMode('vectorial');
+      showScreen('game');
+    };
+
+    const handleSelectArcade = (e?: Event) => {
+      if (e) e.stopPropagation();
+      setPlayMode('arcade');
+      showScreen('game');
+    };
+
+    btnPlayVectorial?.addEventListener('click', handleSelectVectorial);
+    cardLaunchVectorial?.addEventListener('click', handleSelectVectorial);
+
+    btnPlayArcade?.addEventListener('click', handleSelectArcade);
+    cardLaunchArcade?.addEventListener('click', handleSelectArcade);
+
+    btnBackMenu?.addEventListener('click', () => showScreen('title'));
+
+    btnSwitchMode?.addEventListener('click', () => {
+      setPlayMode(activeMode === 'vectorial' ? 'arcade' : 'vectorial');
+    });
+
+    // Modal de Teoría
+    btnOpenTheory?.addEventListener('click', () => { theoryModal.style.display = 'flex'; });
+    btnCloseTheory?.addEventListener('click', () => { theoryModal.style.display = 'none'; });
+    btnCloseTheoryAction?.addEventListener('click', () => { theoryModal.style.display = 'none'; });
+    theoryModal?.addEventListener('click', (e) => {
+      if (e.target === theoryModal) {
+        theoryModal.style.display = 'none';
+      }
+    });
+
+    // =========================================================================
+    // CARGA DE RETO
+    // =========================================================================
+    const loadLevel = (idx: number) => {
+      currentLvl = idx;
+      const ch = CHALLENGES[idx];
+      if (!ch) return;
+
+      shotsTaken = 0;
+      valShotsMade.textContent = '0';
+      victoryOverlay.style.display = 'none';
+
+      lvlKicker.textContent = ch.kicker;
+      lvlTitle.textContent = ch.title;
+      missionBrief.innerHTML = ch.desc;
+      selGameLevel.value = String(idx);
+
+      dispCoCue.textContent = `(${ch.cue.x}, ${ch.cue.y})`;
+      dispCoTarget.textContent = ch.targetDesc;
+      dispCoPocket.textContent = ch.pocketDesc;
+
+      // Crear bolas
+      balls = [];
+      cueBall = {
+        id: 0,
+        label: 'A',
+        x: PLAY_X0 + ch.cue.x,
+        y: PLAY_Y0 + ch.cue.y,
+        vx: 0,
+        vy: 0,
+        color: '#ffffff',
+        isCue: true,
+        isTarget: false,
+        inPocket: false,
+        sinking: false,
+        sinkProgress: 0
+      };
+      balls.push(cueBall);
+
+      ch.balls.forEach(b => {
+        balls.push({
+          ...b,
+          x: PLAY_X0 + b.x,
+          y: PLAY_Y0 + b.y,
+          vx: 0,
+          vy: 0,
+          inPocket: false,
+          sinking: false,
+          sinkProgress: 0
+        });
+      });
+
+      currentVx = ch.optimalVx;
+      currentVy = ch.optimalVy;
+      syncAllInputs();
+
+      diagText.innerHTML = 'Calcula las componentes $\\Delta x$ y $\\Delta y$ en la mesa e introduce los valores arriba.';
+      render();
+    };
+
+    const syncAllInputs = () => {
+      const mag = Math.hypot(currentVx, currentVy);
+      let ang = (Math.atan2(currentVy, currentVx) * 180) / Math.PI;
+      if (ang < 0) ang += 360;
+
+      // Inputs Vectorial
+      inpVx.value = currentVx.toFixed(0);
+      inpVy.value = currentVy.toFixed(0);
+      inpForce.value = mag.toFixed(0);
+      inpAngle.value = ang.toFixed(1);
+
+      // Inputs Arcade
+      slArcPower.value = Math.min(850, Math.max(100, Math.round(mag))).toString();
+      lblArcPower.textContent = `${Math.round(mag)} px/s`;
+      slArcAng.value = ang.toFixed(1);
+      lblArcAng.textContent = `${ang.toFixed(1)}°`;
+
+      hudArcV.textContent = `v = (${currentVx.toFixed(1)}, ${currentVy.toFixed(1)}) px/s`;
+      const eK = (0.5 * 1 * (mag ** 2) * 0.001).toFixed(1);
+      hudArcE.textContent = `${eK} kJ`;
+    };
+
+    // =========================================================================
+    // DISPARO Y MOVIMIENTO
+    // =========================================================================
+    const fireShot = () => {
+      if (isMoving || cueBall.inPocket) return;
+
+      cueBall.vx = currentVx;
+      cueBall.vy = currentVy;
+
+      shotsTaken++;
+      valShotsMade.textContent = String(shotsTaken);
+
+      playHitSound(Math.hypot(currentVx, currentVy));
+      isMoving = true;
+      updateStatusDisplay(true);
+    };
+
+    const updateStatusDisplay = (moving: boolean) => {
+      if (moving) {
+        statusIndicator.className = 'status-indicator in-motion';
+        statusText.textContent = 'Bolas en movimiento...';
+        btnFireManual.disabled = true;
+        btnFireArcade.disabled = true;
+      } else {
+        statusIndicator.className = 'status-indicator ready';
+        statusText.textContent = 'Bolas en reposo';
+        btnFireManual.disabled = false;
+        btnFireArcade.disabled = false;
+      }
+    };
+
+    // =========================================================================
+    // FÍSICA CINEMÁTICA Y COLISIONES (SUB-STEPPING SIN ERRORES DE ESCALA)
+    // =========================================================================
+    const SUB_STEPS = 8;
+    const DT = (1 / 60) / SUB_STEPS;
+
+    const checkWinCondition = () => {
+      const targets = balls.filter(b => b.isTarget);
+      const remaining = targets.filter(b => !b.inPocket);
+
+      if (targets.length > 0 && remaining.length === 0) {
+        playWinFanfare();
+        setTimeout(() => {
+          vShotsCount.textContent = String(shotsTaken);
+          vSummary.textContent = `¡Has resuelto el reto en ${shotsTaken} tiro(s) con física de choque precisa!`;
+          victoryOverlay.style.display = 'flex';
+        }, 500);
+      } else if (currentLvl < 5) {
+        // Feedback didáctico en modo vectorial
+        const ch = CHALLENGES[currentLvl];
+        const optAng = (Math.atan2(ch.optimalVy, ch.optimalVx) * 180 / Math.PI + 360) % 360;
+        const userAng = (Math.atan2(currentVy, currentVx) * 180 / Math.PI + 360) % 360;
+        const diffAng = userAng - optAng;
+        const userPwr = Math.hypot(currentVx, currentVy);
+        const optPwr = Math.hypot(ch.optimalVx, ch.optimalVy);
+
+        let report = `<strong>Tiro ${shotsTaken}:</strong> `;
+        if (Math.abs(diffAng) > 4.5) {
+          report += `Desviación angular de <code>${diffAng > 0 ? '+' : ''}${diffAng.toFixed(1)}°</code>. `;
+        } else {
+          report += `¡Ángulo muy preciso! `;
+        }
+
+        if (userPwr < optPwr * 0.85) {
+          report += `Fuerza insuficiente para superar el rozamiento (${Math.round(userPwr)} vs ~${Math.round(optPwr)} px/s).`;
+        } else if (userPwr > optPwr * 1.25) {
+          report += `Exceso de fuerza (${Math.round(userPwr)} px/s). Ajusta los números y reintenta.`;
+        } else {
+          report += `Revisa el punto de impacto contra la bola objetivo.`;
+        }
+        diagText.innerHTML = report;
+      }
+    };
+
+    const updatePhysics = () => {
+      let anyMoving = false;
+
+      for (let s = 0; s < SUB_STEPS; s++) {
+        // 1. Integración de movimiento y fricción paño
+        balls.forEach(ball => {
+          if (ball.inPocket) return;
+
+          if (ball.sinking) {
+            ball.sinkProgress += 0.08;
+            ball.vx *= 0.85;
+            ball.vy *= 0.85;
+            ball.x += ball.vx * DT;
+            ball.y += ball.vy * DT;
+            if (ball.sinkProgress >= 1) {
+              ball.inPocket = true;
+              ball.sinking = false;
+              playPocketSink();
+              if (ball.isCue) {
+                setTimeout(() => {
+                  cueBall.x = PLAY_X0 + 150;
+                  cueBall.y = PLAY_Y0 + 200;
+                  cueBall.vx = 0;
+                  cueBall.vy = 0;
+                  cueBall.inPocket = false;
+                  cueBall.sinking = false;
+                  cueBall.sinkProgress = 0;
+                }, 600);
+              }
+            }
+            return;
+          }
+
+          const spd = Math.hypot(ball.vx, ball.vy);
+          if (spd > 1.5) {
+            anyMoving = true;
+            ball.x += ball.vx * DT;
+            ball.y += ball.vy * DT;
+
+            // Fricción constante del paño
+            const decel = ACCEL_FRICTION * DT;
+            if (spd > decel) {
+              const fac = (spd - decel) / spd;
+              ball.vx *= fac;
+              ball.vy *= fac;
+            } else {
+              ball.vx = 0;
+              ball.vy = 0;
+            }
+          } else {
+            ball.vx = 0;
+            ball.vy = 0;
+          }
+
+          // 2. Colisión con troneras
+          for (const pocket of POCKETS) {
+            const dist = Math.hypot(ball.x - pocket.x, ball.y - pocket.y);
+            if (dist < POCKET_R - 3) {
+              ball.sinking = true;
+              ball.sinkProgress = 0;
+              const a = Math.atan2(pocket.y - ball.y, pocket.x - ball.x);
+              ball.vx = Math.cos(a) * 45;
+              ball.vy = Math.sin(a) * 45;
+              break;
+            }
+          }
+
+          if (ball.sinking) return;
+
+          // 3. Bandas elásticas
+          if (ball.x - BALL_R < PLAY_X0) {
+            ball.x = PLAY_X0 + BALL_R;
+            ball.vx = -ball.vx * CUSHION_RESTITUTION;
+            playCushionBounce(Math.abs(ball.vx));
+          } else if (ball.x + BALL_R > PLAY_X1) {
+            ball.x = PLAY_X1 - BALL_R;
+            ball.vx = -ball.vx * CUSHION_RESTITUTION;
+            playCushionBounce(Math.abs(ball.vx));
+          }
+
+          if (ball.y - BALL_R < PLAY_Y0) {
+            ball.y = PLAY_Y0 + BALL_R;
+            ball.vy = -ball.vy * CUSHION_RESTITUTION;
+            playCushionBounce(Math.abs(ball.vy));
+          } else if (ball.y + BALL_R > PLAY_Y1) {
+            ball.y = PLAY_Y1 - BALL_R;
+            ball.vy = -ball.vy * CUSHION_RESTITUTION;
+            playCushionBounce(Math.abs(ball.vy));
+          }
+        });
+
+        // 4. Choques elásticos 2D bola contra bola
+        for (let i = 0; i < balls.length; i++) {
+          const b1 = balls[i];
+          if (b1.inPocket || b1.sinking) continue;
+
+          for (let j = i + 1; j < balls.length; j++) {
+            const b2 = balls[j];
+            if (b2.inPocket || b2.sinking) continue;
+
+            const dx = b2.x - b1.x;
+            const dy = b2.y - b1.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < BALL_R * 2 && dist > 0.001) {
+              const overlap = BALL_R * 2 - dist;
+              const nx = dx / dist;
+              const ny = dy / dist;
+
+              b1.x -= nx * (overlap / 2);
+              b1.y -= ny * (overlap / 2);
+              b2.x += nx * (overlap / 2);
+              b2.y += ny * (overlap / 2);
+
+              const kx = b1.vx - b2.vx;
+              const ky = b1.vy - b2.vy;
+              const vRel = nx * kx + ny * ky;
+
+              if (vRel > 0) {
+                b1.vx -= vRel * nx * BALL_RESTITUTION;
+                b1.vy -= vRel * ny * BALL_RESTITUTION;
+                b2.vx += vRel * nx * BALL_RESTITUTION;
+                b2.vy += vRel * ny * BALL_RESTITUTION;
+
+                playBallClick(vRel);
+              }
+            }
+          }
+        }
+      }
+
+      if (isMoving && !anyMoving) {
+        isMoving = false;
+        updateStatusDisplay(false);
+        checkWinCondition();
+      }
+    };
+
+    // =========================================================================
+    // DIBUJO EN CANVAS
+    // =========================================================================
+    const render = () => {
+      ctx.clearRect(0, 0, 880, 480);
+
+      // Marco de madera
+      const wood = ctx.createLinearGradient(0, 0, 880, 480);
+      wood.addColorStop(0, '#2d1810');
+      wood.addColorStop(0.5, '#452618');
+      wood.addColorStop(1, '#1f100a');
+      ctx.fillStyle = wood;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, 880, 480, 20);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Regla graduada métrica en las bandas
+      ctx.font = 'bold 9px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Marcas X (0 a 800)
+      for (let x = 0; x <= PLAY_W; x += 100) {
+        const px = PLAY_X0 + x;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillRect(px - 1, 14, 2, 8);
+        ctx.fillRect(px - 1, PLAY_Y1 + 18, 2, 8);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText(String(x), px, 18);
+        ctx.fillText(String(x), px, PLAY_Y1 + 22);
+      }
+
+      // Marcas Y (0 a 400)
+      for (let y = 0; y <= PLAY_H; y += 100) {
+        const py = PLAY_Y0 + y;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillRect(14, py - 1, 8, 2);
+        ctx.fillRect(PLAY_X1 + 18, py - 1, 8, 2);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText(String(y), 18, py);
+        ctx.fillText(String(y), PLAY_X1 + 22, py);
+      }
+
+      // Paño de juego
+      const felt = ctx.createRadialGradient(440, 240, 100, 440, 240, 460);
+      felt.addColorStop(0, '#065f46');
+      felt.addColorStop(0.7, '#044e39');
+      felt.addColorStop(1, '#023829');
+      ctx.fillStyle = felt;
+      ctx.fillRect(PLAY_X0, PLAY_Y0, PLAY_W, PLAY_H);
+
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(PLAY_X0, PLAY_Y0, PLAY_W, PLAY_H);
+
+      // Rejilla de coordenadas sobre el paño
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      for (let x = 50; x < PLAY_W; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(PLAY_X0 + x, PLAY_Y0);
+        ctx.lineTo(PLAY_X0 + x, PLAY_Y1);
+        ctx.stroke();
+      }
+      for (let y = 50; y < PLAY_H; y += 50) {
+        ctx.beginPath();
+        ctx.moveTo(PLAY_X0, PLAY_Y0 + y);
+        ctx.lineTo(PLAY_X1, PLAY_Y0 + y);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1.2;
+      for (let x = 100; x < PLAY_W; x += 100) {
+        ctx.beginPath();
+        ctx.moveTo(PLAY_X0 + x, PLAY_Y0);
+        ctx.lineTo(PLAY_X0 + x, PLAY_Y1);
+        ctx.stroke();
+      }
+      for (let y = 100; y < PLAY_H; y += 100) {
+        ctx.beginPath();
+        ctx.moveTo(PLAY_X0, PLAY_Y0 + y);
+        ctx.lineTo(PLAY_X1, PLAY_Y0 + y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Troneras
+      POCKETS.forEach(p => {
+        ctx.fillStyle = '#020617';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, POCKET_R, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.font = 'bold 8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.id, p.x, p.y < 240 ? p.y + 14 : p.y - 14);
+      });
+
+      // Raycasting en Modo Arcade
+      if (!isMoving && activeMode === 'arcade' && chkArcRay?.checked && cueBall && !cueBall.inPocket) {
+        drawPredictiveRay();
+      }
+
+      // Flecha vectorial sobre la bola blanca
+      if (!isMoving && cueBall && !cueBall.inPocket) {
+        drawCueArrow();
+      }
+
+      // Bolas con etiquetas flotantes
+      balls.forEach(ball => {
+        if (ball.inPocket) return;
+
+        ctx.save();
+        const rad = ball.sinking ? BALL_R * Math.max(0.1, 1 - ball.sinkProgress) : BALL_R;
+        const alpha = ball.sinking ? Math.max(0, 1 - ball.sinkProgress) : 1;
+        ctx.globalAlpha = alpha;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath();
+        ctx.arc(ball.x + 3, ball.y + 4, rad, 0, Math.PI * 2);
+        ctx.fill();
+
+        const bGrad = ctx.createRadialGradient(
+          ball.x - rad * 0.35, ball.y - rad * 0.35, rad * 0.1,
+          ball.x, ball.y, rad
+        );
+        if (ball.isCue) {
+          bGrad.addColorStop(0, '#ffffff');
+          bGrad.addColorStop(0.7, '#f1f5f9');
+          bGrad.addColorStop(1, '#94a3b8');
+        } else if (ball.isObstacle) {
+          bGrad.addColorStop(0, '#94a3b8');
+          bGrad.addColorStop(0.7, '#475569');
+          bGrad.addColorStop(1, '#1e293b');
+        } else {
+          bGrad.addColorStop(0, '#ffffff');
+          bGrad.addColorStop(0.3, ball.color);
+          bGrad.addColorStop(1, '#090d16');
+        }
+
+        ctx.fillStyle = bGrad;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, rad, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (!ball.isCue && rad > 6) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, rad * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#0f172a';
+          ctx.font = `bold ${Math.round(rad * 0.65)}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(ball.label, ball.x, ball.y + 0.5);
+        }
+
+        // Etiqueta de coordenada
+        if (!isMoving && rad > 8) {
+          const lx = Math.round(ball.x - PLAY_X0);
+          const ly = Math.round(ball.y - PLAY_Y0);
+          const tag = ball.isCue ? `A(${lx}, ${ly})` : `${ball.label}(${lx}, ${ly})`;
+
+          ctx.font = 'bold 10px monospace';
+          const tw = ctx.measureText(tag).width;
+          const tagY = ball.y - BALL_R - 8;
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          ctx.fillRect(ball.x - tw / 2 - 4, tagY - 6, tw + 8, 14);
+
+          ctx.strokeStyle = ball.isCue ? '#38bdf8' : (ball.isTarget ? '#facc15' : '#64748b');
+          ctx.lineWidth = 1;
+          ctx.strokeRect(ball.x - tw / 2 - 4, tagY - 6, tw + 8, 14);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(tag, ball.x, tagY + 1);
+        }
+        ctx.restore();
+      });
+    };
+
+    const drawCueArrow = () => {
+      if (!cueBall) return;
+      const mag = Math.hypot(currentVx, currentVy);
+      if (mag < 1) return;
+
+      const dirX = currentVx / mag;
+      const dirY = currentVy / mag;
+      const arrowLen = Math.min(130, Math.max(35, mag * 0.2));
+
+      const tipX = cueBall.x + dirX * arrowLen;
+      const tipY = cueBall.y + dirY * arrowLen;
+
+      ctx.save();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cueBall.x, cueBall.y);
+      ctx.lineTo(tipX, tipY);
+      ctx.stroke();
+
+      const ang = Math.atan2(dirY, dirX);
+      const hLen = 12;
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(tipX, tipY);
+      ctx.lineTo(tipX - hLen * Math.cos(ang - Math.PI / 6), tipY - hLen * Math.sin(ang - Math.PI / 6));
+      ctx.lineTo(tipX - hLen * Math.cos(ang + Math.PI / 6), tipY - hLen * Math.sin(ang + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const drawPredictiveRay = () => {
+      if (!cueBall) return;
+      const mag = Math.hypot(currentVx, currentVy);
+      if (mag < 1) return;
+
+      const dirX = currentVx / mag;
+      const dirY = currentVy / mag;
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+
+      let hitBall: Ball | null = null;
+      let hitDist = Infinity;
+
+      balls.forEach(b => {
+        if (b.isCue || b.inPocket) return;
+        const toX = b.x - cueBall.x;
+        const toY = b.y - cueBall.y;
+        const proj = toX * dirX + toY * dirY;
+        if (proj > 0) {
+          const perp = Math.abs(toX * dirY - toY * dirX);
+          if (perp < BALL_R * 2) {
+            const d = proj - Math.sqrt(Math.max(0, (BALL_R * 2) ** 2 - perp ** 2));
+            if (d < hitDist) {
+              hitDist = d;
+              hitBall = b;
+            }
+          }
+        }
+      });
+
+      if (hitBall && hitDist < 800) {
+        const impX = cueBall.x + dirX * hitDist;
+        const impY = cueBall.y + dirY * hitDist;
+
+        ctx.beginPath();
+        ctx.moveTo(cueBall.x, cueBall.y);
+        ctx.lineTo(impX, impY);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(impX, impY, BALL_R, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const normX = (hitBall.x - impX) / (BALL_R * 2);
+        const normY = (hitBall.y - impY) / (BALL_R * 2);
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(hitBall.x, hitBall.y);
+        ctx.lineTo(hitBall.x + normX * 70, hitBall.y + normY * 70);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    // =========================================================================
+    // LISTENERS DE INTERFAZ
+    // =========================================================================
+
+    // Cambio formato en Vectorial
+    btnFormatCartesian.addEventListener('click', () => {
+      btnFormatCartesian.classList.add('is-active');
+      btnFormatPolar.classList.remove('is-active');
+      fieldsCartesian.style.display = 'block';
+      fieldsPolar.style.display = 'none';
+    });
+
+    btnFormatPolar.addEventListener('click', () => {
+      btnFormatPolar.classList.add('is-active');
+      btnFormatCartesian.classList.remove('is-active');
+      fieldsPolar.style.display = 'block';
+      fieldsCartesian.style.display = 'none';
+    });
+
+    // Inputs Vectorial manual
+    const updateFromCartesianInput = () => {
+      currentVx = parseFloat(inpVx.value) || 0;
+      currentVy = parseFloat(inpVy.value) || 0;
+      syncAllInputs();
+      render();
+    };
+
+    inpVx.addEventListener('input', updateFromCartesianInput);
+    inpVy.addEventListener('input', updateFromCartesianInput);
+
+    const updateFromPolarInput = () => {
+      const pwr = parseFloat(inpForce.value) || 0;
+      const deg = parseFloat(inpAngle.value) || 0;
+      const rad = (deg * Math.PI) / 180;
+      currentVx = pwr * Math.cos(rad);
+      currentVy = pwr * Math.sin(rad);
+      syncAllInputs();
+      render();
+    };
+
+    inpForce.addEventListener('input', updateFromPolarInput);
+    inpAngle.addEventListener('input', updateFromPolarInput);
+
+    // Inputs Arcade
+    slArcPower.addEventListener('input', () => {
+      const pwr = parseFloat(slArcPower.value) || 450;
+      const rad = (parseFloat(slArcAng.value) * Math.PI) / 180;
+      currentVx = pwr * Math.cos(rad);
+      currentVy = pwr * Math.sin(rad);
+      syncAllInputs();
+      render();
+    });
+
+    slArcAng.addEventListener('input', () => {
+      const pwr = parseFloat(slArcPower.value) || 450;
+      const rad = (parseFloat(slArcAng.value) * Math.PI) / 180;
+      currentVx = pwr * Math.cos(rad);
+      currentVy = pwr * Math.sin(rad);
+      syncAllInputs();
+      render();
+    });
+
+    document.querySelectorAll('.pill-btn').forEach(b => {
+      b.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const r = parseFloat(target.dataset.r || '0');
+        slArcAng.value = String(r);
+        const pwr = parseFloat(slArcPower.value) || 450;
+        const rad = (r * Math.PI) / 180;
+        currentVx = pwr * Math.cos(rad);
+        currentVy = pwr * Math.sin(rad);
+        syncAllInputs();
+        render();
+      });
+    });
+
+    chkArcRay.addEventListener('change', render);
+
+    btnFireManual.addEventListener('click', fireShot);
+    btnFireArcade.addEventListener('click', fireShot);
+
+    btnGameReset.addEventListener('click', () => loadLevel(currentLvl));
+    btnVRetry.addEventListener('click', () => loadLevel(currentLvl));
+    btnVNext.addEventListener('click', () => {
+      const next = (currentLvl + 1) % CHALLENGES.length;
+      loadLevel(next);
+    });
+
+    selGameLevel.addEventListener('change', () => {
+      loadLevel(parseInt(selGameLevel.value, 10));
+    });
+
+    btnGameSound.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundGameIcon.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    // Atajos de teclado
+    window.addEventListener('keydown', (e) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          fireShot();
+        }
+        return;
+      }
+
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        fireShot();
+      } else if (e.key === 'r' || e.key === 'R') {
+        loadLevel(currentLvl);
+      }
+    });
+
+    // Interacción táctil y de ratón en el paño de billar
+    let isAimingDrag = false;
+
+    const getCanvasPos = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    };
+
+    const updateAimFromPos = (x: number, y: number) => {
+      if (!cueBall) return;
+      const dx = x - cueBall.x;
+      const dy = y - cueBall.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 4) return;
+
+      if (activeMode === 'arcade') {
+        const pwr = Math.min(850, Math.max(100, dist * 3));
+        currentVx = (dx / dist) * pwr;
+        currentVy = (dy / dist) * pwr;
+      } else {
+        const pwr = Math.hypot(currentVx, currentVy) || 450;
+        currentVx = (dx / dist) * pwr;
+        currentVy = (dy / dist) * pwr;
+      }
+      syncAllInputs();
+      render();
+    };
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (isMoving || !cueBall || cueBall.inPocket) return;
+      const pos = getCanvasPos(e);
+      const dist = Math.hypot(pos.x - cueBall.x, pos.y - cueBall.y);
+      if (dist < 90 || activeMode === 'arcade') {
+        isAimingDrag = true;
+        updateAimFromPos(pos.x, pos.y);
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isAimingDrag || isMoving || !cueBall || cueBall.inPocket) return;
+      const pos = getCanvasPos(e);
+      updateAimFromPos(pos.x, pos.y);
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isAimingDrag) isAimingDrag = false;
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (isMoving || !cueBall || cueBall.inPocket) return;
+      const pos = getCanvasPos(e);
+      const dist = Math.hypot(pos.x - cueBall.x, pos.y - cueBall.y);
+      if (dist < 90 || activeMode === 'arcade') {
+        isAimingDrag = true;
+        updateAimFromPos(pos.x, pos.y);
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isAimingDrag || isMoving || !cueBall || cueBall.inPocket) return;
+      const pos = getCanvasPos(e);
+      updateAimFromPos(pos.x, pos.y);
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+      if (isAimingDrag) isAimingDrag = false;
+    });
+
+    // Carga inicial segura para tener todas las estructuras de bolas y datos listas
+    loadLevel(0);
+
+    // Loop
+    const loop = () => {
+      if (gameplayScreen.style.display !== 'none') {
+        if (isMoving) {
+          updatePhysics();
+        }
+        render();
+      }
+      requestAnimationFrame(loop);
+    };
+
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS COMPLETOS · PORTADA TIPO JUEGO Y CONSOLA DE BILLAR VECTORIAL
+     ========================================================================= */
+
+  .game-wrapper {
+    min-height: calc(100vh - 70px);
+    background: var(--bg-primary);
+    color: var(--text-main);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* =========================================================================
+     1. PANTALLA DE PORTADA (START SCREEN)
+     ========================================================================= */
+  .title-screen {
+    position: relative;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    overflow: hidden;
+  }
+
+  .title-backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .pool-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.08) 50%, transparent 75%);
+    filter: blur(50px);
+  }
+
+  .chalk-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .title-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1040px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .title-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .pill-kicker {
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+  }
+
+  .main-title {
+    font-size: 3.8rem;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .word-billar {
+    color: var(--text-main);
+  }
+
+  .word-vectorial {
+    color: #10b981;
+    text-shadow: 0 0 35px rgba(16, 185, 129, 0.45);
+  }
+
+  .tagline {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 680px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .tagline strong {
+    color: var(--text-main);
+  }
+
+  /* TARJETAS DE MODO DE JUEGO */
+  .mode-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  @media (max-width: 820px) {
+    .mode-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mode-card {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .mode-card:hover {
+    transform: translateY(-4px);
+    border-color: #10b981;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), 0 0 20px rgba(16, 185, 129, 0.2);
+  }
+
+  .mode-card.featured {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 40%);
+  }
+
+  .card-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.65rem;
+    background: #10b981;
+    color: #ffffff;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+  }
+
+  .card-badge.arcade {
+    background: #38bdf8;
+    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.4);
+  }
+
+  .card-icon {
+    font-size: 2.2rem;
+  }
+
+  .card-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+  }
+
+  .card-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .card-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0.8rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+  }
+
+  .btn-play-mode {
+    margin-top: auto;
+    padding: 0.95rem 1.4rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-main);
+    font-size: 0.92rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-mode:hover {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+    transform: scale(1.02);
+  }
+
+  .btn-play-mode.primary {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    border: none;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  }
+
+  .btn-play-mode.primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5);
+  }
+
+  .btn-play-mode .arrow {
+    font-size: 1.2rem;
+  }
+
+  .title-footer-nav {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn-theory-guide {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 1.3rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-theory-guide:hover {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  /* =========================================================================
+     2. PANTALLA PRINCIPAL DE JUEGO (GAMEPLAY WORKBENCH)
+     ========================================================================= */
+  .gameplay-screen {
+    padding: 1rem 1.25rem 2.5rem 1.25rem;
+    max-width: 1540px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* NAVBAR DE JUEGO */
+  .game-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .nav-cluster-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .btn-back-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-back-menu:hover {
+    color: var(--text-main);
+    border-color: var(--text-main);
+  }
+
+  .nav-mode-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.82rem;
+  }
+
+  .mode-chip-icon {
+    font-size: 1.1rem;
+  }
+
+  .mode-chip-name {
+    font-weight: 800;
+    color: #10b981;
+  }
+
+  .btn-switch-mode {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-left: 0.3rem;
+  }
+
+  .btn-switch-mode:hover {
+    color: var(--text-main);
+    border-color: #10b981;
+  }
+
+  .nav-cluster-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lvl-kicker {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #10b981;
+    letter-spacing: 0.08em;
+  }
+
+  .lvl-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .nav-cluster-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .game-select {
+    padding: 0.45rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .btn-game-icon,
+  .btn-game-ctrl {
+    padding: 0.45rem 0.85rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-game-icon:hover,
+  .btn-game-ctrl:hover {
+    background: var(--bg-plate);
+    border-color: #10b981;
+  }
+
+  /* GRID PRINCIPAL DEL JUEGO */
+  .game-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 390px;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1200px) {
+    .game-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* MESA DE BILLAR (CANVAS) */
+  .pool-table-chassis {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .canvas-viewport {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  #pool-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .table-meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+
+  .meta-tag {
+    padding: 0.25rem 0.65rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-muted);
+  }
+
+  .meta-tag strong {
+    color: var(--text-main);
+  }
+
+  .meta-status {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-indicator.ready {
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .status-indicator.in-motion {
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    animation: pMotion 1s infinite;
+  }
+
+  @keyframes pMotion {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* CONSOLA DE CONTROL TÁCTICO (DERECHA) */
+  .console-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .console-head {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+  }
+
+  .console-kicker {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #10b981;
+  }
+
+  .console-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0.15rem 0 0 0;
+  }
+
+  .mission-brief {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .co-register-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .co-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+  }
+
+  .co-label {
+    color: var(--text-muted);
+  }
+
+  .co-val {
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: #38bdf8;
+  }
+
+  /* FORMAT TABS */
+  .format-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-plate);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 0.8rem;
+  }
+
+  .f-tab {
+    padding: 0.45rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .f-tab.is-active {
+    background: var(--bg-card);
+    color: var(--text-main);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .inputs-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .input-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-plate);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .input-box:focus-within {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  }
+
+  .input-box input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.05rem;
+    font-weight: 800;
+    font-family: monospace;
+    outline: none;
+  }
+
+  .input-box .unit {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 0.25rem;
+  }
+
+  .btn-fire-vector {
+    width: 100%;
+    margin-top: 0.8rem;
+    padding: 0.95rem 1rem;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-fire-vector:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5);
+    filter: brightness(1.08);
+  }
+
+  .btn-fire-vector:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-fire-vector.arcade {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+  }
+
+  .btn-key {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  /* NOTEBOOK DRAWER */
+  .notebook-drawer {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid #38bdf8;
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .drawer-header {
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 0.45rem;
+  }
+
+  .drawer-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .eq-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .eq-title {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .eq-code {
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: var(--bg-card);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+  }
+
+  .shot-diagnosis {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .diag-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .diag-text {
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .diag-text code {
+    font-weight: 800;
+    color: #f59e0b;
+  }
+
+  /* ARCADE SLIDERS */
+  .arcade-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .slider-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .s-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .s-val {
+    font-family: monospace;
+    color: #38bdf8;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #38bdf8;
+    cursor: pointer;
+  }
+
+  .s-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .pills-rumbos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-top: 0.3rem;
+  }
+
+  .pill-btn {
+    padding: 0.35rem 0.2rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pill-btn:hover {
+    color: var(--text-main);
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .guide-toggle-box {
+    padding: 0.75rem;
+    background: var(--bg-plate);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .toggle-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .arcade-hud-card {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  .h-row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .h-row strong {
+    font-family: monospace;
+    color: #38bdf8;
+  }
+
+  /* MODAL VICTORIA */
+  .victory-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 15, 25, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    animation: fadeIn 0.25s ease;
+  }
+
+  .victory-box {
+    background: var(--bg-card);
+    border: 2px solid #10b981;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 440px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(16, 185, 129, 0.35);
+  }
+
+  .v-star-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .v-heading {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .v-summary {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .v-metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .v-metric {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.55rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .v-metric span {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .v-metric strong {
+    font-size: 1rem;
+    color: #10b981;
+  }
+
+  .v-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .btn-v-next {
+    padding: 0.75rem 1.4rem;
+    background: #10b981;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-v-next:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+
+  .btn-v-retry {
+    padding: 0.75rem 1.2rem;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+  }
+
+  /* =========================================================================
+     3. MODAL TEÓRICO DE LA UNAM (EL MÉTODO DEL PUNTO IMAGEN)
+     ========================================================================= */
+  .theory-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1.5rem;
+    animation: fadeIn 0.25s ease;
+  }
+
+  .theory-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    max-width: 760px;
+    width: 100%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .theory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 1.75rem 1rem 1.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .theory-kicker {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+  }
+
+  .theory-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin: 0.2rem 0 0 0;
+  }
+
+  .btn-close-theory {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .btn-close-theory:hover {
+    color: var(--text-main);
+    border-color: var(--text-main);
+  }
+
+  .theory-scroll {
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .theory-sec h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    color: #10b981;
+  }
+
+  .theory-sec p {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 0.8rem 0;
+  }
+
+  .diagram-box {
+    background: #064e3b;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    margin: 1rem 0;
+  }
+
+  .theory-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .math-banner {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem;
+    text-align: center;
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .theory-footer {
+    padding: 1rem 1.75rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    background: var(--bg-plate);
+  }
+
+  .btn-modal-close-action {
+    padding: 0.75rem 1.5rem;
+    background: #10b981;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-modal-close-action:hover {
+    background: #059669;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>

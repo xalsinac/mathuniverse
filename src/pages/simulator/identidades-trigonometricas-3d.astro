@@ -1,0 +1,2107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`La Esencia de las Identidades Trigonométricas en 3D — Math Simulator | ${site.name}`}
+  description="Laboratorio interactivo en 3D para deducir sin memorizar las identidades trigonométricas: fórmulas de la suma de ángulos, simetrías y reducción al primer cuadrante, y combinación lineal."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Identidades 3D" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="ident3d-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="ident-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE -->
+    <header class="ident-header">
+      <div class="ident-kicker">
+        <span class="pulse-dot"></span>
+        <span>LABORATORIO VISUAL · IDENTIDADES SIN MEMORIZAR</span>
+      </div>
+      <h1 class="ident-title">La Esencia de las Identidades Trigonométricas</h1>
+      <p class="ident-desc" id="brandDesc">
+        Toda la tabla de fórmulas trigonométricas proviene de una sola máquina: <strong>rotaciones y simetrías en el círculo unitario</strong>. Cada término de la fórmula corresponde a una longitud geométrica visible.
+      </p>
+    </header>
+
+    <!-- SELECTOR DE LAS 3 ESCENAS / PESTAÑAS -->
+    <nav class="ident-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="ident-tab-btn active" data-tab="rot" id="tab-rot-btn">
+        <span class="tab-icon">🔄</span>
+        <span>1. Suma de Ángulos (α + β)</span>
+      </button>
+      <button type="button" class="ident-tab-btn" data-tab="red" id="tab-red-btn">
+        <span class="tab-icon">🪞</span>
+        <span>2. Simetrías &amp; Reducción</span>
+      </button>
+      <button type="button" class="ident-tab-btn" data-tab="lin" id="tab-lin-btn">
+        <span class="tab-icon">⚡</span>
+        <span>3. Combinación Lineal (a·sin + b·cos)</span>
+      </button>
+    </nav>
+
+    <!-- BOTÓN PARA DESPLEGAR EL TRATADO DIDÁCTICO -->
+    <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+      <span>📖 Deducción y Explicación Paso a Paso</span>
+    </button>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO PEDAGÓGICO</span>
+          <h2 id="guideModalTitle">¿Por qué funciona la suma de ángulos?</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+
+      <div class="guide-body" id="guideContent">
+        <!-- Contenido dinámico según la pestaña activa -->
+      </div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE PARÁMETROS -->
+    <aside class="ident-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+        
+        <!-- PARÁMETROS PESTAÑA 1 (ROTACIÓN Y SUMA) -->
+        <div class="ctl-section tab-rot-only">
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rAlpha">Primer ángulo <span class="math-sym">α</span></label>
+              <span class="ctl-val" id="vAlpha">35° (0.61 rad)</span>
+            </div>
+            <input type="range" id="rAlpha" min="0" max="360" step="1" value="35" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rBeta">Segundo ángulo <span class="math-sym">β</span></label>
+              <span class="ctl-val" id="vBeta">25° (0.44 rad)</span>
+            </div>
+            <input type="range" id="rBeta" min="0" max="180" step="1" value="25" />
+          </div>
+
+          <div class="quick-chips-row">
+            <button type="button" class="chip-btn" id="btnDoubleAngle" title="Hacer β = α para ver el ángulo doble 2α">
+              <span>Hacer β = α (Ángulo Doble)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PARÁMETROS PESTAÑA 2 (SIMETRÍAS Y REDUCCIÓN) -->
+        <div class="ctl-section tab-red-only" style="display: none;">
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rAlphaRed">Ángulo base <span class="math-sym">α</span> (1.ᵉʳ Cuadrante)</label>
+              <span class="ctl-val" id="vAlphaRed">35°</span>
+            </div>
+            <input type="range" id="rAlphaRed" min="5" max="85" step="1" value="35" />
+          </div>
+
+          <div class="ctl-group">
+            <label class="ctl-label-inline">Operación de Simetría / Espejo:</label>
+            <div class="reduction-ops-grid" id="opSelectorGrid">
+              <button type="button" class="op-btn" data-op="0">−α (Eje X)</button>
+              <button type="button" class="op-btn active" data-op="1">π − α (Eje Y)</button>
+              <button type="button" class="op-btn" data-op="2">π + α (Origen)</button>
+              <button type="button" class="op-btn" data-op="3">2π − α (4.º C.)</button>
+              <button type="button" class="op-btn" data-op="4">π/2 − α (Diagonal y=x)</button>
+              <button type="button" class="op-btn" data-op="5">π/2 + α (+90°)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PARÁMETROS PESTAÑA 3 (COMBINACIÓN LINEAL) -->
+        <div class="ctl-section tab-lin-only" style="display: none;">
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rCoefA">Coeficiente <span class="math-sym">a</span> (peso del seno)</label>
+              <span class="ctl-val" id="vCoefA">1.20</span>
+            </div>
+            <input type="range" id="rCoefA" min="-2.0" max="2.0" step="0.05" value="1.2" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rCoefB">Coeficiente <span class="math-sym">b</span> (peso del coseno)</label>
+              <span class="ctl-val" id="vCoefB">0.90</span>
+            </div>
+            <input type="range" id="rCoefB" min="-2.0" max="2.0" step="0.05" value="0.9" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rOmegaLin">Frecuencia angular <span class="math-sym">ω</span></label>
+              <span class="ctl-val" id="vOmegaLin">0.80 rad/s</span>
+            </div>
+            <input type="range" id="rOmegaLin" min="0.2" max="2.5" step="0.05" value="0.8" />
+          </div>
+        </div>
+
+        <!-- REPRODUCTOR / AUTO-ROTACIÓN -->
+        <div class="play-controls-row">
+          <button type="button" class="btn-action play-btn" id="btnPlay">
+            <span id="playIcon">⏸</span>
+            <span id="playText">Pausar Giro</span>
+          </button>
+          <button type="button" class="btn-action reset-btn" id="btnReset" title="Restablecer valores originales">
+            <span>↺ Reset</span>
+          </button>
+        </div>
+
+        <!-- TOGGLES VISUALES -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Capas Visuales:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill tab-rot-only">
+              <input type="checkbox" id="cConstr" checked />
+              <span class="color-dot" style="--dot-c: #a78bfa;"></span>
+              <span>Catetos (cos β, sin β)</span>
+            </label>
+            <label class="toggle-pill tab-rot-only">
+              <input type="checkbox" id="cProj" checked />
+              <span class="color-dot" style="--dot-c: #fbbf24;"></span>
+              <span>Barras de Descomposición</span>
+            </label>
+            <label class="toggle-pill tab-red-only" style="display:none;">
+              <input type="checkbox" id="cMirror" checked />
+              <span class="color-dot" style="--dot-c: #38bdf8;"></span>
+              <span>Eje / Espejo de Simetría</span>
+            </label>
+            <label class="toggle-pill tab-lin-only" style="display:none;">
+              <input type="checkbox" id="cWave" checked />
+              <span class="color-dot" style="--dot-c: #10b981;"></span>
+              <span>Despliegue de Onda 3D</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cGrid" checked />
+              <span class="color-dot" style="--dot-c: #64748b;"></span>
+              <span>Rejilla de Referencia</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- SELECTOR DE VISTAS DE CÁMARA (PRESETS) -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara:</span>
+          <div class="views-grid">
+            <button type="button" class="btn-cam active" data-view="front">Plano Frontal (2D)</button>
+            <button type="button" class="btn-cam" data-view="iso">Perspectiva 3D</button>
+          </div>
+        </div>
+
+        <!-- TELEMETRÍA Y VERIFICACIÓN EN VIVO CON KATEX -->
+        <div class="telemetry-card">
+          <span class="tg-section-label">Ecuación Verificada en Directo:</span>
+          <div class="live-equation-wrap" id="liveFormulaKaTeX">
+            <!-- KaTeX rendered equation -->
+          </div>
+          <div class="live-numeric-proof" id="liveNumericProof">
+            <!-- Comprobación numérica miembro a miembro -->
+          </div>
+        </div>
+
+        <!-- RESUMEN DIDÁCTICO INFERIOR -->
+        <div class="tips-box" id="tipsText">
+          Cargando intuición didáctica...
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- AYUDA INFERIOR -->
+    <div class="bottom-hint" aria-hidden="true">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar en 3D</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⌨️ <strong>Espacio:</strong> Pausar giro</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Centrar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Elementos del DOM
+    const rAlpha = document.getElementById('rAlpha') as HTMLInputElement;
+    const vAlpha = document.getElementById('vAlpha') as HTMLElement;
+    const rBeta = document.getElementById('rBeta') as HTMLInputElement;
+    const vBeta = document.getElementById('vBeta') as HTMLElement;
+    const rAlphaRed = document.getElementById('rAlphaRed') as HTMLInputElement;
+    const vAlphaRed = document.getElementById('vAlphaRed') as HTMLElement;
+    const rCoefA = document.getElementById('rCoefA') as HTMLInputElement;
+    const vCoefA = document.getElementById('vCoefA') as HTMLElement;
+    const rCoefB = document.getElementById('rCoefB') as HTMLInputElement;
+    const vCoefB = document.getElementById('vCoefB') as HTMLElement;
+    const rOmegaLin = document.getElementById('rOmegaLin') as HTMLInputElement;
+    const vOmegaLin = document.getElementById('vOmegaLin') as HTMLElement;
+
+    const btnPlay = document.getElementById('btnPlay') as HTMLButtonElement;
+    const playIcon = document.getElementById('playIcon') as HTMLElement;
+    const playText = document.getElementById('playText') as HTMLElement;
+    const btnReset = document.getElementById('btnReset') as HTMLButtonElement;
+    const btnFold = document.getElementById('btnFold') as HTMLButtonElement;
+    const btnDoubleAngle = document.getElementById('btnDoubleAngle') as HTMLButtonElement;
+    const panel = document.getElementById('panel') as HTMLElement;
+
+    const btnOpenGuide = document.getElementById('btnOpenGuide') as HTMLButtonElement;
+    const btnCloseGuide = document.getElementById('btnCloseGuide') as HTMLButtonElement;
+    const guideDrawer = document.getElementById('guideDrawer') as HTMLElement;
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+    const guideModalTitle = document.getElementById('guideModalTitle') as HTMLElement;
+
+    const cConstr = document.getElementById('cConstr') as HTMLInputElement;
+    const cProj = document.getElementById('cProj') as HTMLInputElement;
+    const cMirror = document.getElementById('cMirror') as HTMLInputElement;
+    const cWave = document.getElementById('cWave') as HTMLInputElement;
+    const cGrid = document.getElementById('cGrid') as HTMLInputElement;
+
+    const tabRotBtn = document.getElementById('tab-rot-btn') as HTMLButtonElement;
+    const tabRedBtn = document.getElementById('tab-red-btn') as HTMLButtonElement;
+    const tabLinBtn = document.getElementById('tab-lin-btn') as HTMLButtonElement;
+    const brandDesc = document.getElementById('brandDesc') as HTMLElement;
+    const tipsText = document.getElementById('tipsText') as HTMLElement;
+
+    const liveFormulaKaTeX = document.getElementById('liveFormulaKaTeX') as HTMLElement;
+    const liveNumericProof = document.getElementById('liveNumericProof') as HTMLElement;
+
+    const rotElements = document.querySelectorAll('.tab-rot-only');
+    const redElements = document.querySelectorAll('.tab-red-only');
+    const linElements = document.querySelectorAll('.tab-lin-only');
+
+    const opButtons = document.querySelectorAll('.op-btn');
+
+    // Constantes matemáticas
+    const TAU = Math.PI * 2;
+    const NEAR = 0.15;
+    const WAVE_LEN = 7.5;
+    const FONT_MATH = 'KaTeX_Math, "Times New Roman", Georgia, serif';
+    const FONT_SANS = 'system-ui, -apple-system, sans-serif';
+
+    // Paleta de colores pedagógica
+    const ROSE = '#fb7185';
+    const VIOLET = '#a78bfa';
+    const EMERALD = '#34d399';
+    const AMBER = '#fbbf24';
+    const CYAN = '#38bdf8';
+    const SLATE = 'rgba(148, 163, 184, 0.7)';
+
+    // Estado interactivo
+    type SceneMode = 'rot' | 'red' | 'lin';
+    let curScene: SceneMode = 'rot';
+
+    const state = {
+      alpha: 35 * (Math.PI / 180),
+      beta: 25 * (Math.PI / 180),
+      alphaRed: 35 * (Math.PI / 180),
+      selectedOp: 1, // 0: -a, 1: pi-a, 2: pi+a, 3: 2pi-a, 4: pi/2-a, 5: pi/2+a
+      coefA: 1.2,
+      coefB: 0.9,
+      omega: 0.8,
+      running: true,
+      time: 0,
+      showConstr: true,
+      showProj: true,
+      showMirror: true,
+      showWave: true,
+      showGrid: true,
+    };
+
+    const SAMPLES: { t: number; y: number }[] = [];
+
+    // Vistas de cámara
+    const VIEWS = {
+      rot: {
+        front: { az: 0.001, el: 0.02, dist: 6.8, tx: 0, ty: -0.15, tz: 0 },
+        iso:   { az: -0.65, el: 0.35, dist: 7.8, tx: 0, ty: -0.15, tz: 0 },
+      },
+      red: {
+        front: { az: 0.001, el: 0.02, dist: 6.8, tx: 0, ty: 0, tz: 0 },
+        iso:   { az: -0.55, el: 0.32, dist: 8.0, tx: 0, ty: 0, tz: 0 },
+      },
+      lin: {
+        front: { az: 0.001, el: 0.02, dist: 8.2, tx: 0, ty: 0, tz: 1.5 },
+        iso:   { az: -0.75, el: 0.32, dist: 12.0, tx: 0, ty: 0, tz: 3.0 },
+      }
+    };
+
+    let cam = { ...VIEWS.rot.front };
+    let tween: { from: typeof cam; to: typeof cam; start: number; dur: number } | null = null;
+
+    // Dimensiones del lienzo
+    let W = 0, H = 0, DPR = 1, FOCAL = 900, CX = 0, CY = 0;
+
+    const resize = () => {
+      DPR = Math.min(2.5, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * DPR);
+      canvas.height = Math.round(H * DPR);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      CX = W / 2;
+      CY = H / 2;
+      FOCAL = 1.15 * Math.min(H, W * 1.1);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // =========================================================================
+    // MATEMÁTICAS 3D Y CÁMARA
+    // =========================================================================
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+    const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const camPt = (C: ReturnType<typeof makeCam>, p: Pt3): Pt3 => {
+      const d = sub(p, C.eye);
+      return [dot3(d, C.r), dot3(d, C.u), dot3(d, C.f)];
+    };
+
+    const scr = (c: Pt3): Pt2 => [CX + (c[0] * FOCAL) / c[2], CY - (c[1] * FOCAL) / c[2]];
+
+    const proj = (C: ReturnType<typeof makeCam>, p: Pt3): Pt2 | null => {
+      const c = camPt(C, p);
+      return c[2] < NEAR ? null : scr(c);
+    };
+
+    const clipNear = (a: Pt3, b: Pt3): Pt3 => {
+      const t = (NEAR - a[2]) / (b[2] - a[2]);
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, NEAR];
+    };
+
+    const polyPath = (C: ReturnType<typeof makeCam>, pts: (Pt3 | null)[]): [Pt2, Pt2] | null => {
+      if (pts.length < 2) return null;
+      let head: Pt2 | null = null, tail: Pt2 | null = null, contin = false, prev: Pt3 | null = null;
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const P = pts[i];
+        if (P === null) {
+          prev = null;
+          contin = false;
+          continue;
+        }
+        const cur = camPt(C, P);
+        if (prev !== null) {
+          let a = prev, b = cur;
+          const av = a[2] >= NEAR, bv = b[2] >= NEAR;
+          if (av || bv) {
+            if (!av) a = clipNear(a, b);
+            if (!bv) b = clipNear(b, a);
+            const sA = scr(a), sB = scr(b);
+            if (!contin) ctx.moveTo(sA[0], sA[1]);
+            ctx.lineTo(sB[0], sB[1]);
+            if (!head) head = sA;
+            tail = sB;
+            contin = bv;
+          } else {
+            contin = false;
+          }
+        }
+        prev = cur;
+      }
+      return head && tail ? [head, tail] : null;
+    };
+
+    interface LineOpt {
+      width?: number;
+      color?: string;
+      dash?: number[];
+      alpha?: number;
+      fade?: [string, string];
+    }
+
+    const strokePoly = (C: ReturnType<typeof makeCam>, pts: (Pt3 | null)[], o: LineOpt) => {
+      const ht = polyPath(C, pts);
+      if (!ht) return;
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = o.width || 2;
+      if (o.alpha != null) ctx.globalAlpha = o.alpha;
+      if (o.dash) ctx.setLineDash(o.dash);
+      if (o.fade) {
+        const h = ht[0], t = ht[1];
+        if (Math.hypot(t[0] - h[0], t[1] - h[1]) < 2) {
+          ctx.strokeStyle = o.fade[0];
+        } else {
+          const g = ctx.createLinearGradient(h[0], h[1], t[0], t[1]);
+          g.addColorStop(0, o.fade[0]);
+          g.addColorStop(1, o.fade[1]);
+          ctx.strokeStyle = g;
+        }
+      } else {
+        ctx.strokeStyle = o.color || '#38bdf8';
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const line3 = (C: ReturnType<typeof makeCam>, a: Pt3, b: Pt3, o: LineOpt) => strokePoly(C, [a, b], o);
+
+    const glowDot = (s: Pt2, r: number, core: string, glow: string) => {
+      const g = ctx.createRadialGradient(s[0], s[1], 0, s[0], s[1], r);
+      g.addColorStop(0, core);
+      g.addColorStop(0.35, glow);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(s[0], s[1], r, 0, TAU);
+      ctx.fill();
+    };
+
+    const solidDot = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, color: string) => {
+      const s = proj(C, p);
+      if (!s) return;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(s[0], s[1], r, 0, TAU);
+      ctx.fill();
+    };
+
+    const label3 = (C: ReturnType<typeof makeCam>, p: Pt3, text: string, o: { font?: string; size?: number; color?: string; align?: CanvasTextAlign; dx?: number; dy?: number }) => {
+      const s = proj(C, p);
+      if (!s) return;
+      ctx.save();
+      ctx.font = o.font || `${o.size || 12}px ${FONT_SANS}`;
+      ctx.fillStyle = o.color || '#c4d2e6';
+      ctx.textAlign = o.align || 'left';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,0.85)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(text, s[0] + (o.dx || 0), s[1] + (o.dy || 0));
+      ctx.restore();
+    };
+
+    const arrowAt = (C: ReturnType<typeof makeCam>, tip3: Pt3, before3: Pt3, color: string) => {
+      const t = proj(C, tip3), b = proj(C, before3);
+      if (!t || !b) return;
+      const a = Math.atan2(t[1] - b[1], t[0] - b[0]);
+      const L = 9;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(t[0], t[1]);
+      ctx.lineTo(t[0] - L * Math.cos(a - 0.42), t[1] - L * Math.sin(a - 0.42));
+      ctx.moveTo(t[0], t[1]);
+      ctx.lineTo(t[0] - L * Math.cos(a + 0.42), t[1] - L * Math.sin(a + 0.42));
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const vecArrow = (C: ReturnType<typeof makeCam>, p: Pt2, color: string, name: string | null, o: { x0?: number; y0?: number; w?: number } = {}) => {
+      const x0 = o.x0 || 0, y0 = o.y0 || 0;
+      line3(C, [x0, y0, 0], [p[0], p[1], 0], { width: o.w || 2.4, color });
+      const bx = x0 + (p[0] - x0) * 0.88, by = y0 + (p[1] - y0) * 0.88;
+      arrowAt(C, [p[0], p[1], 0], [bx, by, 0], color);
+      if (name) {
+        label3(C, [p[0], p[1], 0], name, { font: 'italic 13px ' + FONT_MATH, color, align: 'center', dy: -14 });
+      }
+    };
+
+    const arcBetween = (C: ReturnType<typeof makeCam>, a0: number, a1: number, r: number, name: string, col = AMBER) => {
+      let d = a1 - a0;
+      while (d > Math.PI) d -= TAU;
+      while (d < -Math.PI) d += TAU;
+      const n = Math.max(2, Math.ceil(Math.abs(d) / 0.05));
+      const pts: Pt3[] = [];
+      for (let i = 0; i <= n; i++) {
+        const a = a0 + (d * i) / n;
+        pts.push([r * Math.cos(a), r * Math.sin(a), 0]);
+      }
+      strokePoly(C, pts, { width: 1.6, color: col });
+      if (name) {
+        const mid = a0 + d / 2;
+        label3(C, [(r + 0.16) * Math.cos(mid), (r + 0.16) * Math.sin(mid), 0], name, { font: 'italic 12px ' + FONT_MATH, color: col, align: 'center' });
+      }
+    };
+
+    const drawCircle = (C: ReturnType<typeof makeCam>, A = 1) => {
+      const pts: Pt3[] = [];
+      for (let i = 0; i <= 72; i++) {
+        const a = (i / 72) * TAU;
+        pts.push([A * Math.cos(a), A * Math.sin(a), 0]);
+      }
+      strokePoly(C, pts, { width: 6, color: 'rgba(56, 189, 248, 0.12)' });
+      strokePoly(C, pts, { width: 2, color: 'rgba(56, 189, 248, 0.9)' });
+    };
+
+    const drawAxes = (C: ReturnType<typeof makeCam>, ex = 1.7, ey = 1.5, tLen = 0) => {
+      const AXIS = 'rgba(159, 176, 200, 0.85)';
+      line3(C, [-ex, 0, 0], [ex, 0, 0], { width: 1.4, color: AXIS });
+      arrowAt(C, [ex, 0, 0], [ex - 0.2, 0, 0], AXIS);
+      label3(C, [ex + 0.2, 0, 0], 'x', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+
+      line3(C, [0, -ey, 0], [0, ey, 0], { width: 1.4, color: AXIS });
+      arrowAt(C, [0, ey, 0], [0, ey - 0.2, 0], AXIS);
+      label3(C, [0, ey + 0.18, 0], 'y', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+
+      if (tLen > 0) {
+        line3(C, [0, 0, 0], [0, 0, tLen], { width: 1.4, color: AXIS });
+        arrowAt(C, [0, 0, tLen], [0, 0, tLen - 0.3], AXIS);
+        label3(C, [0, 0, tLen + 0.5], 't', { font: 'italic 15px ' + FONT_MATH, color: '#c4d2e6', align: 'center' });
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 1: ROTACIÓN & SUMA DE ÁNGULOS (ROT)
+    // =========================================================================
+    const drawSceneRot = (C: ReturnType<typeof makeCam>) => {
+      const al = state.alpha;
+      const be = state.beta;
+      const s = al + be;
+
+      if (state.showGrid) {
+        for (let x = -1.5; x <= 1.5; x += 0.5) {
+          if (x !== 0) line3(C, [x, -1.5, 0], [x, 1.5, 0], { width: 1, color: 'rgba(148, 163, 184, 0.08)' });
+        }
+        for (let y = -1.5; y <= 1.5; y += 0.5) {
+          if (y !== 0) line3(C, [-1.5, y, 0], [1.5, y, 0], { width: 1, color: 'rgba(148, 163, 184, 0.08)' });
+        }
+      }
+
+      drawAxes(C, 1.8, 1.6);
+      drawCircle(C, 1);
+
+      // Arcos angulares
+      arcBetween(C, 0, al, 0.35, 'α', AMBER);
+      arcBetween(C, al, s, 0.52, 'β', '#38bdf8');
+
+      // Línea auxiliar en dirección α
+      line3(C, [0, 0, 0], [Math.cos(al) * 1.15, Math.sin(al) * 1.15, 0], { width: 1.2, dash: [4, 5], color: 'rgba(56, 189, 248, 0.45)' });
+
+      // Descomposición de β sobre la base rotada
+      const c1: Pt2 = [Math.cos(be) * Math.cos(al), Math.cos(be) * Math.sin(al)];
+      const P: Pt2 = [Math.cos(s), Math.sin(s)];
+
+      if (state.showConstr) {
+        // Cateto adyacente: longitud cos(β) en dirección α
+        vecArrow(C, c1, VIOLET, 'cos β', { w: 2.2 });
+        // Cateto opuesto: longitud sin(β) perpendicular a α
+        vecArrow(C, P, EMERALD, 'sin β', { x0: c1[0], y0: c1[1], w: 2.2 });
+
+        const ra = proj(C, [c1[0], c1[1], 0]);
+        if (ra) glowDot(ra, 6, '#ffffff', VIOLET);
+      }
+
+      // Vector resultante α + β
+      vecArrow(C, P, ROSE, 'α + β', { w: 2.6 });
+      const pp = proj(C, [P[0], P[1], 0]);
+      if (pp) glowDot(pp, 12, '#ffffff', ROSE);
+
+      // Barras de proyección ortogonal en la parte inferior del eje X
+      if (state.showProj) {
+        const t1 = Math.cos(al) * Math.cos(be);
+        const t2 = Math.sin(al) * Math.sin(be);
+
+        // Proyección vertical punteada desde P hasta la barra
+        line3(C, [P[0], P[1], 0], [P[0], -1.25, 0], { width: 1, dash: [3, 5], color: 'rgba(251, 113, 133, 0.35)' });
+
+        // Barra cos(α)·cos(β)
+        line3(C, [0, -1.3, 0], [t1, -1.3, 0], { width: 4.5, color: VIOLET });
+        label3(C, [t1 / 2, -1.3, 0], 'cos α cos β', { size: 10, color: VIOLET, align: 'center', dy: 14 });
+
+        // Barra −sin(α)·sin(β) (hacia la izquierda)
+        line3(C, [t1, -1.3, 0], [t1 - t2, -1.3, 0], { width: 4.5, color: EMERALD });
+        label3(C, [t1 - t2 / 2, -1.3, 0], '−sin α sin β', { size: 10, color: EMERALD, align: 'center', dy: -13 });
+
+        // Barra resultante cos(α + β)
+        line3(C, [0, -1.5, 0], [P[0], -1.5, 0], { width: 4.5, color: ROSE });
+        label3(C, [P[0] / 2, -1.5, 0], 'cos(α + β)', { size: 10.5, color: ROSE, align: 'center', dy: 14 });
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 2: SIMETRÍAS & REDUCCIÓN AL 1.ER CUADRANTE (RED)
+    // =========================================================================
+    interface RedOp {
+      name: string;
+      mapAngle: (a: number) => number;
+      drawMirror: (C: ReturnType<typeof makeCam>) => void;
+      latexSin: string;
+      latexCos: string;
+      latexTan: string;
+      evalSin: (a: number) => number;
+      evalCos: (a: number) => number;
+      mnemonic: string;
+    }
+
+    const RED_OPS: RedOp[] = [
+      {
+        name: '−α (Ángulo opuesto, 4.º Cuadrante)',
+        mapAngle: (a) => -a,
+        drawMirror: (C) => {
+          line3(C, [-1.7, 0, 0], [1.7, 0, 0], { width: 2, color: CYAN, dash: [5, 4] });
+          label3(C, [1.5, 0.15, 0], 'Espejo: Eje X', { size: 10, color: CYAN });
+        },
+        latexSin: String.raw`\sin(-\alpha) = -\sin\alpha`,
+        latexCos: String.raw`\cos(-\alpha) = \cos\alpha`,
+        latexTan: String.raw`\tan(-\alpha) = -\tan\alpha`,
+        evalSin: (a) => -Math.sin(a),
+        evalCos: (a) => Math.cos(a),
+        mnemonic: 'Reflexión vertical: la x (coseno) no cambia, la y (seno) invierte su signo.',
+      },
+      {
+        name: 'π − α (Suplementarios, 2.º Cuadrante)',
+        mapAngle: (a) => Math.PI - a,
+        drawMirror: (C) => {
+          line3(C, [0, -1.6, 0], [0, 1.6, 0], { width: 2, color: CYAN, dash: [5, 4] });
+          label3(C, [0.15, 1.45, 0], 'Espejo: Eje Y', { size: 10, color: CYAN });
+        },
+        latexSin: String.raw`\sin(\pi - \alpha) = \sin\alpha`,
+        latexCos: String.raw`\cos(\pi - \alpha) = -\cos\alpha`,
+        latexTan: String.raw`\tan(\pi - \alpha) = -\tan\alpha`,
+        evalSin: (a) => Math.sin(a),
+        evalCos: (a) => -Math.cos(a),
+        mnemonic: 'Reflexión horizontal: la altura y (seno) se conserva igual, la base x (coseno) cambia de signo.',
+      },
+      {
+        name: 'π + α (Difieren en 180°, 3.ᵉʳ Cuadrante)',
+        mapAngle: (a) => Math.PI + a,
+        drawMirror: (C) => {
+          solidDot(C, [0, 0, 0], 4.5, CYAN);
+          const P: Pt2 = [Math.cos(state.alphaRed), Math.sin(state.alphaRed)];
+          line3(C, [-P[0] * 1.3, -P[1] * 1.3, 0], [P[0] * 1.3, P[1] * 1.3, 0], { width: 1, color: 'rgba(56, 189, 248, 0.35)', dash: [4, 4] });
+          label3(C, [0.18, -0.18, 0], 'Simetría Central (Origen)', { size: 10, color: CYAN });
+        },
+        latexSin: String.raw`\sin(\pi + \alpha) = -\sin\alpha`,
+        latexCos: String.raw`\cos(\pi + \alpha) = -\cos\alpha`,
+        latexTan: String.raw`\tan(\pi + \alpha) = \tan\alpha`,
+        evalSin: (a) => -Math.sin(a),
+        evalCos: (a) => -Math.cos(a),
+        mnemonic: 'Giro de 180°: ambos catetos se invierten; el cociente tan = sin/cos mantiene signo positivo.',
+      },
+      {
+        name: '2π − α (Difieren en 360°, 4.º Cuadrante)',
+        mapAngle: (a) => TAU - a,
+        drawMirror: (C) => {
+          line3(C, [-1.7, 0, 0], [1.7, 0, 0], { width: 2, color: CYAN, dash: [5, 4] });
+        },
+        latexSin: String.raw`\sin(2\pi - \alpha) = -\sin\alpha`,
+        latexCos: String.raw`\cos(2\pi - \alpha) = \cos\alpha`,
+        latexTan: String.raw`\tan(2\pi - \alpha) = -\tan\alpha`,
+        evalSin: (a) => -Math.sin(a),
+        evalCos: (a) => Math.cos(a),
+        mnemonic: 'Equivalente a una vuelta completa menos α; coincide exactamente con −α.',
+      },
+      {
+        name: 'π/2 − α (Complementarios)',
+        mapAngle: (a) => Math.PI / 2 - a,
+        drawMirror: (C) => {
+          line3(C, [-1.4, -1.4, 0], [1.4, 1.4, 0], { width: 2, color: CYAN, dash: [5, 4] });
+          label3(C, [1.1, 1.25, 0], 'Espejo: Diagonal y = x', { size: 10, color: CYAN });
+        },
+        latexSin: String.raw`\sin(\frac{\pi}{2} - \alpha) = \cos\alpha`,
+        latexCos: String.raw`\cos(\frac{\pi}{2} - \alpha) = \sin\alpha`,
+        latexTan: String.raw`\tan(\frac{\pi}{2} - \alpha) = \cot\alpha`,
+        evalSin: (a) => Math.cos(a),
+        evalCos: (a) => Math.sin(a),
+        mnemonic: 'Reflexión en la bisectriz y = x: se intercambian las coordenadas (x, y) ➔ ¡seno y coseno se cruzan!',
+      },
+      {
+        name: 'π/2 + α (Giro de 90°)',
+        mapAngle: (a) => Math.PI / 2 + a,
+        drawMirror: (C) => {
+          arcBetween(C, state.alphaRed, Math.PI / 2 + state.alphaRed, 0.6, '+90°', CYAN);
+        },
+        latexSin: String.raw`\sin(\frac{\pi}{2} + \alpha) = \cos\alpha`,
+        latexCos: String.raw`\cos(\frac{\pi}{2} + \alpha) = -\sin\alpha`,
+        latexTan: String.raw`\tan(\frac{\pi}{2} + \alpha) = -\cot\alpha`,
+        evalSin: (a) => Math.cos(a),
+        evalCos: (a) => -Math.sin(a),
+        mnemonic: 'Giro de 90°: el cateto horizontal original pasa a ser vertical positivo; el vertical pasa a horizontal negativo.',
+      }
+    ];
+
+    const drawSceneRed = (C: ReturnType<typeof makeCam>) => {
+      const al = state.alphaRed;
+      const op = RED_OPS[state.selectedOp];
+      const qAngle = op.mapAngle(al);
+
+      drawAxes(C, 1.7, 1.5);
+      drawCircle(C, 1);
+
+      // Dibujar espejo o eje de simetría
+      if (state.showMirror) {
+        op.drawMirror(C);
+      }
+
+      // Punto original P(α) en el 1.er cuadrante
+      const P: Pt2 = [Math.cos(al), Math.sin(al)];
+      vecArrow(C, P, ROSE, 'α', { w: 2.4 });
+      const sp = proj(C, [P[0], P[1], 0]);
+      if (sp) glowDot(sp, 11, '#ffffff', ROSE);
+
+      // Punto transformado Q(op(α))
+      const Q: Pt2 = [Math.cos(qAngle), Math.sin(qAngle)];
+      vecArrow(C, Q, VIOLET, 'α*', { w: 2.2 });
+      const sq = proj(C, [Q[0], Q[1], 0]);
+      if (sq) glowDot(sq, 11, '#ffffff', VIOLET);
+
+      // Líneas de coordenadas punteadas para ver los catetos
+      line3(C, [P[0], P[1], 0], [P[0], 0, 0], { width: 1.2, dash: [4, 4], color: ROSE });
+      line3(C, [Q[0], Q[1], 0], [Q[0], 0, 0], { width: 1.2, dash: [4, 4], color: VIOLET });
+
+      // Unir los dos puntos reflejados si hay espejo lineal
+      line3(C, [P[0], P[1], 0], [Q[0], Q[1], 0], { width: 1, dash: [2, 4], color: 'rgba(255, 255, 255, 0.35)' });
+    };
+
+    // =========================================================================
+    // ESCENA 3: COMBINACIÓN LINEAL & ÁNGULO AUXILIAR (LIN)
+    // =========================================================================
+    const drawSceneLin = (C: ReturnType<typeof makeCam>) => {
+      const a = state.coefA;
+      const b = state.coefB;
+      const R = Math.hypot(a, b);
+      const phi = Math.atan2(b, a);
+      const theta = state.time * state.omega;
+
+      drawAxes(C, 2.2, 2.2, WAVE_LEN);
+
+      // Círculo de radio R
+      drawCircle(C, R);
+
+      // Triángulo rectángulo que define el fasor R y el ángulo auxiliar phi
+      line3(C, [0, 0, 0], [a, 0, 0], { width: 2, color: ROSE });
+      label3(C, [a / 2, -0.15, 0], `a = ${a.toFixed(2)}`, { size: 10, color: ROSE, align: 'center' });
+
+      line3(C, [a, 0, 0], [a, b, 0], { width: 2, color: VIOLET });
+      label3(C, [a + 0.15, b / 2, 0], `b = ${b.toFixed(2)}`, { size: 10, color: VIOLET, align: 'left' });
+
+      // Hipotenusa resultante R en reposo
+      line3(C, [0, 0, 0], [a, b, 0], { width: 2.2, color: AMBER });
+      label3(C, [a / 2 - 0.1, b / 2 + 0.15, 0], `R = ${R.toFixed(2)}`, { size: 11, color: AMBER, font: 'bold 12px ' + FONT_SANS });
+      arcBetween(C, 0, phi, 0.45, 'φ', AMBER);
+
+      // Fasor dinámico giratorio
+      const curAngle = theta + phi;
+      const Pdyn: Pt3 = [R * Math.cos(curAngle), R * Math.sin(curAngle), 0];
+      line3(C, [0, 0, 0], Pdyn, { width: 2.4, color: EMERALD });
+      const spDyn = proj(C, Pdyn);
+      if (spDyn) glowDot(spDyn, 12, '#ffffff', EMERALD);
+
+      // Línea de proyección hasta el inicio de la onda
+      line3(C, Pdyn, [0, Pdyn[1], 0], { width: 1.2, dash: [4, 4], color: EMERALD });
+
+      // Despliegue de la onda sinusoidal a lo largo del eje Z temporal
+      if (state.showWave && SAMPLES.length > 1) {
+        const wavePts: Pt3[] = [];
+        const vSpeed = 1.2;
+        for (let i = SAMPLES.length - 1; i >= 0; i--) {
+          const sm = SAMPLES[i];
+          const z = (state.time - sm.t) * vSpeed;
+          if (z > WAVE_LEN) break;
+          wavePts.push([0, sm.y, z]);
+        }
+        strokePoly(C, wavePts, { width: 5.5, color: 'rgba(52, 211, 153, 0.15)' });
+        strokePoly(C, wavePts, { width: 2.4, fade: ['rgba(52, 211, 153, 1)', 'rgba(52, 211, 153, 0.05)'] });
+      }
+    };
+
+    // =========================================================================
+    // BUCLE PRINCIPAL DE ANIMACIÓN
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const loop = (now: number) => {
+      try {
+        const dt = Math.min(0.08, (now - lastTime) / 1000);
+        lastTime = now;
+
+        // Tween de cámara
+        if (tween) {
+          const p = Math.min(1, (now - tween.start) / tween.dur);
+          const ep = ease(p);
+          cam.az = tween.from.az + (tween.to.az - tween.from.az) * ep;
+          cam.el = tween.from.el + (tween.to.el - tween.from.el) * ep;
+          cam.dist = tween.from.dist + (tween.to.dist - tween.from.dist) * ep;
+          cam.tx = tween.from.tx + (tween.to.tx - tween.from.tx) * ep;
+          cam.ty = tween.from.ty + (tween.to.ty - tween.from.ty) * ep;
+          cam.tz = tween.from.tz + (tween.to.tz - tween.from.tz) * ep;
+          if (p >= 1) tween = null;
+        }
+
+        if (state.running) {
+          state.time += dt;
+
+          if (curScene === 'rot') {
+            // Auto-giro lento del ángulo alpha
+            state.alpha = (state.alpha + 0.35 * dt) % TAU;
+            rAlpha.value = Math.round((state.alpha * 180) / Math.PI).toString();
+            vAlpha.textContent = `${Math.round((state.alpha * 180) / Math.PI)}° (${state.alpha.toFixed(2)} rad)`;
+          } else if (curScene === 'lin') {
+            const a = state.coefA;
+            const b = state.coefB;
+            const R = Math.hypot(a, b);
+            const phi = Math.atan2(b, a);
+            const yVal = R * Math.sin(state.time * state.omega + phi);
+            SAMPLES.push({ t: state.time, y: yVal });
+
+            while (SAMPLES.length > 0 && state.time - SAMPLES[0].t > WAVE_LEN / 1.2 + 0.5) {
+              SAMPLES.shift();
+            }
+          }
+        }
+
+        updateLiveEquation();
+
+        // Limpiar lienzo con gradiente espacial adaptado a temas
+        ctx.clearRect(0, 0, W, H);
+        const isLight = document.documentElement.dataset.theme === 'light';
+        const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.85);
+        if (isLight) {
+          bgGrad.addColorStop(0, '#f8f6f1');
+          bgGrad.addColorStop(1, '#e8e5dc');
+        } else {
+          bgGrad.addColorStop(0, '#0d1527');
+          bgGrad.addColorStop(1, '#05070d');
+        }
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Renderizar escena activa
+        const C = makeCam();
+        if (curScene === 'rot') {
+          drawSceneRot(C);
+        } else if (curScene === 'red') {
+          drawSceneRed(C);
+        } else {
+          drawSceneLin(C);
+        }
+      } catch (err) {
+        console.error('Frame error in identidades 3D:', err);
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    // =========================================================================
+    // ACTUALIZACIÓN DE FÓRMULAS EN VIVO CON KATEX
+    // =========================================================================
+    const updateLiveEquation = () => {
+      if (curScene === 'rot') {
+        const al = state.alpha;
+        const be = state.beta;
+        const sum = al + be;
+        const cosSum = Math.cos(sum);
+        const term1 = Math.cos(al) * Math.cos(be);
+        const term2 = Math.sin(al) * Math.sin(be);
+        const rightSide = term1 - term2;
+
+        const isDouble = Math.abs(al - be) < 0.02;
+
+        let latex = '';
+        if (isDouble) {
+          latex = String.raw`\cos(2\alpha) = \cos^2\alpha - \sin^2\alpha`;
+        } else {
+          latex = String.raw`\cos(\alpha + \beta) = \cos\alpha\cos\beta - \sin\alpha\sin\beta`;
+        }
+
+        try {
+          katex.render(latex, liveFormulaKaTeX, { displayMode: true, throwOnError: false });
+        } catch {}
+
+        liveNumericProof.innerHTML = `
+          <span>Lado Izq: <strong>${cosSum.toFixed(4)}</strong></span>
+          <span>=</span>
+          <span>Lado Der: <strong>${rightSide.toFixed(4)}</strong></span>
+          <span style="color:#10b981; font-weight:bold;">(Diferencia: 0.0000 ✓)</span>
+        `;
+      } else if (curScene === 'red') {
+        const op = RED_OPS[state.selectedOp];
+        const al = state.alphaRed;
+        const qAngle = op.mapAngle(al);
+        const sinVal = Math.sin(qAngle);
+        const evalVal = op.evalSin(al);
+
+        const latex = String.raw`${op.latexSin} \quad\text{y}\quad ${op.latexCos}`;
+        try {
+          katex.render(latex, liveFormulaKaTeX, { displayMode: true, throwOnError: false });
+        } catch {}
+
+        liveNumericProof.innerHTML = `
+          <span>Ecuación evaluada: <strong>${sinVal.toFixed(4)} = ${evalVal.toFixed(4)}</strong> ✓</span>
+          <br><small style="color:#94a3b8;">${op.mnemonic}</small>
+        `;
+      } else {
+        const a = state.coefA;
+        const b = state.coefB;
+        const R = Math.hypot(a, b);
+        const phi = Math.atan2(b, a);
+        const phiDeg = Math.round((phi * 180) / Math.PI);
+
+        const latex = String.raw`${a.toFixed(2)}\sin\theta + ${b.toFixed(2)}\cos\theta = ${R.toFixed(2)}\sin(\theta + ${phiDeg}^\circ)`;
+        try {
+          katex.render(latex, liveFormulaKaTeX, { displayMode: true, throwOnError: false });
+        } catch {}
+
+        liveNumericProof.innerHTML = `
+          <span>Amplitud resultante: <strong>R = √(${a.toFixed(2)}² + ${b.toFixed(2)}²) = ${R.toFixed(3)}</strong></span>
+          <br><span>Desfase: <strong>φ = ${phi.toFixed(3)} rad (${phiDeg}°)</strong></span>
+        `;
+      }
+    };
+
+    // =========================================================================
+    // GUÍA PEDAGÓGICA PASO A PASO (EL TRATADO DIDÁCTICO)
+    // =========================================================================
+    const updateGuideContent = () => {
+      if (curScene === 'rot') {
+        guideModalTitle.textContent = '1. Deducción Visual de la Suma de Ángulos';
+        guideContent.innerHTML = `
+          <div class="guide-card">
+            <h3>¿Cómo deducir sin memorizar cos(α + β)?</h3>
+            <p>
+              Toma el radio vector con ángulo <strong>α</strong>. A partir de él, gira un ángulo <strong>β</strong>.
+              El vector resultante tiene longitud 1 y ángulo <strong>α + β</strong>.
+            </p>
+            <div class="math-callout">
+              ${renderMath(String.raw`\begin{aligned}
+                \cos(\alpha + \beta) &= \cos\alpha\cos\beta - \sin\alpha\sin\beta \\
+                \sin(\alpha + \beta) &= \sin\alpha\cos\beta + \cos\alpha\sin\beta
+              \end{aligned}`, true)}
+            </div>
+            <h4>El secreto de la descomposición:</h4>
+            <ul>
+              <li>El cateto adyacente a β tiene longitud <strong style="color:${VIOLET}">cos β</strong> y apunta en la dirección inclinada de α. Su proyección sobre el eje horizontal es <code>(cos β) · cos α</code>.</li>
+              <li>El cateto opuesto a β tiene longitud <strong style="color:${EMERALD}">sin β</strong> y apunta perpendicularmente a α. Como está inclinado hacia atrás respecto al eje x, su proyección sobre el eje horizontal resta: <code>-(sin β) · sin α</code>.</li>
+            </ul>
+            <p>
+              Al sumar ambas proyecciones en el eje horizontal obtenemos exactamente <strong>cos(α + β)</strong>.
+              ¡Cada término de la fórmula es una barrita física visible en la pantalla!
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>El caso especial: El Ángulo Doble</h3>
+            <p>
+              Si hacemos <strong>β = α</strong> en la fórmula anterior:
+            </p>
+            <div class="math-callout">
+              ${renderMath(String.raw`\cos(2\alpha) = \cos\alpha\cos\alpha - \sin\alpha\sin\alpha = \cos^2\alpha - \sin^2\alpha`, true)}
+              ${renderMath(String.raw`\sin(2\alpha) = \sin\alpha\cos\alpha + \cos\alpha\sin\alpha = 2\sin\alpha\cos\alpha`, true)}
+            </div>
+            <p>
+              Utilizando la identidad fundamental <code>sin²α + cos²α = 1</code>, obtenemos las otras dos formas del coseno doble:
+              <code>cos(2α) = 2cos²α - 1 = 1 - 2sin²α</code>.
+            </p>
+          </div>
+        `;
+      } else if (curScene === 'red') {
+        guideModalTitle.textContent = '2. Fórmulas de Reducción: Los Espejos del Círculo';
+        guideContent.innerHTML = `
+          <div class="guide-card">
+            <h3>La Regla Nemotécnica Definitiva (Sin memorizar 24 fórmulas)</h3>
+            <p>
+              En lugar de memorizar una lista interminable de signos y razones, recuerda solo estas <strong>dos reglas geométricas</strong>:
+            </p>
+            <div class="mnemonic-grid">
+              <div class="mnem-card">
+                <h4>1. ¿Cambia la razón trigonométrica?</h4>
+                <p>
+                  • Si el ángulo de referencia está en el <strong>eje horizontal (0, π, 2π)</strong>: la función <strong>NO cambia</strong> (seno sigue siendo seno, coseno sigue siendo coseno).
+                  <br><br>
+                  • Si está en el <strong>eje vertical (π/2, 3π/2)</strong>: la función <strong>CO-muta a su co-función</strong> (seno ➔ coseno, coseno ➔ seno, tangente ➔ cotangente) porque el triángulo se apoya en el eje vertical y se intercambian la base y la altura.
+                </p>
+              </div>
+              <div class="mnem-card">
+                <h4>2. ¿Qué signo se le pone?</h4>
+                <p>
+                  Imagina que <strong>α está en el primer cuadrante</strong> (por ejemplo 30°).
+                  Observa en qué cuadrante cae el ángulo resultante y aplica el signo que le corresponde a la <strong>función original</strong> en ese cuadrante:
+                  <br><br>
+                  • <strong>1.ᵉʳ Cuadrante:</strong> Todos positivos.
+                  <br>• <strong>2.º Cuadrante:</strong> Solo el seno es positivo.
+                  <br>• <strong>3.ᵉʳ Cuadrante:</strong> Solo la tangente es positiva.
+                  <br>• <strong>4.º Cuadrante:</strong> Solo el coseno es positivo.
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        guideModalTitle.textContent = '3. Combinación Lineal: El Fasor Auxiliar';
+        guideContent.innerHTML = `
+          <div class="guide-card">
+            <h3>¿Por qué la suma de dos ondas no se distorsiona?</h3>
+            <p>
+              En acústica, ingeniería de sonido y circuitos eléctricos de corriente alterna, a menudo tenemos que sumar dos señales de la misma frecuencia pero con distinta fase:
+            </p>
+            <div class="math-callout">
+              ${renderMath(String.raw`f(t) = a\sin(\omega t) + b\cos(\omega t)`, true)}
+            </div>
+            <p>
+              Cualquiera pensaría que mezclar dos ondas crea una forma compleja y deformada. Sin embargo, <strong>el resultado es siempre otra onda sinusoidal pura</strong> con amplitud <code>R</code> y un pequeño desfase <code>φ</code>:
+            </p>
+            <div class="math-callout">
+              ${renderMath(String.raw`a\sin\theta + b\cos\theta = R\sin(\theta + \phi)`, true)}
+              ${renderMath(String.raw`R = \sqrt{a^2 + b^2}, \quad \tan\phi = \frac{b}{a}`, true)}
+            </div>
+            <p>
+              <strong>La intuición geométrica:</strong> Los coeficientes <code>(a, b)</code> forman los dos catetos de un triángulo rectángulo en el plano. La hipotenusa es la nueva amplitud <code>R</code>, y el ángulo del triángulo es exactamente el ángulo auxiliar <code>φ</code>.
+            </p>
+          </div>
+        `;
+      }
+    };
+
+    // =========================================================================
+    // GESTIÓN DE EVENTOS DE USUARIO
+    // =========================================================================
+    rAlpha.addEventListener('input', () => {
+      state.alpha = (parseFloat(rAlpha.value) * Math.PI) / 180;
+      vAlpha.textContent = `${rAlpha.value}° (${state.alpha.toFixed(2)} rad)`;
+    });
+
+    rBeta.addEventListener('input', () => {
+      state.beta = (parseFloat(rBeta.value) * Math.PI) / 180;
+      vBeta.textContent = `${rBeta.value}° (${state.beta.toFixed(2)} rad)`;
+    });
+
+    btnDoubleAngle.addEventListener('click', () => {
+      state.beta = state.alpha;
+      rBeta.value = rAlpha.value;
+      vBeta.textContent = `${rBeta.value}° (${state.beta.toFixed(2)} rad)`;
+    });
+
+    rAlphaRed.addEventListener('input', () => {
+      state.alphaRed = (parseFloat(rAlphaRed.value) * Math.PI) / 180;
+      vAlphaRed.textContent = `${rAlphaRed.value}°`;
+    });
+
+    opButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        opButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.selectedOp = parseInt(btn.getAttribute('data-op') || '1', 10);
+      });
+    });
+
+    rCoefA.addEventListener('input', () => {
+      state.coefA = parseFloat(rCoefA.value);
+      vCoefA.textContent = state.coefA.toFixed(2);
+    });
+
+    rCoefB.addEventListener('input', () => {
+      state.coefB = parseFloat(rCoefB.value);
+      vCoefB.textContent = state.coefB.toFixed(2);
+    });
+
+    rOmegaLin.addEventListener('input', () => {
+      state.omega = parseFloat(rOmegaLin.value);
+      vOmegaLin.textContent = `${state.omega.toFixed(2)} rad/s`;
+    });
+
+    btnPlay.addEventListener('click', () => {
+      state.running = !state.running;
+      playIcon.textContent = state.running ? '⏸' : '▶';
+      playText.textContent = state.running ? 'Pausar Giro' : 'Reanudar';
+    });
+
+    btnReset.addEventListener('click', () => {
+      state.alpha = 35 * (Math.PI / 180);
+      state.beta = 25 * (Math.PI / 180);
+      rAlpha.value = '35';
+      rBeta.value = '25';
+      vAlpha.textContent = '35° (0.61 rad)';
+      vBeta.textContent = '25° (0.44 rad)';
+      state.coefA = 1.2;
+      state.coefB = 0.9;
+      rCoefA.value = '1.2';
+      rCoefB.value = '0.9';
+      vCoefA.textContent = '1.20';
+      vCoefB.textContent = '0.90';
+      state.time = 0;
+      SAMPLES.length = 0;
+    });
+
+    btnFold.addEventListener('click', () => {
+      panel.classList.toggle('collapsed');
+      btnFold.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+    });
+
+    // Control del cajón de la guía pedagógica
+    btnOpenGuide.addEventListener('click', () => {
+      updateGuideContent();
+      guideDrawer.classList.add('open');
+    });
+
+    btnCloseGuide.addEventListener('click', () => {
+      guideDrawer.classList.remove('open');
+    });
+
+    cConstr.addEventListener('change', () => { state.showConstr = cConstr.checked; });
+    cProj.addEventListener('change', () => { state.showProj = cProj.checked; });
+    cMirror.addEventListener('change', () => { state.showMirror = cMirror.checked; });
+    cWave.addEventListener('change', () => { state.showWave = cWave.checked; });
+    cGrid.addEventListener('change', () => { state.showGrid = cGrid.checked; });
+
+    // Cambio de escena
+    const switchScene = (mode: SceneMode) => {
+      curScene = mode;
+      tabRotBtn.classList.toggle('active', mode === 'rot');
+      tabRedBtn.classList.toggle('active', mode === 'red');
+      tabLinBtn.classList.toggle('active', mode === 'lin');
+
+      rotElements.forEach((el) => { (el as HTMLElement).style.display = mode === 'rot' ? '' : 'none'; });
+      redElements.forEach((el) => { (el as HTMLElement).style.display = mode === 'red' ? '' : 'none'; });
+      linElements.forEach((el) => { (el as HTMLElement).style.display = mode === 'lin' ? '' : 'none'; });
+
+      if (mode === 'rot') {
+        brandDesc.innerHTML = 'La fórmula de la suma de ángulos es simplemente <strong>«girar α y luego girar β»</strong>: los catetos cos(β) y sin(β) proyectan sus sombras en los ejes.';
+        tipsText.innerHTML = '<strong>Tip:</strong> Observa las barras inferiores bajo el eje X: la barra violeta <code>cos α cos β</code> menos la verde <code>sin α sin β</code> suman con exactitud <code>cos(α + β)</code>.';
+        setCameraView(VIEWS.rot.front);
+      } else if (mode === 'red') {
+        brandDesc.innerHTML = 'Las fórmulas de reducción son <strong>reflexiones en espejos y rotaciones de 90°</strong>: la simetría explica por qué cambian los signos y por qué se cruzan seno y coseno.';
+        tipsText.innerHTML = '<strong>Regla de oro:</strong> Con π el nombre de la función se conserva. Con π/2 (reflejo en la diagonal), ¡el seno se convierte en coseno!';
+        setCameraView(VIEWS.red.front);
+      } else {
+        brandDesc.innerHTML = 'La suma de <strong>a·sin θ + b·cos θ</strong> es siempre una onda senoidal pura: su amplitud <code>R = √(a² + b²)</code> y fase <code>φ</code> son la hipotenusa y el ángulo del triángulo de coeficientes.';
+        tipsText.innerHTML = '<strong>Aplicación real:</strong> En acústica y electricidad, dos ondas de igual frecuencia jamás se distorsionan al sumarse: sólo crean una onda más grande y desplazada.';
+        setCameraView(VIEWS.lin.iso);
+      }
+    };
+
+    tabRotBtn.addEventListener('click', () => switchScene('rot'));
+    tabRedBtn.addEventListener('click', () => switchScene('red'));
+    tabLinBtn.addEventListener('click', () => switchScene('lin'));
+
+    // Presets de cámara
+    const setCameraView = (targetView: typeof cam) => {
+      tween = {
+        from: { ...cam },
+        to: { ...targetView },
+        start: performance.now(),
+        dur: 600,
+      };
+    };
+
+    document.querySelectorAll('.btn-cam').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-cam').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const viewName = btn.getAttribute('data-view') as 'front' | 'iso';
+        const viewSet = VIEWS[curScene];
+        if (viewName in viewSet) {
+          setCameraView(viewSet[viewName]);
+        }
+      });
+    });
+
+    // Control de órbita 3D con ratón
+    let isDragging = false;
+    let isPanning = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      isPanning = e.button === 2 || e.shiftKey;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      canvas.classList.add('dragging');
+      tween = null;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (isPanning) {
+        cam.tx -= dx * 0.012;
+        cam.ty += dy * 0.012;
+      } else {
+        cam.az -= dx * 0.0075;
+        cam.el = Math.max(-1.5, Math.min(1.5, cam.el + dy * 0.0075));
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      canvas.classList.remove('dragging');
+    });
+
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      cam.dist = Math.max(3.5, Math.min(30, cam.dist * zoomFactor));
+    }, { passive: false });
+
+    canvas.addEventListener('dblclick', () => {
+      setCameraView(VIEWS[curScene].front);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
+        e.preventDefault();
+        btnPlay.click();
+      }
+    });
+
+    // Iniciar con la escena de rotación
+    switchScene('rot');
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS DE LA SIMULACIÓN 3D DE IDENTIDADES TRIGONOMÉTRICAS
+     ========================================================================= */
+
+  .ident3d-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #05070d;
+    user-select: none;
+  }
+
+  .ident-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .ident-canvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* CABECERA FLOTANTE */
+  .ident-header {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    max-width: 500px;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .ident-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #fb7185;
+    text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fb7185;
+    box-shadow: 0 0 10px #fb7185;
+    animation: pulseGlow 2s infinite ease-in-out;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .ident-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--text-main, #f3f2ec);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    line-height: 1.2;
+  }
+
+  .ident-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted, #94a3b8);
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  }
+
+  /* SELECTOR DE PESTAÑAS SUPERIOR */
+  .ident-tabs-nav {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
+    display: flex;
+    gap: 0.4rem;
+    background: rgba(13, 20, 36, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 0.35rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .ident-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-size: 0.86rem;
+    font-weight: 700;
+    padding: 0.5rem 1.15rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ident-tab-btn:hover {
+    color: #f8fafc;
+  }
+
+  .ident-tab-btn.active {
+    background: rgba(251, 113, 133, 0.16);
+    border-color: rgba(251, 113, 133, 0.6);
+    color: #fb7185;
+    box-shadow: 0 0 16px rgba(251, 113, 133, 0.25);
+  }
+
+  /* BOTÓN PARA ABRIR LA GUÍA DIDÁCTICA */
+  .btn-open-guide {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 15;
+    background: rgba(13, 20, 36, 0.88);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(251, 113, 133, 0.4);
+    color: #f3f2ec;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.65rem 1.25rem;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(251, 113, 133, 0.2);
+    border-color: #fb7185;
+    transform: translateY(-2px);
+  }
+
+  /* MODAL / DRAWER PEDAGÓGICO */
+  .guide-drawer {
+    position: fixed;
+    top: 5rem;
+    bottom: 2rem;
+    left: 2rem;
+    width: 480px;
+    max-width: calc(100vw - 4rem);
+    background: rgba(13, 20, 36, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(251, 113, 133, 0.35);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateX(-120%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+  }
+
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(10, 15, 30, 0.6);
+  }
+
+  .gh-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #fb7185;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .gh-left h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0.2rem 0 0;
+  }
+
+  .btn-close-guide {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .btn-close-guide:hover {
+    color: #fff;
+    border-color: #fb7185;
+  }
+
+  .guide-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color: #cbd5e1;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .guide-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  .guide-body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 999px;
+  }
+
+  .guide-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 14px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .guide-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .guide-card h4 {
+    margin: 0.5rem 0 0.2rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  .guide-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .math-callout {
+    background: rgba(10, 15, 30, 0.8);
+    border-left: 3px solid #fb7185;
+    padding: 0.75rem 1rem;
+    border-radius: 0 10px 10px 0;
+    margin: 0.5rem 0;
+  }
+
+  .mnemonic-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+  }
+
+  .mnem-card {
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 10px;
+    padding: 0.9rem;
+  }
+
+  /* PANEL LATERAL DE CONTROLES */
+  .ident-panel {
+    position: absolute;
+    top: 5rem;
+    right: 2rem;
+    width: 320px;
+    max-height: calc(100vh - 7rem);
+    background: rgba(13, 20, 36, 0.84);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ph-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  .btn-fold {
+    width: 26px;
+    height: 26px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .btn-fold:hover {
+    color: #fff;
+    border-color: #fb7185;
+  }
+
+  .ident-panel.collapsed {
+    max-height: 56px;
+  }
+
+  .ident-panel.collapsed .panel-content {
+    display: none;
+  }
+
+  .panel-content {
+    padding: 1.15rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .panel-content::-webkit-scrollbar {
+    width: 5px;
+  }
+  .panel-content::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 999px;
+  }
+
+  /* SLIDERS */
+  .ctl-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+  }
+
+  .math-sym {
+    font-family: var(--font-math, Georgia, serif);
+    font-style: italic;
+    color: #fb7185;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fb7185;
+  }
+
+  .ctl-label-inline {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.25);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #fb7185;
+    border: 2px solid #0a0f1d;
+    box-shadow: 0 0 10px rgba(251, 113, 133, 0.8);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .quick-chips-row {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .chip-btn {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px dashed rgba(251, 113, 133, 0.5);
+    border-radius: 8px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #fb7185;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .chip-btn:hover {
+    background: rgba(251, 113, 133, 0.15);
+    border-color: #fb7185;
+  }
+
+  /* REDUCTION OPS GRID */
+  .reduction-ops-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    margin-top: 0.3rem;
+  }
+
+  .op-btn {
+    padding: 0.45rem 0.5rem;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+  }
+
+  .op-btn:hover {
+    border-color: #38bdf8;
+    color: #fff;
+  }
+
+  .op-btn.active {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38bdf8;
+    color: #38bdf8;
+  }
+
+  /* BOTONES DE ACCIÓN */
+  .play-controls-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-action {
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #f1f5f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-action:hover {
+    border-color: #fb7185;
+    background: rgba(251, 113, 133, 0.15);
+  }
+
+  .play-btn {
+    flex: 1;
+    background: rgba(251, 113, 133, 0.18);
+    border-color: rgba(251, 113, 133, 0.5);
+    color: #fb7185;
+  }
+
+  /* TOGGLES */
+  .toggles-box, .camera-views-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.75rem;
+  }
+
+  .tg-section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .toggles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .toggle-pill:hover {
+    border-color: rgba(148, 163, 184, 0.4);
+  }
+
+  .toggle-pill input {
+    accent-color: #fb7185;
+    cursor: pointer;
+  }
+
+  .color-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot-c);
+    box-shadow: 0 0 6px var(--dot-c);
+  }
+
+  /* VISTAS DE CÁMARA */
+  .views-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .btn-cam {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-cam:hover {
+    border-color: #fb7185;
+    color: #fff;
+  }
+
+  .btn-cam.active {
+    background: rgba(251, 113, 133, 0.2);
+    border-color: #fb7185;
+    color: #fb7185;
+  }
+
+  /* TELEMETRÍA */
+  .telemetry-card {
+    background: rgba(10, 15, 30, 0.85);
+    border: 1px solid rgba(251, 113, 133, 0.25);
+    border-radius: 12px;
+    padding: 0.75rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .live-equation-wrap {
+    text-align: center;
+    color: #f1f5f9;
+    font-size: 0.98rem;
+    overflow-x: auto;
+  }
+
+  .live-equation-wrap :global(.katex-display) {
+    margin: 0.25rem 0;
+  }
+
+  .live-numeric-proof {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.76rem;
+    font-family: ui-monospace, monospace;
+    color: #cbd5e1;
+    border-top: 1px dashed rgba(148, 163, 184, 0.2);
+    padding-top: 0.4rem;
+  }
+
+  /* TIP DIDÁCTICO */
+  .tips-box {
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    background: rgba(30, 41, 59, 0.3);
+    border-left: 3px solid #fb7185;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* HINT INFERIOR */
+  .bottom-hint {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(10, 15, 30, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 999px;
+    padding: 0.35rem 1.15rem;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 8;
+  }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .ident3d-container {
+    background: #f2f0ea;
+  }
+
+  :global([data-theme="light"]) .ident-title {
+    color: #0f172a;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .ident-desc {
+    color: #475569;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .ident-tabs-nav,
+  :global([data-theme="light"]) .ident-panel,
+  :global([data-theme="light"]) .guide-drawer,
+  :global([data-theme="light"]) .btn-open-guide {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: #cbd5e1;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .btn-open-guide {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .gh-left h2,
+  :global([data-theme="light"]) .ph-title {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ctl-header,
+  :global([data-theme="light"]) .guide-body {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .guide-card,
+  :global([data-theme="light"]) .mnem-card,
+  :global([data-theme="light"]) .math-callout,
+  :global([data-theme="light"]) .telemetry-card {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .toggle-pill,
+  :global([data-theme="light"]) .btn-cam,
+  :global([data-theme="light"]) .op-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .btn-cam.active,
+  :global([data-theme="light"]) .op-btn.active {
+    background: rgba(225, 29, 72, 0.1);
+    border-color: #e11d48;
+    color: #e11d48;
+  }
+
+  :global([data-theme="light"]) .bottom-hint {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  @media (max-width: 900px) {
+    .ident-header {
+      top: 4.5rem;
+      left: 1rem;
+      right: 1rem;
+      max-width: 100%;
+    }
+    .ident-title {
+      font-size: 1.35rem;
+    }
+    .ident-desc {
+      display: none;
+    }
+    .ident-tabs-nav {
+      top: 7.2rem;
+      left: 1rem;
+      transform: none;
+    }
+    .btn-open-guide {
+      bottom: auto;
+      top: 10.5rem;
+      left: 1rem;
+      font-size: 0.78rem;
+      padding: 0.45rem 0.85rem;
+    }
+    .guide-drawer {
+      top: 4.5rem;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      width: auto;
+    }
+    .ident-panel {
+      top: auto;
+      bottom: 1rem;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+      max-height: 52vh;
+    }
+    .bottom-hint {
+      display: none;
+    }
+  }
+</style>

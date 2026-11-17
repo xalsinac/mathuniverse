@@ -10,7 +10,7 @@ export type Resource = {
   description: string;
   detail: string;
   href: string;
-  icon: 'lab' | 'dojo' | 'junior' | 'practice' | 'exams' | 'selectividad' | 'lessons' | 'games' | 'tools';
+  icon: 'lab' | 'dojo' | 'junior' | 'practice' | 'exams' | 'selectividad' | 'lessons' | 'games' | 'tools' | 'simulator';
   color: string;
 };
 
@@ -43,17 +43,17 @@ export const resources: Resource[] = [
     color: '#ff8a5b',
   },
   {
-    id: 'junior',
+    id: 'games',
     number: '03',
-    name: 'Math Dojo Junior',
+    name: 'Math Gaming',
     accentWord: 'Math',
-    restWord: ' Dojo Junior',
-    eyebrow: 'Primeras exploraciones',
-    description: 'Retos de cálculo para los alumnos de Primaria.',
-    detail: 'Pensados para afianzar técnica, estrategia y confianza. Instalable en el móvil.',
-    href: 'https://mathdojojr.vercel.app/',
-    icon: 'junior',
-    color: '#38c8ff',
+    restWord: ' Gaming',
+    eyebrow: 'Comunidad y retos',
+    description: 'Juegos creados tanto por profesores como por alumnos con una base matemática. ¿Te unes?',
+    detail: 'Experimentos lúdicos, acertijos y proyectos interactivos donde jugar es otra forma de pensar.',
+    href: '/craft',
+    icon: 'games',
+    color: '#b48cff',
   },
   {
     id: 'practice',
@@ -107,17 +107,17 @@ export const resources: Resource[] = [
     color: '#ffc14d',
   },
   {
-    id: 'games',
+    id: 'simulator',
     number: '08',
-    name: 'Math Gaming',
+    name: 'Math Simulator',
     accentWord: 'Math',
-    restWord: ' Gaming',
-    eyebrow: 'Comunidad y retos',
-    description: 'Juegos creados tanto por profesores como por alumnos con una base matemática. ¿Te unes?',
-    detail: 'Experimentos lúdicos, acertijos y proyectos interactivos donde jugar es otra forma de pensar.',
-    href: '/craft',
-    icon: 'games',
-    color: '#b48cff',
+    restWord: ' Simulator',
+    eyebrow: 'Laboratorios y Modelos',
+    description: 'Simulaciones interactivas estilo PhET para manipular parámetros en vivo y visualizar conceptos matemáticos.',
+    detail: 'Modelos dinámicos de funciones, cálculo, vectores, trigonometría, estadística y física matemática con controles en tiempo real.',
+    href: '/simulator',
+    icon: 'simulator',
+    color: '#06b6d4',
   },
   {
     id: 'tools',

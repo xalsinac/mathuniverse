@@ -1,0 +1,2489 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { site } from '../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+interface SimulationItem {
+  id: string;
+  title: string;
+  shortTitle?: string;
+  category: 'calculo' | 'algebra' | 'trigonometria' | 'probabilidad' | 'geometria' | 'fisica';
+  categoryLabel: string;
+  level: 'ESO' | 'Bachillerato' | 'Universidad / Transversal';
+  badge: string;
+  desc: string;
+  formula: string;
+  formulaHtml?: string;
+  features: string[];
+  inPhetStyle: string;
+  accentColor: string;
+  icon: string;
+  hasLiveDemo?: boolean;
+  href?: string;
+}
+
+const renderMath = (latex: string, displayMode = true) => {
+  try {
+    return katex.renderToString(latex, {
+      displayMode,
+      throwOnError: false,
+    });
+  } catch {
+    return `<span class="sf-fallback">${latex}</span>`;
+  }
+};
+
+const rawSimulations: SimulationItem[] = [
+  {
+    id: 'ondas-fourier',
+    title: 'Síntesis de Ondas & Serie de Fourier',
+    shortTitle: 'Ondas & Serie de Fourier',
+    category: 'trigonometria',
+    categoryLabel: 'Trigonometría & Ondas',
+    level: 'Bachillerato',
+    badge: 'DEMO EN VIVO ARRIBA',
+    desc: 'Construye ondas cuadradas, triangulares y dientes de sierra sumando armónicos sinusoidales puros con su vector de fase rotatorio acoplado.',
+    formula: String.raw`f(t) = \sum_{n=1}^{N} A_n \sin(n\omega t + \phi_n)`,
+    features: ['Controles de armónicos N', 'Círculo fasorial rotatorio', 'Visualización espectral'],
+    inPhetStyle: 'Inspirada en Fourier: Making Waves (PhET)',
+    accentColor: '#06b6d4',
+    icon: '🌊',
+    hasLiveDemo: true
+  },
+  {
+    id: 'vectores-2d3d',
+    title: 'Vectores, Producto Escalar y Proyecciones',
+    shortTitle: 'Vectores & Producto Escalar',
+    category: 'algebra',
+    categoryLabel: 'Álgebra Lineal & Vectores',
+    level: 'Bachillerato',
+    badge: 'LABORATORIO 2D/3D',
+    desc: 'Arrastra las puntas de flecha de los vectores u⃗ y v⃗ para observar su suma analítica, el ángulo θ resultante, la proyección ortogonal y el producto escalar u⃗ · v⃗.',
+    formula: String.raw`\vec{u} \cdot \vec{v} = \|\vec{u}\| \|\vec{v}\| \cos(\theta) = u_x v_x + u_y v_y`,
+    features: ['Plano cartesiano milimetrado', 'Proyección ortogonal en vivo', 'Descomposición cartesiana y polar'],
+    inPhetStyle: 'Inspirada en Vector Addition (PhET)',
+    accentColor: '#38bdf8',
+    icon: '↗️'
+  },
+  {
+    id: 'derivada-tangente',
+    title: 'La Derivada y la Recta Tangente Dinámica',
+    shortTitle: 'La Derivada & Recta Tangente',
+    category: 'calculo',
+    categoryLabel: 'Cálculo & Funciones',
+    level: 'Bachillerato',
+    badge: 'CÁLCULO DINÁMICO',
+    desc: 'Desplaza un punto x sobre cualquier función polinómica o trigonométrica. Observa cómo la secante colapsa en la tangente y cómo se dibuja la curva de la función derivada f\'(x).',
+    formula: String.raw`f'(x) = \lim_{\Delta x \to 0} \frac{f(x+\Delta x) - f(x)}{\Delta x}`,
+    features: ['Paso al límite de secante a tangente', 'Trazador en vivo de f\'(x)', 'Selección de funciones f(x)'],
+    inPhetStyle: 'Inspirada en Calculus Grapher (PhET)',
+    accentColor: '#10b981',
+    icon: '📈',
+    href: '/simulator/calculo-visual-3d?tab=deriv'
+  },
+  {
+    id: 'tablero-galton',
+    title: 'Tablero de Galton & Campana de Gauss',
+    shortTitle: 'Tablero de Galton & Gauss',
+    category: 'probabilidad',
+    categoryLabel: 'Probabilidad & Estadística',
+    level: 'ESO',
+    badge: 'ESTOCÁSTICA EN VIVO',
+    desc: 'Deja caer cientos de canicas a través de una pirámide de clavos de Galton (Plinko). Observa cómo las decisiones binarias aleatorias forman la distribución normal gaussiana.',
+    formula: String.raw`f(x) = \frac{1}{\sigma \sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)`,
+    features: ['Simulación física de partículas', 'Histograma en tiempo real', 'Teorema Central del Límite'],
+    inPhetStyle: 'Inspirada en Plinko Probability (PhET)',
+    accentColor: '#f59e0b',
+    icon: '🎲',
+    href: '/simulator/tablero-galton'
+  },
+  {
+    id: 'circulo-unitario',
+    title: 'La Esencia de la Trigonometría en 3D',
+    shortTitle: 'Círculo Unitario · Seno · Tangente',
+    category: 'trigonometria',
+    categoryLabel: 'Trigonometría & Ondas',
+    level: 'Bachillerato',
+    badge: 'ESPACIO & TIEMPO 3D',
+    desc: 'Observa en 3D cómo la rotación en el círculo unitario genera las ondas de seno, coseno y las ramas de la tangente al proyectarse en el tiempo a lo largo de una hélice.',
+    formula: String.raw`\sin^2(\theta) + \cos^2(\theta) = 1 \quad\Longleftrightarrow\quad x^2 + y^2 = 1`,
+    features: ['Cámara 3D con órbita libre y zoom', 'Despliegue de ondas y hélice 3D', 'Tangente y cotangente asintóticas'],
+    inPhetStyle: 'Inspirada en MathViz & Trig Tour (PhET)',
+    accentColor: '#38bdf8',
+    icon: '⭕',
+    href: '/simulator/trigonometria-3d'
+  },
+  {
+    id: 'identidades-trig-3d',
+    title: 'Identidades Trigonométricas en 3D',
+    shortTitle: 'Identidades Trigonométricas',
+    category: 'trigonometria',
+    categoryLabel: 'Trigonometría & Álgebra',
+    level: 'Bachillerato',
+    badge: 'MÁQUINA DE IDENTIDADES',
+    desc: 'Deduce sin memorizar las fórmulas de la suma de ángulos (α + β), los espejos de reducción al primer cuadrante y la combinación lineal a·sin + b·cos = R·sin(θ + φ).',
+    formula: String.raw`\cos(\alpha + \beta) = \cos\alpha\cos\beta - \sin\alpha\sin\beta`,
+    features: ['Deducción geométrica paso a paso', 'Espejos de simetría horizontal/vertical', 'Fasor auxiliar y ángulo doble'],
+    inPhetStyle: 'Inspirada en MathViz & 3Blue1Brown',
+    accentColor: '#fb7185',
+    icon: '🪞',
+    href: '/simulator/identidades-trigonometricas-3d'
+  },
+  {
+    id: 'secciones-conicas-3d',
+    title: 'Secciones Cónicas en 3D: Cono de Apolonio & Dandelin',
+    shortTitle: 'La Esencia de las Cónicas',
+    category: 'geometria',
+    categoryLabel: 'Geometría Analítica 3D',
+    level: 'Bachillerato',
+    badge: 'CONO DE APOLONIO & DANDELIN',
+    desc: 'Corta el cono doble con un plano variable. Alterna al instante con botones dedicados entre circunferencia, elipse, parábola e hipérbola según la inclinación β. Explora las esferas de Dandelin y la definición unificada foco-directriz.',
+    formula: String.raw`e = \tan\beta \quad\Longleftrightarrow\quad r(\theta) = \frac{p}{1 + e\cos\theta}`,
+    features: ['Botones directos de cónicas (Círculo, Elipse, Parábola, Hipérbola)', 'Doble cono 3D con plano secante dinámico', 'Esferas de Dandelin y deducción foco-directriz'],
+    inPhetStyle: 'Inspirada en MathViz & Apolonio de Perge',
+    accentColor: '#a855f7',
+    icon: '📐',
+    href: '/simulator/secciones-conicas-3d'
+  },
+  {
+    id: 'esencia-de-pi-3d',
+    title: 'La Esencia de π en 3D: Longitud, Arquímedes, Kepler, Azar y Series',
+    shortTitle: 'La Esencia de π',
+    category: 'geometria',
+    categoryLabel: 'Geometría, Cálculo & Azar',
+    level: 'Bachillerato',
+    badge: 'CONSTANTE UNIVERSAL π',
+    desc: 'Descubre la firma universal de π en 5 escenas: rueda desenrollada y cicloide, método de exhaustión de Arquímedes con n=6..192, puzle de disección del área de Kepler, probabilidad Monte Carlo y Buffon, y series oscilantes de Leibniz y Euler.',
+    formula: String.raw`\pi = \lim_{n \to \infty} n\sin\left(\frac{\pi}{n}\right) = 4\sum_{k=1}^\infty \frac{(-1)^{k-1}}{2k-1} = \sqrt{6\sum_{k=1}^\infty \frac{1}{k^2}}`,
+    features: ['5 escenarios interactivos 3D', 'Metamorfosis animada de círculo a rectángulo', 'Generador estocástico Monte Carlo y Agujas de Buffon'],
+    inPhetStyle: 'Inspirada en MathViz, 3Blue1Brown y Arquímedes',
+    accentColor: '#f59e0b',
+    icon: '🥧',
+    href: '/simulator/esencia-de-pi-3d'
+  },
+  {
+    id: 'regresion-lineal',
+    title: 'Regresión Lineal y Mínimos Cuadrados',
+    shortTitle: 'Regresión Lineal (Mínimos Cuadrados)',
+    category: 'probabilidad',
+    categoryLabel: 'Probabilidad & Estadística',
+    level: 'Bachillerato',
+    badge: 'ANÁLISIS DE DATOS',
+    desc: 'Coloca puntos experimentales con clics sobre el plano cartesiano. Visualiza los cuadrados de los residuos y cómo la recta de ajuste óptimo minimiza la suma del error cuadrático.',
+    formula: String.raw`S(m,n) = \min_{m,n} \sum_{i=1}^{N} \big(y_i - (m x_i + n)\big)^2`,
+    features: ['Representación visual de residuos', 'Cálculo de R² de correlación', 'Arrastre interactivo de datos'],
+    inPhetStyle: 'Inspirada en Least-Squares Regression (PhET)',
+    accentColor: '#ec4899',
+    icon: '📉'
+  },
+  {
+    id: 'sumas-riemann',
+    title: 'Sumas de Riemann & Área Bajo la Curva',
+    shortTitle: 'Sumas de Riemann & Integrales',
+    category: 'calculo',
+    categoryLabel: 'Cálculo & Funciones',
+    level: 'Bachillerato',
+    badge: 'INTEGRACIÓN',
+    desc: 'Aumenta el número de rectángulos n desde 2 hasta 200. Compara la suma izquierda, derecha, trapezoidal y punto medio con el valor exacto de la integral definida de Riemann.',
+    formula: String.raw`\int_{a}^{b} f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^{n} f(x_i^*)\,\Delta x`,
+    features: ['Selector de partición n rectángulos', 'Comparador de sumas inf/sup', 'Error de cuadratura numérico'],
+    inPhetStyle: 'Inspirada en Area Model & Integration (PhET)',
+    accentColor: '#14b8a6',
+    icon: '📊',
+    href: '/simulator/calculo-visual-3d?tab=riemann'
+  },
+  {
+    id: 'pendulo-simple',
+    title: 'Péndulo Físico & Espacio de Fases',
+    shortTitle: 'Péndulo Físico & Espacio de Fases',
+    category: 'fisica',
+    categoryLabel: 'Física Matemática',
+    level: 'Universidad / Transversal',
+    badge: 'SISTEMAS DINÁMICOS',
+    desc: 'Simula el movimiento de un péndulo bajo gravedad y fricción variable. Visualiza en paralelo la trayectoria temporal θ(t) y la curva en el espacio de fases (θ, ω).',
+    formula: String.raw`\frac{d^2\theta}{dt^2} + \frac{g}{L} \sin(\theta) = 0`,
+    features: ['Aproximación de ángulos pequeños', 'Gráfica de energía cinética/potencial', 'Retrato de fase orbital'],
+    inPhetStyle: 'Inspirada en Pendulum Lab (PhET)',
+    accentColor: '#0ea5e9',
+    icon: '⏱️'
+  },
+  {
+    id: 'esencia-de-i-3d',
+    title: 'La Esencia de i en 3D: Rotación, Cardano, Raíces Ocultas y Matrices',
+    shortTitle: 'La Esencia de i (Imaginarios)',
+    category: 'algebra',
+    categoryLabel: 'Álgebra Lineal & Complejos',
+    level: 'Bachillerato',
+    badge: 'ESPACIO COMPLEJO 3D',
+    desc: 'Desmitifica la unidad imaginaria i en 5 escenas: el cuarto de vuelta (rotación 90°), el enigma de Cardano x³ = 15x + 4, raíces fuera del papel en la superficie |p(z)|, gemelos espejo conjugados y la matriz real J² = −I.',
+    formula: String.raw`i = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} \;\Longrightarrow\; i^2 = -1 \;\Longleftrightarrow\; e^{i\pi/2} = i`,
+    features: ['5 escenarios interactivos 3D', 'Resolución de la cúbica de Cardano', 'Superficie de módulo y matrices de rotación'],
+    inPhetStyle: 'Inspirada en MathViz, Bombelli y Gauss',
+    accentColor: '#818cf8',
+    icon: '🌀',
+    href: '/simulator/esencia-de-i-3d'
+  },
+  {
+    id: 'esencia-de-e-3d',
+    title: 'La Esencia de e en 3D: Interés Compuesto, Autoderivada y Hélice de Euler',
+    shortTitle: 'La Esencia de e (Euler)',
+    category: 'calculo',
+    categoryLabel: 'Cálculo & Funciones',
+    level: 'Bachillerato',
+    badge: 'CRECIMIENTO CONTINUO',
+    desc: 'Descubre la firma de e ≈ 2.71828 en 6 escenas: interés compuesto continuo, la función que es su propia derivada (y\' = y), campo de pendientes, área unitaria bajo 1/x, probabilidad 1/e y la hélice 3D de Euler e^(iθ).',
+    formula: String.raw`e = \lim_{n \to \infty}\left(1 + \frac{1}{n}\right)^n \;\Longrightarrow\; \frac{d}{dx}(e^x) = e^x \;\Longrightarrow\; e^{i\pi} + 1 = 0`,
+    features: ['6 escenarios interactivos 3D', 'Hélice compleja de Euler con sombras sin/cos', 'Autoderivada en vivo y área unitaria ∫(1/x)dx = 1'],
+    inPhetStyle: 'Inspirada en MathViz, Bernoulli y Euler',
+    accentColor: '#10b981',
+    icon: '🌿',
+    href: '/simulator/esencia-de-e-3d'
+  },
+  {
+    id: 'puntos-notables-triangulo',
+    title: 'Puntos Notables del Triángulo & Recta de Euler',
+    shortTitle: 'Puntos Notables (H, G, I, O)',
+    category: 'geometria',
+    categoryLabel: 'Geometría Sintética',
+    level: 'ESO',
+    badge: 'CONSTRUCCIÓN INTERACTIVA',
+    desc: 'Arrastra los vértices A, B, C en tiempo real y observa cómo se trazan medianas (Baricentro G / centro de masa), mediatrices (Circuncentro O), bisectrices (Incentro I) y alturas (Ortocentro H), además de la Recta de Euler.',
+    formula: String.raw`G = \frac{A + B + C}{3} \quad\Longrightarrow\quad \overrightarrow{HG} = 2\,\overrightarrow{GO}`,
+    features: ['Arrastre directo de vértices y trazado animado', 'Marcas de 90°, ángulos y circunferencias', 'Datos curiosos físicos y Recta de Euler en vivo'],
+    inPhetStyle: 'Inspirada en GeoGebra & Leonhard Euler',
+    accentColor: '#a855f7',
+    icon: '🔺',
+    href: '/simulator/puntos-notables-triangulo'
+  }
+];
+
+const simulations = rawSimulations.map((sim) => ({
+  ...sim,
+  formulaHtml: renderMath(sim.formula, true),
+}));
+
+const CATEGORY_GROUPS = [
+  {
+    key: 'trigonometria',
+    title: 'TRIGONOMETRÍA & ONDAS',
+    accent: '#38bdf8',
+    sims: simulations.filter((s) => s.category === 'trigonometria')
+  },
+  {
+    key: 'geometria',
+    title: 'GEOMETRÍA & CÓNICAS 3D',
+    accent: '#a855f7',
+    sims: simulations.filter((s) => s.category === 'geometria')
+  },
+  {
+    key: 'algebra',
+    title: 'ÁLGEBRA LINEAL & VECTORES',
+    accent: '#06b6d4',
+    sims: simulations.filter((s) => s.category === 'algebra')
+  },
+  {
+    key: 'calculo',
+    title: 'CÁLCULO & FUNCIONES',
+    accent: '#10b981',
+    sims: simulations.filter((s) => s.category === 'calculo')
+  },
+  {
+    key: 'probabilidad',
+    title: 'PROBABILIDAD & ESTADÍSTICA',
+    accent: '#f59e0b',
+    sims: simulations.filter((s) => s.category === 'probabilidad')
+  },
+  {
+    key: 'fisica',
+    title: 'FÍSICA MATEMÁTICA',
+    accent: '#0ea5e9',
+    sims: simulations.filter((s) => s.category === 'fisica')
+  }
+];
+---
+
+<BaseLayout
+  title={`Math Simulator — Simulaciones Matemáticas y Modelos PhET | ${site.name}`}
+  description="Laboratorios matemáticos interactivos estilo PhET Colorado. Experimenta con parámetros en vivo, funciones dinámicas, vectores, ondas, series de Fourier y modelos estocásticos."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator" ctaHref="/#recursos" ctaLabel="Math Universe" />
+
+  <div class="sim-page-wrapper" id="simPageWrapper">
+
+    <!-- =========================================================================
+         PANEL LATERAL (SIDEBAR) · ESTILO MATHVIZ
+         ========================================================================= -->
+    <aside class="sim-sidebar" id="simSidebar" aria-label="Navegador de simulaciones matemáticas">
+      <div class="sidebar-inner">
+        <!-- HEADER DEL PANEL LATERAL -->
+        <div class="sidebar-header">
+          <div class="sidebar-brand-group">
+            <span class="sidebar-brand-sub">INTERACTIVE MATH</span>
+            <div class="sidebar-title-row">
+              <span class="sidebar-brand-icon">⚡</span>
+              <h2 class="sidebar-brand-name">Math Simulator</h2>
+            </div>
+          </div>
+          <button type="button" class="sidebar-toggle-btn" id="sidebarCollapseBtn" title="Colapsar panel lateral" aria-label="Colapsar panel lateral">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- BUSCADOR EN VIVO DE HERRAMIENTAS -->
+        <div class="sidebar-search-wrap">
+          <div class="sidebar-search-box">
+            <svg class="search-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="sidebarSearchInput" placeholder="Buscar simulaciones..." aria-label="Buscar simulaciones" />
+            <button type="button" id="sidebarSearchClear" class="search-clear-btn" aria-label="Limpiar búsqueda" style="display: none;">×</button>
+          </div>
+        </div>
+
+        <!-- ACCESO GALERÍA COMPLETA -->
+        <div class="sidebar-nav-all-wrap">
+          <button type="button" class="sidebar-nav-all-btn active" id="sidebarAllFilterBtn" data-filter="all">
+            <span class="all-btn-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+            </span>
+            <span class="all-btn-label">Todas las simulaciones</span>
+            <span class="all-btn-count">{simulations.length}</span>
+          </button>
+        </div>
+
+        <!-- LISTADO POR CATEGORÍAS -->
+        <div class="sidebar-scroll-area" id="sidebarScrollArea">
+          {CATEGORY_GROUPS.map((group) => (
+            <div class="sidebar-group" data-cat-key={group.key}>
+              <div class="sidebar-group-header">
+                <span class="sidebar-group-title">{group.title}</span>
+              </div>
+              <ul class="sidebar-item-list">
+                {group.sims.map((sim) => (
+                  <li
+                    class="sidebar-item"
+                    data-id={sim.id}
+                    data-cat={sim.category}
+                    data-search={`${sim.title} ${sim.shortTitle || ''} ${sim.features.join(' ')}`.toLowerCase()}
+                  >
+                    <a
+                      href={sim.href || (sim.hasLiveDemo ? '#lab-fourier' : `#sim-card-${sim.id}`)}
+                      class="sidebar-item-link"
+                      data-target-id={sim.id}
+                      data-is-direct={Boolean(sim.href)}
+                      title={`${sim.title} · ${sim.categoryLabel}`}
+                    >
+                      <span
+                        class="status-dot"
+                        style={`--dot-color: ${sim.accentColor};`}
+                        title={`Categoría: ${sim.categoryLabel}`}
+                      ></span>
+                      <span class="item-title">{sim.shortTitle || sim.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <!-- PIE DEL PANEL LATERAL -->
+        <div class="sidebar-footer">
+          <div class="sf-stats">
+            <span class="sf-stat-dot"></span>
+            <span>{simulations.length} laboratorios listos</span>
+          </div>
+          <a href="/#recursos" class="sf-link-home">
+            <span>← Índice Math Universe</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- BOTÓN FLOTANTE PARA REABRIR PANEL CUANDO ESTÁ COLAPSADO O EN MÓVIL -->
+    <button type="button" class="sidebar-expand-btn" id="sidebarExpandBtn" title="Abrir panel de simulaciones" aria-label="Abrir panel lateral de simulaciones">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+      <span class="expand-btn-text">Simulaciones</span>
+    </button>
+
+    <!-- TELÓN DE FONDO PARA DISPOSITIVOS MÓVILES -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+    <!-- ENVOLTORIO DE CONTENIDO PRINCIPAL -->
+    <div class="sim-content-wrapper">
+      <main class="sim-main-container">
+
+        <!-- =========================================================================
+             1. HERO DE MATH SIMULATOR CON TRIPLE ONDA SENOIDAL SUAVE
+             ========================================================================= -->
+        <section class="sim-hero">
+          <!-- LIENZO TRIPLE ONDA SINUSOIDAL CON DESPLAZAMIENTO LENTO DETRÁS DEL TÍTULO -->
+          <canvas id="heroWavesCanvas" class="hero-waves-canvas" aria-hidden="true"></canvas>
+          <div class="sim-hero-glow"></div>
+          <div class="sim-hero-content">
+            <div class="sim-hero-kicker">
+              <span class="pulse-dot"></span>
+              <span>MODELOS MATEMÁTICOS DINÁMICOS &amp; LABORATORIOS INTERACTIVOS</span>
+            </div>
+            <h1 class="sim-hero-title">
+              <span class="word-math">MATH</span>
+              <span class="word-sim">SIMULATOR</span>
+            </h1>
+            <p class="sim-hero-desc">
+              Entornos interactivos para manipular variables en tiempo real. Inspirados en la filosofía de <strong>PhET Interactive Simulations</strong> y <strong>MathViz</strong>, aquí las fórmulas se convierten en fenómenos visuales que puedes tocar, pausar y transformar para construir una <strong>intuición matemática genuina</strong>.
+            </p>
+
+            <div class="sim-hero-controls-hint">
+              <span>Funciona en el navegador, sin instalar nada</span>
+              <span class="hint-sep">·</span>
+              <span>Arrastrar para rotar</span>
+              <span class="hint-sep">·</span>
+              <span>Shift + arrastrar para desplazar</span>
+              <span class="hint-sep">·</span>
+              <span>Rueda para zoom</span>
+              <span class="hint-sep">·</span>
+              <span>Doble clic para reiniciar</span>
+            </div>
+          </div>
+        </section>
+
+    <!-- =========================================================================
+         2. SIMULADOR DESTACADO ACTIVO EN VIVO: LABORATORIO DE ONDAS & FOURIER
+         ========================================================================= -->
+    <section class="live-lab-section" id="lab-fourier">
+      <div class="live-lab-header">
+        <div class="live-lab-title-group">
+          <span class="live-chip">LABORATORIO EN VIVO N.º 1</span>
+          <h2>Síntesis Armónica de Ondas y Serie de Fourier</h2>
+          <p>
+            Modifica los controles de amplitud, frecuencia, fase y sumatorio de armónicos para ver cómo se compone la onda resultante $f(t)$ en el dominio temporal y espacial junto a su vector fasorial rotatorio.
+          </p>
+        </div>
+        <div class="live-lab-formula-card">
+          <span class="f-label">Ecuación en Vivo:</span>
+          <div class="f-code-math" id="live-fourier-formula" set:html={renderMath(String.raw`f(t) = 45 \sin(1.2 t)`, false)}></div>
+        </div>
+      </div>
+
+      <!-- BANCO DE TRABAJO DEL SIMULADOR -->
+      <div class="lab-workbench-grid">
+        
+        <!-- PANEL DE VISUALIZACIÓN CANVAS -->
+        <div class="workbench-viewport">
+          <div class="viewport-toolbar">
+            <div class="vt-left">
+              <span class="screen-label">OSCILOSCOPIO &amp; FASOR GIERROTATORIO</span>
+            </div>
+            <div class="vt-right">
+              <button type="button" class="btn-ctrl-sim" id="btn-toggle-play" title="Pausar / Reanudar simulación">
+                <span id="play-icon">⏸️</span>
+                <span id="play-text">Pausar</span>
+              </button>
+              <button type="button" class="btn-ctrl-sim" id="btn-reset-sim" title="Restablecer simulación">
+                <span>↺ Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-wrapper">
+            <canvas id="fourier-canvas" width="840" height="380"></canvas>
+          </div>
+
+          <div class="viewport-meta">
+            <span>Fasor: <strong>Unitario (A)</strong></span>
+            <span>Eje horizontal: <strong>Tiempo / Distancia x</strong></span>
+            <span>Muestreo: <strong>60 fps continuos</strong></span>
+          </div>
+        </div>
+
+        <!-- PANEL DE CONTROLES PHET (SLIDERS Y SELECTORES) -->
+        <div class="workbench-controls">
+          <div class="controls-card">
+            <h3 class="controls-heading">Parámetros del Sistema</h3>
+
+            <!-- TIPO DE ONDA -->
+            <div class="ctrl-group">
+              <label class="ctrl-label">Forma de onda objetivo:</label>
+              <div class="btn-segmented">
+                <button type="button" class="seg-btn active" data-wave="sine">Senoidal</button>
+                <button type="button" class="seg-btn" data-wave="square">Cuadrada</button>
+                <button type="button" class="seg-btn" data-wave="sawtooth">Diente Sierra</button>
+                <button type="button" class="seg-btn" data-wave="triangle">Triangular</button>
+              </div>
+            </div>
+
+            <!-- AMPLITUD -->
+            <div class="ctrl-group">
+              <div class="ctrl-row">
+                <label for="sl-amp">Amplitud (A):</label>
+                <strong id="val-amp">45 px</strong>
+              </div>
+              <input type="range" id="sl-amp" min="10" max="80" value="45" />
+            </div>
+
+            <!-- FRECUENCIA ANGULAR -->
+            <div class="ctrl-group">
+              <div class="ctrl-row">
+                <label for="sl-freq">Frecuencia angular (ω):</label>
+                <strong id="val-freq">1.2 rad/s</strong>
+              </div>
+              <input type="range" id="sl-freq" min="0.2" max="3.5" step="0.1" value="1.2" />
+            </div>
+
+            <!-- NÚMERO DE ARMÓNICOS (FOURIER) -->
+            <div class="ctrl-group">
+              <div class="ctrl-row">
+                <label for="sl-harmonics">Términos de Fourier (N):</label>
+                <strong id="val-harmonics">1 (Fundamental)</strong>
+              </div>
+              <input type="range" id="sl-harmonics" min="1" max="15" step="1" value="1" />
+              <div class="harmonics-hint">Añade armónicos impares para aproximar la forma discontinua.</div>
+            </div>
+
+            <!-- TOGGLES VISUALES -->
+            <div class="ctrl-toggles">
+              <label class="sim-toggle">
+                <input type="checkbox" id="chk-show-phasor" checked />
+                <span>Mostrar círculo fasorial rotatorio</span>
+              </label>
+              <label class="sim-toggle">
+                <input type="checkbox" id="chk-show-grid" checked />
+                <span>Mostrar rejilla milimetrada</span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         3. CATÁLOGO COMPLETO DE SIMULACIONES MATEMÁTICAS
+         ========================================================================= -->
+    <section class="sim-catalog-section">
+      <div class="catalog-header">
+        <div class="ch-text">
+          <span class="ch-eyebrow">COLECCIÓN DE MODELOS VIRTUALES</span>
+          <h2>Catálogo de Simulaciones Matemáticas</h2>
+          <p>Explora experimentos interactivos clasificados por ramas y niveles académicos.</p>
+        </div>
+
+        <!-- FILTROS DE CATEGORÍA -->
+        <div class="filter-pills-row">
+          <button type="button" class="cat-pill active" data-filter="all">Todas ({simulations.length})</button>
+          <button type="button" class="cat-pill" data-filter="trigonometria">Trigonometría &amp; Ondas</button>
+          <button type="button" class="cat-pill" data-filter="geometria">Geometría &amp; Cónicas 3D</button>
+          <button type="button" class="cat-pill" data-filter="algebra">Álgebra &amp; Vectores</button>
+          <button type="button" class="cat-pill" data-filter="calculo">Cálculo &amp; Análisis</button>
+          <button type="button" class="cat-pill" data-filter="probabilidad">Probabilidad &amp; Datos</button>
+          <button type="button" class="cat-pill" data-filter="fisica">Física Matemática</button>
+        </div>
+      </div>
+
+      <!-- GRID DE TARJETAS DE SIMULACIÓN -->
+      <div class="sim-cards-grid" id="sim-cards-container">
+        {simulations.map((sim) => (
+          <article class="sim-card" id={`sim-card-${sim.id}`} data-category={sim.category} style={`--card-accent: ${sim.accentColor};`}>
+            <div class="sim-card-top">
+              <div class="sim-chip-row">
+                <span class="sim-category-chip">{sim.categoryLabel}</span>
+                <span class="sim-level-badge">{sim.level}</span>
+              </div>
+              <span class="sim-card-icon">{sim.icon}</span>
+            </div>
+
+            <h3 class="sim-card-title">{sim.title}</h3>
+            <p class="sim-card-desc">{sim.desc}</p>
+
+            <div class="sim-formula-box">
+              <span class="sf-label">Modelo Teórico</span>
+              <div class="sf-math" set:html={sim.formulaHtml} />
+            </div>
+
+            <ul class="sim-bullets">
+              {sim.features.map((feat) => (
+                <li>
+                  <span class="bullet-check">✓</span>
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div class="sim-card-footer">
+              <span class="phet-note">{sim.inPhetStyle}</span>
+              {sim.href ? (
+                <a href={sim.href} class="btn-launch-sim primary">
+                  <span>Abrir Laboratorio 3D ↗</span>
+                </a>
+              ) : sim.hasLiveDemo ? (
+                <a href="#lab-fourier" class="btn-launch-sim primary">
+                  <span>Probar en vivo ↑</span>
+                </a>
+              ) : (
+                <button type="button" class="btn-launch-sim" data-open-info={sim.id}>
+                  <span>Ver Ficha Técnica →</span>
+                </button>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         4. MANIFIESTO PEDAGÓGICO · POR QUÉ SIMULAR MATEMÁTICAS
+         ========================================================================= -->
+    <section class="philosophy-section">
+      <div class="philosophy-card">
+        <span class="ph-eyebrow">METODOLOGÍA EDUCATIVA</span>
+        <h2 class="ph-title">La Filosofía del Aprendizaje Activo en Math Simulator</h2>
+        <div class="ph-grid">
+          <div class="ph-item">
+            <div class="ph-icon">🔍</div>
+            <h3>Intuición antes que Algoritmos</h3>
+            <p>
+              Antes de aprender a derivar o integrar de memoria sobre el papel, manipular la pendiente de la recta tangente y ver cómo se generan los rectángulos de Riemann crea una conexión conceptual imborrable.
+            </p>
+          </div>
+          <div class="ph-item">
+            <div class="ph-icon">⚖️</div>
+            <h3>Dualidad Gráfica-Algebraica</h3>
+            <p>
+              Cada vez que mueves un control deslizante en Math Simulator, la ecuación analítica cambia al instante en paralelo con la gráfica. No hay símbolos abstractos aislados: cada letra representa una dimensión visible.
+            </p>
+          </div>
+          <div class="ph-item">
+            <div class="ph-icon">🧪</div>
+            <h3>Laboratorio Libre de Frustración</h3>
+            <p>
+              El alumno puede equivocarse, llevar parámetros al infinito o a cero, y ver las consecuencias físicas y geométricas sin la presión de un examen formal. La curiosidad es el motor del rigor matemático.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      </main>
+    </div><!-- /.sim-content-wrapper -->
+
+  </div><!-- /#simPageWrapper -->
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    // =========================================================================
+    // 1. MOTOR GRÁFICO INTERACTIVO DE ONDAS & FOURIER (PHET STYLE)
+    // =========================================================================
+    const canvas = document.getElementById('fourier-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Controles
+    const slAmp = document.getElementById('sl-amp') as HTMLInputElement;
+    const valAmp = document.getElementById('val-amp') as HTMLElement;
+    const slFreq = document.getElementById('sl-freq') as HTMLInputElement;
+    const valFreq = document.getElementById('val-freq') as HTMLElement;
+    const slHarmonics = document.getElementById('sl-harmonics') as HTMLInputElement;
+    const valHarmonics = document.getElementById('val-harmonics') as HTMLElement;
+    const chkPhasor = document.getElementById('chk-show-phasor') as HTMLInputElement;
+    const chkGrid = document.getElementById('chk-show-grid') as HTMLInputElement;
+    const btnTogglePlay = document.getElementById('btn-toggle-play') as HTMLButtonElement;
+    const playIcon = document.getElementById('play-icon') as HTMLElement;
+    const playText = document.getElementById('play-text') as HTMLElement;
+    const btnReset = document.getElementById('btn-reset-sim') as HTMLButtonElement;
+    const liveFormula = document.getElementById('live-fourier-formula') as HTMLElement;
+
+    const segButtons = document.querySelectorAll('.seg-btn');
+
+    let isPlaying = true;
+    let waveType: 'sine' | 'square' | 'sawtooth' | 'triangle' = 'sine';
+    let time = 0;
+
+    // Estado de parámetros
+    let amp = parseFloat(slAmp.value) || 45;
+    let freq = parseFloat(slFreq.value) || 1.2;
+    let harmonics = parseInt(slHarmonics.value, 10) || 1;
+
+    const updateFormulaText = () => {
+      if (!liveFormula) return;
+      const omegaStr = freq.toFixed(1);
+      const ampInt = Math.round(amp);
+      let latex = '';
+
+      if (waveType === 'sine') {
+        latex = String.raw`f(t) = ${ampInt} \sin(${omegaStr} t)`;
+      } else if (waveType === 'square') {
+        latex = String.raw`f(t) = \frac{4 \cdot ${ampInt}}{\pi} \sum_{k=1}^{${harmonics}} \frac{\sin\big((2k-1)${omegaStr} t\big)}{2k-1}`;
+      } else if (waveType === 'sawtooth') {
+        latex = String.raw`f(t) = \frac{2 \cdot ${ampInt}}{\pi} \sum_{k=1}^{${harmonics}} \frac{(-1)^{k+1} \sin\big(k \cdot ${omegaStr} t\big)}{k}`;
+      } else {
+        latex = String.raw`f(t) = \frac{8 \cdot ${ampInt}}{\pi^2} \sum_{k=0}^{${Math.max(0, harmonics - 1)}} \frac{(-1)^k \sin\big((2k+1)${omegaStr} t\big)}{(2k+1)^2}`;
+      }
+
+      try {
+        katex.render(latex, liveFormula, { displayMode: false, throwOnError: false });
+      } catch {
+        liveFormula.textContent = latex;
+      }
+    };
+
+    // Botones segmentados de tipo de onda
+    segButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        segButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        waveType = (btn.getAttribute('data-wave') || 'sine') as typeof waveType;
+        updateFormulaText();
+      });
+    });
+
+    // Renderizar fórmula inicial con KaTeX
+    updateFormulaText();
+
+    slAmp.addEventListener('input', () => {
+      amp = parseFloat(slAmp.value);
+      valAmp.textContent = `${amp} px`;
+      updateFormulaText();
+    });
+
+    slFreq.addEventListener('input', () => {
+      freq = parseFloat(slFreq.value);
+      valFreq.textContent = `${freq.toFixed(1)} rad/s`;
+      updateFormulaText();
+    });
+
+    slHarmonics.addEventListener('input', () => {
+      harmonics = parseInt(slHarmonics.value, 10);
+      valHarmonics.textContent = `${harmonics} ${harmonics === 1 ? '(Fundamental)' : 'armónicos'}`;
+      updateFormulaText();
+    });
+
+    btnTogglePlay.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playIcon.textContent = isPlaying ? '⏸️' : '▶️';
+      playText.textContent = isPlaying ? 'Pausar' : 'Reanudar';
+    });
+
+    btnReset.addEventListener('click', () => {
+      time = 0;
+      amp = 45;
+      slAmp.value = '45';
+      valAmp.textContent = '45 px';
+
+      freq = 1.2;
+      slFreq.value = '1.2';
+      valFreq.textContent = '1.2 rad/s';
+
+      harmonics = 1;
+      slHarmonics.value = '1';
+      valHarmonics.textContent = '1 (Fundamental)';
+
+      waveType = 'sine';
+      segButtons.forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-wave') === 'sine');
+      });
+
+      updateFormulaText();
+    });
+
+    // Función de cálculo de Fourier
+    const evaluateWaveAt = (t: number, xCoord: number) => {
+      let y = 0;
+      const kX = xCoord * 0.02;
+
+      if (waveType === 'sine') {
+        return amp * Math.sin(freq * t - kX);
+      }
+
+      for (let n = 1; n <= harmonics; n++) {
+        if (waveType === 'square') {
+          const k = 2 * n - 1;
+          const aN = (4 * amp) / (Math.PI * k);
+          y += aN * Math.sin(k * (freq * t - kX));
+        } else if (waveType === 'sawtooth') {
+          const aN = (2 * amp * (n % 2 === 0 ? -1 : 1)) / (Math.PI * n);
+          y += aN * Math.sin(n * (freq * t - kX));
+        } else if (waveType === 'triangle') {
+          const k = 2 * n - 1;
+          const sign = n % 2 === 0 ? -1 : 1;
+          const aN = (8 * amp * sign) / (Math.PI * Math.PI * k * k);
+          y += aN * Math.sin(k * (freq * t - kX));
+        }
+      }
+
+      return y;
+    };
+
+    // Bucle de renderizado
+    const render = () => {
+      const W = canvas.width;
+      const H = canvas.height;
+      const centerY = H / 2;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Rejilla de osciloscopio
+      if (chkGrid.checked) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, H);
+          ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+
+        // Eje central
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, centerY);
+        ctx.lineTo(W, centerY);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const phasorCenterX = 130;
+      const waveStartX = 230;
+
+      // Círculo Fasorial a la izquierda
+      if (chkPhasor.checked) {
+        ctx.save();
+        // Círculo base de amplitud
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(phasorCenterX, centerY, Math.min(100, amp), 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Ejes del fasor
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.beginPath();
+        ctx.moveTo(phasorCenterX - 100, centerY);
+        ctx.lineTo(phasorCenterX + 100, centerY);
+        ctx.moveTo(phasorCenterX, centerY - 100);
+        ctx.lineTo(phasorCenterX, centerY + 100);
+        ctx.stroke();
+
+        // Punto del vector giratorio en el fasor
+        const currentY = evaluateWaveAt(time, 0);
+        const theta = freq * time;
+        const phasorTipX = phasorCenterX + amp * Math.cos(theta);
+        const phasorTipY = centerY - currentY;
+
+        // Flecha del fasor
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(phasorCenterX, centerY);
+        ctx.lineTo(phasorTipX, phasorTipY);
+        ctx.stroke();
+
+        ctx.fillStyle = '#06b6d4';
+        ctx.beginPath();
+        ctx.arc(phasorTipX, phasorTipY, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Línea guía discontinua que conecta el fasor con la onda
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.55)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(phasorTipX, phasorTipY);
+        ctx.lineTo(waveStartX, phasorTipY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.restore();
+      }
+
+      // Trazo de la Onda
+      ctx.save();
+      const waveGrad = ctx.createLinearGradient(waveStartX, 0, W, 0);
+      waveGrad.addColorStop(0, '#06b6d4');
+      waveGrad.addColorStop(0.5, '#38bdf8');
+      waveGrad.addColorStop(1, '#818cf8');
+
+      ctx.strokeStyle = waveGrad;
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+
+      const startX = chkPhasor.checked ? waveStartX : 20;
+
+      for (let px = startX; px < W; px++) {
+        const xDist = px - startX;
+        const valY = evaluateWaveAt(time, xDist);
+        const yPos = centerY - valY;
+
+        if (px === startX) {
+          ctx.moveTo(px, yPos);
+        } else {
+          ctx.lineTo(px, yPos);
+        }
+      }
+      ctx.stroke();
+
+      // Punto activo de entrada de la onda
+      const val0 = evaluateWaveAt(time, 0);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(startX, centerY - val0, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      if (isPlaying) {
+        time += 0.035;
+      }
+
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
+
+    // =========================================================================
+    // 2. LIENZO DE TRIPLE ONDA SENOIDAL SUAVE (DESPLAZAMIENTO LENTO TRAS EL HEADER)
+    // =========================================================================
+    const initHeroWaves = () => {
+      const canvasWaves = document.getElementById('heroWavesCanvas') as HTMLCanvasElement;
+      if (!canvasWaves) return;
+      const ctxWaves = canvasWaves.getContext('2d');
+      if (!ctxWaves) return;
+
+      let w = 0;
+      let h = 0;
+      let animId = 0;
+      let waveTick = 0;
+
+      const handleResize = () => {
+        const parent = canvasWaves.parentElement;
+        const rect = parent ? parent.getBoundingClientRect() : canvasWaves.getBoundingClientRect();
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        w = Math.max(300, rect.width);
+        h = Math.max(260, rect.height);
+        canvasWaves.width = Math.round(w * dpr);
+        canvasWaves.height = Math.round(h * dpr);
+        canvasWaves.style.width = `${w}px`;
+        canvasWaves.style.height = `${h}px`;
+        ctxWaves.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+
+      window.addEventListener('resize', handleResize, { passive: true });
+      handleResize();
+
+      const drawSinWave = (
+        amp: number,
+        lambda: number,
+        phase: number,
+        colorDark: string,
+        colorLight: string,
+        lw: number,
+        glowDark: string,
+        glowLight: string
+      ) => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const stroke = isLight ? colorLight : colorDark;
+        const glow = isLight ? glowLight : glowDark;
+        const centerY = h * 0.52;
+
+        ctxWaves.save();
+        ctxWaves.strokeStyle = stroke;
+        ctxWaves.lineWidth = lw;
+        ctxWaves.lineCap = 'round';
+        ctxWaves.lineJoin = 'round';
+        ctxWaves.shadowColor = glow;
+        ctxWaves.shadowBlur = isLight ? 6 : 14;
+
+        ctxWaves.beginPath();
+        const k = (2 * Math.PI) / lambda;
+        const step = 4;
+
+        for (let x = 0; x <= w; x += step) {
+          const normX = x / w;
+          // Envolvente matemática suave para difuminar armónicamente en ambos bordes
+          const envelope = Math.pow(Math.sin(normX * Math.PI), 1.25);
+          const y = centerY + amp * envelope * Math.sin(k * x + phase);
+
+          if (x === 0) {
+            ctxWaves.moveTo(x, y);
+          } else {
+            ctxWaves.lineTo(x, y);
+          }
+        }
+        ctxWaves.stroke();
+        ctxWaves.restore();
+      };
+
+      const renderWaves = () => {
+        ctxWaves.clearRect(0, 0, w, h);
+
+        // Onda 1: Cyan / Neón (Principal, avance lento hacia la derecha)
+        drawSinWave(
+          44,
+          Math.max(320, w * 0.44),
+          waveTick * 0.0075,
+          'rgba(6, 182, 212, 0.52)',
+          'rgba(8, 145, 178, 0.42)',
+          2.5,
+          'rgba(6, 182, 212, 0.65)',
+          'rgba(8, 145, 178, 0.35)'
+        );
+
+        // Onda 2: Púrpura / Violeta (Secundaria, deriva lenta opuesta y longitud mayor)
+        drawSinWave(
+          32,
+          Math.max(450, w * 0.65),
+          -waveTick * 0.0052 + 1.85,
+          'rgba(168, 85, 247, 0.42)',
+          'rgba(147, 51, 234, 0.32)',
+          2.0,
+          'rgba(168, 85, 247, 0.55)',
+          'rgba(147, 51, 234, 0.25)'
+        );
+
+        // Onda 3: Azul Celeste / Hélice fina (Terciaria, oscilación más viva)
+        drawSinWave(
+          22,
+          Math.max(220, w * 0.3),
+          waveTick * 0.0108 + 3.4,
+          'rgba(56, 189, 248, 0.35)',
+          'rgba(2, 132, 199, 0.28)',
+          1.5,
+          'rgba(56, 189, 248, 0.45)',
+          'rgba(2, 132, 199, 0.2)'
+        );
+
+        waveTick += 1;
+        animId = requestAnimationFrame(renderWaves);
+      };
+
+      animId = requestAnimationFrame(renderWaves);
+    };
+
+    initHeroWaves();
+
+    // =========================================================================
+    // 3. PANEL LATERAL (SIDEBAR) ESTILO MATHVIZ: COLAPSO, BÚSQUEDA Y NAVEGACIÓN
+    // =========================================================================
+    const initSidebar = () => {
+      const pageWrapper = document.getElementById('simPageWrapper');
+      const sidebar = document.getElementById('simSidebar');
+      const btnCollapse = document.getElementById('sidebarCollapseBtn');
+      const btnExpand = document.getElementById('sidebarExpandBtn');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const searchInput = document.getElementById('sidebarSearchInput') as HTMLInputElement | null;
+      const searchClear = document.getElementById('sidebarSearchClear') as HTMLButtonElement | null;
+      const btnAll = document.getElementById('sidebarAllFilterBtn');
+      const catPills = document.querySelectorAll('.cat-pill');
+      const navLinks = document.querySelectorAll('.sidebar-item-link');
+      const sidebarItems = document.querySelectorAll('.sidebar-item');
+      const sidebarGroups = document.querySelectorAll('.sidebar-group');
+      const galleryCards = document.querySelectorAll('.sim-card');
+
+      if (!pageWrapper || !sidebar) return;
+
+      const STORAGE_KEY = 'math_sim_sidebar_collapsed';
+      const isMobile = () => window.innerWidth <= 960;
+
+      const setCollapsed = (collapsed: boolean) => {
+        if (collapsed) {
+          pageWrapper.classList.add('sidebar-collapsed');
+          if (btnExpand) btnExpand.style.display = 'flex';
+          localStorage.setItem(STORAGE_KEY, 'true');
+        } else {
+          pageWrapper.classList.remove('sidebar-collapsed');
+          if (btnExpand && !isMobile()) btnExpand.style.display = 'none';
+          localStorage.setItem(STORAGE_KEY, 'false');
+        }
+      };
+
+      const savedCollapsed = localStorage.getItem(STORAGE_KEY);
+      if (savedCollapsed === 'true' && !isMobile()) {
+        setCollapsed(true);
+      } else if (isMobile()) {
+        pageWrapper.classList.add('sidebar-collapsed');
+      }
+
+      btnCollapse?.addEventListener('click', () => {
+        setCollapsed(true);
+      });
+
+      btnExpand?.addEventListener('click', () => {
+        if (isMobile()) {
+          sidebar.classList.add('mobile-open');
+          backdrop?.classList.add('show');
+        } else {
+          setCollapsed(false);
+        }
+      });
+
+      backdrop?.addEventListener('click', () => {
+        sidebar.classList.remove('mobile-open');
+        backdrop.classList.remove('show');
+      });
+
+      // Búsqueda en tiempo real
+      const performSearch = () => {
+        if (!searchInput) return;
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (searchClear) {
+          searchClear.style.display = query.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        // 1. Filtrar lista lateral
+        sidebarGroups.forEach((group) => {
+          let visibleInGroup = 0;
+          const items = group.querySelectorAll('.sidebar-item');
+          items.forEach((item) => {
+            const searchHaystack = (item.getAttribute('data-search') || item.querySelector('.item-title')?.textContent || '').toLowerCase();
+            const matches = !query || searchHaystack.includes(query);
+            (item as HTMLElement).style.display = matches ? 'block' : 'none';
+            if (matches) visibleInGroup++;
+          });
+          (group as HTMLElement).style.display = visibleInGroup > 0 ? 'block' : 'none';
+        });
+
+        // 2. Filtrar tarjetas de la galería
+        galleryCards.forEach((card) => {
+          const cardTitle = (card.querySelector('.sim-card-title')?.textContent || '').toLowerCase();
+          const cardDesc = (card.querySelector('.sim-card-desc')?.textContent || '').toLowerCase();
+          const matches = !query || cardTitle.includes(query) || cardDesc.includes(query);
+          (card as HTMLElement).style.display = matches ? 'flex' : 'none';
+        });
+      };
+
+      searchInput?.addEventListener('input', performSearch);
+      searchClear?.addEventListener('click', () => {
+        if (!searchInput) return;
+        searchInput.value = '';
+        performSearch();
+        searchInput.focus();
+      });
+
+      // Botón "Todas las simulaciones"
+      btnAll?.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        sidebarGroups.forEach((g) => ((g as HTMLElement).style.display = 'block'));
+        sidebarItems.forEach((i) => ((i as HTMLElement).style.display = 'block'));
+        galleryCards.forEach((c) => ((c as HTMLElement).style.display = 'flex'));
+        catPills.forEach((p) => p.classList.remove('active'));
+        document.querySelector('.cat-pill[data-filter="all"]')?.classList.add('active');
+        btnAll.classList.add('active');
+
+        if (isMobile()) {
+          sidebar.classList.remove('mobile-open');
+          backdrop?.classList.remove('show');
+        }
+      });
+
+      // Filtros de categoría del catálogo sincronizados
+      catPills.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          catPills.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.getAttribute('data-filter');
+
+          galleryCards.forEach((card) => {
+            const cardCat = card.getAttribute('data-category');
+            if (cat === 'all' || cardCat === cat) {
+              (card as HTMLElement).style.display = 'flex';
+            } else {
+              (card as HTMLElement).style.display = 'none';
+            }
+          });
+
+          sidebarGroups.forEach((group) => {
+            const gCat = group.getAttribute('data-cat-key');
+            if (cat === 'all' || gCat === cat) {
+              (group as HTMLElement).style.display = 'block';
+            } else {
+              (group as HTMLElement).style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Clic en enlace del sidebar
+      navLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          const targetId = link.getAttribute('data-target-id');
+          const isDirect = link.getAttribute('data-is-direct') === 'true';
+
+          if (isDirect) {
+            return;
+          }
+
+          if (targetId === 'ondas-fourier') {
+            const fourierEl = document.getElementById('lab-fourier');
+            if (fourierEl) {
+              e.preventDefault();
+              fourierEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              fourierEl.classList.remove('highlight-glow');
+              void fourierEl.offsetWidth;
+              fourierEl.classList.add('highlight-glow');
+            }
+          } else {
+            const cardEl = document.getElementById(`sim-card-${targetId}`);
+            if (cardEl) {
+              e.preventDefault();
+              (cardEl as HTMLElement).style.display = 'flex';
+              cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              cardEl.classList.remove('highlight-glow');
+              void cardEl.offsetWidth;
+              cardEl.classList.add('highlight-glow');
+            }
+          }
+
+          if (isMobile()) {
+            sidebar.classList.remove('mobile-open');
+            backdrop?.classList.remove('show');
+          }
+        });
+      });
+    };
+
+    initSidebar();
+
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS DE MATH SIMULATOR (DISEÑO PHET COLORADO & MATH UNIVERSE)
+     ========================================================================= */
+
+  .sim-page-wrapper {
+    display: flex;
+    min-height: calc(100vh - 72px);
+    width: 100%;
+    position: relative;
+  }
+
+  .sim-content-wrapper {
+    flex: 1;
+    min-width: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* =========================================================================
+     PANEL LATERAL (SIDEBAR) · ESTILO MATHVIZ
+     ========================================================================= */
+  .sim-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 40;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Header del Sidebar */
+  .sidebar-header {
+    padding: 1.25rem 1.25rem 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebar-brand-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sidebar-brand-sub {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .sidebar-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .sidebar-brand-icon {
+    font-size: 0.95rem;
+  }
+
+  .sidebar-brand-name {
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-toggle-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-plate);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-toggle-btn:hover {
+    color: #06b6d4;
+    border-color: #06b6d4;
+    background: rgba(6, 182, 212, 0.1);
+  }
+
+  /* Buscador del Sidebar */
+  .sidebar-search-wrap {
+    padding: 0.85rem 1.25rem 0.5rem;
+  }
+
+  .sidebar-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.45rem 0.75rem;
+    gap: 0.5rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sidebar-search-box:focus-within {
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+  }
+
+  .search-svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .sidebar-search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.77rem;
+    font-weight: 400;
+    color: rgba(203, 213, 225, 0.8);
+    width: 100%;
+  }
+
+  .sidebar-search-box input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.65;
+  }
+
+  .search-clear-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .search-clear-btn:hover {
+    color: var(--text-main);
+  }
+
+  /* Botón Todas las Simulaciones */
+  .sidebar-nav-all-wrap {
+    padding: 0.35rem 1.25rem 0.5rem;
+  }
+
+  .sidebar-nav-all-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-plate);
+    color: rgba(203, 213, 225, 0.75);
+    font-size: 0.77rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-nav-all-btn:hover,
+  .sidebar-nav-all-btn.active {
+    background: rgba(6, 182, 212, 0.08);
+    border-color: rgba(6, 182, 212, 0.6);
+    color: #38bdf8;
+  }
+
+  .all-btn-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .all-btn-label {
+    flex: 1;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .all-btn-count {
+    font-size: 0.68rem;
+    font-weight: 400;
+    padding: 0.08rem 0.4rem;
+    background: rgba(6, 182, 212, 0.15);
+    border-radius: 999px;
+  }
+
+  /* Scroll Area & Grupos */
+  .sidebar-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem 1.15rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.85rem; /* Separación amplia entre categorías para evitar sensación de apretado */
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .sidebar-group-header {
+    display: flex;
+    align-items: center;
+    padding: 0 0.55rem;
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: #5f8a9e; /* Tono gris-azulado idéntico a MathViz */
+    text-transform: uppercase;
+    border-bottom: none; /* Sin borde inferior para no encajonar */
+  }
+
+  :global([data-theme="light"]) .sidebar-group-header {
+    color: #4a6f82;
+  }
+
+  .sidebar-item-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem; /* Separación vertical holgada */
+  }
+
+  .sidebar-item-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem; /* Separación generosa entre bola de color y texto */
+    padding: 0.35rem 0.55rem;
+    border-radius: 6px;
+    color: rgba(203, 213, 225, 0.72); /* Tono grisáceo discreto */
+    text-decoration: none;
+    font-size: 0.76rem; /* Letra más pequeña */
+    font-weight: 400;
+    line-height: 1.35;
+    transition: color 0.18s ease, background-color 0.18s ease;
+  }
+
+  .sidebar-item-link:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #f1f5f9;
+  }
+
+  :global([data-theme="light"]) .sidebar-item-link {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .sidebar-item-link:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+  }
+
+  .status-dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    background: var(--dot-color, #06b6d4);
+    flex-shrink: 0;
+    box-shadow: 0 0 9px 1.5px var(--dot-color, #06b6d4);
+    margin-left: 2px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sidebar-item-link:hover .status-dot {
+    transform: scale(1.2);
+    box-shadow: 0 0 12px 2px var(--dot-color, #06b6d4);
+  }
+
+  .item-title {
+    flex: 1;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    word-break: break-word;
+    white-space: normal; /* Fluye naturalmente sin cortes artificiales */
+  }
+
+  /* Footer del Sidebar */
+  .sidebar-footer {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.74rem;
+  }
+
+  .sf-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    opacity: 0.8;
+  }
+
+  .sf-stat-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+
+  .sf-link-home {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 400;
+    opacity: 0.8;
+    transition: color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .sf-link-home:hover {
+    color: #06b6d4;
+    opacity: 1;
+  }
+
+  /* Estado Colapsado */
+  .sim-page-wrapper.sidebar-collapsed .sim-sidebar {
+    margin-left: -300px;
+  }
+
+  .sidebar-expand-btn {
+    position: fixed;
+    top: 84px;
+    left: 12px;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .sim-page-wrapper.sidebar-collapsed .sidebar-expand-btn {
+    display: flex;
+  }
+
+  .sidebar-expand-btn:hover {
+    border-color: #06b6d4;
+    color: #06b6d4;
+    transform: scale(1.04);
+    box-shadow: 0 6px 22px rgba(6, 182, 212, 0.3);
+  }
+
+  /* Backdrop Móvil */
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 95;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Responsive Móvil para Sidebar */
+  @media (max-width: 960px) {
+    .sim-sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 290px;
+      z-index: 100;
+      transform: translateX(-100%);
+      margin-left: 0 !important;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sim-sidebar.mobile-open {
+      transform: translateX(0);
+    }
+
+    .sidebar-expand-btn {
+      display: flex !important;
+      top: auto;
+      bottom: 24px;
+      left: 20px;
+      background: #06b6d4;
+      color: #020617;
+      border-color: #06b6d4;
+    }
+
+    .sidebar-expand-btn:hover {
+      background: #22d3ee;
+      color: #020617;
+    }
+  }
+
+  /* Canvas Triple Sinusoidal Wave */
+  .hero-waves-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Highlight de Tarjetas */
+  @keyframes pulseGlow {
+    0% {
+      box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.8), 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(6, 182, 212, 0.4), 0 16px 40px rgba(6, 182, 212, 0.35);
+      transform: scale(1.02);
+      border-color: #06b6d4;
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(6, 182, 212, 0), 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: scale(1);
+    }
+  }
+
+  .highlight-glow {
+    animation: pulseGlow 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sim-main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4.5rem;
+  }
+
+  /* 1. HERO SECTION */
+  .sim-hero {
+    position: relative;
+    text-align: center;
+    padding: 3rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sim-hero-glow {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 650px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, rgba(14, 165, 233, 0.08) 50%, transparent 75%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sim-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .sim-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: #06b6d4;
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+  }
+
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #06b6d4;
+    box-shadow: 0 0 10px #06b6d4;
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .sim-hero-title {
+    font-size: clamp(2.8rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .word-math {
+    color: var(--text-main);
+  }
+
+  .word-sim {
+    color: #06b6d4;
+    text-shadow: 0 0 30px rgba(6, 182, 212, 0.45);
+  }
+
+  .sim-hero-desc {
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .sim-hero-desc strong {
+    color: var(--text-main);
+  }
+
+  .sim-hero-controls-hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem 0.65rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    color: rgba(148, 163, 184, 0.55);
+    letter-spacing: 0.02em;
+    margin-top: 0.6rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .hint-sep {
+    color: rgba(148, 163, 184, 0.3);
+    user-select: none;
+  }
+
+  :global([data-theme="light"]) .sim-hero-controls-hint {
+    color: rgba(71, 85, 105, 0.65);
+  }
+
+  :global([data-theme="light"]) .hint-sep {
+    color: rgba(71, 85, 105, 0.35);
+  }
+
+  /* 2. LABORATORIO EN VIVO */
+  .live-lab-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2.25rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .live-lab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+  }
+
+  .live-lab-title-group {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .live-chip {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #06b6d4;
+    letter-spacing: 0.1em;
+  }
+
+  .live-lab-title-group h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+  }
+
+  .live-lab-title-group p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .live-lab-formula-card {
+    background: var(--bg-plate);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    border-radius: 14px;
+    padding: 0.85rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 280px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .f-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .f-code-math {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #06b6d4;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.2rem 0;
+  }
+
+  .f-code-math :global(.katex) {
+    font-size: 1.18rem;
+    color: #38bdf8;
+  }
+
+  /* WORKBENCH GRID */
+  .lab-workbench-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 960px) {
+    .lab-workbench-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .workbench-viewport {
+    background: #090d16;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viewport-toolbar {
+    background: rgba(15, 23, 42, 0.75);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .screen-label {
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .vt-right {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-ctrl-sim {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ctrl-sim:hover {
+    border-color: #06b6d4;
+    color: #06b6d4;
+  }
+
+  .canvas-wrapper {
+    position: relative;
+    width: 100%;
+    background: #06090e;
+  }
+
+  #fourier-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .viewport-meta {
+    background: rgba(15, 23, 42, 0.75);
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .viewport-meta strong {
+    color: var(--text-main);
+  }
+
+  /* PANEL DE CONTROLES */
+  .workbench-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .controls-card {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .controls-heading {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.65rem;
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .ctrl-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: var(--text-main);
+  }
+
+  .ctrl-row strong {
+    color: #06b6d4;
+    font-family: monospace;
+  }
+
+  .btn-segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+  }
+
+  .seg-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.45rem 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .seg-btn:hover {
+    color: var(--text-main);
+  }
+
+  .seg-btn.active {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: #06b6d4;
+    color: #06b6d4;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #06b6d4;
+    cursor: pointer;
+  }
+
+  .harmonics-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+  }
+
+  .ctrl-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.85rem;
+  }
+
+  .sim-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.82rem;
+    color: var(--text-main);
+    cursor: pointer;
+  }
+
+  .sim-toggle input {
+    accent-color: #06b6d4;
+  }
+
+  /* 3. CATÁLOGO PHET GRID */
+  .sim-catalog-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .catalog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .ch-eyebrow {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: #06b6d4;
+    letter-spacing: 0.12em;
+  }
+
+  .catalog-header h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+  }
+
+  .catalog-header p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .filter-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .cat-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .cat-pill:hover {
+    color: var(--text-main);
+    border-color: #06b6d4;
+  }
+
+  .cat-pill.active {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: #06b6d4;
+    color: #06b6d4;
+  }
+
+  .sim-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .sim-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sim-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--card-accent, #06b6d4);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3), 0 0 20px rgba(6, 182, 212, 0.15);
+  }
+
+  .sim-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .sim-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .sim-category-chip {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--card-accent, #06b6d4);
+    background: rgba(6, 182, 212, 0.1);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .sim-level-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: var(--bg-plate);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+  }
+
+  .sim-card-icon {
+    font-size: 1.75rem;
+  }
+
+  .sim-card-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+    line-height: 1.25;
+  }
+
+  .sim-card-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .sim-formula-box {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 90px;
+    justify-content: center;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+  }
+
+  .sim-card:hover .sim-formula-box {
+    border-color: rgba(6, 182, 212, 0.35);
+    background: rgba(6, 182, 212, 0.03);
+  }
+
+  .sf-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .sf-math {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.3rem 0;
+    width: 100%;
+  }
+
+  .sf-math :global(.katex-display) {
+    margin: 0.2rem 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .sf-math :global(.katex) {
+    font-size: 1.18rem;
+    color: var(--card-accent, #06b6d4);
+  }
+
+  /* Modo Claro para fórmulas KaTeX */
+  :global([data-theme="light"]) .sim-formula-box {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  }
+
+  :global([data-theme="light"]) .sim-card:hover .sim-formula-box {
+    border-color: var(--card-accent, #0284c7);
+    background: #ffffff;
+  }
+
+  :global([data-theme="light"]) .sf-math :global(.katex) {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .live-lab-formula-card {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  }
+
+  :global([data-theme="light"]) .f-code-math :global(.katex) {
+    color: #0284c7;
+  }
+
+  .sim-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .sim-bullets li {
+    font-size: 0.84rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .bullet-check {
+    color: var(--card-accent, #06b6d4);
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+
+  .sim-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .phet-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .btn-launch-sim {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-launch-sim:hover {
+    border-color: var(--card-accent, #06b6d4);
+    color: var(--card-accent, #06b6d4);
+  }
+
+  .btn-launch-sim.primary {
+    background: #06b6d4;
+    border-color: #06b6d4;
+    color: #020617;
+  }
+
+  .btn-launch-sim.primary:hover {
+    background: #22d3ee;
+    border-color: #22d3ee;
+    color: #020617;
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+  }
+
+  /* 4. FILOSOFÍA PHET */
+  .philosophy-section {
+    margin-top: 1rem;
+  }
+
+  .philosophy-card {
+    background: linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, var(--bg-card) 45%);
+    border: 1px solid rgba(6, 182, 212, 0.28);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .ph-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #06b6d4;
+    letter-spacing: 0.14em;
+  }
+
+  .ph-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+    max-width: 700px;
+  }
+
+  .ph-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .ph-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .ph-icon {
+    font-size: 2rem;
+  }
+
+  .ph-item h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+
+  .ph-item p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>

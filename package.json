@@ -12,6 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.4.7"
+    "astro": "^7.4.7",
+    "katex": "^0.19.1"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.8"
   }
 }

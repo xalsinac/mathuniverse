@@ -13,6 +13,40 @@ interface Props {
 const { lesson, prevLesson, nextLesson } = Astro.props;
 const currentBlock = ACADEMY_BLOCKS.find((b) => b.id === lesson.blockId) || ACADEMY_BLOCKS[0];
 const cleanTitle = lesson.title.replace(/<[^>]*>/g, '');
+
+const RELATED_SIMULATORS: Record<string, { label: string; href: string }[]> = {
+  'cal-03': [
+    { label: "Cálculo Visual 3D: Secante → Tangente y f'(x)", href: '/simulator/calculo-visual-3d?tab=deriv' },
+    { label: 'La Esencia de e: La Autoderivada', href: '/simulator/esencia-de-e-3d' },
+  ],
+  'cal-04': [
+    { label: 'Cálculo Visual 3D: Derivada y Tangente', href: '/simulator/calculo-visual-3d?tab=deriv' },
+  ],
+  'cal-05': [
+    { label: 'Cálculo Visual 3D: Teorema Fundamental', href: '/simulator/calculo-visual-3d?tab=tfc' },
+    { label: 'Cálculo Visual 3D: Sumas de Riemann', href: '/simulator/calculo-visual-3d?tab=riemann' },
+  ],
+  'geo-seno-coseno': [
+    { label: 'La Esencia de la Trigonometría en 3D', href: '/simulator/trigonometria-3d' },
+    { label: 'Identidades Trigonométricas en 3D', href: '/simulator/identidades-trigonometricas-3d' },
+  ],
+  'prb-03': [
+    { label: 'Tablero de Galton & Campana de Gauss en Vivo', href: '/simulator/tablero-galton' },
+  ],
+  'teo-04': [
+    { label: 'La Esencia de i: Raíces Fuera del Papel |p(z)|', href: '/simulator/esencia-de-i-3d' },
+  ],
+  'teo-05': [
+    { label: 'La Esencia de e: Hélice de Euler e^(iθ)', href: '/simulator/esencia-de-e-3d' },
+    { label: 'La Esencia de i en 3D', href: '/simulator/esencia-de-i-3d' },
+    { label: 'La Esencia de π en 3D', href: '/simulator/esencia-de-pi-3d' },
+  ],
+  'teo-basilea': [
+    { label: 'La Esencia de π en 3D: Series Infinitas', href: '/simulator/esencia-de-pi-3d' },
+  ],
+};
+
+const relatedSims = RELATED_SIMULATORS[lesson.id] || [];
 ---
 
 <BaseLayout
@@ -122,6 +156,24 @@ const cleanTitle = lesson.title.replace(/<[^>]*>/g, '');
         <!-- Contenido Didáctico y Riguroso -->
         <article class="lesson-article-prose">
           <slot />
+
+          {relatedSims.length > 0 && (
+            <aside class="academy-sim-bridge" aria-label="Simulaciones interactivas relacionadas">
+              <div class="sim-bridge-head">
+                <span class="sim-bridge-badge">08 · Math Simulator</span>
+                <span class="sim-bridge-kicker">Experimenta lo demostrado en 3D</span>
+              </div>
+              <div class="sim-bridge-pills">
+                {relatedSims.map((sim) => (
+                  <a href={sim.href} class="sim-bridge-pill">
+                    <span class="sbp-icon" aria-hidden="true">🔬</span>
+                    <span class="sbp-label">{sim.label}</span>
+                    <span class="sbp-arrow" aria-hidden="true">↗</span>
+                  </a>
+                ))}
+              </div>
+            </aside>
+          )}
 
           <!-- Pie de Lección: Navegación entre lecciones del bloque -->
           <footer class="lesson-footer-nav">
@@ -1307,5 +1359,94 @@ const cleanTitle = lesson.title.replace(/<[^>]*>/g, '');
       flex-direction: column;
       align-items: flex-start;
     }
+  }
+
+  /* Píldoras de enlace a Math Simulator */
+  .academy-sim-bridge {
+    margin: 2.5rem 0 1.5rem;
+    padding: 1.25rem 1.4rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(56, 189, 248, 0.04));
+    border: 1px solid rgba(56, 189, 248, 0.32);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .sim-bridge-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .sim-bridge-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #020617;
+    background: linear-gradient(135deg, #67e8f9, #06b6d4);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .sim-bridge-kicker {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #67e8f9;
+  }
+
+  .sim-bridge-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .sim-bridge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #e0f2fe;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .sim-bridge-pill:hover {
+    transform: translateY(-1px);
+    border-color: #38bdf8;
+    background: rgba(6, 182, 212, 0.22);
+    color: #ffffff;
+  }
+
+  .sbp-arrow {
+    color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) .academy-sim-bridge {
+    background: linear-gradient(135deg, rgba(207, 250, 254, 0.6), rgba(224, 242, 254, 0.5));
+    border-color: rgba(8, 145, 178, 0.35);
+  }
+
+  :global([data-theme="light"]) .sim-bridge-kicker {
+    color: #0e7490;
+  }
+
+  :global([data-theme="light"]) .sim-bridge-pill {
+    background: #ffffff;
+    border-color: rgba(8, 145, 178, 0.35);
+    color: #083344;
+  }
+
+  :global([data-theme="light"]) .sim-bridge-pill:hover {
+    background: rgba(6, 182, 212, 0.14);
+    border-color: #0891b2;
+    color: #0c4a6e;
   }
 </style>

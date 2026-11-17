@@ -1,0 +1,838 @@
+---
+import AcademyLessonLayout from '../../../layouts/AcademyLessonLayout.astro';
+import { ACADEMY_LESSONS } from '../../../data/academy';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const lessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-uno-mas-uno')!;
+const prevLessonData = ACADEMY_LESSONS.find((l) => l.id === 'fun-palomar');
+const nextLessonData = ACADEMY_LESSONS.find((l) => l.id === 'f-03');
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<AcademyLessonLayout lesson={lessonData} prevLesson={prevLessonData} nextLesson={nextLessonData}>
+  <!-- SECCIÓN 1: ¿POR QUÉ DEMOSTRAR LO OBVIO? -->
+  <section class="lesson-section" id="por-que-demostrar">
+    <div class="section-marker">
+      <span class="marker-num">01</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>1. ¿Por qué hay que demostrar algo tan «obvio» como 1 + 1 = 2?</h2>
+
+    <p class="lead-paragraph">
+      En la vida cotidiana, <code class="inline-code">1 + 1 = 2</code> parece una verdad empírica evidente: si pones una manzana en una cesta y añades otra manzana, tienes dos manzanas. Sin embargo, las matemáticas formales no tratan sobre manzanas, sino sobre <strong>símbolos y reglas lógicas estrictas</strong>.
+    </p>
+
+    <p>
+      Si un ordenador —o un extraterrestre que no conoce los números— nos pregunta qué significan exactamente los símbolos <code class="inline-code">1</code>, <code class="inline-code">+</code>, <code class="inline-code">=</code> y <code class="inline-code">2</code>, no podemos responder «es obvio». Necesitamos definir primero qué es un número y qué significa sumar.
+    </p>
+
+    <div class="history-context-box">
+      <div class="h-icon">📜</div>
+      <div class="h-body">
+        <h4>El récord de Russell y Whitehead: 362 páginas en <em>Principia Mathematica</em> (1910)</h4>
+        <p>
+          A principios del siglo XX, <strong>Bertrand Russell</strong> y <strong>Alfred North Whitehead</strong> intentaron reconstruir toda la matemática partiendo únicamente de la lógica simbólica pura y la teoría de conjuntos.
+        </p>
+        <p>
+          No fue hasta la <strong>página 362 del Tomo I</strong> (Proposición <code class="inline-code">*54.43</code>) cuando lograron demostrar por fin que <code class="inline-code">1 + 1 = 2</code>. Debajo de la demostración escribieron con humor británico: <em>«La proposición anterior resulta ocasionalmente útil»</em>.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      Afortunadamente, en 1889 el matemático italiano <strong>Giuseppe Peano</strong> propuso una base axiomática mucho más directa y elegante para construir la aritmética en apenas unas líneas.
+    </p>
+  </section>
+
+  <!-- SECCIÓN 2: LOS 5 AXIOMAS DE PEANO -->
+  <section class="lesson-section" id="axiomas-peano">
+    <div class="section-marker">
+      <span class="marker-num">02</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>2. Los 5 Axiomas de Peano: Construir los Números desde la Nada</h2>
+
+    <p>
+      Para no dar nada por supuesto, imaginemos que no existen los números. Peano parte únicamente de dos piezas primitivas: un elemento inicial llamado <strong>cero (<code class="inline-code">0</code>)</strong> y una máquina que genera el «siguiente» de cualquier número, llamada <strong>función sucesor <code class="inline-code">S(n)</code></strong>.
+    </p>
+
+    <div class="axioms-grid">
+      <div class="axiom-card">
+        <span class="ax-num">AXIOMA 1</span>
+        <h4>Existencia del inicio</h4>
+        <div class="ax-math" set:html={renderMath(String.raw`0 \in \mathbb{N}`, false)} />
+        <p>El cero es un número natural. Nos asegura que el conjunto no está vacío.</p>
+      </div>
+
+      <div class="axiom-card">
+        <span class="ax-num">AXIOMA 2</span>
+        <h4>Todo número tiene un siguiente</h4>
+        <div class="ax-math" set:html={renderMath(String.raw`\forall n \in \mathbb{N},\; S(n) \in \mathbb{N}`, false)} />
+        <p>Si <code class="inline-code">n</code> es natural, su sucesor <code class="inline-code">S(n)</code> también lo es. Así la cadena nunca termina.</p>
+      </div>
+
+      <div class="axiom-card">
+        <span class="ax-num">AXIOMA 3</span>
+        <h4>El cero no es sucesor de nadie</h4>
+        <div class="ax-math" set:html={renderMath(String.raw`\forall n \in \mathbb{N},\; S(n) \neq 0`, false)} />
+        <p>Impide que los números den la vuelta en círculo (como en un reloj: si <code class="inline-code">S(1)=0</code>, entonces <code class="inline-code">1+1</code> valdría <code class="inline-code">0</code>).</p>
+      </div>
+
+      <div class="axiom-card">
+        <span class="ax-num">AXIOMA 4</span>
+        <h4>Sucesores distintos (Inyectividad)</h4>
+        <div class="ax-math" set:html={renderMath(String.raw`S(m) = S(n) \implies m = n`, false)} />
+        <p>Dos números diferentes no pueden chocar ni fusionarse en el mismo sucesor.</p>
+      </div>
+
+      <div class="axiom-card axiom-wide">
+        <span class="ax-num">AXIOMA 5 (INDUCCIÓN)</span>
+        <h4>No hay números «intrusos»</h4>
+        <div class="ax-math" set:html={renderMath(String.raw`\big(0 \in K \;\land\; \forall n (n \in K \implies S(n) \in K)\big) \implies K = \mathbb{N}`, false)} />
+        <p>Si una propiedad vale para el <code class="inline-code">0</code> y se transmite de cualquier número a su sucesor, entonces vale para <em>todos</em> los naturales. Este axioma garantiza que <code class="inline-code">ℕ</code> es exactamente la cadena que empieza en <code class="inline-code">0</code>.</p>
+      </div>
+    </div>
+
+    <div class="theorem-box-highlight">
+      <div class="thm-tag">DEFINICIÓN DE LOS SÍMBOLOS 1, 2 Y 3</div>
+      <h3>¿Qué son realmente los números 1, 2 y 3?</h3>
+      <p>
+        Los símbolos <code class="inline-code">1</code>, <code class="inline-code">2</code>, <code class="inline-code">3</code>... no son más que <strong>abreviaturas cómodas</strong> para no escribir decenas de letras <code class="inline-code">S</code> anidadas:
+      </p>
+      <div class="def-row">
+        <div class="def-pill" set:html={renderMath(String.raw`1 \stackrel{\text{def}}{=} S(0)`, false)} />
+        <div class="def-pill" set:html={renderMath(String.raw`2 \stackrel{\text{def}}{=} S(1) = S(S(0))`, false)} />
+        <div class="def-pill" set:html={renderMath(String.raw`3 \stackrel{\text{def}}{=} S(2) = S(S(S(0)))`, false)} />
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: DEFINICIÓN RECURSIVA DE LA SUMA -->
+  <section class="lesson-section" id="definicion-suma">
+    <div class="section-marker">
+      <span class="marker-num">03</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>3. Definir la Suma (+) con Solo Dos Reglas</h2>
+
+    <p>
+      Hasta ahora tenemos números (<code class="inline-code">0, S(0), S(S(0))...</code>), pero <strong>todavía no sabemos qué significa el signo <code class="inline-code">+</code></strong>. Peano define la suma de manera recursiva en dos reglas que solo usan el <code class="inline-code">0</code> y el sucesor <code class="inline-code">S</code>:
+    </p>
+
+    <div class="rules-two-col">
+      <div class="rule-card">
+        <span class="rule-tag">REGLA BASE (S1)</span>
+        <h4>Sumar cero no cambia nada</h4>
+        <div class="rule-eq" set:html={renderMath(String.raw`\forall a \in \mathbb{N}, \quad a + 0 \stackrel{\text{def}}{=} a`, true)} />
+        <p>Nos dice cómo detener la recursión cuando el segundo sumando llega a cero.</p>
+      </div>
+
+      <div class="rule-card">
+        <span class="rule-tag">REGLA RECURSIVA (S2)</span>
+        <h4>Sumar un sucesor equivale a dar un paso más</h4>
+        <div class="rule-eq" set:html={renderMath(String.raw`\forall a, b \in \mathbb{N}, \quad a + S(b) \stackrel{\text{def}}{=} S(a + b)`, true)} />
+        <p>Nos permite sacar el operador <code class="inline-code">S</code> hacia afuera, reduciendo el segundo sumando poco a poco hasta llegar a <code class="inline-code">0</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: LA DEMOSTRACIÓN RIGUROSA DE 1 + 1 = 2 -->
+  <section class="lesson-section" id="demostracion-oficial">
+    <div class="section-marker">
+      <span class="marker-num">04</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>4. La Demostración Axiomática Completa de 1 + 1 = 2</h2>
+
+    <p>
+      Ahora ya tenemos todas las piezas. Aplicando únicamente las definiciones de <code class="inline-code">1</code> y <code class="inline-code">2</code> y las dos reglas de la suma, la demostración cae por su propio peso con precisión quirúrgica:
+    </p>
+
+    <div class="proof-box">
+      <div class="proof-header">TEOREMA: 1 + 1 = 2 &nbsp; (EN LA ARITMÉTICA DE PEANO)</div>
+      <ol class="proof-steps">
+        <li>
+          <div class="step-line">
+            <span class="step-math" set:html={renderMath(String.raw`1 + 1 = 1 + S(0)`, false)} />
+            <span class="step-reason">Por definición del número <code class="inline-code">1 := S(0)</code> (sustituimos el segundo sumando).</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-line">
+            <span class="step-math" set:html={renderMath(String.raw`1 + S(0) = S(1 + 0)`, false)} />
+            <span class="step-reason">Por la <strong>Regla Recursiva (S2)</strong> <code class="inline-code">a + S(b) = S(a + b)</code>, tomando <code class="inline-code">a = 1</code> y <code class="inline-code">b = 0</code>.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-line">
+            <span class="step-math" set:html={renderMath(String.raw`S(1 + 0) = S(1)`, false)} />
+            <span class="step-reason">Por la <strong>Regla Base (S1)</strong> <code class="inline-code">a + 0 = a</code> aplicada dentro del paréntesis con <code class="inline-code">a = 1</code>.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-line">
+            <span class="step-math" set:html={renderMath(String.raw`S(1) = 2`, false)} />
+            <span class="step-reason">Por definición del símbolo <code class="inline-code">2 := S(1)</code>.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-line step-final">
+            <span class="step-math" set:html={renderMath(String.raw`\therefore \quad 1 + 1 = 2 \qquad \blacksquare`, false)} />
+            <span class="step-reason">Por la propiedad transitiva de la igualdad. ¡Demostrado!</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 5: LABORATORIO INTERACTIVO: MÁQUINA DE PEANO -->
+  <section class="lesson-section" id="maquina-peano">
+    <div class="section-marker">
+      <span class="marker-num">05</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>5. Laboratorio Interactivo: La Máquina Axiomática de Peano</h2>
+
+    <p>
+      Elige cualquier pareja de números naturales <code class="inline-code">a</code> y <code class="inline-code">b</code> y observa paso a paso cómo el motor lógico reduce la suma usando únicamente <code class="inline-code">0</code>, <code class="inline-code">S(n)</code> y las reglas <strong>(S1)</strong> y <strong>(S2)</strong>.
+    </p>
+
+    <div class="peano-lab-shell">
+      <div class="peano-controls-bar">
+        <div class="peano-pickers">
+          <label class="picker-item">
+            <span>Primer sumando <code class="inline-code">a</code>:</span>
+            <select id="selPeanoA">
+              <option value="0">0</option>
+              <option value="1" selected>1 = S(0)</option>
+              <option value="2">2 = S(S(0))</option>
+              <option value="3">3 = S(S(S(0)))</option>
+            </select>
+          </label>
+          <span class="plus-big">+</span>
+          <label class="picker-item">
+            <span>Segundo sumando <code class="inline-code">b</code>:</span>
+            <select id="selPeanoB">
+              <option value="0">0</option>
+              <option value="1" selected>1 = S(0)</option>
+              <option value="2">2 = S(S(0))</option>
+              <option value="3">3 = S(S(S(0)))</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="peano-actions">
+          <button type="button" class="lab-btn primary" id="btnNextPeanoStep">▶ Siguiente paso lógico</button>
+          <button type="button" class="lab-btn" id="btnAllPeanoSteps">⚡ Resolver todo</button>
+          <button type="button" class="lab-btn" id="btnResetPeano">↺ Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="peano-visual-blocks" id="peanoVisualBlocks"></div>
+
+      <div class="peano-trace-box" id="peanoTraceBox">
+        <!-- Pasos formales dinámicos -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 6: COMPROBACIÓN PRÁCTICA -->
+  <section class="lesson-section" id="reto-practico">
+    <div class="section-marker">
+      <span class="marker-num">06</span>
+      <span class="marker-line"></span>
+    </div>
+
+    <h2>6. Comprobación Práctica</h2>
+
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Pregunta 1:</strong> En la demostración de <code class="inline-code">1 + 1 = 2</code>, cuando pasamos de <code class="inline-code">1 + S(0)</code> a <code class="inline-code">S(1 + 0)</code>, ¿qué regla estamos aplicando?
+        </p>
+        <div class="quiz-options" data-quiz="q1">
+          <button type="button" class="quiz-opt" data-correct="false">La Regla Base: a + 0 = a</button>
+          <button type="button" class="quiz-opt" data-correct="true">La Regla Recursiva: a + S(b) = S(a + b)</button>
+          <button type="button" class="quiz-opt" data-correct="false">El Axioma 3: S(n) ≠ 0</button>
+        </div>
+        <p class="quiz-feedback" id="fb-q1" hidden></p>
+      </div>
+
+      <div class="quiz-card">
+        <p class="quiz-q">
+          <strong>Pregunta 2:</strong> ¿Por qué es imprescindible el <strong>Axioma 3</strong> (<code class="inline-code">S(n) ≠ 0</code>) para que la aritmética funcione como esperamos?
+        </p>
+        <div class="quiz-options" data-quiz="q2">
+          <button type="button" class="quiz-opt" data-correct="true">Porque evita que la cadena de sucesores dé la vuelta en círculo (como en un reloj donde 1 + 1 podría volver a 0).</button>
+          <button type="button" class="quiz-opt" data-correct="false">Porque sin él no podríamos multiplicar por cero.</button>
+          <button type="button" class="quiz-opt" data-correct="false">Porque garantiza que existan números negativos.</button>
+        </div>
+        <p class="quiz-feedback" id="fb-q2" hidden></p>
+      </div>
+    </div>
+  </section>
+</AcademyLessonLayout>
+
+<script>
+  (() => {
+    const selA = document.getElementById('selPeanoA') as HTMLSelectElement;
+    const selB = document.getElementById('selPeanoB') as HTMLSelectElement;
+    const btnNext = document.getElementById('btnNextPeanoStep') as HTMLButtonElement;
+    const btnAll = document.getElementById('btnAllPeanoSteps') as HTMLButtonElement;
+    const btnReset = document.getElementById('btnResetPeano') as HTMLButtonElement;
+    const traceBox = document.getElementById('peanoTraceBox') as HTMLElement;
+    const visualBlocks = document.getElementById('peanoVisualBlocks') as HTMLElement;
+
+    const toPeanoStr = (n: number): string => {
+      if (n === 0) return '0';
+      let s = '0';
+      for (let i = 0; i < n; i++) s = `S(${s})`;
+      return s;
+    };
+
+    interface PeanoStep {
+      expr: string;
+      reason: string;
+      outerS: number;
+      leftVal: number;
+      rightVal: number;
+    }
+
+    let steps: PeanoStep[] = [];
+    let currentStepIdx = 0;
+
+    const buildDerivation = (a: number, b: number) => {
+      steps = [];
+      currentStepIdx = 0;
+
+      // Paso 0: Expresión original
+      steps.push({
+        expr: `${a} + ${b}`,
+        reason: 'Expresión inicial a demostrar.',
+        outerS: 0,
+        leftVal: a,
+        rightVal: b,
+      });
+
+      if (b === 0) {
+        steps.push({
+          expr: `${a}`,
+          reason: `Regla Base (S1): a + 0 = a, con a = ${a}.`,
+          outerS: 0,
+          leftVal: a,
+          rightVal: 0,
+        });
+      } else {
+        // Desplegar b como S(...)
+        let curB = b;
+        let outer = 0;
+        steps.push({
+          expr: `${a} + S(${curB - 1 === 0 ? '0' : curB - 1})`,
+          reason: `Por definición de ${b} := S(${curB - 1}).`,
+          outerS: 0,
+          leftVal: a,
+          rightVal: b,
+        });
+
+        while (curB > 0) {
+          outer++;
+          curB--;
+          const inner = curB === 0 ? `${a} + 0` : `${a} + S(${curB - 1})`;
+          const wrapped = 'S('.repeat(outer) + inner + ')'.repeat(outer);
+          steps.push({
+            expr: wrapped,
+            reason: `Regla Recursiva (S2): a + S(b) = S(a + b) aplicada ${outer === 1 ? 'una vez' : `${outer} veces`}.`,
+            outerS: outer,
+            leftVal: a,
+            rightVal: curB,
+          });
+        }
+
+        // Aplicar regla base a + 0 = a
+        const baseWrapped = 'S('.repeat(outer) + `${a}` + ')'.repeat(outer);
+        steps.push({
+          expr: baseWrapped,
+          reason: `Regla Base (S1): sustituimos (${a} + 0) por ${a}.`,
+          outerS: outer,
+          leftVal: a,
+          rightVal: 0,
+        });
+
+        // Colapsar los S(...) paso a paso hasta el resultado
+        let curVal = a;
+        while (outer > 0) {
+          outer--;
+          curVal++;
+          const resWrapped = outer === 0 ? `${curVal}` : 'S('.repeat(outer) + `${curVal}` + ')'.repeat(outer);
+          steps.push({
+            expr: resWrapped,
+            reason: `Definición de ${curVal} := S(${curVal - 1}).`,
+            outerS: outer,
+            leftVal: curVal,
+            rightVal: 0,
+          });
+        }
+      }
+
+      renderPeanoState();
+    };
+
+    const renderPeanoState = () => {
+      if (!traceBox || !visualBlocks) return;
+      const a = parseInt(selA.value, 10);
+      const b = parseInt(selB.value, 10);
+
+      // Bloques visuales de sucesores
+      let blocksHtml = `<div class="blocks-group"><span class="bg-lbl">a = ${a}:</span>`;
+      if (a === 0) blocksHtml += `<span class="zero-chip">0</span>`;
+      for (let i = 0; i < a; i++) blocksHtml += `<span class="unit-block is-a">S</span>`;
+      blocksHtml += `</div><span class="blocks-plus">+</span><div class="blocks-group"><span class="bg-lbl">b = ${b}:</span>`;
+      if (b === 0) blocksHtml += `<span class="zero-chip">0</span>`;
+      for (let i = 0; i < b; i++) blocksHtml += `<span class="unit-block is-b">S</span>`;
+      blocksHtml += `</div>`;
+
+      if (currentStepIdx === steps.length - 1) {
+        blocksHtml += `<span class="blocks-eq">=</span><div class="blocks-group"><span class="bg-lbl">Total = ${a + b}:</span>`;
+        if (a + b === 0) blocksHtml += `<span class="zero-chip">0</span>`;
+        for (let i = 0; i < a + b; i++) blocksHtml += `<span class="unit-block is-res">S</span>`;
+        blocksHtml += `</div>`;
+      }
+      visualBlocks.innerHTML = blocksHtml;
+
+      // Lista de pasos
+      traceBox.innerHTML = steps.slice(0, currentStepIdx + 1).map((st, idx) => `
+        <div class="trace-row ${idx === currentStepIdx ? 'is-latest' : ''}">
+          <span class="tr-num">#${idx}</span>
+          <code class="tr-expr">${st.expr}</code>
+          <span class="tr-reason">${st.reason}</span>
+        </div>
+      `).join('');
+
+      btnNext.disabled = currentStepIdx >= steps.length - 1;
+    };
+
+    selA?.addEventListener('change', () => buildDerivation(parseInt(selA.value, 10), parseInt(selB.value, 10)));
+    selB?.addEventListener('change', () => buildDerivation(parseInt(selA.value, 10), parseInt(selB.value, 10)));
+
+    btnNext?.addEventListener('click', () => {
+      if (currentStepIdx < steps.length - 1) {
+        currentStepIdx++;
+        renderPeanoState();
+      }
+    });
+
+    btnAll?.addEventListener('click', () => {
+      currentStepIdx = steps.length - 1;
+      renderPeanoState();
+    });
+
+    btnReset?.addEventListener('click', () => {
+      currentStepIdx = 0;
+      renderPeanoState();
+    });
+
+    buildDerivation(1, 1);
+
+    // Quiz interactivo
+    document.querySelectorAll('.quiz-options').forEach(group => {
+      const qId = group.getAttribute('data-quiz');
+      const fb = document.getElementById(`fb-${qId}`);
+      const btns = group.querySelectorAll('.quiz-opt');
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.getAttribute('data-correct') === 'true';
+          btns.forEach(b => b.classList.remove('is-right', 'is-wrong'));
+          btn.classList.add(ok ? 'is-right' : 'is-wrong');
+          if (fb) {
+            fb.hidden = false;
+            fb.textContent = ok
+              ? '¡Exacto! Has aplicado correctamente el razonamiento axiomático.'
+              : 'Revisa los axiomas y reglas de la suma arriba e inténtalo de nuevo.';
+            fb.className = `quiz-feedback ${ok ? 'ok' : 'err'}`;
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<style>
+  .history-context-box {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.06);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    margin: 1.25rem 0;
+  }
+  .h-icon { font-size: 1.8rem; line-height: 1; }
+  .h-body h4 { margin: 0 0 0.45rem; color: #fbbf24; }
+  .h-body p { margin: 0 0 0.5rem; font-size: 0.92rem; line-height: 1.55; }
+  .h-body p:last-child { margin-bottom: 0; }
+
+  .axioms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  @media (max-width: 720px) {
+    .axioms-grid { grid-template-columns: 1fr; }
+  }
+
+  .axiom-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .axiom-wide {
+    grid-column: 1 / -1;
+  }
+
+  .ax-num {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #fbbf24;
+  }
+
+  .axiom-card h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-main);
+  }
+
+  .ax-math {
+    font-size: 1.05rem;
+    color: #38bdf8;
+    padding: 0.25rem 0;
+  }
+
+  .axiom-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .theorem-box-highlight {
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 16px;
+    padding: 1.35rem 1.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .thm-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+    margin-bottom: 0.35rem;
+  }
+
+  .def-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 0.85rem;
+  }
+
+  .def-pill {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    color: #fbbf24;
+    font-size: 1.05rem;
+  }
+
+  .rules-two-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .rule-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .rule-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #10b981;
+  }
+
+  .rule-card h4 { margin: 0; color: var(--text-main); }
+  .rule-eq { color: #38bdf8; font-size: 1.1rem; }
+  .rule-card p { margin: 0; font-size: 0.88rem; color: var(--text-muted); }
+
+  .proof-box {
+    background: var(--bg-card);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+
+  .proof-header {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #10b981;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .proof-steps {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step-line {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .step-math {
+    font-size: 1.12rem;
+    color: #38bdf8;
+  }
+
+  .step-final .step-math {
+    color: #fbbf24;
+    font-size: 1.25rem;
+  }
+
+  .step-reason {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  /* LABORATORIO DE PEANO */
+  .peano-lab-shell {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .peano-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+  }
+
+  .peano-pickers {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .picker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+  }
+
+  .picker-item select {
+    background: var(--bg-plate);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+
+  .plus-big {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #38bdf8;
+  }
+
+  .peano-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lab-btn {
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-plate);
+    color: var(--text-main);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .lab-btn.primary {
+    background: #fbbf24;
+    border-color: #fbbf24;
+    color: #020617;
+    font-weight: 700;
+  }
+
+  .lab-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .peano-visual-blocks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--bg-plate);
+    border-radius: 12px;
+  }
+
+  .blocks-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .bg-lbl {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-right: 0.25rem;
+  }
+
+  .unit-block {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    font-family: ui-monospace, monospace;
+  }
+
+  .unit-block.is-a { background: rgba(56, 189, 248, 0.25); border: 1px solid #38bdf8; color: #38bdf8; }
+  .unit-block.is-b { background: rgba(16, 185, 129, 0.25); border: 1px solid #10b981; color: #10b981; }
+  .unit-block.is-res { background: rgba(251, 191, 36, 0.25); border: 1px solid #fbbf24; color: #fbbf24; }
+  .zero-chip { font-family: ui-monospace, monospace; font-size: 0.82rem; color: var(--text-muted); }
+
+  .peano-trace-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .trace-row {
+    display: grid;
+    grid-template-columns: 36px minmax(140px, 240px) 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    background: var(--bg-plate);
+    border: 1px solid transparent;
+    font-size: 0.85rem;
+  }
+
+  .trace-row.is-latest {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+  }
+
+  .tr-num { font-family: ui-monospace, monospace; color: var(--text-muted); font-size: 0.75rem; }
+  .tr-expr { font-family: ui-monospace, monospace; color: #38bdf8; font-weight: 700; }
+  .tr-reason { color: var(--text-muted); font-size: 0.82rem; }
+
+  @media (max-width: 680px) {
+    .trace-row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+
+  /* QUIZ */
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .quiz-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .quiz-q { margin: 0; font-size: 0.9rem; line-height: 1.5; }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .quiz-opt {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-plate);
+    color: var(--text-main);
+    font-size: 0.84rem;
+    cursor: pointer;
+  }
+
+  .quiz-opt.is-right { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #10b981; }
+  .quiz-opt.is-wrong { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #f43f5e; }
+  .quiz-feedback { margin: 0; font-size: 0.82rem; font-weight: 600; }
+  .quiz-feedback.ok { color: #10b981; }
+  .quiz-feedback.err { color: #f43f5e; }
+</style>

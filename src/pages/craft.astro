@@ -15,7 +15,7 @@ const totalCount = craftProjects.length;
 
 // Clasificación de proyectos en estanterías lógicas
 const dojoIds = ['math-dojo-arcade', 'math-dojo-junior'];
-const arcadeIds = ['galaxy-pong', 'demolicion-fiq', 'astro-raya', 'radar-cartesiano'];
+const arcadeIds = ['galaxy-pong', 'astro-raya', 'radar-cartesiano', 'billar-vectorial'];
 const paradoxIds = [
   'monty-hall',
   'problema-100-prisioneros',
@@ -33,6 +33,7 @@ const geometryIds = [
 ];
 
 const dojoProjects = craftProjects.filter((p) => dojoIds.includes(p.id));
+const studentProjects = craftProjects.filter((p) => p.authorType === 'student');
 const arcadeProjects = craftProjects.filter((p) => arcadeIds.includes(p.id));
 const paradoxProjects = craftProjects.filter((p) => paradoxIds.includes(p.id));
 const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id));
@@ -43,7 +44,7 @@ const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id))
   description="Catálogo de juegos matemáticos, simulaciones de física y experimentos interactivos en Math Universe. Donde jugar es otra forma de pensar."
 >
   <!-- Barra superior técnica unificada -->
-  <SiteHeader activePage="craft" statusText="08 · Math Gaming" ctaHref="/#recursos" ctaLabel="Todas las Apps">
+  <SiteHeader activePage="craft" statusText="03 · Math Gaming" ctaHref="/#recursos" ctaLabel="Todas las Apps">
     <div slot="right-extra" class="topbar-cell craft-top-actions">
       <a
         href="#colabora"
@@ -99,6 +100,10 @@ const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id))
               <a href="#shelf-dojos" class="shelf-nav-pill is-gold">
                 <span class="nav-pill-dot"></span>
                 <span>🥋 Math Dojos</span>
+              </a>
+              <a href="#shelf-students" class="shelf-nav-pill is-rose">
+                <span class="nav-pill-dot"></span>
+                <span>🎒 Juegos de Alumnos</span>
               </a>
               <a href="#shelf-arcades" class="shelf-nav-pill is-cyan">
                 <span class="nav-pill-dot"></span>
@@ -262,6 +267,87 @@ const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id))
                     <path d="M7 17L17 7M17 7H7M17 7V17" />
                   </svg>
                 </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- ESTANTERÍA DE ALUMNOS: JUEGOS CREADOS POR ESTUDIANTES -->
+      <section class="game-shelf shelf-students" id="shelf-students" data-shelf="students" style="--shelf-accent: #f43f5e;">
+        <div class="shelf-header">
+          <div class="shelf-title-wrap">
+            <div class="shelf-glass-pill is-rose">
+              <span class="pill-badge-icon">🎒</span>
+              <span class="pill-badge-title">JUEGOS DE ALUMNOS</span>
+              <span class="pill-badge-sep" aria-hidden="true">·</span>
+              <span class="pill-badge-subtitle">Creados por estudiantes de ESO y Bachillerato</span>
+            </div>
+            <h2 class="shelf-title">Juegos de Alumnos</h2>
+            <p class="shelf-desc">
+              Proyectos originales diseñados y programados por alumnos del instituto aplicando matemáticas, física y lógica real.
+            </p>
+          </div>
+          <span class="shelf-count-badge" data-shelf-count>{studentProjects.length} juegos</span>
+        </div>
+
+        <div class="app-tiles-grid">
+          {studentProjects.map((project) => (
+            <article
+              class="app-tile"
+              data-craft-tile
+              data-id={project.id}
+              data-author={project.authorType}
+              data-title={project.title.toLowerCase()}
+              data-desc={project.description.toLowerCase()}
+              data-topic={project.mathTopic.toLowerCase()}
+              data-tags={project.tags.join(',').toLowerCase()}
+              data-author-name={project.authorName.toLowerCase()}
+              style={`--accent-color:${project.color}`}
+            >
+              <CraftAppIcon id={project.id} class="tile-app-icon" />
+
+              <div class="tile-body">
+                <div class="tile-top-row">
+                  <h3 class="tile-title">
+                    <a
+                      href={project.url}
+                      target={project.isExternal ? '_blank' : undefined}
+                      rel={project.isExternal ? 'noopener noreferrer' : undefined}
+                      class="stretched-link"
+                    >
+                      {project.title}
+                    </a>
+                  </h3>
+                  <button
+                    type="button"
+                    class="fav-star-btn"
+                    data-fav-btn={project.id}
+                    title="Guardar en favoritos"
+                    aria-label={`Añadir ${project.title} a favoritos`}
+                  >
+                    <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
+                </div>
+
+                <p class="tile-desc" title={project.shortDescription || project.description}>
+                  {project.shortDescription || project.description}
+                </p>
+
+                <div class="tile-meta-row">
+                  <span class="author-badge is-student">
+                    {`🎒 Alumno: ${project.authorName}${project.schoolOrCourse ? ` (${project.schoolOrCourse})` : ''}`}
+                  </span>
+                  <span class="topic-tag">{project.mathTopic.split(',')[0]}</span>
+                  <span class="tile-play-indicator" aria-hidden="true">
+                    <span>Jugar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
               </div>
             </article>
           ))}
@@ -750,6 +836,14 @@ const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id))
   }
   :root.theme-dark .shelf-nav-pill.is-purple:hover { color: #c084fc; }
 
+  .shelf-nav-pill.is-rose .nav-pill-dot { background: #f43f5e; }
+  .shelf-nav-pill.is-rose:hover {
+    border-color: #f43f5e;
+    background: color-mix(in srgb, #f43f5e 14%, var(--bg-raised));
+    color: #e11d48;
+  }
+  :root.theme-dark .shelf-nav-pill.is-rose:hover { color: #fb7185; }
+
   /* Fila Inferior de Toolbar */
   .toolbar-bottom-row {
     display: flex;
@@ -1010,6 +1104,15 @@ const geometryProjects = craftProjects.filter((p) => geometryIds.includes(p.id))
   }
   :root.theme-dark .shelf-glass-pill.is-purple {
     color: #c084fc;
+  }
+
+  .shelf-glass-pill.is-rose {
+    background: color-mix(in srgb, #f43f5e 16%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, #f43f5e 45%, transparent);
+    color: #be123c;
+  }
+  :root.theme-dark .shelf-glass-pill.is-rose {
+    color: #fda4af;
   }
 
   .pill-badge-icon {

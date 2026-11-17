@@ -1,0 +1,2856 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`La Esencia de π en 3D: Longitud, Arquímedes, Puzle de Kepler, Probabilidad y Series — Math Simulator | ${site.name}`}
+  description="Laboratorio 3D interactivo para descubrir la verdadera naturaleza del número pi (π): rueda rodante y cicloide, método de exhaustión de Arquímedes, disección del área de Kepler, probabilidad Monte Carlo y series de Leibniz y Euler."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / La Esencia de π" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="pi-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="pi-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE IZQUIERDA -->
+    <header class="pi-header">
+      <div class="pi-kicker">
+        <span class="pulse-dot"></span>
+        <span>GEOMETRÍA, CÁLCULO &amp; AZAR · LA FIRMA DE π</span>
+      </div>
+      <h1 class="pi-title">La Esencia de π en 3D</h1>
+      <p class="pi-desc" id="brandDesc">
+        El número <strong class="hl-pi">π = 3.14159265...</strong> es la constante universal que emerge cuando el movimiento circular se traduce en longitud, área, probabilidad o sumas infinitas.
+      </p>
+      <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+        <span>📖 Deducción y Explicación Paso a Paso</span>
+      </button>
+    </header>
+
+    <!-- SELECTOR DE LAS 5 ESCENAS / PESTAÑAS (EN LA PARTE SUPERIOR CENTRAL) -->
+    <nav class="pi-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="pi-tab-btn active" data-tab="roll" id="tabRollBtn">
+        <span class="tab-icon">🔄</span>
+        <span>1. Desenrollar Rueda</span>
+      </button>
+      <button type="button" class="pi-tab-btn" data-tab="arch" id="tabArchBtn">
+        <span class="tab-icon">🏛️</span>
+        <span>2. Arquímedes (Polígonos)</span>
+      </button>
+      <button type="button" class="pi-tab-btn" data-tab="area" id="tabAreaBtn">
+        <span class="tab-icon">🍕</span>
+        <span>3. Puzle del Área (Kepler)</span>
+      </button>
+      <button type="button" class="pi-tab-btn" data-tab="prob" id="tabProbBtn">
+        <span class="tab-icon">🎲</span>
+        <span>4. Probabilidad &amp; Buffon</span>
+      </button>
+      <button type="button" class="pi-tab-btn" data-tab="series" id="tabSeriesBtn">
+        <span class="tab-icon">📈</span>
+        <span>5. Series Infinitas</span>
+      </button>
+    </nav>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO DIDÁCTICO</span>
+          <h2 id="guideModalTitle">¿Qué es en realidad el número π?</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+
+      <div class="guide-body" id="guideContent">
+        <!-- Contenido dinámico renderizado con KaTeX -->
+      </div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE CONTROLES DERECHA -->
+    <aside class="pi-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+        
+        <!-- =================== PARÁMETROS ESCENA 1: RUEDA DESENROLLADA =================== -->
+        <div class="ctl-section tab-roll-only">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Rodadura sin Deslizamiento</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rAngle">Giro de la rueda <span class="math-sym">θ</span></label>
+              <span class="ctl-val" id="vAngle">0.00 rad (0°)</span>
+            </div>
+            <input type="range" id="rAngle" min="0" max="6.28318" step="0.01" value="0" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnRollHalfPi" title="Girar exactamente media vuelta">
+              <span>Media vuelta (x = π)</span>
+            </button>
+            <button type="button" class="preset-chip" id="btnRollFullPi" title="Girar vuelta completa">
+              <span>Vuelta entera (x = 2π)</span>
+            </button>
+          </div>
+
+          <div class="ctl-group" style="margin-top: 0.65rem;">
+            <div class="ctl-header">
+              <label for="rRadius">Radio de la rueda <span class="math-sym">r</span></label>
+              <span class="ctl-val" id="vRadius">1.00</span>
+            </div>
+            <input type="range" id="rRadius" min="0.5" max="1.5" step="0.05" value="1.0" />
+          </div>
+
+          <div class="quick-play-row">
+            <button type="button" class="btn-play-action" id="btnToggleRollPlay">
+              <span id="playRollIcon">▶</span>
+              <span id="playRollText">Rodar Rueda</span>
+            </button>
+            <button type="button" class="btn-reset-action" id="btnResetRoll">↺ Rebobinar</button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 2: ARQUÍMEDES =================== -->
+        <div class="ctl-section tab-arch-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Método de Exhaustión (Polígonos)</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label>Número de lados <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vArchN">n = 6 lados</span>
+            </div>
+            <div class="arch-presets-grid">
+              <button type="button" class="arch-step-btn active" data-n="6">n = 6</button>
+              <button type="button" class="arch-step-btn" data-n="12">n = 12</button>
+              <button type="button" class="arch-step-btn" data-n="24">n = 24</button>
+              <button type="button" class="arch-step-btn" data-n="48">n = 48</button>
+              <button type="button" class="arch-step-btn" data-n="96">n = 96 (Arquímedes)</button>
+              <button type="button" class="arch-step-btn" data-n="192">n = 192</button>
+            </div>
+          </div>
+
+          <div class="quick-play-row">
+            <button type="button" class="btn-play-action" id="btnAutoArch">
+              <span id="autoArchIcon">▶</span>
+              <span id="autoArchText">Subir Escalera de Lados</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 3: PUZLE DEL ÁREA =================== -->
+        <div class="ctl-section tab-area-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Metamorfosis Círculo ➔ Rectángulo</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rSectors">Sectores circulares <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vSectors">16 sectores</span>
+            </div>
+            <div class="arch-presets-grid" style="grid-template-columns: repeat(4, 1fr);">
+              <button type="button" class="sector-step-btn" data-sec="8">8</button>
+              <button type="button" class="sector-step-btn active" data-sec="16">16</button>
+              <button type="button" class="sector-step-btn" data-sec="32">32</button>
+              <button type="button" class="sector-step-btn" data-sec="64">64</button>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rMorph">Despliegue a rectángulo</label>
+              <span class="ctl-val" id="vMorph">0% (Círculo)</span>
+            </div>
+            <input type="range" id="rMorph" min="0" max="1" step="0.01" value="0" />
+          </div>
+
+          <div class="quick-play-row">
+            <button type="button" class="btn-play-action" id="btnToggleMorph">
+              <span id="morphIcon">▶</span>
+              <span id="morphText">Desplegar / Recomponer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 4: PROBABILIDAD =================== -->
+        <div class="ctl-section tab-prob-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Monte Carlo &amp; Aguja de Buffon</span>
+          </div>
+
+          <div class="ctl-group">
+            <label class="ctl-label-inline">Experimento Estocástico:</label>
+            <div class="mode-switch-grid">
+              <button type="button" class="mode-btn active" id="btnModeDarts">🎯 Dardos (¼ Círculo)</button>
+              <button type="button" class="mode-btn" id="btnModeBuffon">🧵 Agujas de Buffon</button>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label>Lanzar Muestras:</label>
+              <span class="ctl-val" id="vSampleCount">N = 0</span>
+            </div>
+            <div class="arch-presets-grid" style="grid-template-columns: repeat(3, 1fr);">
+              <button type="button" class="drop-btn" id="btnAdd100">+100</button>
+              <button type="button" class="drop-btn" id="btnAdd500">+500</button>
+              <button type="button" class="drop-btn" id="btnAdd2000">+2000</button>
+            </div>
+          </div>
+
+          <div class="quick-play-row">
+            <button type="button" class="btn-play-action" id="btnStreamPoints">
+              <span id="streamIcon">▶</span>
+              <span id="streamText">Lluvia Continua</span>
+            </button>
+            <button type="button" class="btn-reset-action" id="btnResetProb">↺ Vaciar</button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 5: SERIES =================== -->
+        <div class="ctl-section tab-series-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Fórmulas Analíticas &amp; Límites</span>
+          </div>
+
+          <div class="ctl-group">
+            <label class="ctl-label-inline">Familia de Serie:</label>
+            <div class="arch-presets-grid" style="grid-template-columns: 1fr;">
+              <button type="button" class="series-type-btn active" data-series="leibniz">
+                <span>Leibniz (1673): Alternada</span>
+              </button>
+              <button type="button" class="series-type-btn" data-series="basel">
+                <span>Euler / Basilea (1734): Σ 1/k²</span>
+              </button>
+              <button type="button" class="series-type-btn" data-series="nilakantha">
+                <span>Nilakantha (s. XV): Ultrarrápida</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="rTerms">Términos acumulados <span class="math-sym">k</span></label>
+              <span class="ctl-val" id="vTerms">k = 25 términos</span>
+            </div>
+            <input type="range" id="rTerms" min="1" max="150" step="1" value="25" />
+          </div>
+
+          <div class="quick-play-row">
+            <button type="button" class="btn-play-action" id="btnPlaySeries">
+              <span id="playSeriesIcon">▶</span>
+              <span id="playSeriesText">Sumar Términos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TOGGLES Y OPCIONES DE CÁMARA COMUNES -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Ayudas Visuales:</span>
+          <div class="toggles-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="cTrace" checked />
+              <span class="color-dot" style="--dot-c: #fb7185;"></span>
+              <span>Trazas / Curvas</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cPiRail" checked />
+              <span class="color-dot" style="--dot-c: #f59e0b;"></span>
+              <span>Línea Exacta de π</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cLabels" checked />
+              <span class="color-dot" style="--dot-c: #38bdf8;"></span>
+              <span>Cotas &amp; Etiquetas</span>
+            </label>
+            <label class="toggle-pill">
+              <input type="checkbox" id="cGrid3D" checked />
+              <span class="color-dot" style="--dot-c: #64748b;"></span>
+              <span>Rejilla 3D</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- VISTAS DE CÁMARA PREDEFINIDAS -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara:</span>
+          <div class="cam-btns-grid">
+            <button type="button" class="cam-btn active" data-view="iso">Perspectiva 3D</button>
+            <button type="button" class="cam-btn" data-view="front">Frontal (X-Y)</button>
+            <button type="button" class="cam-btn" data-view="top">Planta (Superior)</button>
+            <button type="button" class="cam-btn" data-view="side">Corredor Lateral</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- TARJETA FLOTANTE DE TELEMETRÍA (COLOCADA ABAJO A LA IZQUIERDA SIN SOLAPAMIENTO) -->
+    <div class="telemetry-badge" id="telemetryCard">
+      <div class="tele-top">
+        <span class="tele-type-pill" id="teleBadgePill">LONGITUD Y DESENROLLADO</span>
+        <span class="tele-condition" id="teleCondition">Media vuelta exacta: x = π ≈ 3.14159...</span>
+      </div>
+      <div class="tele-metrics-row">
+        <div class="tm-item">
+          <span class="tm-label">Aproximación π*</span>
+          <span class="tm-val tm-highlight" id="tmApprox">3.14159</span>
+        </div>
+        <div class="tm-item">
+          <span class="tm-label">Valor Real π</span>
+          <span class="tm-val">3.14159265...</span>
+        </div>
+        <div class="tm-item">
+          <span class="tm-label">Error Absoluto |ε|</span>
+          <span class="tm-val" id="tmError">0.00000</span>
+        </div>
+      </div>
+      <div class="tele-eq-box" id="teleEqBox">
+        <!-- Ecuación en vivo generada dinámicamente con KaTeX -->
+      </div>
+    </div>
+
+    <!-- HINT FLOTANTE INFERIOR DE CÁMARA 3D (CENTRO INFERIOR) -->
+    <div class="cam-hint" id="camHint">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 3D</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Centrar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Elementos DOM de escenas
+    const tabBtns = document.querySelectorAll('.pi-tab-btn');
+    const camBtns = document.querySelectorAll('.cam-btn');
+
+    // Escena 1 (Roll)
+    const rAngle = document.getElementById('rAngle') as HTMLInputElement;
+    const vAngle = document.getElementById('vAngle') as HTMLElement;
+    const rRadius = document.getElementById('rRadius') as HTMLInputElement;
+    const vRadius = document.getElementById('vRadius') as HTMLElement;
+    const btnRollHalfPi = document.getElementById('btnRollHalfPi') as HTMLButtonElement;
+    const btnRollFullPi = document.getElementById('btnRollFullPi') as HTMLButtonElement;
+    const btnToggleRollPlay = document.getElementById('btnToggleRollPlay') as HTMLButtonElement;
+    const playRollIcon = document.getElementById('playRollIcon') as HTMLElement;
+    const playRollText = document.getElementById('playRollText') as HTMLElement;
+    const btnResetRoll = document.getElementById('btnResetRoll') as HTMLButtonElement;
+
+    // Escena 2 (Arquímedes)
+    const archStepBtns = document.querySelectorAll('.arch-step-btn');
+    const vArchN = document.getElementById('vArchN') as HTMLElement;
+    const btnAutoArch = document.getElementById('btnAutoArch') as HTMLButtonElement;
+    const autoArchIcon = document.getElementById('autoArchIcon') as HTMLElement;
+    const autoArchText = document.getElementById('autoArchText') as HTMLElement;
+
+    // Escena 3 (Puzle Área)
+    const sectorStepBtns = document.querySelectorAll('.sector-step-btn');
+    const vSectors = document.getElementById('vSectors') as HTMLElement;
+    const rMorph = document.getElementById('rMorph') as HTMLInputElement;
+    const vMorph = document.getElementById('vMorph') as HTMLElement;
+    const btnToggleMorph = document.getElementById('btnToggleMorph') as HTMLButtonElement;
+    const morphIcon = document.getElementById('morphIcon') as HTMLElement;
+    const morphText = document.getElementById('morphText') as HTMLElement;
+
+    // Escena 4 (Probabilidad)
+    const btnModeDarts = document.getElementById('btnModeDarts') as HTMLButtonElement;
+    const btnModeBuffon = document.getElementById('btnModeBuffon') as HTMLButtonElement;
+    const vSampleCount = document.getElementById('vSampleCount') as HTMLElement;
+    const btnAdd100 = document.getElementById('btnAdd100') as HTMLButtonElement;
+    const btnAdd500 = document.getElementById('btnAdd500') as HTMLButtonElement;
+    const btnAdd2000 = document.getElementById('btnAdd2000') as HTMLButtonElement;
+    const btnStreamPoints = document.getElementById('btnStreamPoints') as HTMLButtonElement;
+    const streamIcon = document.getElementById('streamIcon') as HTMLElement;
+    const streamText = document.getElementById('streamText') as HTMLElement;
+    const btnResetProb = document.getElementById('btnResetProb') as HTMLButtonElement;
+
+    // Escena 5 (Series)
+    const seriesTypeBtns = document.querySelectorAll('.series-type-btn');
+    const rTerms = document.getElementById('rTerms') as HTMLInputElement;
+    const vTerms = document.getElementById('vTerms') as HTMLElement;
+    const btnPlaySeries = document.getElementById('btnPlaySeries') as HTMLButtonElement;
+    const playSeriesIcon = document.getElementById('playSeriesIcon') as HTMLElement;
+    const playSeriesText = document.getElementById('playSeriesText') as HTMLElement;
+
+    // Toggles
+    const cTrace = document.getElementById('cTrace') as HTMLInputElement;
+    const cPiRail = document.getElementById('cPiRail') as HTMLInputElement;
+    const cLabels = document.getElementById('cLabels') as HTMLInputElement;
+    const cGrid3D = document.getElementById('cGrid3D') as HTMLInputElement;
+
+    // Telemetría
+    const teleBadgePill = document.getElementById('teleBadgePill') as HTMLElement;
+    const teleCondition = document.getElementById('teleCondition') as HTMLElement;
+    const tmApprox = document.getElementById('tmApprox') as HTMLElement;
+    const tmError = document.getElementById('tmError') as HTMLElement;
+    const teleEqBox = document.getElementById('teleEqBox') as HTMLElement;
+
+    // Drawer Didáctico
+    const btnOpenGuide = document.getElementById('btnOpenGuide') as HTMLButtonElement;
+    const btnCloseGuide = document.getElementById('btnCloseGuide') as HTMLButtonElement;
+    const guideDrawer = document.getElementById('guideDrawer') as HTMLElement;
+    const guideModalTitle = document.getElementById('guideModalTitle') as HTMLElement;
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+
+    // Plegado del panel
+    const btnFold = document.getElementById('btnFold') as HTMLButtonElement;
+    const panel = document.getElementById('panel') as HTMLElement;
+
+    let isPanelFolded = false;
+    btnFold.addEventListener('click', () => {
+      isPanelFolded = !isPanelFolded;
+      panel.classList.toggle('folded', isPanelFolded);
+      btnFold.textContent = isPanelFolded ? '+' : '−';
+    });
+
+    // Pestaña activa: 'roll' | 'arch' | 'area' | 'prob' | 'series'
+    type SceneTab = 'roll' | 'arch' | 'area' | 'prob' | 'series';
+    let activeTab: SceneTab = 'roll';
+
+    // =========================================================================
+    // ESTADOS DE LAS SIMULACIONES
+    // =========================================================================
+    // Escena 1
+    let rollTheta = 0;
+    let rollRadius = 1.0;
+    let isRollPlaying = false;
+    let cycloidPoints: Pt3[] = [];
+
+    // Escena 2
+    let archSides = 6;
+    let isArchPlaying = false;
+    let archTimer = 0;
+
+    // Escena 3
+    let numSectors = 16;
+    let morphProgress = 0;
+    let isMorphing = false;
+    let morphDirection = 1;
+
+    // Escena 4
+    type ProbMode = 'darts' | 'buffon';
+    let probMode: ProbMode = 'darts';
+    let isStreamingProb = false;
+    interface Dart { x: number; y: number; inCircle: boolean }
+    interface Needle { x: number; y: number; angle: number; crosses: boolean }
+    let dartsList: Dart[] = [];
+    let needlesList: Needle[] = [];
+    let dartsIn = 0;
+    let needlesCross = 0;
+
+    // Escena 5
+    type SeriesType = 'leibniz' | 'basel' | 'nilakantha';
+    let seriesType: SeriesType = 'leibniz';
+    let seriesTerms = 25;
+    let isSeriesPlaying = false;
+
+    // =========================================================================
+    // VISTAS Y CÁMARA 3D (CON CENTRADO ÓPTICO CORREGIDO)
+    // =========================================================================
+    const VIEWS = {
+      roll: {
+        iso:   { az: -0.75, el: 0.32, dist: 11.2, tx: 3.1, ty: 0.9, tz: 0 },
+        front: { az: 0.001, el: 0.02, dist: 8.8,  tx: 3.1, ty: 1.0, tz: 0 },
+        top:   { az: 0.001, el: 1.54, dist: 11.0, tx: 3.1, ty: 0.0, tz: 0 },
+        side:  { az: -Math.PI / 2, el: 0.05, dist: 9.0, tx: 0, ty: 1.0, tz: 0 }
+      },
+      arch: {
+        iso:   { az: -0.75, el: 0.32, dist: 11.5, tx: 0.0, ty: 0.0, tz: 1.8 },
+        front: { az: 0.001, el: 0.02, dist: 8.5,  tx: 0.0, ty: 0.0, tz: 0 },
+        top:   { az: 0.001, el: 1.54, dist: 10.0, tx: 0.0, ty: 0.0, tz: 0 },
+        side:  { az: -Math.PI / 2, el: 0.12, dist: 11.5, tx: 0, ty: 0.0, tz: 2.8 }
+      },
+      area: {
+        iso:   { az: -0.55, el: 0.35, dist: 10.8, tx: 0.0, ty: 0.8, tz: 0 },
+        front: { az: 0.001, el: 0.02, dist: 8.2,  tx: 0.0, ty: 0.8, tz: 0 },
+        top:   { az: 0.001, el: 1.54, dist: 10.5, tx: 0.0, ty: 0.0, tz: 0 },
+        side:  { az: -Math.PI / 2, el: 0.05, dist: 9.0, tx: 0, ty: 0.8, tz: 0 }
+      },
+      prob: {
+        iso:   { az: -0.60, el: 0.38, dist: 10.5, tx: 0.0, ty: 0.0, tz: 0 },
+        front: { az: 0.001, el: 0.02, dist: 8.0,  tx: 0.0, ty: 0.0, tz: 0 },
+        top:   { az: 0.001, el: 1.54, dist: 10.0, tx: 0.0, ty: 0.0, tz: 0 },
+        side:  { az: -Math.PI / 2, el: 0.05, dist: 9.0, tx: 0, ty: 0.0, tz: 0 }
+      },
+      series: {
+        iso:   { az: -0.85, el: 0.30, dist: 11.5, tx: 0.0, ty: 2.6, tz: 2.5 },
+        front: { az: 0.001, el: 0.02, dist: 8.5,  tx: 0.0, ty: 2.6, tz: 0 },
+        top:   { az: 0.001, el: 1.54, dist: 11.0, tx: 0.0, ty: 0.0, tz: 2.5 },
+        side:  { az: -Math.PI / 2, el: 0.02, dist: 9.8, tx: 0.0, ty: 2.6, tz: 3.2 }
+      }
+    };
+
+    let cam = { ...VIEWS.roll.iso };
+    let camTween: { from: typeof cam; to: typeof cam; start: number; dur: number } | null = null;
+
+    // Dimensiones y proyección
+    let W = 0, H = 0, DPR = 1, FOCAL = 850, CX = 0, CY = 0;
+
+    const resize = () => {
+      DPR = Math.min(2.5, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * DPR);
+      canvas.height = Math.round(H * DPR);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      // Desplazamiento óptico del centro 3D:
+      // El panel derecho mide ~330px en desktop (W > 1024).
+      // Colocamos CX en el centro de la zona abierta para que el PAN empiece centrado
+      // en la zona visible y no se desplace hacia la derecha.
+      const panelWidth = W > 1024 ? 330 : 0;
+      CX = Math.round((W - panelWidth) / 2);
+      CY = Math.round(H / 2);
+      FOCAL = 1.15 * Math.min(H, (W - panelWidth) * 1.05);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Matemáticas 3D y proyecciones
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const add = (a: Pt3, b: Pt3): Pt3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    const scale = (a: Pt3, s: number): Pt3 => [a[0] * s, a[1] * s, a[2] * s];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+    const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const project = (p: Pt3, c: ReturnType<typeof makeCam>): { p2: Pt2; z: number; visible: boolean } => {
+      const d = sub(p, c.eye);
+      const zCam = dot3(d, c.f);
+      if (zCam <= 0.05) return { p2: [0, 0], z: zCam, visible: false };
+      const xCam = dot3(d, c.r);
+      const yCam = dot3(d, c.u);
+      const s = FOCAL / zCam;
+      return {
+        p2: [CX + xCam * s, CY - yCam * s],
+        z: zCam,
+        visible: true,
+      };
+    };
+
+    const line3 = (
+      C: ReturnType<typeof makeCam>,
+      a: Pt3,
+      b: Pt3,
+      col: string,
+      w = 1.5,
+      dash: number[] = []
+    ) => {
+      const pa = project(a, C);
+      const pb = project(b, C);
+      if (!pa.visible && !pb.visible) return;
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = w;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(pa.p2[0], pa.p2[1]);
+      ctx.lineTo(pb.p2[0], pb.p2[1]);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const dot3D = (
+      C: ReturnType<typeof makeCam>,
+      p: Pt3,
+      r: number,
+      fill: string,
+      stroke = '#ffffff',
+      sw = 1.5
+    ) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = sw;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      if (sw > 0) ctx.stroke();
+      ctx.restore();
+    };
+
+    const label3D = (
+      C: ReturnType<typeof makeCam>,
+      p: Pt3,
+      txt: string,
+      col = '#f8fafc',
+      bg = 'rgba(15, 23, 42, 0.75)',
+      font = '12px system-ui'
+    ) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.font = font;
+      const tw = ctx.measureText(txt).width;
+      const x = pp.p2[0] + 8;
+      const y = pp.p2[1] - 8;
+      if (bg) {
+        ctx.fillStyle = bg;
+        ctx.fillRect(x - 4, y - 11, tw + 8, 16);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x - 4, y - 11, tw + 8, 16);
+      }
+      ctx.fillStyle = col;
+      ctx.fillText(txt, x, y + 1);
+      ctx.restore();
+    };
+
+    const drawGridFloor = (C: ReturnType<typeof makeCam>, x0: number, x1: number, z0: number, z1: number, step = 1.0) => {
+      if (!cGrid3D.checked) return;
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const gCol = isDark ? 'rgba(148, 163, 184, 0.10)' : 'rgba(100, 116, 139, 0.12)';
+      for (let x = x0; x <= x1 + 0.001; x += step) {
+        line3(C, [x, 0, z0], [x, 0, z1], gCol, 1.0);
+      }
+      for (let z = z0; z <= z1 + 0.001; z += step) {
+        line3(C, [x0, 0, z], [x1, 0, z], gCol, 1.0);
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 1: DESENROLLAR LA RUEDA (LONGITUD Y CICLOIDE)
+    // =========================================================================
+    const drawRollScene = (C: ReturnType<typeof makeCam>) => {
+      drawGridFloor(C, -1, 7.5, -2, 2, 0.5);
+
+      const r = rollRadius;
+      const th = rollTheta;
+      const rollDistance = r * th;
+
+      // Suelo / Eje de rodadura
+      line3(C, [-1, 0, 0], [7.5, 0, 0], 'rgba(148, 163, 184, 0.4)', 1.5);
+
+      // Marcas exactas de π y 2π
+      if (cPiRail.checked) {
+        const xHalf = Math.PI * r;
+        const xFull = 2 * Math.PI * r;
+
+        // Marca en x = π·r
+        line3(C, [xHalf, 0, -0.4], [xHalf, 0, 0.4], '#f59e0b', 2.0);
+        dot3D(C, [xHalf, 0, 0], 4, '#f59e0b', '#ffffff', 1.5);
+        label3D(C, [xHalf, -0.2, 0], r === 1 ? 'x = π ≈ 3.1416' : `x = π·r (${xHalf.toFixed(2)})`, '#f59e0b');
+
+        // Marca en x = 2π·r
+        line3(C, [xFull, 0, -0.4], [xFull, 0, 0.4], '#f59e0b', 2.0);
+        dot3D(C, [xFull, 0, 0], 4, '#f59e0b', '#ffffff', 1.5);
+        label3D(C, [xFull, -0.2, 0], r === 1 ? 'x = 2π ≈ 6.2832' : `x = 2π·r (${xFull.toFixed(2)})`, '#f59e0b');
+      }
+
+      // Huella / arco ya desenrollado y apoyado sobre el suelo
+      if (rollDistance > 0.01) {
+        line3(C, [0, 0.01, 0], [rollDistance, 0.01, 0], '#fb7185', 3.5);
+      }
+
+      // Rueda: Centro en [rollDistance, r, 0]
+      const center: Pt3 = [rollDistance, r, 0];
+      dot3D(C, center, 4, '#38bdf8', '#ffffff', 1.5);
+
+      // Aro de la rueda
+      const SAMPLES = 48;
+      ctx.save();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      let started = false;
+      for (let i = 0; i <= SAMPLES; i++) {
+        const a = (i / SAMPLES) * Math.PI * 2;
+        const pt: Pt3 = [center[0] + r * Math.sin(a), center[1] + r * Math.cos(a), 0];
+        const pr = project(pt, C);
+        if (pr.visible) {
+          if (!started) {
+            ctx.moveTo(pr.p2[0], pr.p2[1]);
+            started = true;
+          } else {
+            ctx.lineTo(pr.p2[0], pr.p2[1]);
+          }
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      // Radio que conecta el centro con el punto del borde
+      const rimX = center[0] - r * Math.sin(th);
+      const rimY = center[1] - r * Math.cos(th);
+      const rimPt: Pt3 = [rimX, rimY, 0];
+
+      line3(C, center, rimPt, '#fb7185', 2.0);
+      dot3D(C, rimPt, 6, '#fb7185', '#ffffff', 2.0);
+      label3D(C, rimPt, 'Punto del Borde P', '#fb7185');
+
+      // Arco restante aún en la rueda
+      ctx.save();
+      ctx.strokeStyle = '#fb7185';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      started = false;
+      for (let i = 0; i <= 36; i++) {
+        const frac = i / 36;
+        const a = (1 - frac) * th;
+        const pt: Pt3 = [center[0] - r * Math.sin(a), center[1] - r * Math.cos(a), 0];
+        const pr = project(pt, C);
+        if (pr.visible) {
+          if (!started) {
+            ctx.moveTo(pr.p2[0], pr.p2[1]);
+            started = true;
+          } else {
+            ctx.lineTo(pr.p2[0], pr.p2[1]);
+          }
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      // Trazado de la cicloide
+      if (cTrace.checked && cycloidPoints.length > 1) {
+        ctx.save();
+        ctx.strokeStyle = '#a78bfa';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        started = false;
+        cycloidPoints.forEach((p) => {
+          const pr = project(p, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        });
+        ctx.stroke();
+        ctx.restore();
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 2: ARQUÍMEDES (MÉTODO DE EXHAUSTIÓN Y REGLA FRONTAL)
+    // =========================================================================
+    const drawArchScene = (C: ReturnType<typeof makeCam>) => {
+      drawGridFloor(C, -3.0, 3.0, -1, 6, 0.5);
+
+      const n = archSides;
+      const R = 1.4; // Radio del círculo base
+
+      const pIns = n * Math.sin(Math.PI / n);
+      const pCirc = n * Math.tan(Math.PI / n);
+
+      // Círculo unitario de referencia en el centro (z = 0)
+      const SAMPLES = 64;
+      ctx.save();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      let started = false;
+      for (let i = 0; i <= SAMPLES; i++) {
+        const a = (i / SAMPLES) * Math.PI * 2;
+        const pt: Pt3 = [R * Math.cos(a), R * Math.sin(a), 0];
+        const pr = project(pt, C);
+        if (pr.visible) {
+          if (!started) {
+            ctx.moveTo(pr.p2[0], pr.p2[1]);
+            started = true;
+          } else {
+            ctx.lineTo(pr.p2[0], pr.p2[1]);
+          }
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      // Polígono Circunscrito (en z = 0, violeta #a78bfa)
+      // Radio de vértices: R / cos(π/n)
+      const R_circ = R / Math.cos(Math.PI / n);
+      ctx.save();
+      ctx.strokeStyle = '#a78bfa';
+      ctx.fillStyle = 'rgba(167, 139, 250, 0.08)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      started = false;
+      for (let i = 0; i <= n; i++) {
+        const a = (i / n) * Math.PI * 2 + Math.PI / n;
+        const pt: Pt3 = [R_circ * Math.cos(a), R_circ * Math.sin(a), 0];
+        const pr = project(pt, C);
+        if (pr.visible) {
+          if (!started) {
+            ctx.moveTo(pr.p2[0], pr.p2[1]);
+            started = true;
+          } else {
+            ctx.lineTo(pr.p2[0], pr.p2[1]);
+          }
+        }
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Polígono Inscrito (en z = 0, rosa coral #fb7185)
+      ctx.save();
+      ctx.strokeStyle = '#fb7185';
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.12)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      started = false;
+      for (let i = 0; i <= n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const pt: Pt3 = [R * Math.cos(a), R * Math.sin(a), 0];
+        const pr = project(pt, C);
+        if (pr.visible) {
+          if (!started) {
+            ctx.moveTo(pr.p2[0], pr.p2[1]);
+            started = true;
+          } else {
+            ctx.lineTo(pr.p2[0], pr.p2[1]);
+          }
+        }
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Etiquetas indicativas sobre la figura
+      if (cLabels.checked) {
+        label3D(C, [0, R_circ + 0.22, 0], `Circunscrito: ${pCirc.toFixed(4)}`, '#a78bfa');
+        label3D(C, [0, -R - 0.25, 0], `Inscrito: ${pIns.toFixed(4)}`, '#fb7185');
+        dot3D(C, [0, 0, 0], 3, '#38bdf8', '#ffffff', 1);
+        label3D(C, [0, 0, 0], 'Círculo r=1', '#38bdf8');
+      }
+
+      // Corredor de convergencia en profundidad 3D (Z > 0)
+      if (cTrace.checked) {
+        const HIST_STEPS = [6, 12, 24, 48, 96];
+        HIST_STEPS.forEach((sn, idx) => {
+          const zStep = (idx + 1) * 1.0;
+          const alpha = 0.25 - idx * 0.035;
+
+          // Polígono inscrito en profundidad
+          ctx.save();
+          ctx.strokeStyle = `rgba(251, 113, 133, ${alpha + 0.15})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          let s1 = false;
+          for (let i = 0; i <= sn; i++) {
+            const a = (i / sn) * Math.PI * 2;
+            const pt: Pt3 = [R * Math.cos(a), R * Math.sin(a), zStep];
+            const pr = project(pt, C);
+            if (pr.visible) {
+              if (!s1) { ctx.moveTo(pr.p2[0], pr.p2[1]); s1 = true; }
+              else { ctx.lineTo(pr.p2[0], pr.p2[1]); }
+            }
+          }
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+
+          // Polígono circunscrito en profundidad
+          const rC = R / Math.cos(Math.PI / sn);
+          ctx.save();
+          ctx.strokeStyle = `rgba(167, 139, 250, ${alpha + 0.15})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          let s2 = false;
+          for (let i = 0; i <= sn; i++) {
+            const a = (i / sn) * Math.PI * 2 + Math.PI / sn;
+            const pt: Pt3 = [rC * Math.cos(a), rC * Math.sin(a), zStep];
+            const pr = project(pt, C);
+            if (pr.visible) {
+              if (!s2) { ctx.moveTo(pr.p2[0], pr.p2[1]); s2 = true; }
+              else { ctx.lineTo(pr.p2[0], pr.p2[1]); }
+            }
+          }
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+
+          label3D(C, [R_circ + 0.3, 0, zStep], `n = ${sn}`, idx === 4 ? '#f59e0b' : 'rgba(148, 163, 184, 0.6)');
+        });
+      }
+
+      // Barra métrica inferior comparativa directa (en el plano z = 0, y = -2.1)
+      const rulerY = -2.1;
+      const rulerCenter = 0;
+      const scaleX = 3.2;
+
+      const xLo = rulerCenter + (pIns - Math.PI) * scaleX;
+      const xHi = rulerCenter + (pCirc - Math.PI) * scaleX;
+      const xExactPi = rulerCenter;
+
+      // Eje base de la regla
+      line3(C, [-2.4, rulerY, 0], [2.4, rulerY, 0], 'rgba(148, 163, 184, 0.3)', 1.5);
+
+      // Tramo de cota: desde xLo hasta xHi
+      line3(C, [xLo, rulerY, 0], [xHi, rulerY, 0], 'rgba(167, 139, 250, 0.35)', 5.0);
+      line3(C, [xLo, rulerY, 0], [xExactPi, rulerY, 0], '#fb7185', 3.0);
+      line3(C, [xExactPi, rulerY, 0], [xHi, rulerY, 0], '#a78bfa', 3.0);
+
+      dot3D(C, [xLo, rulerY, 0], 4, '#fb7185', '#ffffff', 1.5);
+      dot3D(C, [xHi, rulerY, 0], 4, '#a78bfa', '#ffffff', 1.5);
+
+      // Marca vertical exacta de π en la regla
+      line3(C, [xExactPi, rulerY - 0.15, 0], [xExactPi, rulerY + 0.15, 0], '#f59e0b', 2.5);
+      dot3D(C, [xExactPi, rulerY, 0], 3, '#f59e0b', '#ffffff', 1.0);
+
+      label3D(C, [xExactPi, rulerY - 0.28, 0], 'π (Objetivo)', '#f59e0b');
+      label3D(C, [xLo, rulerY + 0.25, 0], `n·sin = ${pIns.toFixed(4)}`, '#fb7185');
+      label3D(C, [xHi, rulerY + 0.25, 0], `n·tan = ${pCirc.toFixed(4)}`, '#a78bfa');
+
+      // Línea dorada longitudinal de π a través del túnel
+      if (cPiRail.checked) {
+        line3(C, [0, -R, 0], [0, -R, 5.5], 'rgba(245, 158, 11, 0.45)', 1.5, [4, 4]);
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 3: PUZLE DEL ÁREA DEL CÍRCULO (KEPLER 1615)
+    // =========================================================================
+    const drawAreaScene = (C: ReturnType<typeof makeCam>) => {
+      drawGridFloor(C, -4, 4, -1, 1, 0.5);
+
+      const n = numSectors;
+      const m = morphProgress;
+      const R = 1.6;
+      const dTheta = (Math.PI * 2) / n;
+
+      // Rectángulo objetivo π·R x R (cuando m = 1)
+      if (cPiRail.checked) {
+        const rectW = Math.PI * R;
+        const rectH = R;
+        const rx0 = -rectW / 2;
+        const rTopLeft: Pt3 = [rx0, rectH, 0];
+        const rTopRight: Pt3 = [rx0 + rectW, rectH, 0];
+        const rBotRight: Pt3 = [rx0 + rectW, 0, 0];
+        const rBotLeft: Pt3 = [rx0, 0, 0];
+
+        line3(C, rBotLeft, rBotRight, 'rgba(245, 158, 11, 0.5)', 1.5, [4, 4]);
+        line3(C, rBotRight, rTopRight, 'rgba(245, 158, 11, 0.5)', 1.5, [4, 4]);
+        line3(C, rTopRight, rTopLeft, 'rgba(245, 158, 11, 0.5)', 1.5, [4, 4]);
+        line3(C, rTopLeft, rBotLeft, 'rgba(245, 158, 11, 0.5)', 1.5, [4, 4]);
+
+        if (m > 0.85) {
+          label3D(C, [0, -0.25, 0], `Base = π·r ≈ ${(Math.PI * R).toFixed(2)}`, '#f59e0b');
+          label3D(C, [rx0 - 0.35, rectH / 2, 0], `Altura = r = ${R.toFixed(1)}`, '#38bdf8');
+        }
+      }
+
+      // Dibujar cada sector interpolado
+      for (let i = 0; i < n; i++) {
+        const isUp = i % 2 === 0;
+        const rectX = -((Math.PI * R) / 2) + (i + 0.5) * (Math.PI * R / n);
+        const rectY = isUp ? 0 : R;
+        const rectApex: Pt3 = [rectX, rectY, 0];
+        const circleOrigin: Pt3 = [0, R, 0];
+
+        const currApex: Pt3 = [
+          circleOrigin[0] * (1 - m) + rectApex[0] * m,
+          circleOrigin[1] * (1 - m) + rectApex[1] * m,
+          0
+        ];
+
+        const a1 = i * dTheta;
+        const a2 = (i + 1) * dTheta;
+
+        const cP1: Pt3 = [R * Math.cos(a1), R + R * Math.sin(a1), 0];
+        const cP2: Pt3 = [R * Math.cos(a2), R + R * Math.sin(a2), 0];
+
+        const halfW = (Math.PI * R) / (2 * n);
+        const rBaseY = isUp ? R : 0;
+        const rP1: Pt3 = [rectX - halfW, rBaseY, 0];
+        const rP2: Pt3 = [rectX + halfW, rBaseY, 0];
+
+        const currP1: Pt3 = [cP1[0] * (1 - m) + rP1[0] * m, cP1[1] * (1 - m) + rP1[1] * m, 0];
+        const currP2: Pt3 = [cP2[0] * (1 - m) + rP2[0] * m, cP2[1] * (1 - m) + rP2[1] * m, 0];
+
+        const isAlt = i % 2 === 0;
+        const fillCol = isAlt ? 'rgba(56, 189, 248, 0.18)' : 'rgba(251, 113, 133, 0.18)';
+        const strokeCol = isAlt ? '#38bdf8' : '#fb7185';
+
+        const prApex = project(currApex, C);
+        const pr1 = project(currP1, C);
+        const pr2 = project(currP2, C);
+
+        if (prApex.visible && pr1.visible && pr2.visible) {
+          ctx.save();
+          ctx.fillStyle = fillCol;
+          ctx.strokeStyle = strokeCol;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(prApex.p2[0], prApex.p2[1]);
+          ctx.lineTo(pr1.p2[0], pr1.p2[1]);
+          ctx.lineTo(pr2.p2[0], pr2.p2[1]);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 4: PROBABILIDAD (MONTE CARLO & BUFFON)
+    // =========================================================================
+    const drawProbScene = (C: ReturnType<typeof makeCam>) => {
+      drawGridFloor(C, -2.5, 2.5, -2, 2, 0.5);
+
+      if (probMode === 'darts') {
+        const S = 3.0;
+        const O: Pt3 = [-S / 2, -S / 2, 0];
+
+        line3(C, [O[0], O[1], 0], [O[0] + S, O[1], 0], 'rgba(148, 163, 184, 0.5)', 1.8);
+        line3(C, [O[0] + S, O[1], 0], [O[0] + S, O[1] + S, 0], 'rgba(148, 163, 184, 0.5)', 1.8);
+        line3(C, [O[0] + S, O[1] + S, 0], [O[0], O[1] + S, 0], 'rgba(148, 163, 184, 0.5)', 1.8);
+        line3(C, [O[0], O[1] + S, 0], [O[0], O[1], 0], 'rgba(148, 163, 184, 0.5)', 1.8);
+
+        ctx.save();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= 36; i++) {
+          const a = (i / 36) * (Math.PI / 2);
+          const pt: Pt3 = [O[0] + S * Math.cos(a), O[1] + S * Math.sin(a), 0];
+          const pr = project(pt, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        dartsList.forEach((d) => {
+          const pt: Pt3 = [O[0] + d.x * S, O[1] + d.y * S, 0];
+          dot3D(C, pt, 2.2, d.inCircle ? '#10b981' : '#ef4444', '', 0);
+        });
+      } else {
+        const D = 1.0;
+        const L = 1.0;
+
+        for (let i = -2; i <= 2; i++) {
+          const y = i * D;
+          line3(C, [-2.5, y, 0], [2.5, y, 0], '#38bdf8', 1.8);
+        }
+
+        needlesList.forEach((needle) => {
+          const halfLx = (L / 2) * Math.cos(needle.angle);
+          const halfLy = (L / 2) * Math.sin(needle.angle);
+          const pA: Pt3 = [needle.x - halfLx, needle.y - halfLy, 0];
+          const pB: Pt3 = [needle.x + halfLx, needle.y + halfLy, 0];
+          const col = needle.crosses ? '#10b981' : '#a78bfa';
+          line3(C, pA, pB, col, 1.8);
+        });
+      }
+    };
+
+    // =========================================================================
+    // ESCENA 5: SERIES INFINITAS Y CÁLCULO
+    // =========================================================================
+    const drawSeriesScene = (C: ReturnType<typeof makeCam>) => {
+      drawGridFloor(C, -1, 1, 0, 6, 0.5);
+
+      const kMax = seriesTerms;
+      const Z_LEN = 5.5;
+
+      line3(C, [0, 1.5, 0], [0, 4.2, 0], 'rgba(148, 163, 184, 0.4)', 1.5);
+      line3(C, [0, 0, 0], [0, 0, Z_LEN + 0.5], 'rgba(148, 163, 184, 0.4)', 1.5);
+
+      if (cPiRail.checked) {
+        line3(C, [0, Math.PI, 0], [0, Math.PI, Z_LEN], '#f59e0b', 2.0, [4, 4]);
+        label3D(C, [0, Math.PI + 0.15, Z_LEN], 'π Exacto (3.14159...)', '#f59e0b');
+      }
+
+      const pts: Pt3[] = [];
+      let runningSum = 0;
+      for (let k = 1; k <= kMax; k++) {
+        const z = (k / kMax) * Z_LEN;
+        let sVal = 0;
+
+        if (seriesType === 'leibniz') {
+          const term = 4 * ((k % 2 === 1 ? 1 : -1) / (2 * k - 1));
+          runningSum += term;
+          sVal = runningSum;
+        } else if (seriesType === 'basel') {
+          runningSum += 1 / (k * k);
+          sVal = Math.sqrt(6 * runningSum);
+        } else {
+          if (k === 1) runningSum = 3;
+          const sign = k % 2 === 1 ? 1 : -1;
+          const denom = (2 * k) * (2 * k + 1) * (2 * k + 2);
+          runningSum += 4 * (sign / denom);
+          sVal = runningSum;
+        }
+
+        const pt: Pt3 = [0, sVal, z];
+        pts.push(pt);
+      }
+
+      if (pts.length > 1) {
+        ctx.save();
+        ctx.strokeStyle = '#fb7185';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        let started = false;
+        pts.forEach((p) => {
+          const pr = project(p, C);
+          if (pr.visible) {
+            if (!started) {
+              ctx.moveTo(pr.p2[0], pr.p2[1]);
+              started = true;
+            } else {
+              ctx.lineTo(pr.p2[0], pr.p2[1]);
+            }
+          }
+        });
+        ctx.stroke();
+        ctx.restore();
+
+        pts.forEach((p, idx) => {
+          if (idx % 2 === 0 || idx === pts.length - 1) {
+            dot3D(C, p, 3.2, '#fb7185', '#ffffff', 1.0);
+          }
+        });
+      }
+    };
+
+    // =========================================================================
+    // ACTUALIZACIÓN DE TELEMETRÍA Y FÓRMULAS
+    // =========================================================================
+    const updateTelemetry = () => {
+      let approx = 0;
+      let badge = '';
+      let condition = '';
+      let formula = '';
+
+      if (activeTab === 'roll') {
+        badge = 'DESENROLLADO DE RUEDA';
+        const distance = rollRadius * rollTheta;
+        approx = distance / rollRadius;
+        const diffToPi = Math.abs(rollTheta - Math.PI);
+        if (diffToPi < 0.05) {
+          condition = '¡Hito alcanzado! Media vuelta exacta x = π·r';
+        } else {
+          condition = `Giro actual: θ = ${rollTheta.toFixed(2)} rad (${((rollTheta * 180) / Math.PI).toFixed(0)}°)`;
+        }
+        formula = String.raw`x = r\theta \quad\xrightarrow{\theta = \pi}\quad x = \pi r \quad\xrightarrow{\theta = 2\pi}\quad x = 2\pi r`;
+      } else if (activeTab === 'arch') {
+        badge = 'MÉTODO DE ARQUÍMEDES';
+        const n = archSides;
+        const pIns = n * Math.sin(Math.PI / n);
+        const pCirc = n * Math.tan(Math.PI / n);
+        approx = (pIns + pCirc) / 2;
+        condition = `Polígono regular de ${n} lados: ${pIns.toFixed(4)} < π < ${pCirc.toFixed(4)}`;
+        formula = String.raw`n\sin\left(\frac{\pi}{n}\right) < \pi < n\tan\left(\frac{\pi}{n}\right) \quad (n = ${n})`;
+      } else if (activeTab === 'area') {
+        badge = 'DISECCIÓN DEL ÁREA (KEPLER)';
+        approx = Math.PI;
+        condition = `${numSectors} sectores recombinados en un rectángulo de base π·r y altura r`;
+        formula = String.raw`\text{Área} = \lim_{n \to \infty} (\text{Base} \times \text{Altura}) = (\pi r) \times r = \pi r^2`;
+      } else if (activeTab === 'prob') {
+        badge = probMode === 'darts' ? 'MONTE CARLO (¼ CÍRCULO)' : 'AGUJA DE BUFFON';
+        if (probMode === 'darts') {
+          const total = dartsList.length;
+          approx = total > 0 ? (4 * dartsIn) / total : 0;
+          condition = `Aciertos en el círculo: ${dartsIn} de ${total} (${total > 0 ? ((dartsIn / total) * 100).toFixed(1) : 0}%)`;
+          formula = String.raw`\pi \approx 4 \times \frac{N_{\text{dentro}}}{N_{\text{total}}} = 4 \times \frac{${dartsIn}}{${total || 1}} \approx ${approx.toFixed(4)}`;
+        } else {
+          const total = needlesList.length;
+          approx = needlesCross > 0 ? (2 * total) / needlesCross : 0;
+          condition = `Agujas cruzadas: ${needlesCross} de ${total} lanzadas`;
+          formula = String.raw`P = \frac{2L}{\pi D} \implies \pi \approx \frac{2 \cdot N_{\text{total}}}{N_{\text{cruces}}} \approx ${approx.toFixed(4)}`;
+        }
+      } else {
+        badge = 'SERIES INFINITAS';
+        const k = seriesTerms;
+        if (seriesType === 'leibniz') {
+          let s = 0;
+          for (let i = 1; i <= k; i++) s += 4 * ((i % 2 === 1 ? 1 : -1) / (2 * i - 1));
+          approx = s;
+          condition = `Serie de Leibniz con k = ${k} términos oscilantes`;
+          formula = String.raw`\pi = 4\sum_{k=1}^{\infty}\frac{(-1)^{k-1}}{2k-1} = 4\left(1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \dots\right)`;
+        } else if (seriesType === 'basel') {
+          let s = 0;
+          for (let i = 1; i <= k; i++) s += 1 / (i * i);
+          approx = Math.sqrt(6 * s);
+          condition = `Problema de Basilea de Euler (1734) con k = ${k} términos`;
+          formula = String.raw`\sum_{k=1}^{\infty}\frac{1}{k^2} = \frac{\pi^2}{6} \implies \pi = \sqrt{6\sum_{k=1}^{${k}}\frac{1}{k^2}} \approx ${approx.toFixed(5)}`;
+        } else {
+          let s = 3;
+          for (let i = 1; i <= k; i++) {
+            const sign = i % 2 === 1 ? 1 : -1;
+            const denom = (2 * i) * (2 * i + 1) * (2 * i + 2);
+            s += 4 * (sign / denom);
+          }
+          approx = s;
+          condition = `Serie de Nilakantha (s. XV) con k = ${k} términos (ultrarrápida)`;
+          formula = String.raw`\pi = 3 + \sum_{k=1}^{${k}}\frac{4(-1)^{k-1}}{(2k)(2k+1)(2k+2)} \approx ${approx.toFixed(6)}`;
+        }
+      }
+
+      teleBadgePill.textContent = badge;
+      teleCondition.textContent = condition;
+      tmApprox.textContent = approx > 0 ? approx.toFixed(5) : '—';
+      const absErr = Math.abs(approx - Math.PI);
+      tmError.textContent = approx > 0 ? absErr.toFixed(5) : '—';
+
+      try {
+        katex.render(formula, teleEqBox, { displayMode: true, throwOnError: false });
+      } catch {
+        teleEqBox.textContent = formula;
+      }
+    };
+
+    // =========================================================================
+    // TRATADO DIDÁCTICO CON KATEX AUTOMÁTICO
+    // =========================================================================
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    const typesetMath = (html: string): string => {
+      let res = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        return `<div class="katex-display-wrapper">${renderMathClient(math.trim(), true)}</div>`;
+      });
+      res = res.replace(/\$([^\$\r\n]+?)\$/g, (_, math) => {
+        return renderMathClient(math.trim(), false);
+      });
+      return res;
+    };
+
+    const renderGuideContent = () => {
+      let rawHtml = '';
+
+      if (activeTab === 'roll') {
+        guideModalTitle.textContent = '1. Desenrollar la Rueda: La Definición Métrica';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>¿Qué es el número $\\pi$?</h3>
+            <p>
+              Desde la antigüedad más remota, cualquier constructor que intentara medir una rueda redonda descubría la misma regla empírica: <strong>el perímetro de un círculo es un poco más de tres veces su diámetro</strong>.
+            </p>
+            <div class="math-callout">
+              $$\\pi = \\frac{\\text{Perímetro}}{\\text{Diámetro}} = \\frac{2\\pi r}{2r} = 3.1415926535...$$
+            </div>
+            <p>
+              Lo asombroso de este número no es su valor decimal, sino su <strong>invariancia de escala</strong>: da igual si mides una moneda de un céntimo, la órbita de Júpiter o una galaxia espiral; la razón entre la vuelta completa y el ancho es matemáticamente idéntica.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>El Experimento Físico del Desenrollado</h3>
+            <p>
+              Si untamos de tinta un único punto de una rueda de radio $r = 1$ y la hacemos rodar en línea recta sin patinar:
+            </p>
+            <ul class="guide-list">
+              <li>Tras <strong>media vuelta</strong> (ángulo $\\theta = \\pi$ rad = $180^\\circ$), la rueda ha dejado atrás exactamente una longitud $x = \\pi \\approx 3.1416$.</li>
+              <li>Tras <strong>una vuelta completa</strong> (ángulo $\\theta = 2\\pi$ rad = $360^\\circ$), la huella mide exactamente $x = 2\\pi \\approx 6.2832$.</li>
+              <li>El punto del borde traza en el aire una curva fascinante llamada <strong>cicloide</strong>, cuya longitud bajo un arco completo es exactamente $8r$.</li>
+            </ul>
+          </div>
+        `;
+      } else if (activeTab === 'arch') {
+        guideModalTitle.textContent = '2. El Método de Exhaustión de Arquímedes (c. 250 a.C.)';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>La Primera Gran Cota Rigurosa de la Historia</h3>
+            <p>
+              En su tratado <em>Sobre la medida del círculo</em>, <strong>Arquímedes de Siracusa</strong> ideó un método deslumbrante para acotar $\\pi$ sin necesidad de medir físicamente nada con reglas imperfectas: atrapar al círculo como en una pinza entre dos polígonos regulares.
+            </p>
+            <div class="math-callout">
+              $$\\text{Perímetro Inscrito} < \\text{Circunferencia} < \\text{Perímetro Circunscrito}$$
+            </div>
+            <div class="math-callout">
+              $$n \\cdot \\sin\\left(\\frac{\\pi}{n}\\right) < \\pi < n \\cdot \\tan\\left(\\frac{\\pi}{n}\\right)$$
+            </div>
+          </div>
+
+          <div class="guide-card">
+            <h3>La Escalera de Duplicación: De 6 a 96 Lados</h3>
+            <p>
+              Arquímedes comenzó con un hexágono regular ($n = 6$), donde el lado inscrito es exactamente igual al radio, dando la cota intuitiva $3 < \\pi < 3.464$. Luego, usando hábilmente el Teorema de Pitágoras y las bisectrices de ángulos, duplicó sucesivamente los lados:
+            </p>
+            <ul class="guide-list">
+              <li><strong>$n = 6$:</strong> $3.0000 < \\pi < 3.4641$</li>
+              <li><strong>$n = 12$:</strong> $3.1058 < \\pi < 3.2154$</li>
+              <li><strong>$n = 24$:</strong> $3.1326 < \\pi < 3.1597$</li>
+              <li><strong>$n = 48$:</strong> $3.1393 < \\pi < 3.1461$</li>
+              <li><strong>$n = 96$:</strong> $\\frac{223}{71} < \\pi < \\frac{22}{7} \\quad (3.1408 < \\pi < 3.1428)$</li>
+            </ul>
+            <p>
+              La fracción $\\frac{22}{7} \\approx 3.1428$ fue tan precisa que se utilizó como estándar universal de ingeniería durante casi dos milenios.
+            </p>
+          </div>
+        `;
+      } else if (activeTab === 'area') {
+        guideModalTitle.textContent = '3. El Puzle del Área del Círculo (Johannes Kepler, 1615)';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>¿Por qué el Área es $\\pi r^2$ y no otra cosa?</h3>
+            <p>
+              Muchos estudiantes memorizan la fórmula del área del círculo sin comprender de dónde sale. En 1615, el astrónomo <strong>Johannes Kepler</strong> (en su obra <em>Nova stereometria doliorum vinariorum</em>) demostró el resultado cortando el círculo en infinitas cuñas triangulares.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>La Transformación Geométrica</h3>
+            <p>
+              Si dividimos el círculo en $n$ sectores iguales y los abrimos entrelazándolos alternadamente hacia arriba y hacia abajo:
+            </p>
+            <ul class="guide-list">
+              <li>La base superior e inferior se reparten la circunferencia completa en dos mitades de longitud $\\frac{2\\pi r}{2} = \\pi r$.</li>
+              <li>La altura de cada cuña triangular coincide con el radio del círculo $r$.</li>
+              <li>A medida que aumentamos el número de cortes $n \\to \\infty$, los arcos curvos se aplanan y el objeto resultante se convierte en un <strong>rectángulo exacto</strong>.</li>
+            </ul>
+            <div class="math-callout">
+              $$\\text{Área del Círculo} = \\text{Base} \\times \\text{Altura} = (\\pi r) \\times r = \\pi r^2$$
+            </div>
+            <p>
+              ¡La fórmula $\\pi r^2$ no es una fórmula nueva, es el perímetro $\\pi r$ puesto de pie como base de un rectángulo!
+            </p>
+          </div>
+        `;
+      } else if (activeTab === 'prob') {
+        guideModalTitle.textContent = '4. $\\pi$ en la Probabilidad: De Monte Carlo a Buffon';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>¿Por qué un número del círculo aparece en el azar?</h3>
+            <p>
+              Parece magia que al lanzar agujas al suelo o tirar dardos al azar sobre una mesa cuadrada emerja con precisión el número $\\pi$. Esto ocurre porque el círculo representa la <strong>distribución de simetría rotacional perfecta</strong> en el plano.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>1. El Método Monte Carlo (Stanislaw Ulam & John von Neumann)</h3>
+            <p>
+              Si lanzamos $N_{\\text{total}}$ puntos uniformemente distribuidos en un cuadrado de lado $1$:
+            </p>
+            <div class="math-callout">
+              $$\\frac{\\text{Área del cuarto de círculo}}{\\text{Área del cuadrado}} = \\frac{\\pi / 4}{1} = \\frac{\\pi}{4}$$
+            </div>
+            <p>
+              Por la Ley de los Grandes Números: $\\pi \\approx 4 \\times \\frac{N_{\\text{dentro}}}{N_{\\text{total}}}$.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>2. La Aguja de Buffon (Georges-Louis Leclerc, 1777)</h3>
+            <p>
+              Al arrojar agujas de longitud $L$ sobre un suelo con tablas paralelas separadas una distancia $D = L$, la probabilidad de que una aguja cruce una línea depende del ángulo aleatorio $\\theta$:
+            </p>
+            <div class="math-callout">
+              $$P(\\text{cruzar}) = \\frac{1}{\\pi} \\int_0^\\pi \\sin\\theta \\, d\\theta = \\frac{2}{\\pi}$$
+            </div>
+            <p>
+              Invirtiendo la proporción: $\\pi \\approx \\frac{2 \\cdot N_{\\text{agujas}}}{N_{\\text{cruces}}}$. ¡El primer puente formal entre la geometría integral y la teoría de probabilidades!
+            </p>
+          </div>
+        `;
+      } else {
+        guideModalTitle.textContent = '5. $\\pi$ en las Series Infinitas y el Análisis Matemático';
+        rawHtml = `
+          <div class="guide-card">
+            <h3>El Salto de la Geometría al Análisis Puro</h3>
+            <p>
+              Durante 1800 años, $\\pi$ era puramente un objeto geométrico. Con el nacimiento del cálculo infinitesimal en el siglo XVII, los matemáticos descubrieron que $\\pi$ es el valor al que convergen infinitas sumas aritméticas puras de números enteros.
+            </p>
+          </div>
+
+          <div class="guide-card">
+            <h3>Las Fórmulas Más Célebres</h3>
+            <ul class="guide-list">
+              <li>
+                <strong>Fórmula de Leibniz (1673):</strong>
+                Derivada de la serie de Taylor de $\\arctan(1) = \\frac{\\pi}{4}$:
+                <div class="math-callout">
+                  $$\\frac{\\pi}{4} = 1 - \\frac{1}{3} + \\frac{1}{5} - \\frac{1}{7} + \\frac{1}{9} - \\dots = \\sum_{k=1}^\\infty \\frac{(-1)^{k-1}}{2k-1}$$
+                </div>
+                Aunque es de una belleza poética insuperable, converge muy lentamente (hacen falta cientos de términos para ganar dos decimales).
+              </li>
+              <li>
+                <strong>Problema de Basilea de Euler (1734):</strong>
+                La suma de los inversos de los cuadrados de todos los enteros:
+                <div class="math-callout">
+                  $$\\sum_{k=1}^\\infty \\frac{1}{k^2} = 1 + \\frac{1}{4} + \\frac{1}{9} + \\frac{1}{16} + \\dots = \\frac{\\pi^2}{6} \\implies \\pi = \\sqrt{6\\sum_{k=1}^\\infty \\frac{1}{k^2}}$$
+                </div>
+              </li>
+              <li>
+                <strong>Serie de Nilakantha Somayaji (siglo XV):</strong>
+                <div class="math-callout">
+                  $$\\pi = 3 + \\frac{4}{2\\cdot 3\\cdot 4} - \\frac{4}{4\\cdot 5\\cdot 6} + \\frac{4}{6\\cdot 7\\cdot 8} - \\dots$$
+                </div>
+                Converge con una rapidez asombrosa, alcanzando $3.141$ en tan solo cinco términos.
+              </li>
+            </ul>
+          </div>
+        `;
+      }
+
+      guideContent.innerHTML = typesetMath(rawHtml);
+    };
+
+    btnOpenGuide.addEventListener('click', () => {
+      renderGuideContent();
+      guideDrawer.classList.add('open');
+    });
+
+    btnCloseGuide.addEventListener('click', () => {
+      guideDrawer.classList.remove('open');
+    });
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE PESTAÑAS
+    // =========================================================================
+    const switchTab = (tab: SceneTab) => {
+      activeTab = tab;
+      tabBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+
+      document.querySelectorAll('.tab-roll-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'roll' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-arch-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'arch' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-area-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'area' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-prob-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'prob' ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-series-only').forEach((el) => {
+        (el as HTMLElement).style.display = tab === 'series' ? 'block' : 'none';
+      });
+
+      const targetCam = VIEWS[tab].iso;
+      camTween = {
+        from: { ...cam },
+        to: { ...targetCam },
+        start: performance.now(),
+        dur: 600,
+      };
+
+      camBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-view') === 'iso'));
+      updateTelemetry();
+      renderGuideContent();
+    };
+
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab') as SceneTab;
+        switchTab(tab);
+      });
+    });
+
+    // Selector de vistas
+    camBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const view = btn.getAttribute('data-view') as 'iso' | 'front' | 'top' | 'side';
+        camBtns.forEach((b) => b.classList.toggle('active', b === btn));
+        const target = VIEWS[activeTab][view] || VIEWS.roll.iso;
+        camTween = {
+          from: { ...cam },
+          to: { ...target },
+          start: performance.now(),
+          dur: 500,
+        };
+      });
+    });
+
+    // =========================================================================
+    // CONTROLES INTERACTIVOS POR ESCENA
+    // =========================================================================
+    // Escena 1 (Roll)
+    rAngle.addEventListener('input', () => {
+      rollTheta = parseFloat(rAngle.value);
+      vAngle.textContent = `${rollTheta.toFixed(2)} rad (${((rollTheta * 180) / Math.PI).toFixed(0)}°)`;
+      recordCycloid();
+      updateTelemetry();
+    });
+
+    rRadius.addEventListener('input', () => {
+      rollRadius = parseFloat(rRadius.value);
+      vRadius.textContent = rollRadius.toFixed(2);
+      recordCycloid();
+      updateTelemetry();
+    });
+
+    const recordCycloid = () => {
+      cycloidPoints = [];
+      const steps = 60;
+      for (let i = 0; i <= steps; i++) {
+        const th = (i / steps) * rollTheta;
+        const x = rollRadius * th - rollRadius * Math.sin(th);
+        const y = rollRadius - rollRadius * Math.cos(th);
+        cycloidPoints.push([x, y, 0]);
+      }
+    };
+
+    btnRollHalfPi.addEventListener('click', () => {
+      rollTheta = Math.PI;
+      rAngle.value = rollTheta.toString();
+      vAngle.textContent = `π rad (180°)`;
+      recordCycloid();
+      updateTelemetry();
+    });
+
+    btnRollFullPi.addEventListener('click', () => {
+      rollTheta = Math.PI * 2;
+      rAngle.value = rollTheta.toString();
+      vAngle.textContent = `2π rad (360°)`;
+      recordCycloid();
+      updateTelemetry();
+    });
+
+    btnToggleRollPlay.addEventListener('click', () => {
+      isRollPlaying = !isRollPlaying;
+      btnToggleRollPlay.classList.toggle('active', isRollPlaying);
+      playRollIcon.textContent = isRollPlaying ? '⏸' : '▶';
+      playRollText.textContent = isRollPlaying ? 'Pausar Rueda' : 'Rodar Rueda';
+    });
+
+    btnResetRoll.addEventListener('click', () => {
+      rollTheta = 0;
+      rAngle.value = '0';
+      vAngle.textContent = '0.00 rad (0°)';
+      cycloidPoints = [];
+      isRollPlaying = false;
+      btnToggleRollPlay.classList.remove('active');
+      playRollIcon.textContent = '▶';
+      playRollText.textContent = 'Rodar Rueda';
+      updateTelemetry();
+    });
+
+    // Escena 2 (Arquímedes)
+    archStepBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        archStepBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        archSides = parseInt(btn.getAttribute('data-n') || '6', 10);
+        vArchN.textContent = `n = ${archSides} lados`;
+        updateTelemetry();
+      });
+    });
+
+    btnAutoArch.addEventListener('click', () => {
+      isArchPlaying = !isArchPlaying;
+      btnAutoArch.classList.toggle('active', isArchPlaying);
+      autoArchIcon.textContent = isArchPlaying ? '⏸' : '▶';
+      autoArchText.textContent = isArchPlaying ? 'Pausar Escalera' : 'Subir Escalera de Lados';
+    });
+
+    // Escena 3 (Puzle Área)
+    sectorStepBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        sectorStepBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        numSectors = parseInt(btn.getAttribute('data-sec') || '16', 10);
+        vSectors.textContent = `${numSectors} sectores`;
+        updateTelemetry();
+      });
+    });
+
+    rMorph.addEventListener('input', () => {
+      morphProgress = parseFloat(rMorph.value);
+      vMorph.textContent = `${Math.round(morphProgress * 100)}% (${morphProgress > 0.85 ? 'Rectángulo' : morphProgress < 0.15 ? 'Círculo' : 'Transformando'})`;
+      updateTelemetry();
+    });
+
+    btnToggleMorph.addEventListener('click', () => {
+      isMorphing = !isMorphing;
+      btnToggleMorph.classList.toggle('active', isMorphing);
+      morphIcon.textContent = isMorphing ? '⏸' : '▶';
+      morphText.textContent = isMorphing ? 'Pausar Despliegue' : 'Desplegar / Recomponer';
+    });
+
+    // Escena 4 (Probabilidad)
+    btnModeDarts.addEventListener('click', () => {
+      probMode = 'darts';
+      btnModeDarts.classList.add('active');
+      btnModeBuffon.classList.remove('active');
+      updateTelemetry();
+    });
+
+    btnModeBuffon.addEventListener('click', () => {
+      probMode = 'buffon';
+      btnModeBuffon.classList.add('active');
+      btnModeDarts.classList.remove('active');
+      updateTelemetry();
+    });
+
+    const addSamples = (count: number) => {
+      if (probMode === 'darts') {
+        for (let i = 0; i < count; i++) {
+          const x = Math.random();
+          const y = Math.random();
+          const inCircle = x * x + y * y <= 1.0;
+          if (inCircle) dartsIn++;
+          dartsList.push({ x, y, inCircle });
+        }
+        vSampleCount.textContent = `N = ${dartsList.length}`;
+      } else {
+        const D = 1.0;
+        const L = 1.0;
+        for (let i = 0; i < count; i++) {
+          const x = (Math.random() - 0.5) * 4.0;
+          const y = (Math.random() - 0.5) * 4.0;
+          const angle = Math.random() * Math.PI;
+          const yDistToLine = Math.abs(y - Math.round(y / D) * D);
+          const crosses = yDistToLine <= (L / 2) * Math.sin(angle);
+          if (crosses) needlesCross++;
+          needlesList.push({ x, y, angle, crosses });
+        }
+        vSampleCount.textContent = `N = ${needlesList.length}`;
+      }
+      updateTelemetry();
+    };
+
+    btnAdd100.addEventListener('click', () => addSamples(100));
+    btnAdd500.addEventListener('click', () => addSamples(500));
+    btnAdd2000.addEventListener('click', () => addSamples(2000));
+
+    btnStreamPoints.addEventListener('click', () => {
+      isStreamingProb = !isStreamingProb;
+      btnStreamPoints.classList.toggle('active', isStreamingProb);
+      streamIcon.textContent = isStreamingProb ? '⏸' : '▶';
+      streamText.textContent = isStreamingProb ? 'Detener Lluvia' : 'Lluvia Continua';
+    });
+
+    btnResetProb.addEventListener('click', () => {
+      dartsList = [];
+      needlesList = [];
+      dartsIn = 0;
+      needlesCross = 0;
+      isStreamingProb = false;
+      btnStreamPoints.classList.remove('active');
+      streamIcon.textContent = '▶';
+      streamText.textContent = 'Lluvia Continua';
+      vSampleCount.textContent = 'N = 0';
+      updateTelemetry();
+    });
+
+    // Escena 5 (Series)
+    seriesTypeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        seriesTypeBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        seriesType = btn.getAttribute('data-series') as SeriesType;
+        updateTelemetry();
+      });
+    });
+
+    rTerms.addEventListener('input', () => {
+      seriesTerms = parseInt(rTerms.value, 10);
+      vTerms.textContent = `k = ${seriesTerms} términos`;
+      updateTelemetry();
+    });
+
+    btnPlaySeries.addEventListener('click', () => {
+      isSeriesPlaying = !isSeriesPlaying;
+      btnPlaySeries.classList.toggle('active', isSeriesPlaying);
+      playSeriesIcon.textContent = isSeriesPlaying ? '⏸' : '▶';
+      playSeriesText.textContent = isSeriesPlaying ? 'Pausar Suma' : 'Sumar Términos';
+    });
+
+    // =========================================================================
+    // INTERACCIÓN DE CÁMARA (MOUSE & TOUCH)
+    // =========================================================================
+    let isDragging = false;
+    let dragMode: 'orbit' | 'pan' = 'orbit';
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragMode = e.button === 2 || e.shiftKey ? 'pan' : 'orbit';
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      camTween = null;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (dragMode === 'orbit') {
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.45, Math.min(1.45, cam.el + dy * 0.007));
+      } else {
+        const panSpeed = cam.dist * 0.0015;
+        const C = makeCam();
+        cam.tx -= (C.r[0] * dx - C.u[0] * dy) * panSpeed;
+        cam.ty -= (C.r[1] * dx - C.u[1] * dy) * panSpeed;
+        cam.tz -= (C.r[2] * dx - C.u[2] * dy) * panSpeed;
+      }
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      camTween = null;
+      const factor = Math.exp(e.deltaY * 0.001);
+      cam.dist = Math.max(3.5, Math.min(26.0, cam.dist * factor));
+    }, { passive: false });
+
+    canvas.addEventListener('dblclick', () => {
+      const defaultView = VIEWS[activeTab].iso;
+      camTween = {
+        from: { ...cam },
+        to: { ...defaultView },
+        start: performance.now(),
+        dur: 500,
+      };
+      camBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-view') === 'iso'));
+    });
+
+    // Touch
+    let touchDist0 = 0;
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        dragMode = 'orbit';
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        isDragging = true;
+        dragMode = 'pan';
+        touchDist0 = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      if (e.touches.length === 1 && dragMode === 'orbit') {
+        const dx = e.touches[0].clientX - lastMouseX;
+        const dy = e.touches[0].clientY - lastMouseY;
+        lastMouseX = e.touches[0].clientX;
+        lastMouseY = e.touches[0].clientY;
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.45, Math.min(1.45, cam.el + dy * 0.007));
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = touchDist0 / (dist || 1);
+        cam.dist = Math.max(3.5, Math.min(26.0, cam.dist * factor));
+        touchDist0 = dist;
+      }
+    });
+
+    canvas.addEventListener('touchend', () => { isDragging = false; });
+
+    // =========================================================================
+    // LOOP PRINCIPAL DE ANIMACIÓN
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const loop = (now: number) => {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+
+      if (isRollPlaying && activeTab === 'roll') {
+        rollTheta = (rollTheta + dt * 1.5) % (Math.PI * 2);
+        rAngle.value = rollTheta.toString();
+        vAngle.textContent = `${rollTheta.toFixed(2)} rad (${((rollTheta * 180) / Math.PI).toFixed(0)}°)`;
+        recordCycloid();
+        updateTelemetry();
+      }
+
+      if (isArchPlaying && activeTab === 'arch') {
+        archTimer += dt;
+        if (archTimer > 1.2) {
+          archTimer = 0;
+          const STEPS = [6, 12, 24, 48, 96, 192];
+          const currIdx = STEPS.indexOf(archSides);
+          const nextIdx = (currIdx + 1) % STEPS.length;
+          archSides = STEPS[nextIdx];
+          archStepBtns.forEach((b) => {
+            b.classList.toggle('active', parseInt(b.getAttribute('data-n') || '0', 10) === archSides);
+          });
+          vArchN.textContent = `n = ${archSides} lados`;
+          updateTelemetry();
+        }
+      }
+
+      if (isMorphing && activeTab === 'area') {
+        morphProgress += dt * 0.45 * morphDirection;
+        if (morphProgress >= 1.0) {
+          morphProgress = 1.0;
+          morphDirection = -1;
+        } else if (morphProgress <= 0.0) {
+          morphProgress = 0.0;
+          morphDirection = 1;
+        }
+        rMorph.value = morphProgress.toString();
+        vMorph.textContent = `${Math.round(morphProgress * 100)}% (${morphProgress > 0.85 ? 'Rectángulo' : morphProgress < 0.15 ? 'Círculo' : 'Transformando'})`;
+        updateTelemetry();
+      }
+
+      if (isStreamingProb && activeTab === 'prob') {
+        addSamples(8);
+      }
+
+      if (isSeriesPlaying && activeTab === 'series') {
+        seriesTerms = (seriesTerms % 150) + 1;
+        rTerms.value = seriesTerms.toString();
+        vTerms.textContent = `k = ${seriesTerms} términos`;
+        updateTelemetry();
+      }
+
+      // Tween de cámara
+      if (camTween) {
+        const progress = Math.min(1, (now - camTween.start) / camTween.dur);
+        const k = ease(progress);
+        cam.az = camTween.from.az + (camTween.to.az - camTween.from.az) * k;
+        cam.el = camTween.from.el + (camTween.to.el - camTween.from.el) * k;
+        cam.dist = camTween.from.dist + (camTween.to.dist - camTween.from.dist) * k;
+        cam.tx = camTween.from.tx + (camTween.to.tx - camTween.from.tx) * k;
+        cam.ty = camTween.from.ty + (camTween.to.ty - camTween.from.ty) * k;
+        cam.tz = camTween.from.tz + (camTween.to.tz - camTween.from.tz) * k;
+        if (progress >= 1) camTween = null;
+      }
+
+      // Limpiar lienzo
+      ctx.clearRect(0, 0, W, H);
+
+      const isDark = document.documentElement.dataset.theme !== 'light';
+      const bgGrad = ctx.createRadialGradient(CX, CY, 50, CX, CY, Math.max(W, H) * 0.7);
+      if (isDark) {
+        bgGrad.addColorStop(0, 'rgba(15, 23, 42, 0.98)');
+        bgGrad.addColorStop(1, 'rgba(2, 6, 23, 1)');
+      } else {
+        bgGrad.addColorStop(0, 'rgba(248, 250, 252, 0.98)');
+        bgGrad.addColorStop(1, 'rgba(241, 245, 249, 1)');
+      }
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      const C = makeCam();
+
+      try {
+        if (activeTab === 'roll') {
+          drawRollScene(C);
+        } else if (activeTab === 'arch') {
+          drawArchScene(C);
+        } else if (activeTab === 'area') {
+          drawAreaScene(C);
+        } else if (activeTab === 'prob') {
+          drawProbScene(C);
+        } else {
+          drawSeriesScene(C);
+        }
+      } catch (err) {
+        console.error('Error in render loop:', err);
+      }
+
+      requestAnimationFrame(loop);
+    };
+
+    // Inicializar
+    updateTelemetry();
+    renderGuideContent();
+    requestAnimationFrame(loop);
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     ESTILOS BASE Y CONTENEDOR PRINCIPAL
+     ========================================================================== */
+  .pi-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background-color: var(--bg-primary, #030712);
+    color: var(--text-primary, #f8fafc);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :global([data-theme="light"]) .pi-container {
+    background-color: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .pi-desc {
+    color: #475569;
+  }
+
+  .pi-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    z-index: 1;
+  }
+
+  .pi-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* ==========================================================================
+     CABECERA SUPERIOR FLOTANTE IZQUIERDA
+     ========================================================================== */
+  .pi-header {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    max-width: 440px;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .pi-kicker {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-primary, #38bdf8);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+    animation: pulseGlow 2s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .pi-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :global([data-theme="light"]) .pi-title {
+    background: linear-gradient(135deg, #0f172a 30%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hl-pi {
+    color: #f59e0b;
+    -webkit-text-fill-color: #f59e0b;
+  }
+
+  .pi-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--text-secondary, #94a3b8);
+    margin: 0;
+  }
+
+  .btn-open-guide {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #f59e0b;
+    border-radius: 10px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    margin-top: 0.25rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(245, 158, 11, 0.28);
+    border-color: #f59e0b;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+  }
+
+  /* ==========================================================================
+     SELECTOR DE PESTAÑAS (EN LA PARTE SUPERIOR CENTRAL)
+     ========================================================================== */
+  .pi-tabs-nav {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.35rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.35rem 0.5rem;
+    border-radius: 9999px;
+    z-index: 25;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  }
+
+  :global([data-theme="light"]) .pi-tabs-nav {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  }
+
+  .pi-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  :global([data-theme="light"]) .pi-tab-btn {
+    color: #64748b;
+  }
+
+  .pi-tab-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  :global([data-theme="light"]) .pi-tab-btn:hover {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .pi-tab-btn.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  }
+
+  /* ==========================================================================
+     MODAL / DRAWER PEDAGÓGICO
+     ========================================================================== */
+  .guide-drawer {
+    position: absolute;
+    top: 5rem;
+    left: 2rem;
+    width: 490px;
+    max-height: calc(100vh - 11rem);
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  .guide-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .guide-header {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .gh-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    text-transform: uppercase;
+  }
+
+  .guide-header h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0.25rem 0 0 0;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .guide-header h2 {
+    color: #0f172a;
+  }
+
+  .btn-close-guide {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-close-guide:hover {
+    color: #ffffff;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+  }
+
+  .guide-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :global([data-theme="light"]) .guide-body {
+    color: #334155;
+  }
+
+  .guide-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  :global([data-theme="light"]) .guide-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .guide-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .guide-list {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .math-callout {
+    background: rgba(56, 189, 248, 0.08);
+    border-left: 3px solid #38bdf8;
+    padding: 0.65rem 0.85rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0.65rem 0;
+    font-size: 0.95rem;
+  }
+
+  .katex-display-wrapper {
+    margin: 0.35rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: center;
+  }
+
+  .katex-display-wrapper :global(.katex-display) {
+    margin: 0.25rem 0 !important;
+  }
+
+  .guide-body :global(.katex) {
+    font-size: 1.05em;
+  }
+
+  /* ==========================================================================
+     PANEL FLOTANTE DE CONTROLES (DERECHA)
+     ========================================================================== */
+  .pi-panel {
+    position: absolute;
+    top: 5rem;
+    right: 2rem;
+    width: 320px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    z-index: 20;
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+    transition: all 0.25s ease;
+  }
+
+  :global([data-theme="light"]) .pi-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.1);
+  }
+
+  .pi-panel.folded .panel-content {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global([data-theme="light"]) .panel-header {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .ph-title-group {
+    color: #0f172a;
+  }
+
+  .btn-fold {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .btn-fold:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .panel-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100vh - 12rem);
+    overflow-y: auto;
+  }
+
+  .ctl-header-bar {
+    margin-bottom: 0.65rem;
+  }
+
+  .sec-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+  }
+
+  .ctl-header label {
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .ctl-header label {
+    color: #334155;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+
+  .ctl-label-inline {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin-bottom: 0.35rem;
+  }
+
+  input[type='range'] {
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+    cursor: pointer;
+    accent-color: #38bdf8;
+  }
+
+  :global([data-theme="light"]) input[type='range'] {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  /* PRESETS Y BOTONES DE ACCIÓN */
+  .quick-presets-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+  }
+
+  .preset-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-chip:hover {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .quick-play-row {
+    display: flex;
+    gap: 0.45rem;
+    margin-top: 0.65rem;
+  }
+
+  .btn-play-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(2, 132, 199, 0.25) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-play-action:hover {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: #38bdf8;
+  }
+
+  .btn-play-action.active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  .btn-reset-action {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-reset-action:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .arch-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+
+  .arch-step-btn, .sector-step-btn, .drop-btn, .series-type-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px;
+    padding: 0.4rem 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .arch-step-btn:hover, .sector-step-btn:hover, .drop-btn:hover, .series-type-btn:hover {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .arch-step-btn.active, .sector-step-btn.active, .series-type-btn.active {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.18);
+  }
+
+  .mode-switch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .mode-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.45rem 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mode-btn.active {
+    color: #f59e0b;
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  /* TOGGLES Y VISTAS */
+  .toggles-box, .camera-views-box {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 0.85rem;
+  }
+
+  :global([data-theme="light"]) .toggles-box, :global([data-theme="light"]) .camera-views-box {
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .tg-section-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+  }
+
+  .toggles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global([data-theme="light"]) .toggle-pill {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #334155;
+  }
+
+  .toggle-pill:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .toggle-pill input {
+    accent-color: #38bdf8;
+  }
+
+  .color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--dot-c, #38bdf8);
+    box-shadow: 0 0 6px var(--dot-c, #38bdf8);
+  }
+
+  .cam-btns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .cam-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cam-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .cam-btn.active {
+    color: #38bdf8;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+  }
+
+  /* ==========================================================================
+     TELEMETRÍA (COLOCADA ABAJO A LA IZQUIERDA SIN COLISIONES)
+     ========================================================================== */
+  .telemetry-badge {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    width: 380px;
+    max-width: calc(100vw - 360px);
+    background: rgba(15, 23, 42, 0.90);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 0.85rem 1.1rem;
+    z-index: 15;
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  :global([data-theme="light"]) .telemetry-badge {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .tele-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .tele-type-pill {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+  }
+
+  .tele-condition {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  :global([data-theme="light"]) .tele-condition {
+    color: #64748b;
+  }
+
+  .tele-metrics-row {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+  }
+
+  :global([data-theme="light"]) .tele-metrics-row {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .tm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .tm-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .tm-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  :global([data-theme="light"]) .tm-val {
+    color: #0f172a;
+  }
+
+  .tm-highlight {
+    color: #f59e0b;
+  }
+
+  .tele-eq-box {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 0.35rem;
+  }
+
+  :global([data-theme="light"]) .tele-eq-box {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .tele-eq-box :global(.katex-display) {
+    margin: 0 !important;
+    font-size: 0.95rem;
+  }
+
+  /* HINT FLOTANTE */
+  .cam-hint {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  :global([data-theme="light"]) .cam-hint {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE DESIGN
+     ========================================================================== */
+  @media (max-width: 1200px) {
+    .pi-header {
+      max-width: 320px;
+    }
+    .pi-tabs-nav {
+      top: 4.8rem;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .pi-tabs-nav {
+      top: auto;
+      bottom: 1rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      transform: none;
+      justify-content: space-around;
+      overflow-x: auto;
+    }
+    .pi-panel {
+      width: 290px;
+      right: 1rem;
+      top: 5rem;
+    }
+    .telemetry-badge {
+      display: none;
+    }
+    .cam-hint {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pi-header {
+      top: 4.5rem;
+      left: 1rem;
+      right: 1rem;
+      max-width: 100%;
+    }
+    .pi-panel {
+      top: auto;
+      bottom: 4.5rem;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+    }
+    .guide-drawer {
+      left: 0;
+      right: 0;
+      width: 100%;
+      top: auto;
+      bottom: 0;
+      max-height: 80vh;
+      border-radius: 20px 20px 0 0;
+    }
+  }
+</style>

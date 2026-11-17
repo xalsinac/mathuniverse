@@ -1,0 +1,2575 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`La Esencia de i en 3D: Rotación de 90°, Cardano, Raíces Ocultas y Matrices — Math Simulator | ${site.name}`}
+  description="Laboratorio 3D interactivo para comprender la verdadera naturaleza del número imaginario i: el cuarto de vuelta (rotación 90°), el enigma de Cardano x³ = 15x + 4, raíces fuera del papel en la superficie |p(z)|, gemelos espejo conjugados y la matriz real J² = −I."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / La Esencia de i" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="i-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="i-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE IZQUIERDA -->
+    <header class="i-header">
+      <div class="i-kicker">
+        <span class="pulse-dot"></span>
+        <span>ÁLGEBRA LINEAL &amp; PLANO COMPLEJO · LA ESENCIA DE i</span>
+      </div>
+      <h1 class="i-title">La Esencia de i en 3D</h1>
+      <p class="i-desc" id="brandDesc">
+        El número <strong class="hl-i">i</strong> no es un truco ficticio ni «imaginario»: es el operador geométrico que rota el espacio <strong class="hl-i">90°</strong>. Descubre cómo $i^2 = -1$ significa dar media vuelta y por qué los complejos son el puente obligado hacia la realidad.
+      </p>
+      <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+        <span>📖 Deducción Histórica y Explicación Paso a Paso</span>
+      </button>
+    </header>
+
+    <!-- SELECTOR DE LAS 5 ESCENAS / PESTAÑAS (PARTE SUPERIOR CENTRAL) -->
+    <nav class="i-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="i-tab-btn active" data-tab="turn" id="tabTurnBtn">
+        <span class="tab-icon">🔄</span>
+        <span>1. El Cuarto de Vuelta (×i = 90°)</span>
+      </button>
+      <button type="button" class="i-tab-btn" data-tab="cubic" id="tabCubicBtn">
+        <span class="tab-icon">🏛️</span>
+        <span>2. Enigma de Cardano (x³ = 15x + 4)</span>
+      </button>
+      <button type="button" class="i-tab-btn" data-tab="roots" id="tabRootsBtn">
+        <span class="tab-icon">⛰️</span>
+        <span>3. Raíces Fuera del Papel (|p(z)|)</span>
+      </button>
+      <button type="button" class="i-tab-btn" data-tab="conj" id="tabConjBtn">
+        <span class="tab-icon">🪞</span>
+        <span>4. Gemelos Espejo (Conjugados)</span>
+      </button>
+      <button type="button" class="i-tab-btn" data-tab="matrix" id="tabMatrixBtn">
+        <span class="tab-icon">🧮</span>
+        <span>5. i es una Matriz (J² = −I)</span>
+      </button>
+    </nav>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO DIDÁCTICO</span>
+          <h2 id="guideModalTitle">¿Qué es en realidad el número i?</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+
+      <div class="guide-body" id="guideContent">
+        <!-- Contenido renderizado con KaTeX -->
+      </div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE CONTROLES DERECHA -->
+    <aside class="i-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+        
+        <!-- =================== PARÁMETROS ESCENA 1: EL CUARTO DE VUELTA =================== -->
+        <div class="ctl-section tab-turn-only">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Punto Inicial z₀ = a + bi</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slRe0">Parte Real <span class="math-sym">Re(z₀)</span></label>
+              <span class="ctl-val" id="vRe0">1.20</span>
+            </div>
+            <input type="range" id="slRe0" min="-2.0" max="2.0" step="0.05" value="1.20" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slIm0">Parte Imaginaria <span class="math-sym">Im(z₀)</span></label>
+              <span class="ctl-val" id="vIm0">0.50</span>
+            </div>
+            <input type="range" id="slIm0" min="-2.0" max="2.0" step="0.05" value="0.50" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slTurnSpeed">Velocidad de Giro <span class="math-sym">ω</span></label>
+              <span class="ctl-val" id="vTurnSpeed">0.80×</span>
+            </div>
+            <input type="range" id="slTurnSpeed" min="0.2" max="2.0" step="0.1" value="0.8" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnPreset1" title="Situar en 1 real">z₀ = 1</button>
+            <button type="button" class="preset-chip" id="btnPresetI" title="Situar en i imaginario">z₀ = i</button>
+            <button type="button" class="preset-chip" id="btnPresetDiag" title="Situar en 1 + i">z₀ = 1 + i</button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 2: CARDANO =================== -->
+        <div class="ctl-section tab-cubic-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Ecuación de Cardano: x³ = 15x + 4</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slBranchK">Rama Cúbica <span class="math-sym">k</span></label>
+              <span class="ctl-val" id="vBranchK">0 (Raíz x = 4)</span>
+            </div>
+            <input type="range" id="slBranchK" min="0" max="2" step="1" value="0" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip active" id="btnBranch0" title="Rama principal: x = 4">k = 0 → x = 4</button>
+            <button type="button" class="preset-chip" id="btnBranch1" title="Segunda raíz: x = -2 - √3">k = 1 → −3.73</button>
+            <button type="button" class="preset-chip" id="btnBranch2" title="Tercera raíz: x = -2 + √3">k = 2 → −0.27</button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 3: RAÍCES FUERA DEL PAPEL =================== -->
+        <div class="ctl-section tab-roots-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Superficie de Módulo |p(z)|</span>
+          </div>
+
+          <div class="ctl-group">
+            <label class="ctl-label">Familia de Polinomios:</label>
+            <div class="btn-segmented">
+              <button type="button" class="seg-btn active" id="btnPolyQuad" data-poly="0">p(z) = z² + c</button>
+              <button type="button" class="seg-btn" id="btnPolyCubic" data-poly="1">p(z) = z³ − z + c</button>
+            </div>
+          </div>
+
+          <div class="ctl-group" style="margin-top: 0.65rem;">
+            <div class="ctl-header">
+              <label for="slParamC">Parámetro <span class="math-sym">c</span></label>
+              <span class="ctl-val" id="vParamC">0.50</span>
+            </div>
+            <input type="range" id="slParamC" min="-2.0" max="2.0" step="0.02" value="0.50" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnPresetNegC" title="c = -1 (Raíces reales en eje X)">c = −1 (Reales)</button>
+            <button type="button" class="preset-chip" id="btnPresetZeroC" title="c = 0 (Bifurcación en origen)">c = 0 (Colisión)</button>
+            <button type="button" class="preset-chip active" id="btnPresetPosC" title="c = +1 (Raíces en eje imaginario)">c = +1 (Fuera del Papel)</button>
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 4: GEMELOS ESPEJO =================== -->
+        <div class="ctl-section tab-conj-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Simetría de Conjugación z y z̄</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slZRe">Parte Real <span class="math-sym">a = Re(z)</span></label>
+              <span class="ctl-val" id="vZRe">1.10</span>
+            </div>
+            <input type="range" id="slZRe" min="-2.0" max="2.0" step="0.05" value="1.10" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slZIm">Parte Imaginaria <span class="math-sym">b = Im(z)</span></label>
+              <span class="ctl-val" id="vZIm">0.90</span>
+            </div>
+            <input type="range" id="slZIm" min="-2.0" max="2.0" step="0.05" value="0.90" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slQuarQ">Parámetro Cuártico <span class="math-sym">q</span> (Raíces)</label>
+              <span class="ctl-val" id="vQuarQ">0.45</span>
+            </div>
+            <input type="range" id="slQuarQ" min="-1.2" max="1.2" step="0.02" value="0.45" />
+          </div>
+        </div>
+
+        <!-- =================== PARÁMETROS ESCENA 5: MATRICES =================== -->
+        <div class="ctl-section tab-matrix-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Matriz J = [0 −1; 1 0] y Mapa aI + bJ</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slMatA">Componente Real <span class="math-sym">a</span></label>
+              <span class="ctl-val" id="vMatA">0.80</span>
+            </div>
+            <input type="range" id="slMatA" min="-1.5" max="1.5" step="0.05" value="0.80" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slMatB">Componente Rotatoria <span class="math-sym">b</span></label>
+              <span class="ctl-val" id="vMatB">0.60</span>
+            </div>
+            <input type="range" id="slMatB" min="-1.5" max="1.5" step="0.05" value="0.60" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slMatSpeed">Velocidad Paso <span class="math-sym">J</span></label>
+              <span class="ctl-val" id="vMatSpeed">0.80×</span>
+            </div>
+            <input type="range" id="slMatSpeed" min="0.2" max="2.0" step="0.1" value="0.8" />
+          </div>
+        </div>
+
+        <!-- TOGGLES DINÁMICOS POR ESCENA -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Capas Visuales:</span>
+          <div class="toggles-grid" id="togglesContainer">
+            <!-- Toggles dinámicos generados según la pestaña activa -->
+          </div>
+        </div>
+
+        <!-- VISTAS DE CÁMARA PREDEFINIDAS -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara:</span>
+          <div class="cam-btns-grid">
+            <button type="button" class="cam-btn active" data-view="iso">Perspectiva 3D</button>
+            <button type="button" class="cam-btn" data-view="front">Plano Complejo (X-Y)</button>
+            <button type="button" class="cam-btn" data-view="top">Planta Superior (X-Z)</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- TARJETA FLOTANTE DE TELEMETRÍA (COLOCADA ABAJO A LA IZQUIERDA) -->
+    <div class="telemetry-badge" id="telemetryCard">
+      <div class="tele-top">
+        <span class="tele-type-pill" id="teleBadgePill">ROTACIÓN COMPLEJA</span>
+        <span class="tele-condition" id="teleCondition">Operador de rotación antihoraria de 90°</span>
+      </div>
+      <div class="tele-metrics-row" id="teleMetricsRow">
+        <!-- Métricas dinámicas en tiempo real -->
+      </div>
+      <div class="tele-eq-box" id="teleEqBox">
+        <!-- Ecuación en vivo generada con KaTeX -->
+      </div>
+    </div>
+
+    <!-- HINT FLOTANTE INFERIOR DE CÁMARA 3D -->
+    <div class="cam-hint" id="camHint">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 3D</span>
+      <span>•</span>
+      <span>⌨️ <strong>Shift + Arrastrar:</strong> Desplazar vista</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Reiniciar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // Helper KaTeX para el cliente
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    // Paleta cromática estándar MathViz (adaptable a Modo Oscuro y Claro)
+    let isLight = document.documentElement.dataset.theme === 'light';
+    let C_CYN = '#2dd4ea';
+    let C_ROSE = '#fb7185';
+    let C_VIO = '#a78bfa';
+    let C_EME = '#34d399';
+    let C_ORG = '#fb923c';
+    let C_AMB = '#fbbf24';
+    let AXIS = 'rgba(148, 163, 184, 0.45)';
+    let AXIS_DIM = 'rgba(148, 163, 184, 0.2)';
+    let COL_AXIS_LBL = COL_AXIS_LBL;
+    let COL_TICK = 'rgba(159, 176, 200, 0.65)';
+    let COL_GRID = 'rgba(148, 163, 184, 0.08)';
+    let COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+    let COL_VEC_SUB = 'rgba(241, 245, 249, 0.5)';
+    let COL_DOT_CORE = '#ffffff';
+    const FONT_MATH = 'Georgia, "Times New Roman", serif';
+
+    const syncThemeColors = () => {
+      isLight = document.documentElement.dataset.theme === 'light';
+      if (isLight) {
+        C_CYN = '#0891b2';
+        C_ROSE = '#e11d48';
+        C_VIO = '#7c3aed';
+        C_EME = '#059669';
+        C_ORG = '#ea580c';
+        C_AMB = '#d97706';
+        AXIS = 'rgba(51, 65, 85, 0.55)';
+        AXIS_DIM = 'rgba(51, 65, 85, 0.28)';
+        COL_AXIS_LBL = '#1e293b';
+        COL_TICK = 'rgba(51, 65, 85, 0.78)';
+        COL_GRID = 'rgba(15, 23, 42, 0.08)';
+        COL_VEC_MAIN = 'rgba(15, 23, 42, 0.88)';
+        COL_VEC_SUB = 'rgba(15, 23, 42, 0.45)';
+        COL_DOT_CORE = '#0f172a';
+      } else {
+        C_CYN = '#2dd4ea';
+        C_ROSE = '#fb7185';
+        C_VIO = '#a78bfa';
+        C_EME = '#34d399';
+        C_ORG = '#fb923c';
+        C_AMB = '#fbbf24';
+        AXIS = 'rgba(148, 163, 184, 0.45)';
+        AXIS_DIM = 'rgba(148, 163, 184, 0.2)';
+        COL_AXIS_LBL = COL_AXIS_LBL;
+        COL_TICK = 'rgba(159, 176, 200, 0.65)';
+        COL_GRID = 'rgba(148, 163, 184, 0.08)';
+        COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+        COL_VEC_SUB = 'rgba(241, 245, 249, 0.5)';
+        COL_DOT_CORE = '#ffffff';
+      }
+    };
+    syncThemeColors();
+
+    const hexA = (hex: string, a: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    };
+
+    const fmt = (n: number, d = 2) => Math.abs(n) < 1e-6 ? '0' : n.toFixed(d);
+    const fmtS = (n: number, d = 2) => (Math.abs(n) < 1e-6 ? '0' : (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(d));
+    const czs = (re: number, im: number) => fmt(re) + (im < 0 ? ' − ' : ' + ') + fmt(Math.abs(im)) + 'i';
+    const ease = (u: number) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+    const stepAngle = (u: number) => {
+      const n = Math.floor(u);
+      const f = u - n;
+      return (n + ease(Math.min(1, f / 0.7))) * (Math.PI / 2);
+    };
+
+    // Estado global de la simulación
+    const state = {
+      tab: 'turn' as 'turn' | 'cubic' | 'roots' | 'conj' | 'matrix',
+      re0: 1.20,
+      im0: 0.50,
+      turnSpeed: 0.8,
+      branchK: 0,
+      polySel: 0,
+      paramC: 0.50,
+      zRe: 1.10,
+      zIm: 0.90,
+      quarQ: 0.45,
+      matA: 0.80,
+      matB: 0.60,
+      matSpeed: 0.8,
+      t: 0,
+      showGrid: true,
+      // Toggles Escena 1
+      showTurnPt: true,
+      showGhosts: true,
+      showArc: true,
+      stepDemo: true,
+      // Toggles Escena 2
+      showCubic: true,
+      showRootsP: true,
+      showConjP: true,
+      showPair: true,
+      // Toggles Escena 3
+      showSlice: true,
+      showPath: true,
+      showSurf: true,
+      showPits: true,
+      // Toggles Escena 4
+      showZ: true,
+      showTwin: true,
+      showSum: true,
+      showProd: true,
+      showQuartic: true,
+      // Toggles Escena 5
+      showTrack: true,
+      showAB: false,
+      showCloud: true,
+      mDemo: true,
+    };
+
+    // Cámara 3D
+    let W = 0, H = 0, CX = 0, CY = 0, FOCAL = 1000;
+    const cam = {
+      az: -0.7,
+      el: 0.35,
+      dist: 8.5,
+      tx: 0,
+      ty: 0,
+      tz: 0,
+    };
+
+    const resize = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const panelWidth = W > 1024 ? 330 : 0;
+      CX = Math.round((W - panelWidth) / 2);
+      CY = Math.round(H / 2);
+      FOCAL = 1.15 * Math.min(H, (W - panelWidth) * 1.05);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Matemáticas 3D y proyecciones
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const project = (p: Pt3, c: ReturnType<typeof makeCam>): { p2: Pt2; z: number; visible: boolean } => {
+      const d = sub(p, c.eye);
+      const zCam = dot3(d, c.f);
+      if (zCam <= 0.05) return { p2: [0, 0], z: zCam, visible: false };
+      const xCam = dot3(d, c.r);
+      const yCam = dot3(d, c.u);
+      const s = FOCAL / zCam;
+      return {
+        p2: [CX + xCam * s, CY - yCam * s],
+        z: zCam,
+        visible: true,
+      };
+    };
+
+    const line3 = (C: ReturnType<typeof makeCam>, a: Pt3, b: Pt3, col: string, w = 1.5, dash: number[] = []) => {
+      const pa = project(a, C);
+      const pb = project(b, C);
+      if (!pa.visible && !pb.visible) return;
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = w;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(pa.p2[0], pa.p2[1]);
+      ctx.lineTo(pb.p2[0], pb.p2[1]);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const dot3D = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, fill: string, stroke = '#ffffff', sw = 1.5) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = sw;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      if (sw > 0) ctx.stroke();
+      ctx.restore();
+    };
+
+    const glowDot = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, core: string, glow: string) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.shadowColor = glow;
+      ctx.shadowBlur = r * 1.5;
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const label3 = (C: ReturnType<typeof makeCam>, p: Pt3, text: string, col = '#ffffff', size = 11, align: CanvasTextAlign = 'center', dy = -10, fontStyle = '') => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.font = `${fontStyle ? fontStyle + ' ' : ''}${size}px ${fontStyle ? FONT_MATH : 'ui-sans-serif, system-ui, sans-serif'}`;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, pp.p2[0], pp.p2[1] + dy);
+      ctx.restore();
+    };
+
+    const arrowAt = (C: ReturnType<typeof makeCam>, tip: Pt3, tail: Pt3, col: string) => {
+      const pt = project(tip, C);
+      const pr = project(tail, C);
+      if (!pt.visible || !pr.visible) return;
+      const dx = pt.p2[0] - pr.p2[0];
+      const dy = pt.p2[1] - pr.p2[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 2) return;
+      const ux = dx / len, uy = dy / len;
+      const sz = 8;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(pt.p2[0], pt.p2[1]);
+      ctx.lineTo(pt.p2[0] - sz * ux + (sz * 0.45) * uy, pt.p2[1] - sz * uy - (sz * 0.45) * ux);
+      ctx.lineTo(pt.p2[0] - sz * ux - (sz * 0.45) * uy, pt.p2[1] - sz * uy + (sz * 0.45) * ux);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const rot2 = (x: number, y: number, ang: number): [number, number] => {
+      const c = Math.cos(ang), s = Math.sin(ang);
+      return [x * c - y * s, x * s + y * c];
+    };
+
+    const arcPts = (cx: number, cy: number, r: number, a0: number, a1: number): Pt3[] => {
+      const n = Math.max(2, Math.ceil(Math.abs(a1 - a0) / 0.05));
+      const pts: Pt3[] = [];
+      for (let j = 0; j <= n; j++) {
+        const a = a0 + (a1 - a0) * j / n;
+        pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), 0]);
+      }
+      return pts;
+    };
+
+    const axesC = (C: ReturnType<typeof makeCam>, cx: number, hw: number, hh: number, o?: { hwL?: number; xlab?: string; ylab?: string; xticks?: { v: number; lab: string; c?: string }[]; yticks?: { v: number; lab: string; c?: string }[] }) => {
+      const opt = o || {};
+      const hl = opt.hwL != null ? opt.hwL : hw;
+      line3(C, [cx - hl, 0, 0], [cx + hw, 0, 0], AXIS, 1.4);
+      arrowAt(C, [cx + hw, 0, 0], [cx + hw - 0.2, 0, 0], AXIS);
+      label3(C, [cx + hw + 0.25, 0, 0], opt.xlab || 'Re', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+      line3(C, [cx, -hh, 0], [cx, hh, 0], AXIS, 1.4);
+      arrowAt(C, [cx, hh, 0], [cx, hh - 0.2, 0], AXIS);
+      label3(C, [cx, hh + 0.2, 0], opt.ylab || 'Im', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+      (opt.xticks || []).forEach(tk => {
+        line3(C, [cx + tk.v, -0.05, 0], [cx + tk.v, 0.05, 0], AXIS_DIM, 1.2);
+        label3(C, [cx + tk.v, -0.22, 0], tk.lab, tk.c || COL_TICK, 10.5, 'center', 0, tk.c ? 'italic' : '');
+      });
+      (opt.yticks || []).forEach(tk => {
+        line3(C, [cx - 0.05, tk.v, 0], [cx + 0.05, tk.v, 0], AXIS_DIM, 1.2);
+        label3(C, [cx - 0.15, tk.v, 0], tk.lab, tk.c || COL_TICK, 10.5, 'right', 0, tk.c ? 'italic' : '');
+      });
+    };
+
+    const gridRect = (C: ReturnType<typeof makeCam>, x0: number, x1: number, y0: number, y1: number, st = 0.5) => {
+      for (let x = Math.ceil(x0 / st) * st; x <= x1 + 1e-9; x += st) {
+        line3(C, [x, y0, 0], [x, y1, 0], COL_GRID, 1);
+      }
+      for (let y = Math.ceil(y0 / st) * st; y <= y1 + 1e-9; y += st) {
+        line3(C, [x0, y, 0], [x1, y, 0], COL_GRID, 1);
+      }
+    };
+
+    const gridFloor = (C: ReturnType<typeof makeCam>, g = 2, st = 0.5) => {
+      const n = Math.round(g / st);
+      for (let i = -n; i <= n; i++) {
+        if (i === 0) continue;
+        const u = i * st;
+        line3(C, [u, 0, -g], [u, 0, g], COL_GRID, 1);
+        line3(C, [-g, 0, u], [g, 0, u], COL_GRID, 1);
+      }
+    };
+
+    // Constantes Escena 2 (Cardano: x³ = 15x + 4)
+    const CBA = { cx: -1.95, sx: 0.28, sy: 0.042, x0: -4.4, x1: 4.8 };
+    const CBB = { cx: 1.85, s: 0.42 };
+    const CB_ARG = Math.atan2(11, 2);
+    const CB_MOD = Math.sqrt(5);
+    const CB_ROOTS = [0, 1, 2].map(k => {
+      const a = (CB_ARG + 2 * Math.PI * k) / 3;
+      return [CB_MOD * Math.cos(a), CB_MOD * Math.sin(a)] as [number, number];
+    });
+    const CB_REAL = CB_ROOTS.map(r => 2 * r[0]);
+    const CB_REAL_LAB = ['4', '−2−√3', '−2+√3'];
+
+    // Constantes Escena 3 (Raíces fuera del papel: superficie |p(z)|)
+    const RT_D = 1.8;
+    const RT_GN = 36;
+    const RT_SC = [0.35, 0.15];
+    const RT_CRIT = 2 / (3 * Math.sqrt(3));
+
+    const pEval = (sel: number, c: number, re: number, im: number): [number, number] => {
+      if (sel === 0) return [re * re - im * im + c, 2 * re * im];
+      return [re * re * re - 3 * re * im * im - re + c, 3 * re * re * im - im * im * im - im];
+    };
+
+    const rtRoots = (sel: number, c: number): [number, number][] => {
+      if (sel === 0) {
+        if (c <= 0) {
+          const r = Math.sqrt(-c);
+          return [[r, 0], [-r, 0]];
+        }
+        const r = Math.sqrt(c);
+        return [[0, r], [0, -r]];
+      }
+      if (Math.abs(c) <= RT_CRIT) {
+        const m = 2 / Math.sqrt(3);
+        const ph = Math.acos(Math.max(-1, Math.min(1, -c * 3 * Math.sqrt(3) / 2))) / 3;
+        return [0, 1, 2].map(k => [m * Math.cos(ph - 2 * Math.PI * k / 3), 0]);
+      }
+      const D = Math.sqrt(c * c / 4 - 1 / 27);
+      const r = Math.cbrt(-c / 2 + D) + Math.cbrt(-c / 2 - D);
+      const im = Math.sqrt(Math.max(0, 3 * r * r - 4)) / 2;
+      return [[r, 0], [-r / 2, im], [-r / 2, -im]];
+    };
+
+    // Nube vectorial para Escena 5 (Matriz J)
+    const MAT_N = 24;
+    const MAT_CLOUD: [number, number][] = [];
+    for (let k = 0; k < MAT_N; k++) {
+      const a = (k * 2 * Math.PI) / MAT_N;
+      const L = 0.62 + 0.46 * (0.5 + 0.5 * Math.sin(k * 2.3999632));
+      MAT_CLOUD.push([L * Math.cos(a), L * Math.sin(a)]);
+    }
+
+    // Variables de reloj acumulativo
+    let turnA = 0;
+    let matU = 0;
+
+    // Actualización de UI y toggles dinámicos
+    const togglesContainer = document.getElementById('togglesContainer') as HTMLElement;
+    const teleBadgePill = document.getElementById('teleBadgePill') as HTMLElement;
+    const teleCondition = document.getElementById('teleCondition') as HTMLElement;
+    const teleMetricsRow = document.getElementById('teleMetricsRow') as HTMLElement;
+    const teleEqBox = document.getElementById('teleEqBox') as HTMLElement;
+
+    const updateTogglesUI = () => {
+      if (!togglesContainer) return;
+      togglesContainer.innerHTML = '';
+
+      type ToggleDef = { key: keyof typeof state; label: string; color: string };
+      let list: ToggleDef[] = [];
+
+      if (state.tab === 'turn') {
+        list = [
+          { key: 'showTurnPt', label: 'Vector z Rotatorio', color: C_ROSE },
+          { key: 'showGhosts', label: '4 Estaciones (z₀·iⁿ)', color: C_VIO },
+          { key: 'showArc', label: 'Arco y Ángulo 90°', color: C_AMB },
+          { key: 'stepDemo', label: 'Modo Paso a Paso ×i', color: '#94a3b8' },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'cubic') {
+        list = [
+          { key: 'showCubic', label: 'Curva y = x³ − 15x − 4', color: C_ROSE },
+          { key: 'showRootsP', label: 'Raíces ∛(2+11i)', color: C_VIO },
+          { key: 'showConjP', label: 'Conjugadas ∛(2−11i)', color: C_EME },
+          { key: 'showPair', label: 'Puente Conjugado → Raíz Real', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'roots') {
+        list = [
+          { key: 'showSlice', label: 'Corte Eje Real (Curva Libro)', color: C_ROSE },
+          { key: 'showPath', label: 'Huella de Migración', color: C_VIO },
+          { key: 'showSurf', label: 'Superficie 3D |p(z)|', color: C_CYN },
+          { key: 'showPits', label: 'Pozos de Ceros', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla del Suelo', color: '#64748b' },
+        ];
+      } else if (state.tab === 'conj') {
+        list = [
+          { key: 'showZ', label: 'Punto z = a + bi', color: C_ROSE },
+          { key: 'showTwin', label: 'Gemelo Conjugado z̄', color: C_VIO },
+          { key: 'showSum', label: 'Suma z + z̄ = 2a (Real)', color: C_EME },
+          { key: 'showProd', label: 'Producto z·z̄ = a²+b² (Real)', color: C_ORG },
+          { key: 'showQuartic', label: 'Raíces Polinómicas (Bifurcación)', color: '#e2e8f0' },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else {
+        list = [
+          { key: 'showTrack', label: 'Vector Guía v y Pasos Jⁿv', color: C_ROSE },
+          { key: 'showAB', label: 'Mapa Lineal aI + bJ', color: C_VIO },
+          { key: 'showCloud', label: 'Nube Vectorial Giratoria', color: C_CYN },
+          { key: 'mDemo', label: 'Demostración Paso ×J', color: '#94a3b8' },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      }
+
+      list.forEach(t => {
+        const lbl = document.createElement('label');
+        lbl.className = 'toggle-pill';
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.checked = Boolean(state[t.key]);
+        inp.addEventListener('change', () => {
+          (state as any)[t.key] = inp.checked;
+        });
+        const dot = document.createElement('span');
+        dot.className = 'color-dot';
+        dot.style.setProperty('--dot-c', t.color);
+        const txt = document.createElement('span');
+        txt.textContent = t.label;
+
+        lbl.appendChild(inp);
+        lbl.appendChild(dot);
+        lbl.appendChild(txt);
+        togglesContainer.appendChild(lbl);
+      });
+    };
+
+    // Actualización de telemetría y explicaciones en vivo
+    const updateTelemetry = () => {
+      if (state.tab === 'turn') {
+        teleBadgePill.textContent = '1. EL CUARTO DE VUELTA';
+        teleCondition.textContent = 'Multiplicación por i: giro antihorario de 90° exactos';
+        const rot = stepAngle(turnA);
+        const n = Math.floor(turnA) % 4;
+        const p = rot2(state.re0, state.im0, rot);
+        const pNext = rot2(p[0], p[1], Math.PI / 2);
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Vector z</span>
+            <span class="tm-val tm-highlight">${czs(p[0], p[1])}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Giro × i</span>
+            <span class="tm-val" style="color: ${C_VIO};">${czs(pNext[0], pNext[1])}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Paso Cuadrante</span>
+            <span class="tm-val">${n} / 4 (Giro ${((rot * 180) / Math.PI).toFixed(0)}°)</span>
+          </div>
+        `;
+
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`z \cdot i = (x + yi)i = -y + xi \quad\Longrightarrow\quad i^2 = -1 \text{ (2 giros de 90° = dar la vuelta)}`,
+          false
+        );
+      } else if (state.tab === 'cubic') {
+        teleBadgePill.textContent = '2. ENIGMA DE CARDANO';
+        teleCondition.textContent = 'x³ = 15x + 4 · La raíz real 4 solo se alcanza cruzando el plano complejo';
+        const k = Math.round(state.branchK);
+        const r = CB_ROOTS[k];
+        const sumReal = 2 * r[0];
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Rama k</span>
+            <span class="tm-val tm-highlight">${k} (${CB_REAL_LAB[k]})</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">∛(2 + 11i)</span>
+            <span class="tm-val" style="color: ${C_VIO};">${czs(r[0], r[1])}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Suma Real</span>
+            <span class="tm-val" style="color: ${C_AMB};">${sumReal.toFixed(3)}</span>
+          </div>
+        `;
+
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`x = \sqrt[3]{2 + 11i} + \sqrt[3]{2 - 11i} = (2 + i) + (2 - i) = 4 \quad\text{(Bombelli 1572)}`,
+          false
+        );
+      } else if (state.tab === 'roots') {
+        teleBadgePill.textContent = '3. RAÍCES FUERA DEL PAPEL';
+        teleCondition.textContent = 'Superficie de módulo |p(z)|: las raíces no desaparecen, migran al eje imaginario';
+        const roots = rtRoots(state.polySel, state.paramC);
+        const offPaper = roots.filter(r => Math.abs(r[1]) > 1e-4).length;
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Parámetro c</span>
+            <span class="tm-val tm-highlight">${state.paramC >= 0 ? '+' : ''}${state.paramC.toFixed(2)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Raíces Totales</span>
+            <span class="tm-val">${roots.length} (T. Fundamental del Álgebra)</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Fuera del Papel</span>
+            <span class="tm-val" style="color: ${offPaper > 0 ? C_ROSE : C_EME};">${offPaper} raíces complejas</span>
+          </div>
+        `;
+
+        const polyLatex = state.polySel === 0 ? String.raw`p(z) = z^2 + c` : String.raw`p(z) = z^3 - z + c`;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`${polyLatex} \quad\Longrightarrow\quad c > 0 \implies z = \pm i\sqrt{c} \quad\text{(las raíces viajan al eje imaginario)}`,
+          false
+        );
+      } else if (state.tab === 'conj') {
+        teleBadgePill.textContent = '4. GEMELOS ESPEJO CONJUGADOS';
+        teleCondition.textContent = 'z y z̄: la simetría que impide que el mundo real gotee números imaginarios';
+        const a = state.zRe, b = state.zIm;
+        const sum2a = 2 * a;
+        const prod = a * a + b * b;
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">z</span>
+            <span class="tm-val tm-highlight">${czs(a, b)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Suma z + z̄</span>
+            <span class="tm-val" style="color: ${C_EME};">${sum2a.toFixed(2)} (Eje Real)</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Producto z·z̄</span>
+            <span class="tm-val" style="color: ${C_ORG};">${prod.toFixed(2)} = |z|² (Real)</span>
+          </div>
+        `;
+
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`(a + bi) + (a - bi) = 2a \in \mathbb{R} \quad\text{y}\quad (a + bi)(a - bi) = a^2 + b^2 \in \mathbb{R}`,
+          false
+        );
+      } else {
+        teleBadgePill.textContent = '5. i ES UNA MATRIZ REAL';
+        teleCondition.textContent = 'Desmitificación total: los números complejos son matrices de rotación-escala 2×2';
+        const a = state.matA, b = state.matB;
+        const det = a * a + b * b;
+        const angDeg = ((Math.atan2(b, a) * 180) / Math.PI).toFixed(1);
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Matriz M</span>
+            <span class="tm-val tm-highlight">[${a.toFixed(2)}, ${(-b).toFixed(2)}; ${b.toFixed(2)}, ${a.toFixed(2)}]</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Determinante</span>
+            <span class="tm-val" style="color: ${C_CYN};">${det.toFixed(2)} = |z|²</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Ángulo de Giro</span>
+            <span class="tm-val" style="color: ${C_AMB};">${angDeg}°</span>
+          </div>
+        `;
+
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`J = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} \implies J^2 = -I \quad\text{y}\quad a + bi \equiv \begin{pmatrix} a & -b \\ b & a \end{pmatrix}`,
+          false
+        );
+      }
+    };
+
+    // Render del Drawer Pedagógico con KaTeX
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+    const populateGuide = () => {
+      if (!guideContent) return;
+      guideContent.innerHTML = `
+        <article class="guide-article">
+          <section class="guide-section">
+            <div class="sec-badge">SECCIÓN 1</div>
+            <h3>El gran error histórico: ¿Por qué los llamaron "imaginarios"?</h3>
+            <p>
+              En 1637, René Descartes utilizó por primera vez la palabra <em>«imaginarios»</em> de manera despectiva para referirse a las raíces que no podían dibujarse en la recta numérica convencional. Fue un error de nomenclatura que ha confundido a estudiantes durante siglos.
+            </p>
+            <p>
+              Como escribió Carl Friedrich Gauss en 1831: <em>«Si a +1, −1 e i se les hubiera llamado unidad directa, inversa y lateral en lugar de positiva, negativa e imaginaria, la gente nunca habría sentido que hay algo misterioso en ellos»</em>.
+            </p>
+            <div class="guide-box">
+              <strong>Idea clave:</strong> Multiplicar por $1$ deja un número igual (giro de $0^\circ$). Multiplicar por $-1$ invierte la dirección (giro de $180^\circ$). El número $i$ es simplemente el operador intermedio: <strong>un giro de $90^\circ$ en sentido antihorario</strong>. Por eso, dos giros de $90^\circ$ seguidos producen un giro de $180^\circ$:
+              <div class="math-center">${renderMathClient(String.raw`i \times i = i^2 = -1`, true)}</div>
+            </div>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">SECCIÓN 2</div>
+            <h3>El verdadero nacimiento de los complejos: La ecuación cúbica de Cardano (1545)</h3>
+            <p>
+              Existe el mito popular de que los números complejos se inventaron para resolver la ecuación cuadrática $x^2 + 1 = 0$. Esto es históricamente falso: los matemáticos renacentistas simplemente decían que $x^2 = -1$ era imposible y no le prestaban atención.
+            </p>
+            <p>
+              La necesidad real surgió con la ecuación cúbica de Girolamo Cardano y Niccolò Tartaglia:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`x^3 = 15x + 4`, true)}</div>
+            <p>
+              Cualquiera puede comprobar por inspección que $x = 4$ es una solución real evidente ($4^3 = 64$ y $15(4) + 4 = 64$). Sin embargo, al aplicar la rigurosa fórmula algebraica de Cardano, se obtenía:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`x = \sqrt[3]{2 + \sqrt{-121}} + \sqrt[3]{2 - \sqrt{-121}} = \sqrt[3]{2 + 11i} + \sqrt[3]{2 - 11i}`, true)}</div>
+            <p>
+              ¡La fórmula pasaba forzosamente por la raíz de un número negativo para llegar a una respuesta real palpable! En 1572, Rafael Bombelli tuvo una intuición genial: si $2 + 11i = (2 + i)^3$, entonces $\sqrt[3]{2 + 11i} = 2 + i$. Al sumar su conjugado $2 - i$:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`(2 + i) + (2 - i) = 4`, true)}</div>
+            <p>
+              Los números complejos demostraron que no eran una ficción: eran un <strong>puente obligatorio</strong> que la naturaleza matemática exigía cruzar para conectar problemas reales con soluciones reales.
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">SECCIÓN 3</div>
+            <h3>Raíces fuera del papel: El Teorema Fundamental del Álgebra</h3>
+            <p>
+              En la educación secundaria se enseña que una parábola como $y = x^2 + 1$ «no tiene raíces reales» porque su gráfica flota por encima del eje $X$.
+            </p>
+            <p>
+              Al ampliar el dominio de la función a todo el plano complejo $z = x + iy$, la gráfica ya no es una simple curva unidimensional, sino una <strong>superficie de módulo $|p(z)|$ en 3 dimensiones</strong>.
+            </p>
+            <p>
+              En esta superficie tridimensional se observa con claridad que la función toca el suelo cero exactamente en dos conos o pozos: $z = +i$ y $z = -i$. La curva del libro de texto es solo una rebanada o corte plano. <strong>Las raíces nunca desaparecen: solo abandonan el papel unidimensional para vivir en el espacio complejo bidimensional</strong>.
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">SECCIÓN 4</div>
+            <h3>Gemelos espejo: Por qué el universo físico nunca «gotea» números imaginarios</h3>
+            <p>
+              En la mecánica cuántica y la ingeniería eléctrica, las ecuaciones fundamentales (como la ecuación de Schrödinger o el análisis de impedancias) utilizan números complejos continuamente. ¿Por qué nuestros instrumentos de laboratorio siempre miden voltajes, energías y posiciones reales?
+            </p>
+            <p>
+              La respuesta radica en la <strong>simetría de los gemelos conjugados</strong>:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`z = a + bi \quad\Longleftrightarrow\quad \bar{z} = a - bi`, true)}</div>
+            <p>
+              En cualquier polinomio o ecuación diferencial con coeficientes reales, las soluciones complejas aparecen obligatoriamente en pares conjugados. Al sumarse o multiplicarse:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`z + \bar{z} = 2a \in \mathbb{R} \qquad z \cdot \bar{z} = a^2 + b^2 \in \mathbb{R}`, true)}</div>
+            <p>
+              La parte imaginaria se cancela de forma exacta y simétrica, garantizando que el mundo observable permanezca 100% en el eje real.
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">SECCIÓN 5</div>
+            <h3>La desmitificación definitiva: $i$ es álgebra lineal pura</h3>
+            <p>
+              Si aún dudas de si $i$ existe, considera la siguiente matriz cuadrada de números reales ordinarios:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`J = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}`, true)}</div>
+            <p>
+              Al multiplicar esta matriz por sí misma:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`J^2 = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} -1 & 0 \\ 0 & -1 \end{pmatrix} = -I`, true)}</div>
+            <p>
+              Cualquier número complejo $a + bi$ es matemáticamente indistinguible de la matriz:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`aI + bJ = \begin{pmatrix} a & -b \\ b & a \end{pmatrix}`, true)}</div>
+            <p>
+              No hace falta imaginar nada esotérico: <strong>los números complejos son simplemente matrices reales de rotación y escalado de $2 \times 2$ escritas en notación abreviada</strong>.
+            </p>
+          </section>
+        </article>
+      `;
+    };
+    populateGuide();
+
+    // Controles DOM
+    const tabBtns = document.querySelectorAll('.i-tab-btn');
+    const camBtns = document.querySelectorAll('.cam-btn');
+    const btnFold = document.getElementById('btnFold');
+    const panel = document.getElementById('panel');
+    const btnOpenGuide = document.getElementById('btnOpenGuide');
+    const btnCloseGuide = document.getElementById('btnCloseGuide');
+    const guideDrawer = document.getElementById('guideDrawer');
+
+    // Drawer de Guía
+    btnOpenGuide?.addEventListener('click', () => guideDrawer?.classList.add('open'));
+    btnCloseGuide?.addEventListener('click', () => guideDrawer?.classList.remove('open'));
+
+    // Plegar panel
+    btnFold?.addEventListener('click', () => {
+      panel?.classList.toggle('collapsed');
+      if (btnFold) btnFold.textContent = panel?.classList.contains('collapsed') ? '+' : '−';
+    });
+
+    // Pestañas
+    const ctlSections = {
+      turn: document.querySelector('.tab-turn-only') as HTMLElement,
+      cubic: document.querySelector('.tab-cubic-only') as HTMLElement,
+      roots: document.querySelector('.tab-roots-only') as HTMLElement,
+      conj: document.querySelector('.tab-conj-only') as HTMLElement,
+      matrix: document.querySelector('.tab-matrix-only') as HTMLElement,
+    };
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.tab = btn.getAttribute('data-tab') as typeof state.tab;
+
+        Object.keys(ctlSections).forEach(k => {
+          if (ctlSections[k as keyof typeof ctlSections]) {
+            ctlSections[k as keyof typeof ctlSections].style.display = k === state.tab ? 'block' : 'none';
+          }
+        });
+
+        updateTogglesUI();
+        updateTelemetry();
+
+        // Ajustes de cámara sugeridos para cada escena
+        if (state.tab === 'turn') {
+          cam.az = -0.7; cam.el = 0.35; cam.dist = 8.5; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        } else if (state.tab === 'cubic') {
+          cam.az = -0.55; cam.el = 0.3; cam.dist = 9.5; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        } else if (state.tab === 'roots') {
+          cam.az = -0.75; cam.el = 0.42; cam.dist = 9.5; cam.tx = 0; cam.ty = 0.6; cam.tz = 0;
+        } else if (state.tab === 'conj') {
+          cam.az = -0.7; cam.el = 0.35; cam.dist = 8.5; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        } else {
+          cam.az = -0.7; cam.el = 0.35; cam.dist = 8.5; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        }
+      });
+    });
+
+    // Sliders Escena 1
+    const slRe0 = document.getElementById('slRe0') as HTMLInputElement;
+    const vRe0 = document.getElementById('vRe0') as HTMLElement;
+    const slIm0 = document.getElementById('slIm0') as HTMLInputElement;
+    const vIm0 = document.getElementById('vIm0') as HTMLElement;
+    const slTurnSpeed = document.getElementById('slTurnSpeed') as HTMLInputElement;
+    const vTurnSpeed = document.getElementById('vTurnSpeed') as HTMLElement;
+
+    slRe0?.addEventListener('input', () => {
+      state.re0 = parseFloat(slRe0.value);
+      if (vRe0) vRe0.textContent = state.re0.toFixed(2);
+      updateTelemetry();
+    });
+    slIm0?.addEventListener('input', () => {
+      state.im0 = parseFloat(slIm0.value);
+      if (vIm0) vIm0.textContent = state.im0.toFixed(2);
+      updateTelemetry();
+    });
+    slTurnSpeed?.addEventListener('input', () => {
+      state.turnSpeed = parseFloat(slTurnSpeed.value);
+      if (vTurnSpeed) vTurnSpeed.textContent = state.turnSpeed.toFixed(2) + '×';
+    });
+
+    document.getElementById('btnPreset1')?.addEventListener('click', () => {
+      state.re0 = 1; state.im0 = 0;
+      slRe0.value = '1'; slIm0.value = '0';
+      vRe0.textContent = '1.00'; vIm0.textContent = '0.00';
+      updateTelemetry();
+    });
+    document.getElementById('btnPresetI')?.addEventListener('click', () => {
+      state.re0 = 0; state.im0 = 1;
+      slRe0.value = '0'; slIm0.value = '1';
+      vRe0.textContent = '0.00'; vIm0.textContent = '1.00';
+      updateTelemetry();
+    });
+    document.getElementById('btnPresetDiag')?.addEventListener('click', () => {
+      state.re0 = 1; state.im0 = 1;
+      slRe0.value = '1'; slIm0.value = '1';
+      vRe0.textContent = '1.00'; vIm0.textContent = '1.00';
+      updateTelemetry();
+    });
+
+    // Sliders Escena 2
+    const slBranchK = document.getElementById('slBranchK') as HTMLInputElement;
+    const vBranchK = document.getElementById('vBranchK') as HTMLElement;
+    const branchBtns = [
+      document.getElementById('btnBranch0'),
+      document.getElementById('btnBranch1'),
+      document.getElementById('btnBranch2'),
+    ];
+
+    const setBranch = (k: number) => {
+      state.branchK = k;
+      if (slBranchK) slBranchK.value = String(k);
+      if (vBranchK) vBranchK.textContent = `${k} (${CB_REAL_LAB[k]})`;
+      branchBtns.forEach((b, idx) => b?.classList.toggle('active', idx === k));
+      updateTelemetry();
+    };
+
+    slBranchK?.addEventListener('input', () => setBranch(parseInt(slBranchK.value, 10)));
+    branchBtns.forEach((b, idx) => b?.addEventListener('click', () => setBranch(idx)));
+
+    // Sliders Escena 3
+    const slParamC = document.getElementById('slParamC') as HTMLInputElement;
+    const vParamC = document.getElementById('vParamC') as HTMLElement;
+    const btnPolyQuad = document.getElementById('btnPolyQuad');
+    const btnPolyCubic = document.getElementById('btnPolyCubic');
+
+    btnPolyQuad?.addEventListener('click', () => {
+      btnPolyQuad.classList.add('active');
+      btnPolyCubic?.classList.remove('active');
+      state.polySel = 0;
+      updateTelemetry();
+    });
+    btnPolyCubic?.addEventListener('click', () => {
+      btnPolyCubic.classList.add('active');
+      btnPolyQuad?.classList.remove('active');
+      state.polySel = 1;
+      updateTelemetry();
+    });
+
+    slParamC?.addEventListener('input', () => {
+      state.paramC = parseFloat(slParamC.value);
+      if (vParamC) vParamC.textContent = (state.paramC >= 0 ? '+' : '') + state.paramC.toFixed(2);
+      updateTelemetry();
+    });
+
+    document.getElementById('btnPresetNegC')?.addEventListener('click', () => {
+      state.paramC = -1; slParamC.value = '-1'; vParamC.textContent = '-1.00';
+      updateTelemetry();
+    });
+    document.getElementById('btnPresetZeroC')?.addEventListener('click', () => {
+      state.paramC = 0; slParamC.value = '0'; vParamC.textContent = '0.00';
+      updateTelemetry();
+    });
+    document.getElementById('btnPresetPosC')?.addEventListener('click', () => {
+      state.paramC = 1; slParamC.value = '1'; vParamC.textContent = '+1.00';
+      updateTelemetry();
+    });
+
+    // Sliders Escena 4
+    const slZRe = document.getElementById('slZRe') as HTMLInputElement;
+    const vZRe = document.getElementById('vZRe') as HTMLElement;
+    const slZIm = document.getElementById('slZIm') as HTMLInputElement;
+    const vZIm = document.getElementById('vZIm') as HTMLElement;
+    const slQuarQ = document.getElementById('slQuarQ') as HTMLInputElement;
+    const vQuarQ = document.getElementById('vQuarQ') as HTMLElement;
+
+    slZRe?.addEventListener('input', () => {
+      state.zRe = parseFloat(slZRe.value);
+      if (vZRe) vZRe.textContent = state.zRe.toFixed(2);
+      updateTelemetry();
+    });
+    slZIm?.addEventListener('input', () => {
+      state.zIm = parseFloat(slZIm.value);
+      if (vZIm) vZIm.textContent = state.zIm.toFixed(2);
+      updateTelemetry();
+    });
+    slQuarQ?.addEventListener('input', () => {
+      state.quarQ = parseFloat(slQuarQ.value);
+      if (vQuarQ) vQuarQ.textContent = state.quarQ.toFixed(2);
+      updateTelemetry();
+    });
+
+    // Sliders Escena 5
+    const slMatA = document.getElementById('slMatA') as HTMLInputElement;
+    const vMatA = document.getElementById('vMatA') as HTMLElement;
+    const slMatB = document.getElementById('slMatB') as HTMLInputElement;
+    const vMatB = document.getElementById('vMatB') as HTMLElement;
+    const slMatSpeed = document.getElementById('slMatSpeed') as HTMLInputElement;
+    const vMatSpeed = document.getElementById('vMatSpeed') as HTMLElement;
+
+    slMatA?.addEventListener('input', () => {
+      state.matA = parseFloat(slMatA.value);
+      if (vMatA) vMatA.textContent = state.matA.toFixed(2);
+      updateTelemetry();
+    });
+    slMatB?.addEventListener('input', () => {
+      state.matB = parseFloat(slMatB.value);
+      if (vMatB) vMatB.textContent = state.matB.toFixed(2);
+      updateTelemetry();
+    });
+    slMatSpeed?.addEventListener('input', () => {
+      state.matSpeed = parseFloat(slMatSpeed.value);
+      if (vMatSpeed) vMatSpeed.textContent = state.matSpeed.toFixed(2) + '×';
+    });
+
+    // Cámara Presets
+    camBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        camBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.getAttribute('data-view');
+        if (view === 'iso') {
+          cam.az = -0.7; cam.el = 0.35; cam.dist = 8.5; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        } else if (view === 'front') {
+          cam.az = 0.001; cam.el = 0.02; cam.dist = 6.8; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        } else if (view === 'top') {
+          cam.az = 0.001; cam.el = 1.54; cam.dist = 8.0; cam.tx = 0; cam.ty = 0; cam.tz = 0;
+        }
+      });
+    });
+
+    // Interacción ratón / táctil con la cámara
+    let isDragging = false;
+    let isPanning = false;
+    let lastX = 0, lastY = 0;
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      isPanning = e.shiftKey || e.button === 2;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.classList.add('dragging');
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      isPanning = false;
+      canvas.classList.remove('dragging');
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      if (isPanning) {
+        cam.tx -= dx * 0.008 * (cam.dist / 8);
+        cam.ty += dy * 0.008 * (cam.dist / 8);
+      } else {
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.52, Math.min(1.52, cam.el + dy * 0.007));
+      }
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      cam.dist = Math.max(2.5, Math.min(25, cam.dist * zoomFactor));
+    }, { passive: false });
+
+    canvas.addEventListener('dblclick', () => {
+      cam.az = -0.7;
+      cam.el = 0.35;
+      cam.dist = 8.5;
+      cam.tx = 0;
+      cam.ty = 0;
+      cam.tz = 0;
+    });
+
+    // Inicializar UI de toggles y telemetría
+    updateTogglesUI();
+    updateTelemetry();
+
+    // =========================================================================
+    // LOOP DE RENDERIZADO PRINCIPAL
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const render = (now: number) => {
+      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      state.t += dt;
+
+      // Incrementar variables continuas
+      if (state.tab === 'turn') {
+        turnA += (0.9 * state.turnSpeed) * dt;
+      } else if (state.tab === 'matrix') {
+        matU += (0.9 * state.matSpeed) * dt;
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      syncThemeColors();
+      const C = makeCam();
+
+      // =====================================================================
+      // 1. ESCENA 1: EL CUARTO DE VUELTA (×i = 90°)
+      // =====================================================================
+      if (state.tab === 'turn') {
+        const a0 = state.re0, b0 = state.im0;
+        const R = Math.hypot(a0, b0);
+        const base = Math.atan2(b0, a0);
+        const rot = state.stepDemo ? stepAngle(turnA) : turnA * Math.PI * 0.5;
+        const n = Math.floor(turnA);
+        const nm = ((n % 4) + 4) % 4;
+
+        if (state.showGrid) gridRect(C, -2.4, 2.4, -2.0, 2.0, 0.5);
+
+        axesC(C, 0, 2.35, 1.9, {
+          xlab: 'Re',
+          ylab: 'Im',
+          xticks: [{ v: -2, lab: '−2' }, { v: -1, lab: '−1' }, { v: 1, lab: '1' }, { v: 2, lab: '2' }],
+          yticks: [{ v: 1, lab: 'i', c: C_CYN }, { v: -1, lab: '−i', c: C_CYN }],
+        });
+
+        // Eje real destacado
+        line3(C, [-2.35, 0, 0], [2.35, 0, 0], 'rgba(45,212,234,0.15)', 5.5);
+        line3(C, [-2.35, 0, 0], [2.35, 0, 0], 'rgba(45,212,234,0.6)', 1.8);
+        label3(C, [-2.25, 0.2, 0], 'Eje Real ℝ', hexA(C_CYN, 0.85), 11, 'left');
+
+        // Círculo orbital de radio R
+        if (R > 0.05) {
+          const circ = arcPts(0, 0, R, 0, Math.PI * 2);
+          for (let i = 0; i < circ.length - 1; i++) {
+            line3(C, circ[i], circ[i + 1], 'rgba(251,191,36,0.22)', 1, [4, 5]);
+          }
+        }
+
+        // Cuatro estaciones z₀, i·z₀, −z₀, −i·z₀
+        if (state.showGhosts && R > 0.04) {
+          const stationLabs = ['z₀', 'i·z₀', '−z₀', '−i·z₀'];
+          for (let k = 0; k < 4; k++) {
+            const p2 = rot2(a0, b0, k * (Math.PI / 2));
+            const isCur = k === nm;
+            dot3D(C, [p2[0], p2[1], 0], isCur ? 4.5 : 3.0, hexA(C_VIO, isCur ? 1 : 0.6), '#ffffff', isCur ? 2 : 1);
+            label3(
+              C,
+              [p2[0] * (1 + 0.28 / R), p2[1] * (1 + 0.28 / R), 0],
+              stationLabs[k],
+              hexA(C_VIO, 0.95),
+              12,
+              'center',
+              0,
+              'italic'
+            );
+          }
+        }
+
+        // Arco de giro y ángulo recto 90°
+        if (state.showArc && R > 0.04) {
+          const aSt = base + n * (Math.PI / 2);
+          const currentArc = arcPts(0, 0, R, aSt, base + rot);
+          for (let i = 0; i < currentArc.length - 1; i++) {
+            line3(C, currentArc[i], currentArc[i + 1], 'rgba(251,191,36,0.9)', 2.2);
+          }
+          const ca = Math.cos(aSt), sa = Math.sin(aSt), ss = 0.16;
+          line3(C, [(R - ss) * ca, (R - ss) * sa, 0], [(R - ss) * ca - ss * sa, (R - ss) * sa + ss * ca, 0], 'rgba(251,191,36,0.85)', 1.2);
+          line3(C, [(R - ss) * ca - ss * sa, (R - ss) * sa + ss * ca, 0], [R * ca - ss * sa, R * sa + ss * ca, 0], 'rgba(251,191,36,0.85)', 1.2);
+
+          const midA = aSt + Math.min(Math.PI / 4, (rot - n * (Math.PI / 2)) / 2);
+          label3(C, [(R + 0.28) * Math.cos(midA), (R + 0.28) * Math.sin(midA), 0], '90°', C_AMB, 11, 'center', 0, 'italic');
+        }
+
+        // Vector radio giratorio z
+        const pRot = rot2(a0, b0, rot);
+        line3(C, [0, 0, 0], [pRot[0], pRot[1], 0], COL_VEC_MAIN, 2.2);
+        arrowAt(C, [pRot[0], pRot[1], 0], [pRot[0] * 0.85, pRot[1] * 0.85, 0], '#ffffff');
+
+        if (state.showTurnPt && R > 0.04) {
+          glowDot(C, [pRot[0], pRot[1], 0], 8, '#ffffff', hexA(C_ROSE, 0.95));
+          label3(C, [pRot[0], pRot[1], 0], 'z', C_ROSE, 14, 'left', -14, 'italic');
+        }
+
+        // Destello dorado cuando aterriza en -z₀ (i² = -1)
+        const rotMod = ((rot % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+        if (Math.abs(rotMod - Math.PI) < 0.22) {
+          const negP = rot2(a0, b0, Math.PI);
+          glowDot(C, [negP[0], negP[1], 0], 16 + 4 * Math.sin(state.t * 10), '#fffbeb', 'rgba(251,191,36,0.95)');
+          label3(C, [negP[0], negP[1] - 0.35, 0], 'i² z₀ = −z₀', C_AMB, 13, 'center', 0, 'italic');
+        }
+
+        label3(C, [-2.25, 1.68, 0], '×i = Rotación 90° antihoraria', C_ROSE, 13, 'left', 0, 'italic');
+      }
+
+      // =====================================================================
+      // 2. ESCENA 2: CARDANO (x³ = 15x + 4)
+      // =====================================================================
+      else if (state.tab === 'cubic') {
+        const k = Math.round(state.branchK);
+        if (state.showGrid) gridRect(C, -3.5, 3.8, -1.6, 1.6, 0.5);
+
+        // Panel Izquierdo: Curva Real y = x³ - 15x - 4
+        axesC(C, CBA.cx, 1.5, 1.75, {
+          hwL: 1.4,
+          xlab: 'x',
+          ylab: 'y',
+          xticks: [
+            { v: -4 * CBA.sx, lab: '−4' },
+            { v: -2 * CBA.sx, lab: '−2' },
+            { v: 2 * CBA.sx, lab: '2' },
+            { v: 4 * CBA.sx, lab: '4' },
+          ],
+        });
+
+        if (state.showCubic) {
+          const pts: Pt3[] = [];
+          for (let x = CBA.x0; x <= CBA.x1 + 1e-6; x += 0.05) {
+            const y = (x * x * x - 15 * x - 4) * CBA.sy;
+            pts.push([CBA.cx + x * CBA.sx, y, 0]);
+          }
+          for (let i = 0; i < pts.length - 1; i++) {
+            line3(C, pts[i], pts[i + 1], hexA(C_ROSE, 0.9), 2.2);
+          }
+          label3(C, [CBA.cx - 1.35, 1.6, 0], 'y = x³ − 15x − 4', C_ROSE, 13, 'left', 0, 'italic');
+        }
+
+        // Raíces reales marcadas en el eje X izquierdo
+        CB_REAL.forEach((r, idx) => {
+          const wx = CBA.cx + r * CBA.sx;
+          line3(C, [wx, -0.08, 0], [wx, 0.08, 0], 'rgba(251,191,36,0.9)', 2);
+          label3(C, [wx, 0.25, 0], CB_REAL_LAB[idx], hexA(C_AMB, idx === k ? 1 : 0.6), 11, 'center', 0, 'italic');
+        });
+
+        // Panel Derecho: Plano Complejo w = ∛(2 ± 11i) sobre círculo |w| = √5
+        axesC(C, CBB.cx, 1.95, 1.45, {
+          hwL: 1.35,
+          xlab: 'Re',
+          ylab: 'Im',
+          xticks: [{ v: 2 * CBB.s, lab: '2' }, { v: -2 * CBB.s, lab: '−2' }],
+          yticks: [{ v: CBB.s, lab: 'i', c: C_CYN }, { v: -CBB.s, lab: '−i', c: C_CYN }],
+        });
+
+        const circ = arcPts(CBB.cx, 0, CB_MOD * CBB.s, 0, Math.PI * 2);
+        for (let i = 0; i < circ.length - 1; i++) {
+          line3(C, circ[i], circ[i + 1], 'rgba(45,212,234,0.7)', 1.8);
+        }
+        label3(C, [CBB.cx - 0.95, 1.05, 0], '|w| = √5', C_CYN, 12, 'center', 0, 'italic');
+
+        const toW = (re: number, im: number): Pt3 => [CBB.cx + re * CBB.s, im * CBB.s, 0];
+
+        // 3 Raíces de ∛(2 + 11i) en violeta
+        if (state.showRootsP) {
+          CB_ROOTS.forEach((r, idx) => {
+            const isCur = idx === k;
+            glowDot(C, toW(r[0], r[1]), isCur ? 7 : 4.5, '#ffffff', hexA(C_VIO, isCur ? 0.95 : 0.5));
+          });
+          label3(C, toW(2, 1), '2 + i', C_VIO, 12, 'left', -10, 'italic');
+          label3(C, [CBB.cx - 1.25, 1.35, 0], '∛(2 + 11i)', C_VIO, 12, 'left', 0, 'italic');
+        }
+
+        // 3 Raíces conjugadas de ∛(2 − 11i) en esmeralda
+        if (state.showConjP) {
+          CB_ROOTS.forEach((r, idx) => {
+            const isCur = idx === k;
+            glowDot(C, toW(r[0], -r[1]), isCur ? 7 : 4.5, '#ffffff', hexA(C_EME, isCur ? 0.95 : 0.5));
+          });
+          label3(C, toW(2, -1), '2 − i', C_EME, 12, 'left', 12, 'italic');
+          label3(C, [CBB.cx - 1.25, -1.35, 0], '∛(2 − 11i)', C_EME, 12, 'left', 0, 'italic');
+        }
+
+        // Par conjugado sumándose y conectando con la raíz real (Puente de Cardano)
+        if (state.showPair) {
+          const r = CB_ROOTS[k];
+          const sumReal = 2 * r[0];
+          const pTop = toW(r[0], r[1]);
+          const pBot = toW(r[0], -r[1]);
+          const pSum = toW(sumReal, 0);
+
+          line3(C, pTop, pBot, 'rgba(251,191,36,0.8)', 1.5, [5, 5]);
+          line3(C, pTop, pSum, 'rgba(251,191,36,0.5)', 1.2, [4, 4]);
+          line3(C, pBot, pSum, 'rgba(251,191,36,0.5)', 1.2, [4, 4]);
+
+          glowDot(C, pSum, 8 + 2 * Math.sin(state.t * 6), '#fffbeb', 'rgba(251,191,36,0.95)');
+          label3(C, pSum, `Suma = ${sumReal.toFixed(2)}`, C_AMB, 11.5, 'center', -16, 'italic');
+
+          // Puente ámbar hacia el panel izquierdo
+          const pRealLeft: Pt3 = [CBA.cx + CB_REAL[k] * CBA.sx, 0, 0];
+          line3(C, pSum, pRealLeft, 'rgba(251,191,36,0.7)', 1.6, [6, 6]);
+          arrowAt(C, pRealLeft, [pRealLeft[0] + 0.3, 0, 0], 'rgba(251,191,36,0.95)');
+          glowDot(C, pRealLeft, 8 + 2 * Math.sin(state.t * 6), '#fffbeb', 'rgba(251,191,36,0.95)');
+        }
+
+        label3(C, [0, 1.85, 0], 'x = ∛(2 + 11i) + ∛(2 − 11i)', C_AMB, 13.5, 'center', 0, 'italic');
+        label3(C, [CBB.cx - 1.3, -1.7, 0], '(2 + i)³ = 2 + 11i', C_VIO, 12, 'left', 0, 'italic');
+      }
+
+      // =====================================================================
+      // 3. ESCENA 3: RAÍCES FUERA DEL PAPEL (|p(z)|)
+      // =====================================================================
+      else if (state.tab === 'roots') {
+        const sel = state.polySel;
+        const c = state.paramC;
+        const sc = RT_SC[sel];
+
+        if (state.showGrid) gridFloor(C, 2.2, 0.5);
+
+        // Ejes 3D: X = Re(z), Z = Im(z), Y = |p(z)|
+        line3(C, [-2.2, 0, 0], [2.35, 0, 0], AXIS, 1.4);
+        arrowAt(C, [2.35, 0, 0], [2.15, 0, 0], AXIS);
+        label3(C, [2.6, 0, 0], 'Re z', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+        line3(C, [0, 0, -2.2], [0, 0, 2.35], AXIS, 1.4);
+        arrowAt(C, [0, 0, 2.35], [0, 0, 2.15], AXIS);
+        label3(C, [0, 0, 2.6], 'Im z', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+        line3(C, [0, 0, 0], [0, 2.5, 0], AXIS, 1.4);
+        arrowAt(C, [0, 2.5, 0], [0, 2.3, 0], AXIS);
+        label3(C, [0, 2.7, 0], '|p(z)|', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+        // Malla de la superficie 3D |p(z)|
+        if (state.showSurf) {
+          const X = (i: number) => -RT_D + 2 * RT_D * i / RT_GN;
+          const h = (re: number, im: number) => {
+            const p = pEval(sel, c, re, im);
+            return Math.hypot(p[0], p[1]) * sc;
+          };
+
+          // Rejillas longitudinales
+          for (let j = 0; j <= RT_GN; j += 2) {
+            for (let i = 0; i < RT_GN; i++) {
+              const p1: Pt3 = [X(i), h(X(i), X(j)), X(j)];
+              const p2: Pt3 = [X(i + 1), h(X(i + 1), X(j)), X(j)];
+              line3(C, p1, p2, 'rgba(45,212,234,0.22)', 1);
+            }
+          }
+          // Rejillas transversales
+          for (let i = 0; i <= RT_GN; i += 2) {
+            for (let j = 0; j < RT_GN; j++) {
+              const p1: Pt3 = [X(i), h(X(i), X(j)), X(j)];
+              const p2: Pt3 = [X(i), h(X(i), X(j + 1)), X(j + 1)];
+              line3(C, p1, p2, 'rgba(45,212,234,0.22)', 1);
+            }
+          }
+        }
+
+        // Corte en el eje real Im(z) = 0 (la curva del libro de texto)
+        if (state.showSlice) {
+          const slicePts: Pt3[] = [];
+          for (let x = -RT_D; x <= RT_D + 1e-6; x += 0.04) {
+            const val = pEval(sel, c, x, 0)[0];
+            slicePts.push([x, Math.abs(val) * sc, 0]);
+          }
+          for (let i = 0; i < slicePts.length - 1; i++) {
+            line3(C, slicePts[i], slicePts[i + 1], hexA(C_ROSE, 0.95), 2.4);
+          }
+          label3(
+            C,
+            [-1.5, Math.abs(pEval(sel, c, -1.5, 0)[0]) * sc + 0.3, 0],
+            sel === 0 ? 'y = x² + c' : 'y = x³ − x + c',
+            C_ROSE,
+            13,
+            'center',
+            0,
+            'italic'
+          );
+        }
+
+        // Huella de migración de raíces (c ∈ [-2, 2])
+        if (state.showPath) {
+          for (let cStep = -2; cStep <= 2; cStep += 0.08) {
+            rtRoots(sel, cStep).forEach(r => {
+              dot3D(C, [r[0], 0, r[1]], 1.5, hexA(C_VIO, 0.4), 'transparent', 0);
+            });
+          }
+          label3(C, [0.15, 0, 1.6], 'Huella de migración de raíces', hexA(C_VIO, 0.85), 11, 'left');
+        }
+
+        // Pozos de ceros actuales
+        if (state.showPits) {
+          const roots = rtRoots(sel, c);
+          roots.forEach(r => {
+            if (Math.abs(r[0]) > RT_D || Math.abs(r[1]) > RT_D) return;
+            glowDot(C, [r[0], 0, r[1]], 6.5, '#fffbeb', 'rgba(251,191,36,0.95)');
+            label3(
+              C,
+              [r[0], 0.25, r[1]],
+              Math.abs(r[1]) < 1e-4 ? fmt(r[0]) : czs(r[0], r[1]),
+              C_AMB,
+              11,
+              'center',
+              0,
+              'italic'
+            );
+          });
+
+          // Alerta visual de colisión / despegue del papel cuando c ≈ 0
+          if (Math.abs(c) < 0.08) {
+            glowDot(C, [0, 0, 0], 14 + 3 * Math.sin(state.t * 8), '#ffffff', 'rgba(251,191,36,0.9)');
+            label3(C, [0, -0.3, 0], '¡Las raíces chocan y despegan del papel!', C_AMB, 12, 'center', 0, 'italic');
+          }
+        }
+      }
+
+      // =====================================================================
+      // 4. ESCENA 4: GEMELOS ESPEJO (CONJUGADOS)
+      // =====================================================================
+      else if (state.tab === 'conj') {
+        const a = state.zRe, b = state.zIm, q = state.quarQ;
+        if (state.showGrid) gridRect(C, -2.4, 2.4, -2.0, 2.0, 0.5);
+
+        axesC(C, 0, 2.5, 1.9, {
+          xlab: 'Re',
+          ylab: 'Im',
+          xticks: [{ v: -1, lab: '−1' }, { v: 1, lab: '1' }, { v: 2, lab: '2' }],
+          yticks: [{ v: 1, lab: 'i', c: C_CYN }, { v: -1, lab: '−i', c: C_CYN }],
+        });
+
+        // Espejo = Eje Real ℝ
+        line3(C, [-2.5, 0, 0], [2.5, 0, 0], 'rgba(45,212,234,0.12)', 7);
+        line3(C, [-2.5, 0, 0], [2.5, 0, 0], 'rgba(45,212,234,0.8)', 1.8);
+        label3(C, [-2.4, 0.2, 0], 'Espejo = Eje Real ℝ', hexA(C_CYN, 0.85), 11, 'left');
+
+        // z (Rosa) y z̄ (Violeta)
+        if (state.showZ) {
+          line3(C, [0, 0, 0], [a, b, 0], COL_VEC_MAIN, 2);
+          glowDot(C, [a, b, 0], 7.5, '#ffffff', hexA(C_ROSE, 0.95));
+          label3(C, [a, b + 0.25, 0], 'z = a + bi', C_ROSE, 13, 'center', 0, 'italic');
+        }
+
+        if (state.showTwin) {
+          line3(C, [0, 0, 0], [a, -b, 0], COL_VEC_SUB, 1.6);
+          line3(C, [a, b, 0], [a, -b, 0], hexA(C_VIO, 0.55), 1.4, [6, 6]);
+          glowDot(C, [a, -b, 0], 6.5, '#ffffff', hexA(C_VIO, 0.85));
+          label3(C, [a, -b - 0.25, 0], 'z̄ = a − bi', C_VIO, 13, 'center', 0, 'italic');
+        }
+
+        // Suma vectorial z + z̄ = 2a (Esmeralda)
+        if (state.showSum) {
+          line3(C, [a, b, 0], [2 * a, 0, 0], hexA(C_EME, 0.5), 1.2, [5, 5]);
+          line3(C, [a, -b, 0], [2 * a, 0, 0], hexA(C_EME, 0.5), 1.2, [5, 5]);
+          line3(C, [0, 0, 0], [2 * a, 0, 0], hexA(C_EME, 0.9), 2.4);
+          arrowAt(C, [2 * a, 0, 0], [2 * a - (a >= 0 ? 0.2 : -0.2), 0, 0], hexA(C_EME, 0.95));
+          glowDot(C, [2 * a, 0, 0], 6, '#ffffff', hexA(C_EME, 0.85));
+          label3(C, [2 * a, -0.28, 0], 'z + z̄ = 2a', C_EME, 12, 'center', 0, 'italic');
+        }
+
+        // Producto z · z̄ = a² + b² (Naranja)
+        if (state.showProd) {
+          const m2 = a * a + b * b;
+          line3(C, [0, 0, 0], [a, 0, 0], 'rgba(251,191,36,0.75)', 1.4);
+          line3(C, [a, 0, 0], [a, b, 0], 'rgba(251,191,36,0.75)', 1.4);
+          label3(C, [a / 2, -0.16, 0], 'a', C_AMB, 11.5, 'center', 0, 'italic');
+          label3(C, [a + 0.15, b / 2, 0], 'b', C_AMB, 11.5, 'left', 0, 'italic');
+
+          glowDot(C, [m2, 0, 0], 6.5, '#ffffff', hexA(C_ORG, 0.9));
+          label3(C, [m2, 0.28, 0], 'z·z̄ = a² + b²', C_ORG, 12, 'center', 0, 'italic');
+        }
+
+        // Raíces del polinomio real bajo parámetro q
+        if (state.showQuartic) {
+          const pr = q > 0
+            ? [[0.3, Math.sqrt(q)], [0.3, -Math.sqrt(q)]]
+            : [[0.3 + Math.sqrt(-q), 0], [0.3 - Math.sqrt(-q), 0]];
+
+          pr.forEach(r => {
+            glowDot(C, [r[0], r[1], 0], 5.5, '#ffffff', 'rgba(226,232,240,0.85)');
+          });
+          if (q > 0.001) {
+            line3(C, [pr[0][0], pr[0][1], 0], [pr[1][0], pr[1][1], 0], 'rgba(226,232,240,0.4)', 1.2, [6, 6]);
+          }
+          label3(C, [0.3, (q > 0 ? Math.sqrt(q) : 0) + 0.32, 0], 'Raíces conjugadas de polinomio real', 'rgba(226,232,240,0.8)', 11, 'center');
+        }
+      }
+
+      // =====================================================================
+      // 5. ESCENA 5: i ES UNA MATRIZ (J² = −I)
+      // =====================================================================
+      else {
+        const a = state.matA, b = state.matB;
+        const rot = state.mDemo ? stepAngle(matU) : matU * Math.PI * 0.5;
+        const n = Math.floor(matU);
+        const nm = ((n % 4) + 4) % 4;
+
+        if (state.showGrid) gridRect(C, -2.2, 2.2, -2.0, 2.0, 0.5);
+
+        axesC(C, 0, 2.1, 1.9, {
+          xlab: 'x',
+          ylab: 'y',
+          xticks: [{ v: 1, lab: '1' }, { v: -1, lab: '−1' }],
+          yticks: [{ v: 1, lab: '1' }, { v: -1, lab: '−1' }],
+        });
+
+        // Nube vectorial en rotación bajo J
+        if (state.showCloud) {
+          MAT_CLOUD.forEach(v => {
+            const p = rot2(v[0], v[1], rot);
+            line3(C, [0, 0, 0], [p[0], p[1], 0], 'rgba(45,212,234,0.45)', 1.4);
+            arrowAt(C, [p[0], p[1], 0], [p[0] * 0.8, p[1] * 0.8, 0], 'rgba(45,212,234,0.65)');
+          });
+        }
+
+        // Mapa lineal M = aI + bJ (en violeta)
+        if (state.showAB) {
+          MAT_CLOUD.forEach(v => {
+            const p = rot2(v[0], v[1], rot);
+            const w = [a * p[0] - b * p[1], b * p[0] + a * p[1]];
+            line3(C, [0, 0, 0], [w[0], w[1], 0], hexA(C_VIO, 0.5), 1.4);
+            arrowAt(C, [w[0], w[1], 0], [w[0] * 0.8, w[1] * 0.8, 0], hexA(C_VIO, 0.55));
+          });
+        }
+
+        // Vector guía principal v y sus 4 paradas
+        const v0 = [1.05, 0.45];
+        if (state.showTrack) {
+          for (let k = 0; k < 4; k++) {
+            const g = rot2(v0[0], v0[1], k * (Math.PI / 2));
+            dot3D(C, [g[0], g[1], 0], 3, hexA(C_ROSE, k === nm ? 1 : 0.4), '#ffffff', 1);
+          }
+          const pv = rot2(v0[0], v0[1], rot);
+          line3(C, [0, 0, 0], [pv[0], pv[1], 0], hexA(C_ROSE, 0.95), 2.4);
+          arrowAt(C, [pv[0], pv[1], 0], [pv[0] * 0.85, pv[1] * 0.85, 0], hexA(C_ROSE, 0.95));
+          label3(C, [pv[0] * 1.25, pv[1] * 1.25, 0], 'Jⁿ v', C_ROSE, 12, 'center', 0, 'italic');
+        }
+
+        // Destello cuando J² = -I
+        if (nm === 2 && Math.abs((rot % (Math.PI * 2)) - Math.PI) < 0.2) {
+          glowDot(C, [0, 0, 0], 14 + 3 * Math.sin(state.t * 8), '#ffffff', 'rgba(251,191,36,0.9)');
+          label3(C, [0, -0.35, 0], 'J² = −I (¡Inversión completa con matriz real!)', C_AMB, 12.5, 'center', 0, 'italic');
+        }
+
+        label3(C, [-2.0, 1.7, 0], 'J = [0 −1; 1 0] ≡ i (Rotación 90°)', C_CYN, 13, 'left', 0, 'italic');
+      }
+
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
+  })();
+</script>
+
+<style>
+  /* =========================================================================
+     ESTILOS GENERALES Y LAYOUT · LA ESENCIA DE i EN 3D
+     ========================================================================= */
+  .i-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #05070d;
+    color: #e2e8f0;
+    user-select: none;
+  }
+
+  .i-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .i-canvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* =========================================================================
+     CABECERA SUPERIOR IZQUIERDA
+     ========================================================================= */
+  .i-header {
+    position: absolute;
+    top: 76px;
+    left: 24px;
+    z-index: 10;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    pointer-events: auto;
+  }
+
+  .i-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #818cf8;
+    background: rgba(129, 140, 248, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    width: fit-content;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #818cf8;
+    box-shadow: 0 0 8px #818cf8;
+    animation: pulseGlow 1.8s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .i-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+    text-shadow: 0 2px 20px rgba(129, 140, 248, 0.35);
+  }
+
+  .i-desc {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(159, 176, 200, 0.85);
+    margin: 0;
+  }
+
+  .hl-i {
+    color: #818cf8;
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+
+  .btn-open-guide {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 10px;
+    background: rgba(129, 140, 248, 0.15);
+    border: 1px solid rgba(129, 140, 248, 0.45);
+    color: #c7d2fe;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(129, 140, 248, 0.28);
+    border-color: #818cf8;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(129, 140, 248, 0.35);
+  }
+
+  /* =========================================================================
+     PESTAÑAS DE NAVEGACIÓN SUPERIOR (TOP-CENTER)
+     ========================================================================= */
+  .i-tabs-nav {
+    position: absolute;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  }
+
+  .i-tab-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.18s ease;
+  }
+
+  .i-tab-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .i-tab-btn.active {
+    background: rgba(129, 140, 248, 0.2);
+    border-color: rgba(129, 140, 248, 0.6);
+    color: #c7d2fe;
+    box-shadow: 0 0 14px rgba(129, 140, 248, 0.25);
+  }
+
+  .tab-icon {
+    font-size: 0.95rem;
+  }
+
+  /* =========================================================================
+     PANEL FLOTANTE DERECHO DE PARÁMETROS
+     ========================================================================= */
+  .i-panel {
+    position: absolute;
+    top: 76px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    transition: width 0.25s ease, transform 0.25s ease;
+  }
+
+  .i-panel.collapsed {
+    width: 48px;
+    overflow: hidden;
+  }
+
+  .i-panel.collapsed .panel-content {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .btn-fold {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .panel-content {
+    padding: 1rem 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+
+  .ctl-header-bar {
+    margin-bottom: 0.65rem;
+  }
+
+  .sec-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #818cf8;
+    text-transform: uppercase;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .math-sym {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #818cf8;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    color: #38bdf8;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #818cf8;
+    cursor: pointer;
+  }
+
+  .quick-presets-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  .preset-chip {
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .preset-chip:hover, .preset-chip.active {
+    background: rgba(129, 140, 248, 0.2);
+    border-color: #818cf8;
+    color: #c7d2fe;
+  }
+
+  .btn-segmented {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .seg-btn {
+    flex: 1;
+    padding: 0.35rem 0.5rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .seg-btn.active {
+    background: rgba(129, 140, 248, 0.25);
+    border-color: #818cf8;
+    color: #ffffff;
+  }
+
+  .toggles-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.85rem;
+  }
+
+  .tg-section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .toggles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    padding: 0.25rem 0.35rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+  }
+
+  .toggle-pill:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .color-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot-c, #818cf8);
+    box-shadow: 0 0 6px var(--dot-c, #818cf8);
+  }
+
+  .camera-views-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.85rem;
+  }
+
+  .cam-btns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+
+  .cam-btn {
+    padding: 0.35rem 0.3rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .cam-btn.active, .cam-btn:hover {
+    background: rgba(129, 140, 248, 0.2);
+    border-color: #818cf8;
+    color: #ffffff;
+  }
+
+  /* =========================================================================
+     TARJETA FLOTANTE DE TELEMETRÍA (INFERIOR IZQUIERDA)
+     ========================================================================= */
+  .telemetry-badge {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    z-index: 15;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    padding: 0.85rem 1.15rem;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 480px;
+  }
+
+  .tele-top {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .tele-type-pill {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(129, 140, 248, 0.2);
+    color: #c7d2fe;
+    border: 1px solid rgba(129, 140, 248, 0.4);
+  }
+
+  .tele-condition {
+    font-size: 0.74rem;
+    color: #94a3b8;
+  }
+
+  .tele-metrics-row {
+    display: flex;
+    gap: 1.25rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding: 0.45rem 0;
+  }
+
+  .tm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tm-label {
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+  }
+
+  .tm-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    color: #f1f5f9;
+  }
+
+  .tm-highlight {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .tele-eq-box {
+    font-size: 0.85rem;
+    color: #c7d2fe;
+    overflow-x: auto;
+  }
+
+  /* =========================================================================
+     HINT FLOTANTE INFERIOR
+     ========================================================================= */
+  .cam-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.74rem;
+    color: rgba(148, 163, 184, 0.6);
+    pointer-events: none;
+    background: rgba(13, 20, 36, 0.6);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  /* =========================================================================
+     DRAWER PEDAGÓGICO DE EXPLICACIÓN DETALLADA
+     ========================================================================= */
+  .guide-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(600px, 92vw);
+    background: rgba(10, 15, 28, 0.96);
+    border-right: 1px solid rgba(129, 140, 248, 0.35);
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+  }
+
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .gh-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #818cf8;
+  }
+
+  .guide-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0.2rem 0 0;
+  }
+
+  .btn-close-guide {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .guide-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem 3rem;
+  }
+
+  .guide-article {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .guide-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .sec-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+  }
+
+  .guide-section h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0;
+  }
+
+  .guide-section p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(203, 213, 225, 0.85);
+    margin: 0;
+  }
+
+  .guide-box {
+    background: rgba(129, 140, 248, 0.08);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .math-center {
+    display: flex;
+    justify-content: center;
+    margin: 0.65rem 0;
+    color: #38bdf8;
+  }
+
+  @media (max-width: 900px) {
+    .i-tabs-nav {
+      top: auto;
+      bottom: 80px;
+      left: 12px;
+      right: 12px;
+      transform: none;
+      overflow-x: auto;
+      border-radius: 14px;
+      justify-content: flex-start;
+    }
+    .i-header {
+      top: 65px;
+      left: 14px;
+      right: 14px;
+      max-width: none;
+    }
+    .i-panel {
+      top: auto;
+      bottom: 14px;
+      right: 14px;
+      width: calc(100vw - 28px);
+      max-height: 50vh;
+    }
+    .telemetry-badge {
+      display: none;
+    }
+    .cam-hint {
+      display: none;
+    }
+  }
+
+  /* =========================================================================
+     MODO CLARO (LIGHT THEME)
+     ========================================================================= */
+  :global([data-theme="light"]) .i-container {
+    background: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .i-kicker {
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.1);
+    border-color: rgba(79, 70, 229, 0.3);
+  }
+
+  :global([data-theme="light"]) .i-title {
+    color: #0f172a;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .i-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .hl-i {
+    color: #4f46e5;
+  }
+
+  :global([data-theme="light"]) .btn-open-guide {
+    background: rgba(79, 70, 229, 0.1);
+    border-color: rgba(79, 70, 229, 0.35);
+    color: #4338ca;
+  }
+
+  :global([data-theme="light"]) .btn-open-guide:hover {
+    background: rgba(79, 70, 229, 0.2);
+    border-color: #4f46e5;
+    color: #312e81;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.18);
+  }
+
+  :global([data-theme="light"]) .i-tabs-nav,
+  :global([data-theme="light"]) .i-panel,
+  :global([data-theme="light"]) .telemetry-badge,
+  :global([data-theme="light"]) .cam-hint {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .i-tab-btn {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .i-tab-btn:hover {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .i-tab-btn.active {
+    background: rgba(79, 70, 229, 0.14);
+    border-color: #4f46e5;
+    color: #4338ca;
+    box-shadow: none;
+  }
+
+  :global([data-theme="light"]) .panel-header {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .ph-title-group {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .btn-fold {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .sec-tag {
+    color: #4f46e5;
+  }
+
+  :global([data-theme="light"]) .ctl-header {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .math-sym {
+    color: #4f46e5;
+  }
+
+  :global([data-theme="light"]) .ctl-val {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .preset-chip,
+  :global([data-theme="light"]) .seg-btn,
+  :global([data-theme="light"]) .cam-btn {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .preset-chip:hover,
+  :global([data-theme="light"]) .preset-chip.active,
+  :global([data-theme="light"]) .seg-btn.active,
+  :global([data-theme="light"]) .cam-btn.active,
+  :global([data-theme="light"]) .cam-btn:hover {
+    background: rgba(79, 70, 229, 0.12);
+    border-color: #4f46e5;
+    color: #4338ca;
+  }
+
+  :global([data-theme="light"]) .toggles-box,
+  :global([data-theme="light"]) .camera-views-box {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .tg-section-label {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .toggle-pill {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .toggle-pill:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  :global([data-theme="light"]) .tele-type-pill {
+    background: rgba(79, 70, 229, 0.12);
+    border-color: rgba(79, 70, 229, 0.35);
+    color: #4338ca;
+  }
+
+  :global([data-theme="light"]) .tele-condition,
+  :global([data-theme="light"]) .tm-label {
+    color: #64748b;
+  }
+
+  :global([data-theme="light"]) .tele-metrics-row {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .tm-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .tm-highlight {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .tele-eq-box {
+    color: #312e81;
+  }
+
+  :global([data-theme="light"]) .cam-hint {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: rgba(255, 255, 255, 0.98);
+    border-right-color: #cbd5e1;
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.12);
+  }
+
+  :global([data-theme="light"]) .guide-header {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .gh-badge {
+    color: #4f46e5;
+  }
+
+  :global([data-theme="light"]) .guide-header h2,
+  :global([data-theme="light"]) .guide-section h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .btn-close-guide {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .guide-section p {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .guide-box {
+    background: rgba(79, 70, 229, 0.06);
+    border-color: rgba(79, 70, 229, 0.25);
+    color: #1e293b;
+  }
+
+  :global([data-theme="light"]) .math-center {
+    color: #0284c7;
+  }
+</style>

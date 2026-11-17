@@ -1,0 +1,2005 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { site } from '../../config/site';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+const renderMath = (latex: string, displayMode = false) => {
+  try {
+    return katex.renderToString(latex, { displayMode, throwOnError: false });
+  } catch {
+    return latex;
+  }
+};
+---
+
+<BaseLayout
+  title={`Cálculo Visual 3D: Derivadas, Sumas de Riemann y Sólidos de Revolución — Math Simulator | ${site.name}`}
+  description="Laboratorio 3D interactivo de Cálculo Diferencial e Integral: paso al límite de secante a tangente, trazador de f'(x), sumas de Riemann en 3D, sólidos de revolución por discos y Teorema Fundamental del Cálculo."
+>
+  <SiteHeader activePage="simulator" statusText="08 · Math Simulator / Cálculo Visual 3D" ctaHref="/simulator" ctaLabel="← Catálogo de Simuladores" />
+
+  <main class="calc-container">
+    <!-- LIENZO 3D CANVAS PRINCIPAL -->
+    <canvas id="scene" class="calc-canvas"></canvas>
+
+    <!-- CABECERA SUPERIOR FLOTANTE IZQUIERDA -->
+    <header class="calc-header">
+      <div class="calc-kicker">
+        <span class="pulse-dot"></span>
+        <span>CÁLCULO DIFERENCIAL E INTEGRAL · BACHILLERATO &amp; SELECTIVIDAD</span>
+      </div>
+      <h1 class="calc-title">Cálculo Visual en 3D</h1>
+      <p class="calc-desc" id="brandDesc">
+        Observa cómo el cambio instantáneo (<strong class="hl-calc">derivada</strong>) y la acumulación continua (<strong class="hl-calc">integral</strong>) son dos caras inversas de la misma moneda geométrica.
+      </p>
+      <button type="button" class="btn-open-guide" id="btnOpenGuide" title="Abrir explicación didáctica completa">
+        <span>📖 Teoría y Demostración Paso a Paso</span>
+      </button>
+    </header>
+
+    <!-- SELECTOR DE LAS 4 ESCENAS / PESTAÑAS (PARTE SUPERIOR CENTRAL) -->
+    <nav class="calc-tabs-nav" aria-label="Escena de simulación">
+      <button type="button" class="calc-tab-btn active" data-tab="deriv" id="tabDerivBtn">
+        <span class="tab-icon">📈</span>
+        <span>1. Secante → Tangente f'(x)</span>
+      </button>
+      <button type="button" class="calc-tab-btn" data-tab="riemann" id="tabRiemannBtn">
+        <span class="tab-icon">📊</span>
+        <span>2. Sumas de Riemann</span>
+      </button>
+      <button type="button" class="calc-tab-btn" data-tab="solid" id="tabSolidBtn">
+        <span class="tab-icon">🏺</span>
+        <span>3. Sólido de Revolución 3D</span>
+      </button>
+      <button type="button" class="calc-tab-btn" data-tab="tfc" id="tabTfcBtn">
+        <span class="tab-icon">🔗</span>
+        <span>4. Teorema Fundamental</span>
+      </button>
+    </nav>
+
+    <!-- MODAL / DRAWER PEDAGÓGICO -->
+    <div class="guide-drawer" id="guideDrawer">
+      <div class="guide-header">
+        <div class="gh-left">
+          <span class="gh-badge">TRATADO DE CÁLCULO VISUAL</span>
+          <h2 id="guideModalTitle">Derivadas, Integrales y su Conexión Profunda</h2>
+        </div>
+        <button type="button" class="btn-close-guide" id="btnCloseGuide" title="Cerrar guía">✕</button>
+      </div>
+      <div class="guide-body" id="guideContent"></div>
+    </div>
+
+    <!-- PANEL FLOTANTE DE CONTROLES DERECHA -->
+    <aside class="calc-panel" id="panel">
+      <div class="panel-header">
+        <div class="ph-title-group">
+          <span class="ph-icon">🎛️</span>
+          <span class="ph-title">Controles &amp; Parámetros</span>
+        </div>
+        <button type="button" class="btn-fold" id="btnFold" title="Plegar / Desplegar panel">−</button>
+      </div>
+
+      <div class="panel-content" id="panelBody">
+
+        <!-- SELECTOR DE FUNCIÓN GLOBAL -->
+        <div class="ctl-section">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Función de Estudio f(x)</span>
+          </div>
+          <div class="fn-grid">
+            <button type="button" class="fn-btn active" data-fn="cubic">0.25x³ − 0.75x</button>
+            <button type="button" class="fn-btn" data-fn="quad">0.5x² − 1</button>
+            <button type="button" class="fn-btn" data-fn="sin">sin(1.5x) + 1.2</button>
+            <button type="button" class="fn-btn" data-fn="exp">0.5·e^(0.5x)</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 1: DERIVADA =================== -->
+        <div class="ctl-section tab-deriv-only">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Paso al Límite: Δx → 0</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slX0">Punto de estudio <span class="math-sym">x₀</span></label>
+              <span class="ctl-val" id="vX0">0.80</span>
+            </div>
+            <input type="range" id="slX0" min="-2.2" max="2.2" step="0.05" value="0.80" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slDx">Incremento <span class="math-sym">h = Δx</span></label>
+              <span class="ctl-val" id="vDx">1.10</span>
+            </div>
+            <input type="range" id="slDx" min="0.01" max="2.00" step="0.01" value="1.10" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnAnimLimit">▶ Animar Δx → 0</button>
+            <button type="button" class="preset-chip" id="btnResetDx">h = 1.10</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 2: SUMAS DE RIEMANN =================== -->
+        <div class="ctl-section tab-riemann-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Partición y Método Numérico</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slRiemannN">Rectángulos <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vRiemannN">8</span>
+            </div>
+            <input type="range" id="slRiemannN" min="2" max="100" step="1" value="8" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slLimA">Límite inferior <span class="math-sym">a</span></label>
+              <span class="ctl-val" id="vLimA">-1.50</span>
+            </div>
+            <input type="range" id="slLimA" min="-2.5" max="0.5" step="0.1" value="-1.50" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slLimB">Límite superior <span class="math-sym">b</span></label>
+              <span class="ctl-val" id="vLimB">2.00</span>
+            </div>
+            <input type="range" id="slLimB" min="0.6" max="2.6" step="0.1" value="2.00" />
+          </div>
+
+          <div class="ctl-group">
+            <label class="ctl-label">Criterio de altura:</label>
+            <div class="method-grid">
+              <button type="button" class="method-btn active" data-method="left">Izquierda</button>
+              <button type="button" class="method-btn" data-method="right">Derecha</button>
+              <button type="button" class="method-btn" data-method="mid">Punto Medio</button>
+              <button type="button" class="method-btn" data-method="trap">Trapecios</button>
+            </div>
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnAnimRiemann">▶ Animar n: 2 → 60</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 3: SÓLIDO DE REVOLUCIÓN =================== -->
+        <div class="ctl-section tab-solid-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Revolución Alrededor del Eje X</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slRevAngle">Ángulo de giro <span class="math-sym">θ</span></label>
+              <span class="ctl-val" id="vRevAngle">360°</span>
+            </div>
+            <input type="range" id="slRevAngle" min="15" max="360" step="5" value="360" />
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slDisksN">Discos de Riemann <span class="math-sym">n</span></label>
+              <span class="ctl-val" id="vDisksN">14</span>
+            </div>
+            <input type="range" id="slDisksN" min="4" max="40" step="1" value="14" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnAnimSolid">▶ Rotar 0° → 360°</button>
+          </div>
+        </div>
+
+        <!-- =================== ESCENA 4: TEOREMA FUNDAMENTAL =================== -->
+        <div class="ctl-section tab-tfc-only" style="display: none;">
+          <div class="ctl-header-bar">
+            <span class="sec-tag">Función Integral F(x) = ∫ₐˣ f(t) dt</span>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-header">
+              <label for="slTfcX">Posición actual <span class="math-sym">x</span></label>
+              <span class="ctl-val" id="vTfcX">1.20</span>
+            </div>
+            <input type="range" id="slTfcX" min="-1.5" max="2.4" step="0.05" value="1.20" />
+          </div>
+
+          <div class="quick-presets-row">
+            <button type="button" class="preset-chip" id="btnAnimTfc">▶ Barrer x en [a, b]</button>
+          </div>
+        </div>
+
+        <!-- TOGGLES DINÁMICOS POR ESCENA -->
+        <div class="toggles-box">
+          <span class="tg-section-label">Capas Visuales:</span>
+          <div class="toggles-grid" id="togglesContainer"></div>
+        </div>
+
+        <!-- VISTAS DE CÁMARA -->
+        <div class="camera-views-box">
+          <span class="tg-section-label">Vistas de Cámara:</span>
+          <div class="cam-btns-grid">
+            <button type="button" class="cam-btn active" data-view="iso">Perspectiva 3D</button>
+            <button type="button" class="cam-btn" data-view="front">Frontal (X-Y)</button>
+            <button type="button" class="cam-btn" data-view="top">Planta (X-Z)</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- TARJETA FLOTANTE DE TELEMETRÍA (INFERIOR IZQUIERDA) -->
+    <div class="telemetry-badge" id="telemetryCard">
+      <div class="tele-top">
+        <span class="tele-type-pill" id="teleBadgePill">DERIVADA INSTANTÁNEA</span>
+        <span class="tele-condition" id="teleCondition">Cuando Δx → 0, la pendiente secante converge a f'(x₀)</span>
+      </div>
+      <div class="tele-metrics-row" id="teleMetricsRow"></div>
+      <div class="tele-eq-box" id="teleEqBox"></div>
+    </div>
+
+    <!-- HINT FLOTANTE INFERIOR -->
+    <div class="cam-hint" id="camHint">
+      <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 3D</span>
+      <span>•</span>
+      <span>⌨️ <strong>Shift + Arrastrar:</strong> Desplazar vista</span>
+      <span>•</span>
+      <span>📜 <strong>Rueda:</strong> Zoom</span>
+      <span>•</span>
+      <span>⚡ <strong>Doble clic:</strong> Reiniciar vista</span>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import katex from 'katex';
+
+  (() => {
+    const canvas = document.getElementById('scene') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    const renderMathClient = (latex: string, displayMode = false) => {
+      try {
+        return katex.renderToString(latex, { displayMode, throwOnError: false });
+      } catch {
+        return latex;
+      }
+    };
+
+    // Paleta adaptativa Modo Oscuro / Modo Claro
+    let isLight = document.documentElement.dataset.theme === 'light';
+    let C_CYN = '#2dd4ea';
+    let C_ROSE = '#fb7185';
+    let C_VIO = '#a78bfa';
+    let C_EME = '#34d399';
+    let C_ORG = '#fb923c';
+    let C_AMB = '#fbbf24';
+    let AXIS = 'rgba(148, 163, 184, 0.45)';
+    let COL_AXIS_LBL = '#c4d2e6';
+    let COL_GRID = 'rgba(148, 163, 184, 0.08)';
+    let COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+    const FONT_MATH = 'Georgia, "Times New Roman", serif';
+
+    const syncThemeColors = () => {
+      isLight = document.documentElement.dataset.theme === 'light';
+      if (isLight) {
+        C_CYN = '#0891b2';
+        C_ROSE = '#e11d48';
+        C_VIO = '#7c3aed';
+        C_EME = '#059669';
+        C_ORG = '#ea580c';
+        C_AMB = '#d97706';
+        AXIS = 'rgba(51, 65, 85, 0.55)';
+        COL_AXIS_LBL = '#1e293b';
+        COL_GRID = 'rgba(15, 23, 42, 0.08)';
+        COL_VEC_MAIN = 'rgba(15, 23, 42, 0.88)';
+      } else {
+        C_CYN = '#2dd4ea';
+        C_ROSE = '#fb7185';
+        C_VIO = '#a78bfa';
+        C_EME = '#34d399';
+        C_ORG = '#fb923c';
+        C_AMB = '#fbbf24';
+        AXIS = 'rgba(148, 163, 184, 0.45)';
+        COL_AXIS_LBL = '#c4d2e6';
+        COL_GRID = 'rgba(148, 163, 184, 0.08)';
+        COL_VEC_MAIN = 'rgba(241, 245, 249, 0.92)';
+      }
+    };
+    syncThemeColors();
+
+    const hexA = (hex: string, a: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    };
+
+    // Definición analítica de funciones f(x), f'(x) y primitiva ∫f(x)dx
+    type FnKey = 'cubic' | 'quad' | 'sin' | 'exp';
+    const FUNCTIONS: Record<FnKey, {
+      label: string;
+      f: (x: number) => number;
+      df: (x: number) => number;
+      F: (x: number) => number;
+      latex: string;
+    }> = {
+      cubic: {
+        label: '0.25x³ − 0.75x',
+        f: x => 0.25 * x * x * x - 0.75 * x,
+        df: x => 0.75 * x * x - 0.75,
+        F: x => 0.0625 * Math.pow(x, 4) - 0.375 * x * x,
+        latex: String.raw`f(x) = 0.25x^3 - 0.75x`
+      },
+      quad: {
+        label: '0.5x² − 1',
+        f: x => 0.5 * x * x - 1,
+        df: x => x,
+        F: x => (1 / 6) * x * x * x - x,
+        latex: String.raw`f(x) = 0.5x^2 - 1`
+      },
+      sin: {
+        label: 'sin(1.5x) + 1.2',
+        f: x => Math.sin(1.5 * x) + 1.2,
+        df: x => 1.5 * Math.cos(1.5 * x),
+        F: x => -Math.cos(1.5 * x) / 1.5 + 1.2 * x,
+        latex: String.raw`f(x) = \sin(1.5x) + 1.2`
+      },
+      exp: {
+        label: '0.5·e^(0.5x)',
+        f: x => 0.5 * Math.exp(0.5 * x),
+        df: x => 0.25 * Math.exp(0.5 * x),
+        F: x => Math.exp(0.5 * x),
+        latex: String.raw`f(x) = 0.5 e^{0.5x}`
+      }
+    };
+
+    // Leer ?tab= de URL si viene desde una tarjeta específica
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramTab = urlParams.get('tab');
+    const initialTab = (paramTab === 'riemann' || paramTab === 'solid' || paramTab === 'tfc' || paramTab === 'deriv') ? paramTab : 'deriv';
+
+    const state = {
+      tab: initialTab as 'deriv' | 'riemann' | 'solid' | 'tfc',
+      fn: 'cubic' as FnKey,
+      x0: 0.80,
+      dx: 1.10,
+      riemannN: 8,
+      limA: -1.5,
+      limB: 2.0,
+      method: 'left' as 'left' | 'right' | 'mid' | 'trap',
+      revAngle: 360,
+      disksN: 14,
+      tfcX: 1.20,
+      t: 0,
+      showGrid: true,
+      // Toggles
+      showSecant: true,
+      showTangent: true,
+      showDerivCurve: true,
+      showDiffTriangle: true,
+      showExactArea: true,
+      show3DBars: true,
+      showDisks: true,
+      showMesh: true,
+      showIntegralCurve: true,
+    };
+
+    // Cámara 3D
+    let W = 0, H = 0, CX = 0, CY = 0, FOCAL = 1000;
+    const cam = { az: -0.5, el: 0.25, dist: 7.5, tx: 0, ty: 0.3, tz: 0 };
+
+    const resize = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const panelWidth = W > 1024 ? 330 : 0;
+      CX = Math.round((W - panelWidth) / 2);
+      CY = Math.round(H / 2);
+      FOCAL = 1.15 * Math.min(H, (W - panelWidth) * 1.05);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    type Pt3 = [number, number, number];
+    type Pt2 = [number, number];
+
+    const sub = (a: Pt3, b: Pt3): Pt3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const dot3 = (a: Pt3, b: Pt3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a: Pt3, b: Pt3): Pt3 => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const norm = (a: Pt3): Pt3 => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
+
+    const makeCam = () => {
+      const cp = Math.cos(cam.el), sp = Math.sin(cam.el);
+      const eye: Pt3 = [
+        cam.tx + cam.dist * cp * Math.sin(cam.az),
+        cam.ty + cam.dist * sp,
+        cam.tz + cam.dist * cp * Math.cos(cam.az),
+      ];
+      const f = norm(sub([cam.tx, cam.ty, cam.tz], eye));
+      const r = norm(cross(f, [0, 1, 0]));
+      const u = cross(r, f);
+      return { eye, f, r, u };
+    };
+
+    const project = (p: Pt3, c: ReturnType<typeof makeCam>): { p2: Pt2; z: number; visible: boolean } => {
+      const d = sub(p, c.eye);
+      const zCam = dot3(d, c.f);
+      if (zCam <= 0.05) return { p2: [0, 0], z: zCam, visible: false };
+      const xCam = dot3(d, c.r);
+      const yCam = dot3(d, c.u);
+      const s = FOCAL / zCam;
+      return {
+        p2: [CX + xCam * s, CY - yCam * s],
+        z: zCam,
+        visible: true,
+      };
+    };
+
+    const line3 = (C: ReturnType<typeof makeCam>, a: Pt3, b: Pt3, col: string, w = 1.5, dash: number[] = []) => {
+      const pa = project(a, C);
+      const pb = project(b, C);
+      if (!pa.visible && !pb.visible) return;
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = w;
+      if (dash.length) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(pa.p2[0], pa.p2[1]);
+      ctx.lineTo(pb.p2[0], pb.p2[1]);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const fillPoly3 = (C: ReturnType<typeof makeCam>, pts: Pt3[], col: string) => {
+      const p2s = pts.map(p => project(p, C)).filter(p => p.visible);
+      if (p2s.length < 3) return;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(p2s[0].p2[0], p2s[0].p2[1]);
+      for (let i = 1; i < p2s.length; i++) ctx.lineTo(p2s[i].p2[0], p2s[i].p2[1]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const glowDot = (C: ReturnType<typeof makeCam>, p: Pt3, r: number, core: string, glow: string) => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.shadowColor = glow;
+      ctx.shadowBlur = r * 1.5;
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(pp.p2[0], pp.p2[1], r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const label3 = (C: ReturnType<typeof makeCam>, p: Pt3, text: string, col = '#ffffff', size = 11, align: CanvasTextAlign = 'center', dy = -10, fontStyle = '') => {
+      const pp = project(p, C);
+      if (!pp.visible) return;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.font = `${fontStyle ? fontStyle + ' ' : ''}${size}px ${fontStyle ? FONT_MATH : 'ui-sans-serif, system-ui, sans-serif'}`;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, pp.p2[0], pp.p2[1] + dy);
+      ctx.restore();
+    };
+
+    const arrowAt = (C: ReturnType<typeof makeCam>, tip: Pt3, tail: Pt3, col: string) => {
+      const pt = project(tip, C);
+      const pr = project(tail, C);
+      if (!pt.visible || !pr.visible) return;
+      const dx = pt.p2[0] - pr.p2[0];
+      const dy = pt.p2[1] - pr.p2[1];
+      const len = Math.hypot(dx, dy);
+      if (len < 2) return;
+      const ux = dx / len, uy = dy / len;
+      const sz = 8;
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(pt.p2[0], pt.p2[1]);
+      ctx.lineTo(pt.p2[0] - sz * ux + (sz * 0.45) * uy, pt.p2[1] - sz * uy - (sz * 0.45) * ux);
+      ctx.lineTo(pt.p2[0] - sz * ux - (sz * 0.45) * uy, pt.p2[1] - sz * uy + (sz * 0.45) * ux);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const gridRect = (C: ReturnType<typeof makeCam>, x0: number, x1: number, y0: number, y1: number, st = 0.5) => {
+      for (let x = Math.ceil(x0 / st) * st; x <= x1 + 1e-9; x += st) {
+        line3(C, [x, y0, 0], [x, y1, 0], COL_GRID, 1);
+      }
+      for (let y = Math.ceil(y0 / st) * st; y <= y1 + 1e-9; y += st) {
+        line3(C, [x0, y, 0], [x1, y, 0], COL_GRID, 1);
+      }
+    };
+
+    // Cálculo de Suma de Riemann
+    const computeRiemann = (fnKey: FnKey, a: number, b: number, n: number, method: typeof state.method) => {
+      const f = FUNCTIONS[fnKey].f;
+      const F = FUNCTIONS[fnKey].F;
+      const dx = (b - a) / n;
+      let sum = 0;
+      for (let i = 0; i < n; i++) {
+        const x0 = a + i * dx;
+        const x1 = x0 + dx;
+        if (method === 'left') sum += f(x0) * dx;
+        else if (method === 'right') sum += f(x1) * dx;
+        else if (method === 'mid') sum += f((x0 + x1) / 2) * dx;
+        else sum += 0.5 * (f(x0) + f(x1)) * dx;
+      }
+      const exact = F(b) - F(a);
+      return { sum, exact, err: Math.abs(sum - exact), dx };
+    };
+
+    // Cálculo numérico volumen sólido de revolución V = π ∫ f(x)² dx
+    const computeSolidVolume = (fnKey: FnKey, a: number, b: number, n: number) => {
+      const f = FUNCTIONS[fnKey].f;
+      const dx = (b - a) / n;
+      let diskVol = 0;
+      for (let i = 0; i < n; i++) {
+        const xm = a + (i + 0.5) * dx;
+        const r = f(xm);
+        diskVol += Math.PI * r * r * dx;
+      }
+      // Integral exacta aproximada por Simpson fino (N=400)
+      const N = 400;
+      const h = (b - a) / N;
+      let exactVol = 0;
+      for (let i = 0; i <= N; i++) {
+        const x = a + i * h;
+        const w = (i === 0 || i === N) ? 1 : (i % 2 === 1 ? 4 : 2);
+        const r = f(x);
+        exactVol += w * Math.PI * r * r;
+      }
+      exactVol *= h / 3;
+      return { diskVol, exactVol, err: Math.abs(diskVol - exactVol) };
+    };
+
+    // Elementos UI
+    const togglesContainer = document.getElementById('togglesContainer') as HTMLElement;
+    const teleBadgePill = document.getElementById('teleBadgePill') as HTMLElement;
+    const teleCondition = document.getElementById('teleCondition') as HTMLElement;
+    const teleMetricsRow = document.getElementById('teleMetricsRow') as HTMLElement;
+    const teleEqBox = document.getElementById('teleEqBox') as HTMLElement;
+
+    const updateTogglesUI = () => {
+      if (!togglesContainer) return;
+      togglesContainer.innerHTML = '';
+
+      type ToggleDef = { key: keyof typeof state; label: string; color: string };
+      let list: ToggleDef[] = [];
+
+      if (state.tab === 'deriv') {
+        list = [
+          { key: 'showSecant', label: 'Recta Secante (P → Q)', color: C_VIO },
+          { key: 'showTangent', label: 'Recta Tangente Límite', color: C_AMB },
+          { key: 'showDiffTriangle', label: 'Triángulo Δx / Δy', color: C_ORG },
+          { key: 'showDerivCurve', label: 'Trazador Curva f\'(x)', color: C_ROSE },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'riemann') {
+        list = [
+          { key: 'show3DBars', label: 'Bloques 3D Extruidos', color: C_CYN },
+          { key: 'showExactArea', label: 'Área Exacta Sombreada', color: C_EME },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      } else if (state.tab === 'solid') {
+        list = [
+          { key: 'showMesh', label: 'Superficie de Revolución', color: C_CYN },
+          { key: 'showDisks', label: 'Discos de Riemann πr²Δx', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla Espacial', color: '#64748b' },
+        ];
+      } else {
+        list = [
+          { key: 'showIntegralCurve', label: 'Curva Integral F(x)', color: C_EME },
+          { key: 'showTangent', label: 'Pendiente F\'(x) = f(x)', color: C_AMB },
+          { key: 'showGrid', label: 'Rejilla y Ejes', color: '#64748b' },
+        ];
+      }
+
+      list.forEach(t => {
+        const lbl = document.createElement('label');
+        lbl.className = 'toggle-pill';
+        const inp = document.createElement('input');
+        inp.type = 'checkbox';
+        inp.checked = Boolean(state[t.key]);
+        inp.addEventListener('change', () => {
+          (state as any)[t.key] = inp.checked;
+        });
+        const dot = document.createElement('span');
+        dot.className = 'color-dot';
+        dot.style.setProperty('--dot-c', t.color);
+        const txt = document.createElement('span');
+        txt.textContent = t.label;
+        lbl.appendChild(inp);
+        lbl.appendChild(dot);
+        lbl.appendChild(txt);
+        togglesContainer.appendChild(lbl);
+      });
+    };
+
+    const updateTelemetry = () => {
+      const fnObj = FUNCTIONS[state.fn];
+
+      if (state.tab === 'deriv') {
+        const y0 = fnObj.f(state.x0);
+        const y1 = fnObj.f(state.x0 + state.dx);
+        const secSlope = (y1 - y0) / state.dx;
+        const tanSlope = fnObj.df(state.x0);
+
+        teleBadgePill.textContent = '1. DERIVADA Y SECANTE';
+        teleCondition.textContent = state.dx < 0.05
+          ? '¡Límite alcanzado! La recta secante se funde con la tangente exacta'
+          : 'Reduce Δx → 0 para observar cómo la secante converge a f\'(x₀)';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Pendiente Secante</span>
+            <span class="tm-val" style="color: ${C_VIO};">${secSlope.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Derivada f'(x₀)</span>
+            <span class="tm-val tm-highlight">${tanSlope.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Diferencia |ε|</span>
+            <span class="tm-val" style="color: ${C_AMB};">${Math.abs(secSlope - tanSlope).toFixed(4)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`f'(x_0) = \lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x} \approx \frac{${(y1 - y0).toFixed(2)}}{${state.dx.toFixed(2)}} = ${secSlope.toFixed(2)}`,
+          false
+        );
+      } else if (state.tab === 'riemann') {
+        const { sum, exact, err } = computeRiemann(state.fn, state.limA, state.limB, state.riemannN, state.method);
+        teleBadgePill.textContent = '2. SUMAS DE RIEMANN';
+        teleCondition.textContent = `Aproximación mediante ${state.riemannN} particiones en [${state.limA.toFixed(1)}, ${state.limB.toFixed(1)}]`;
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Suma Riemann</span>
+            <span class="tm-val tm-highlight">${sum.toFixed(4)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Integral Exacta</span>
+            <span class="tm-val" style="color: ${C_EME};">${exact.toFixed(4)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Error |ε|</span>
+            <span class="tm-val" style="color: ${C_AMB};">${err.toFixed(4)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\int_{${state.limA.toFixed(1)}}^{${state.limB.toFixed(1)}} f(x)\,dx \approx \sum_{i=1}^{${state.riemannN}} f(x_i^*)\,\Delta x = ${sum.toFixed(3)}`,
+          false
+        );
+      } else if (state.tab === 'solid') {
+        const { diskVol, exactVol, err } = computeSolidVolume(state.fn, -1.2, 1.8, state.disksN);
+        teleBadgePill.textContent = '3. SÓLIDO DE REVOLUCIÓN 3D';
+        teleCondition.textContent = `Volumen generado por ${state.disksN} discos cilíndricos de radio r = f(x) al rotar ${state.revAngle}°`;
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Volumen Discos</span>
+            <span class="tm-val tm-highlight">${diskVol.toFixed(3)} u³</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Volumen Exacto</span>
+            <span class="tm-val" style="color: ${C_AMB};">${exactVol.toFixed(3)} u³</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Error |ε|</span>
+            <span class="tm-val">${err.toFixed(3)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`V = \pi \int_{a}^{b} \big[f(x)\big]^2\,dx \approx \sum_{i=1}^{${state.disksN}} \pi \big[f(x_i)\big]^2 \Delta x`,
+          false
+        );
+      } else {
+        const a = -1.5;
+        const x = state.tfcX;
+        const areaVal = fnObj.F(x) - fnObj.F(a);
+        const heightVal = fnObj.f(x);
+
+        teleBadgePill.textContent = '4. TEOREMA FUNDAMENTAL';
+        teleCondition.textContent = 'La pendiente de la integral acumulada F(x) es exactamente la altura f(x)';
+
+        teleMetricsRow.innerHTML = `
+          <div class="tm-item">
+            <span class="tm-label">Área F(x)</span>
+            <span class="tm-val" style="color: ${C_EME};">${areaVal.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Pendiente F'(x)</span>
+            <span class="tm-val tm-highlight">${heightVal.toFixed(3)}</span>
+          </div>
+          <div class="tm-item">
+            <span class="tm-label">Altura f(x)</span>
+            <span class="tm-val" style="color: ${C_AMB};">${heightVal.toFixed(3)}</span>
+          </div>
+        `;
+        teleEqBox.innerHTML = renderMathClient(
+          String.raw`\frac{d}{dx} \left[ \int_{a}^{x} f(t)\,dt \right] = f(x) = ${heightVal.toFixed(2)}`,
+          false
+        );
+      }
+    };
+
+    // Guía Pedagógica
+    const guideContent = document.getElementById('guideContent') as HTMLElement;
+    const populateGuide = () => {
+      if (!guideContent) return;
+      guideContent.innerHTML = `
+        <article class="guide-article">
+          <section class="guide-section">
+            <div class="sec-badge">1. EL PROBLEMA DE LA TANGENTE (DERIVADA)</div>
+            <h3>¿Cómo medir la velocidad en un único instante?</h3>
+            <p>
+              Para medir una pendiente media entre dos puntos $P(x_0, f(x_0))$ y $Q(x_0 + h, f(x_0 + h))$ usamos la recta secante. Pero cuando queremos la <strong>velocidad o pendiente instantánea</strong> en $P$, acercamos $Q$ hacia $P$ haciendo $h = \Delta x \to 0$:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}`, true)}</div>
+            <p>
+              En el simulador, observa que cuando $f'(x) = 0$ (la curva derivada roja cruza el eje $X$), la función original $f(x)$ alcanza un máximo o mínimo local.
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">2. EL PROBLEMA DEL ÁREA (SUMAS DE RIEMANN)</div>
+            <h3>Particionar para conquistar lo curvo</h3>
+            <p>
+              Bernhard Riemann formalizó cómo calcular el área exacta bajo una curva dividiendo $[a, b]$ en $n$ rectángulos de base $\Delta x = \frac{b-a}{n}$ y sumando sus áreas. Al hacer $n \to \infty$, el error desaparece:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`\int_a^b f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i^*)\,\Delta x`, true)}</div>
+            <p>
+              Fíjate en la diferencia de precisión entre tomar la altura por la izquierda, por el punto medio o usando <strong>trapecios</strong> (que convergen muchísimo más rápido).
+            </p>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">3. SÓLIDOS DE REVOLUCIÓN EN 3D</div>
+            <h3>De rectángulos planos a discos cilíndricos</h3>
+            <p>
+              Si giramos una curva $y = f(x)$ $360^\circ$ alrededor del eje $X$, cada rectángulo de Riemann genera un <strong>disco cilíndrico</strong> de radio $r = f(x)$ y grosor $\Delta x$, cuyo volumen elemental es $\pi r^2 \Delta x$. Sumando infinitos discos obtenemos la fórmula de Selectividad:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`V = \pi \int_a^b \big[f(x)\big]^2\,dx`, true)}</div>
+          </section>
+
+          <section class="guide-section">
+            <div class="sec-badge">4. EL TEOREMA FUNDAMENTAL DEL CÁLCULO</div>
+            <h3>La unión histórica de Newton y Leibniz</h3>
+            <p>
+              Si definimos la función área acumulada $F(x) = \int_a^x f(t)\,dt$, un pequeño avance $\Delta x$ añade una franja de área $\Delta F \approx f(x)\,\Delta x$. Dividiendo por $\Delta x$, descubrimos que la derivada del área es la propia curva original:
+            </p>
+            <div class="math-center">${renderMathClient(String.raw`\frac{d}{dx}\int_a^x f(t)\,dt = f(x)`, true)}</div>
+          </section>
+        </article>
+      `;
+    };
+    populateGuide();
+
+    // Controles DOM
+    const tabBtns = document.querySelectorAll('.calc-tab-btn');
+    const fnBtns = document.querySelectorAll('.fn-btn');
+    const methodBtns = document.querySelectorAll('.method-btn');
+    const camBtns = document.querySelectorAll('.cam-btn');
+    const btnFold = document.getElementById('btnFold');
+    const panel = document.getElementById('panel');
+    const btnOpenGuide = document.getElementById('btnOpenGuide');
+    const btnCloseGuide = document.getElementById('btnCloseGuide');
+    const guideDrawer = document.getElementById('guideDrawer');
+
+    btnOpenGuide?.addEventListener('click', () => guideDrawer?.classList.add('open'));
+    btnCloseGuide?.addEventListener('click', () => guideDrawer?.classList.remove('open'));
+    btnFold?.addEventListener('click', () => {
+      panel?.classList.toggle('collapsed');
+      if (btnFold) btnFold.textContent = panel?.classList.contains('collapsed') ? '+' : '−';
+    });
+
+    const ctlSections = {
+      deriv: document.querySelector('.tab-deriv-only') as HTMLElement,
+      riemann: document.querySelector('.tab-riemann-only') as HTMLElement,
+      solid: document.querySelector('.tab-solid-only') as HTMLElement,
+      tfc: document.querySelector('.tab-tfc-only') as HTMLElement,
+    };
+
+    const setCameraForTab = (tab: typeof state.tab) => {
+      if (tab === 'solid') {
+        cam.az = -0.75; cam.el = 0.38; cam.dist = 8.0; cam.tx = 0.2; cam.ty = 0; cam.tz = 0;
+      } else if (tab === 'riemann') {
+        cam.az = -0.45; cam.el = 0.28; cam.dist = 7.8; cam.tx = 0.2; cam.ty = 0.3; cam.tz = 0;
+      } else {
+        cam.az = 0.001; cam.el = 0.02; cam.dist = 7.2; cam.tx = 0.1; cam.ty = 0.25; cam.tz = 0;
+      }
+    };
+
+    const switchTab = (tab: typeof state.tab) => {
+      state.tab = tab;
+      tabBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
+      Object.keys(ctlSections).forEach(k => {
+        const el = ctlSections[k as keyof typeof ctlSections];
+        if (el) el.style.display = k === tab ? 'block' : 'none';
+      });
+      setCameraForTab(tab);
+      updateTogglesUI();
+      updateTelemetry();
+    };
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab') as typeof state.tab));
+    });
+
+    // Selector de función
+    fnBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        fnBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.fn = btn.getAttribute('data-fn') as FnKey;
+        updateTelemetry();
+      });
+    });
+
+    // Sliders Escena 1
+    const slX0 = document.getElementById('slX0') as HTMLInputElement;
+    const vX0 = document.getElementById('vX0') as HTMLElement;
+    const slDx = document.getElementById('slDx') as HTMLInputElement;
+    const vDx = document.getElementById('vDx') as HTMLElement;
+    slX0?.addEventListener('input', () => {
+      state.x0 = parseFloat(slX0.value);
+      if (vX0) vX0.textContent = state.x0.toFixed(2);
+      updateTelemetry();
+    });
+    slDx?.addEventListener('input', () => {
+      state.dx = parseFloat(slDx.value);
+      if (vDx) vDx.textContent = state.dx.toFixed(2);
+      updateTelemetry();
+    });
+
+    let animTimer: number | null = null;
+    const stopAnim = () => {
+      if (animTimer !== null) {
+        cancelAnimationFrame(animTimer);
+        animTimer = null;
+      }
+    };
+
+    document.getElementById('btnAnimLimit')?.addEventListener('click', () => {
+      stopAnim();
+      let cur = 1.6;
+      const step = () => {
+        cur = Math.max(0.01, cur * 0.965);
+        state.dx = cur;
+        if (slDx) slDx.value = cur.toFixed(2);
+        if (vDx) vDx.textContent = cur.toFixed(2);
+        updateTelemetry();
+        if (cur > 0.012 && state.tab === 'deriv') animTimer = requestAnimationFrame(step);
+      };
+      animTimer = requestAnimationFrame(step);
+    });
+
+    document.getElementById('btnResetDx')?.addEventListener('click', () => {
+      stopAnim();
+      state.dx = 1.1;
+      if (slDx) slDx.value = '1.10';
+      if (vDx) vDx.textContent = '1.10';
+      updateTelemetry();
+    });
+
+    // Sliders Escena 2
+    const slRiemannN = document.getElementById('slRiemannN') as HTMLInputElement;
+    const vRiemannN = document.getElementById('vRiemannN') as HTMLElement;
+    const slLimA = document.getElementById('slLimA') as HTMLInputElement;
+    const vLimA = document.getElementById('vLimA') as HTMLElement;
+    const slLimB = document.getElementById('slLimB') as HTMLInputElement;
+    const vLimB = document.getElementById('vLimB') as HTMLElement;
+
+    slRiemannN?.addEventListener('input', () => {
+      state.riemannN = parseInt(slRiemannN.value, 10);
+      if (vRiemannN) vRiemannN.textContent = String(state.riemannN);
+      updateTelemetry();
+    });
+    slLimA?.addEventListener('input', () => {
+      state.limA = Math.min(state.limB - 0.3, parseFloat(slLimA.value));
+      slLimA.value = state.limA.toFixed(1);
+      if (vLimA) vLimA.textContent = state.limA.toFixed(2);
+      updateTelemetry();
+    });
+    slLimB?.addEventListener('input', () => {
+      state.limB = Math.max(state.limA + 0.3, parseFloat(slLimB.value));
+      slLimB.value = state.limB.toFixed(1);
+      if (vLimB) vLimB.textContent = state.limB.toFixed(2);
+      updateTelemetry();
+    });
+    methodBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        methodBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.method = btn.getAttribute('data-method') as typeof state.method;
+        updateTelemetry();
+      });
+    });
+
+    document.getElementById('btnAnimRiemann')?.addEventListener('click', () => {
+      stopAnim();
+      let curN = 2;
+      let tick = 0;
+      const step = () => {
+        tick++;
+        if (tick % 4 === 0) {
+          curN = Math.min(60, curN + 1);
+          state.riemannN = curN;
+          if (slRiemannN) slRiemannN.value = String(curN);
+          if (vRiemannN) vRiemannN.textContent = String(curN);
+          updateTelemetry();
+        }
+        if (curN < 60 && state.tab === 'riemann') animTimer = requestAnimationFrame(step);
+      };
+      animTimer = requestAnimationFrame(step);
+    });
+
+    // Sliders Escena 3
+    const slRevAngle = document.getElementById('slRevAngle') as HTMLInputElement;
+    const vRevAngle = document.getElementById('vRevAngle') as HTMLElement;
+    const slDisksN = document.getElementById('slDisksN') as HTMLInputElement;
+    const vDisksN = document.getElementById('vDisksN') as HTMLElement;
+    slRevAngle?.addEventListener('input', () => {
+      state.revAngle = parseInt(slRevAngle.value, 10);
+      if (vRevAngle) vRevAngle.textContent = `${state.revAngle}°`;
+      updateTelemetry();
+    });
+    slDisksN?.addEventListener('input', () => {
+      state.disksN = parseInt(slDisksN.value, 10);
+      if (vDisksN) vDisksN.textContent = String(state.disksN);
+      updateTelemetry();
+    });
+    document.getElementById('btnAnimSolid')?.addEventListener('click', () => {
+      stopAnim();
+      let ang = 15;
+      const step = () => {
+        ang = Math.min(360, ang + 4);
+        state.revAngle = ang;
+        if (slRevAngle) slRevAngle.value = String(ang);
+        if (vRevAngle) vRevAngle.textContent = `${ang}°`;
+        updateTelemetry();
+        if (ang < 360 && state.tab === 'solid') animTimer = requestAnimationFrame(step);
+      };
+      animTimer = requestAnimationFrame(step);
+    });
+
+    // Sliders Escena 4
+    const slTfcX = document.getElementById('slTfcX') as HTMLInputElement;
+    const vTfcX = document.getElementById('vTfcX') as HTMLElement;
+    slTfcX?.addEventListener('input', () => {
+      state.tfcX = parseFloat(slTfcX.value);
+      if (vTfcX) vTfcX.textContent = state.tfcX.toFixed(2);
+      updateTelemetry();
+    });
+    document.getElementById('btnAnimTfc')?.addEventListener('click', () => {
+      stopAnim();
+      let curX = -1.4;
+      const step = () => {
+        curX += 0.025;
+        if (curX > 2.4) curX = 2.4;
+        state.tfcX = curX;
+        if (slTfcX) slTfcX.value = curX.toFixed(2);
+        if (vTfcX) vTfcX.textContent = curX.toFixed(2);
+        updateTelemetry();
+        if (curX < 2.4 && state.tab === 'tfc') animTimer = requestAnimationFrame(step);
+      };
+      animTimer = requestAnimationFrame(step);
+    });
+
+    // Cámara Presets
+    camBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        camBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.getAttribute('data-view');
+        if (view === 'iso') {
+          cam.az = -0.55; cam.el = 0.32; cam.dist = 7.8; cam.tx = 0.2; cam.ty = 0.25; cam.tz = 0;
+        } else if (view === 'front') {
+          cam.az = 0.001; cam.el = 0.02; cam.dist = 7.2; cam.tx = 0.1; cam.ty = 0.25; cam.tz = 0;
+        } else if (view === 'top') {
+          cam.az = 0.001; cam.el = 1.52; cam.dist = 8.2; cam.tx = 0.1; cam.ty = 0; cam.tz = 0;
+        }
+      });
+    });
+
+    // Interacción ratón
+    let isDragging = false, isPanning = false, lastX = 0, lastY = 0;
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      isPanning = e.shiftKey || e.button === 2;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.classList.add('dragging');
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      isPanning = false;
+      canvas.classList.remove('dragging');
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (isPanning) {
+        cam.tx -= dx * 0.008 * (cam.dist / 8);
+        cam.ty += dy * 0.008 * (cam.dist / 8);
+      } else {
+        cam.az -= dx * 0.007;
+        cam.el = Math.max(-1.52, Math.min(1.52, cam.el + dy * 0.007));
+      }
+    });
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      cam.dist = Math.max(2.5, Math.min(25, cam.dist * (e.deltaY > 0 ? 1.08 : 0.92)));
+    }, { passive: false });
+    canvas.addEventListener('dblclick', () => setCameraForTab(state.tab));
+
+    switchTab(initialTab);
+
+    // =========================================================================
+    // LOOP DE RENDERIZADO 3D
+    // =========================================================================
+    let lastTime = performance.now();
+
+    const drawAxes = (C: ReturnType<typeof makeCam>, x0 = -2.8, x1 = 3.0, y0 = -2.2, y1 = 2.6) => {
+      line3(C, [x0, 0, 0], [x1, 0, 0], AXIS, 1.5);
+      arrowAt(C, [x1, 0, 0], [x1 - 0.2, 0, 0], AXIS);
+      label3(C, [x1 + 0.22, 0, 0], 'x', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+
+      line3(C, [0, y0, 0], [0, y1, 0], AXIS, 1.5);
+      arrowAt(C, [0, y1, 0], [0, y1 - 0.2, 0], AXIS);
+      label3(C, [0, y1 + 0.22, 0], 'y', COL_AXIS_LBL, 13, 'center', 0, 'italic');
+    };
+
+    const render = (now: number) => {
+      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      state.t += dt;
+
+      ctx.clearRect(0, 0, W, H);
+      syncThemeColors();
+      const C = makeCam();
+      const fnObj = FUNCTIONS[state.fn];
+
+      // 1. ESCENA 1: DERIVADA (SECANTE -> TANGENTE + TRAZADOR f'(x))
+      if (state.tab === 'deriv') {
+        if (state.showGrid) gridRect(C, -2.8, 2.8, -2.2, 2.6, 0.5);
+        drawAxes(C);
+
+        // Curva principal f(x)
+        for (let x = -2.5; x < 2.6; x += 0.05) {
+          line3(C, [x, fnObj.f(x), 0], [x + 0.05, fnObj.f(x + 0.05), 0], C_CYN, 2.8);
+        }
+
+        // Trazador de la función derivada f'(x)
+        if (state.showDerivCurve) {
+          for (let x = -2.5; x < 2.6; x += 0.05) {
+            line3(C, [x, fnObj.df(x), -0.35], [x + 0.05, fnObj.df(x + 0.05), -0.35], C_ROSE, 2.0, [4, 4]);
+          }
+          const df0 = fnObj.df(state.x0);
+          line3(C, [state.x0, fnObj.f(state.x0), 0], [state.x0, df0, -0.35], hexA(C_ROSE, 0.5), 1.2, [3, 3]);
+          glowDot(C, [state.x0, df0, -0.35], 5.5, COL_VEC_MAIN, C_ROSE);
+          label3(C, [state.x0, df0 - 0.22, -0.35], `f'(${state.x0.toFixed(1)})=${df0.toFixed(2)}`, C_ROSE, 11, 'center', 0, 'italic');
+        }
+
+        const x0 = state.x0, y0 = fnObj.f(x0);
+        const x1 = x0 + state.dx, y1 = fnObj.f(x1);
+        const tanSlope = fnObj.df(x0);
+        const secSlope = (y1 - y0) / state.dx;
+
+        // Triángulo diferencial Δx / Δy
+        if (state.showDiffTriangle) {
+          line3(C, [x0, y0, 0], [x1, y0, 0], C_ORG, 2.0);
+          line3(C, [x1, y0, 0], [x1, y1, 0], C_EME, 2.0);
+          label3(C, [(x0 + x1) / 2, y0 - 0.16, 0], `Δx=${state.dx.toFixed(2)}`, C_ORG, 10.5, 'center', 0, 'italic');
+          label3(C, [x1 + 0.16, (y0 + y1) / 2, 0], `Δy=${(y1 - y0).toFixed(2)}`, C_EME, 10.5, 'left', 0, 'italic');
+        }
+
+        // Recta tangente límite
+        if (state.showTangent) {
+          line3(C, [x0 - 1.1, y0 - 1.1 * tanSlope, 0], [x0 + 1.1, y0 + 1.1 * tanSlope, 0], C_AMB, 2.2);
+        }
+
+        // Recta secante por P y Q
+        if (state.showSecant) {
+          line3(C, [x0 - 0.9, y0 - 0.9 * secSlope, 0], [x1 + 0.9, y1 + 0.9 * secSlope, 0], C_VIO, 2.0, [6, 4]);
+          glowDot(C, [x1, y1, 0], 6, COL_VEC_MAIN, C_VIO);
+          label3(C, [x1, y1 + 0.22, 0], 'Q', C_VIO, 12, 'center', 0, 'italic');
+        }
+
+        glowDot(C, [x0, y0, 0], 7, COL_VEC_MAIN, C_AMB);
+        label3(C, [x0, y0 + 0.24, 0], 'P', C_AMB, 12.5, 'center', 0, 'italic');
+      }
+
+      // 2. ESCENA 2: SUMAS DE RIEMANN
+      else if (state.tab === 'riemann') {
+        if (state.showGrid) gridRect(C, -2.8, 2.8, -2.2, 2.6, 0.5);
+        drawAxes(C);
+
+        const a = state.limA, b = state.limB, n = state.riemannN;
+        const dx = (b - a) / n;
+
+        // Área exacta sombreada sutil
+        if (state.showExactArea) {
+          const st = (b - a) / 60;
+          for (let x = a; x < b; x += st) {
+            const xN = Math.min(b, x + st);
+            fillPoly3(C, [[x, 0, -0.02], [xN, 0, -0.02], [xN, fnObj.f(xN), -0.02], [x, fnObj.f(x), -0.02]], hexA(C_EME, 0.16));
+          }
+        }
+
+        // Rectángulos / Bloques 3D de Riemann
+        const depth = state.show3DBars ? 0.55 : 0;
+        for (let i = 0; i < n; i++) {
+          const x0 = a + i * dx, x1 = x0 + dx;
+          let yLeft = 0, yRight = 0;
+          if (state.method === 'left') { yLeft = yRight = fnObj.f(x0); }
+          else if (state.method === 'right') { yLeft = yRight = fnObj.f(x1); }
+          else if (state.method === 'mid') { yLeft = yRight = fnObj.f((x0 + x1) / 2); }
+          else { yLeft = fnObj.f(x0); yRight = fnObj.f(x1); }
+
+          const colFill = yLeft >= 0 ? hexA(C_CYN, 0.35) : hexA(C_ROSE, 0.35);
+          const colEdge = yLeft >= 0 ? C_CYN : C_ROSE;
+
+          // Cara frontal
+          fillPoly3(C, [[x0, 0, 0], [x1, 0, 0], [x1, yRight, 0], [x0, yLeft, 0]], colFill);
+          line3(C, [x0, 0, 0], [x0, yLeft, 0], colEdge, 1.2);
+          line3(C, [x0, yLeft, 0], [x1, yRight, 0], colEdge, 1.5);
+          line3(C, [x1, yRight, 0], [x1, 0, 0], colEdge, 1.2);
+
+          if (depth > 0 && n <= 45) {
+            // Extrusión 3D superior y lateral
+            fillPoly3(C, [[x0, yLeft, 0], [x1, yRight, 0], [x1, yRight, -depth], [x0, yLeft, -depth]], hexA(colEdge, 0.25));
+            line3(C, [x0, yLeft, -depth], [x1, yRight, -depth], hexA(colEdge, 0.6), 1);
+            line3(C, [x1, yRight, 0], [x1, yRight, -depth], hexA(colEdge, 0.6), 1);
+          }
+        }
+
+        // Curva f(x) sobre los rectángulos
+        for (let x = -2.5; x < 2.6; x += 0.05) {
+          line3(C, [x, fnObj.f(x), 0.02], [x + 0.05, fnObj.f(x + 0.05), 0.02], C_AMB, 2.6);
+        }
+      }
+
+      // 3. ESCENA 3: SÓLIDO DE REVOLUCIÓN 3D
+      else if (state.tab === 'solid') {
+        if (state.showGrid) gridRect(C, -2.5, 2.5, -2.0, 2.0, 0.5);
+        drawAxes(C, -2.2, 2.4, -2.0, 2.0);
+
+        const a = -1.2, b = 1.8;
+        const maxRad = (state.revAngle * Math.PI) / 180;
+
+        // Discos cilíndricos de Riemann
+        if (state.showDisks) {
+          const n = state.disksN;
+          const dx = (b - a) / n;
+          for (let i = 0; i < n; i++) {
+            const xm = a + (i + 0.5) * dx;
+            const r = Math.abs(fnObj.f(xm));
+            const steps = 16;
+            for (let s = 0; s < steps; s++) {
+              const a0 = (s / steps) * maxRad;
+              const a1 = ((s + 1) / steps) * maxRad;
+              line3(C, [xm, r * Math.cos(a0), r * Math.sin(a0)], [xm, r * Math.cos(a1), r * Math.sin(a1)], hexA(C_AMB, 0.55), 1.2);
+            }
+          }
+        }
+
+        // Malla de superficie de revolución
+        if (state.showMesh) {
+          const xSteps = 22, rSteps = 18;
+          for (let i = 0; i <= xSteps; i++) {
+            const x = a + (i / xSteps) * (b - a);
+            const r = Math.abs(fnObj.f(x));
+            for (let j = 0; j < rSteps; j++) {
+              const t0 = (j / rSteps) * maxRad;
+              const t1 = ((j + 1) / rSteps) * maxRad;
+              line3(C, [x, r * Math.cos(t0), r * Math.sin(t0)], [x, r * Math.cos(t1), r * Math.sin(t1)], hexA(C_CYN, 0.4), 1);
+            }
+          }
+          for (let j = 0; j <= rSteps; j += 2) {
+            const t = (j / rSteps) * maxRad;
+            for (let i = 0; i < xSteps; i++) {
+              const x0 = a + (i / xSteps) * (b - a);
+              const x1 = a + ((i + 1) / xSteps) * (b - a);
+              const r0 = Math.abs(fnObj.f(x0)), r1 = Math.abs(fnObj.f(x1));
+              line3(C, [x0, r0 * Math.cos(t), r0 * Math.sin(t)], [x1, r1 * Math.cos(t), r1 * Math.sin(t)], hexA(C_CYN, 0.35), 1);
+            }
+          }
+        }
+
+        // Perfil generatriz f(x) destacado
+        for (let x = a; x < b; x += 0.05) {
+          line3(C, [x, fnObj.f(x), 0], [x + 0.05, fnObj.f(x + 0.05), 0], C_ROSE, 2.8);
+        }
+      }
+
+      // 4. ESCENA 4: TEOREMA FUNDAMENTAL DEL CÁLCULO
+      else {
+        if (state.showGrid) gridRect(C, -2.5, 2.8, -2.2, 2.8, 0.5);
+        drawAxes(C);
+
+        const a = -1.5, xCur = state.tfcX;
+
+        // Área acumulada ∫ₐˣ f(t) dt
+        const st = 0.06;
+        for (let t = a; t < xCur; t += st) {
+          const tN = Math.min(xCur, t + st);
+          fillPoly3(C, [[t, 0, 0], [tN, 0, 0], [tN, fnObj.f(tN), 0], [t, fnObj.f(t), 0]], hexA(C_CYN, 0.25));
+        }
+
+        // Curva original f(x)
+        for (let x = -2.2; x < 2.5; x += 0.05) {
+          line3(C, [x, fnObj.f(x), 0], [x + 0.05, fnObj.f(x + 0.05), 0], C_CYN, 2.5);
+        }
+
+        // Curva integral F(x) = ∫ₐˣ f(t) dt
+        if (state.showIntegralCurve) {
+          const Fa = fnObj.F(a);
+          for (let x = a; x < 2.4; x += 0.05) {
+            line3(C, [x, fnObj.F(x) - Fa, 0], [x + 0.05, fnObj.F(x + 0.05) - Fa, 0], C_EME, 2.5);
+          }
+          const Fx = fnObj.F(xCur) - Fa;
+          glowDot(C, [xCur, Fx, 0], 6.5, COL_VEC_MAIN, C_EME);
+          label3(C, [xCur, Fx + 0.24, 0], `F(x)=${Fx.toFixed(2)}`, C_EME, 11.5, 'center', 0, 'italic');
+
+          // Tangente a F(x) cuya pendiente es f(x)
+          if (state.showTangent) {
+            const slope = fnObj.f(xCur);
+            line3(C, [xCur - 0.7, Fx - 0.7 * slope, 0], [xCur + 0.7, Fx + 0.7 * slope, 0], C_AMB, 2.2);
+          }
+        }
+
+        const fx = fnObj.f(xCur);
+        line3(C, [xCur, 0, 0], [xCur, fx, 0], C_AMB, 1.8, [4, 4]);
+        glowDot(C, [xCur, fx, 0], 6.5, COL_VEC_MAIN, C_AMB);
+        label3(C, [xCur, fx + 0.24, 0], `f(x)=${fx.toFixed(2)}`, C_AMB, 11.5, 'center', 0, 'italic');
+      }
+
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
+  })();
+</script>
+
+<style>
+  .calc-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #05070d;
+    color: #e2e8f0;
+    user-select: none;
+  }
+
+  .calc-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .calc-canvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* CABECERA */
+  .calc-header {
+    position: absolute;
+    top: 76px;
+    left: 24px;
+    z-index: 10;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    pointer-events: auto;
+  }
+
+  .calc-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #06b6d4;
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    width: fit-content;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #06b6d4;
+    box-shadow: 0 0 8px #06b6d4;
+    animation: pulseGlow 1.8s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .calc-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+    text-shadow: 0 2px 20px rgba(6, 182, 212, 0.35);
+  }
+
+  .calc-desc {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(159, 176, 200, 0.85);
+    margin: 0;
+  }
+
+  .hl-calc {
+    color: #06b6d4;
+    font-weight: 700;
+  }
+
+  .btn-open-guide {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 10px;
+    background: rgba(6, 182, 212, 0.15);
+    border: 1px solid rgba(6, 182, 212, 0.45);
+    color: #a5f3fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+  }
+
+  .btn-open-guide:hover {
+    background: rgba(6, 182, 212, 0.28);
+    border-color: #06b6d4;
+    color: #ffffff;
+  }
+
+  /* PESTAÑAS */
+  .calc-tabs-nav {
+    position: absolute;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  }
+
+  .calc-tab-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .calc-tab-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .calc-tab-btn.active {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: rgba(6, 182, 212, 0.6);
+    color: #a5f3fc;
+  }
+
+  /* PANEL DERECHO */
+  .calc-panel {
+    position: absolute;
+    top: 76px;
+    right: 20px;
+    width: 320px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 18px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+    transition: width 0.25s ease;
+  }
+
+  .calc-panel.collapsed {
+    width: 48px;
+    overflow: hidden;
+  }
+
+  .calc-panel.collapsed .panel-content {
+    display: none;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.15rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .ph-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .btn-fold {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .panel-content {
+    padding: 1rem 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+  }
+
+  .sec-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #06b6d4;
+    text-transform: uppercase;
+  }
+
+  .fn-grid, .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+  }
+
+  .fn-btn, .method-btn {
+    padding: 0.35rem 0.45rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .fn-btn.active, .method-btn.active, .fn-btn:hover, .method-btn:hover {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: #06b6d4;
+    color: #ffffff;
+  }
+
+  .ctl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .ctl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .math-sym {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #06b6d4;
+  }
+
+  .ctl-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    color: #38bdf8;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: #06b6d4;
+    cursor: pointer;
+  }
+
+  .quick-presets-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  .preset-chip {
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .preset-chip:hover, .preset-chip.active {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: #06b6d4;
+    color: #a5f3fc;
+  }
+
+  .toggles-box, .camera-views-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    padding-top: 0.85rem;
+  }
+
+  .tg-section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .toggles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    padding: 0.25rem 0.35rem;
+    border-radius: 6px;
+  }
+
+  .color-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dot-c, #06b6d4);
+    box-shadow: 0 0 6px var(--dot-c, #06b6d4);
+  }
+
+  .cam-btns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+  }
+
+  .cam-btn {
+    padding: 0.35rem 0.3rem;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .cam-btn.active, .cam-btn:hover {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: #06b6d4;
+    color: #ffffff;
+  }
+
+  /* TELEMETRÍA */
+  .telemetry-badge {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    z-index: 15;
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    padding: 0.85rem 1.15rem;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 480px;
+  }
+
+  .tele-top {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .tele-type-pill {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(6, 182, 212, 0.2);
+    color: #a5f3fc;
+    border: 1px solid rgba(6, 182, 212, 0.4);
+  }
+
+  .tele-condition {
+    font-size: 0.74rem;
+    color: #94a3b8;
+  }
+
+  .tele-metrics-row {
+    display: flex;
+    gap: 1.25rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    padding: 0.45rem 0;
+  }
+
+  .tm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tm-label {
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+  }
+
+  .tm-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    color: #f1f5f9;
+  }
+
+  .tm-highlight {
+    color: #38bdf8;
+    font-weight: 700;
+  }
+
+  .tele-eq-box {
+    font-size: 0.85rem;
+    color: #a5f3fc;
+    overflow-x: auto;
+  }
+
+  .cam-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.74rem;
+    color: rgba(148, 163, 184, 0.6);
+    pointer-events: none;
+    background: rgba(13, 20, 36, 0.6);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  /* DRAWER PEDAGÓGICO */
+  .guide-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(600px, 92vw);
+    background: rgba(10, 15, 28, 0.96);
+    border-right: 1px solid rgba(6, 182, 212, 0.35);
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+  }
+
+  .guide-drawer.open {
+    transform: translateX(0);
+  }
+
+  .guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.75rem 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .gh-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #06b6d4;
+  }
+
+  .guide-header h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0.2rem 0 0;
+  }
+
+  .btn-close-guide {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .guide-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1.75rem 3rem;
+  }
+
+  .guide-article {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .guide-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .sec-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #38bdf8;
+  }
+
+  .guide-section h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0;
+  }
+
+  .guide-section p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(203, 213, 225, 0.85);
+    margin: 0;
+  }
+
+  .math-center {
+    display: flex;
+    justify-content: center;
+    margin: 0.65rem 0;
+    color: #38bdf8;
+  }
+
+  /* MODO CLARO */
+  :global([data-theme="light"]) .calc-container {
+    background: #f2f0ea;
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .calc-kicker {
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.1);
+    border-color: rgba(2, 132, 199, 0.3);
+  }
+
+  :global([data-theme="light"]) .calc-title {
+    color: #0f172a;
+    text-shadow: none;
+  }
+
+  :global([data-theme="light"]) .calc-desc {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .hl-calc {
+    color: #0284c7;
+  }
+
+  :global([data-theme="light"]) .btn-open-guide {
+    background: rgba(2, 132, 199, 0.1);
+    border-color: rgba(2, 132, 199, 0.35);
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .calc-tabs-nav,
+  :global([data-theme="light"]) .calc-panel,
+  :global([data-theme="light"]) .telemetry-badge,
+  :global([data-theme="light"]) .cam-hint {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #cbd5e1;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  :global([data-theme="light"]) .calc-tab-btn {
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .calc-tab-btn.active {
+    background: rgba(2, 132, 199, 0.14);
+    border-color: #0284c7;
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .panel-header,
+  :global([data-theme="light"]) .toggles-box,
+  :global([data-theme="light"]) .camera-views-box,
+  :global([data-theme="light"]) .tele-metrics-row {
+    border-color: #e2e8f0;
+  }
+
+  :global([data-theme="light"]) .ph-title-group,
+  :global([data-theme="light"]) .tm-val {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .ctl-header,
+  :global([data-theme="light"]) .toggle-pill,
+  :global([data-theme="light"]) .cam-hint {
+    color: #334155;
+  }
+
+  :global([data-theme="light"]) .fn-btn,
+  :global([data-theme="light"]) .method-btn,
+  :global([data-theme="light"]) .preset-chip,
+  :global([data-theme="light"]) .cam-btn {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  :global([data-theme="light"]) .fn-btn.active,
+  :global([data-theme="light"]) .method-btn.active,
+  :global([data-theme="light"]) .preset-chip:hover,
+  :global([data-theme="light"]) .preset-chip.active,
+  :global([data-theme="light"]) .cam-btn.active {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .tele-type-pill {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: rgba(2, 132, 199, 0.35);
+    color: #0369a1;
+  }
+
+  :global([data-theme="light"]) .tele-eq-box {
+    color: #0c4a6e;
+  }
+
+  :global([data-theme="light"]) .guide-drawer {
+    background: rgba(255, 255, 255, 0.98);
+    border-right-color: #cbd5e1;
+  }
+
+  :global([data-theme="light"]) .guide-header h2,
+  :global([data-theme="light"]) .guide-section h3 {
+    color: #0f172a;
+  }
+
+  :global([data-theme="light"]) .guide-section p {
+    color: #334155;
+  }
+
+  @media (max-width: 900px) {
+    .calc-tabs-nav {
+      top: auto;
+      bottom: 80px;
+      left: 12px;
+      right: 12px;
+      transform: none;
+      overflow-x: auto;
+      border-radius: 14px;
+      justify-content: flex-start;
+    }
+    .calc-header {
+      top: 65px;
+      left: 14px;
+      right: 14px;
+      max-width: none;
+    }
+    .calc-panel {
+      top: auto;
+      bottom: 14px;
+      right: 14px;
+      width: calc(100vw - 28px);
+      max-height: 50vh;
+    }
+    .telemetry-badge, .cam-hint {
+      display: none;
+    }
+  }
+</style>
