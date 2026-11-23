@@ -714,23 +714,23 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
                   data-sheet-card="${sheet.id}"
                   style="--pill-accent:${brInfo?.color || '#38c8ff'}"
                 >
-                  <div class="sheet-pill-main">
+                  <div class="sheet-pill-head">
                     <span class="sheet-level-tag">
                       <span class="sheet-pill-dot" aria-hidden="true"></span>
                       ${lvlInfo?.short || sheet.level}
                     </span>
-                    <h3 class="sheet-card-title">${sheet.title}</h3>
+                    <button
+                      type="button"
+                      class="sheet-open-btn"
+                      data-open-sheet="${sheet.id}"
+                      aria-label="Abrir ${sheet.title}"
+                    >
+                      <span>Abrir</span>
+                      <span aria-hidden="true">→</span>
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    class="sheet-open-btn"
-                    data-open-sheet="${sheet.id}"
-                    aria-label="Abrir ${sheet.title}"
-                  >
-                    <span>Abrir</span>
-                    <span aria-hidden="true">→</span>
-                  </button>
+                  <h3 class="sheet-card-title">${sheet.title}</h3>
                 </article>
               `;
             })
@@ -1745,7 +1745,7 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
   }
 
   .gym-archive :global(.sheet-card) {
-    align-items: center;
+    align-items: stretch;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     background: color-mix(in srgb, var(--pill-accent, #38c8ff) 11%, rgba(255, 255, 255, 0.78));
@@ -1755,9 +1755,10 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
       0 4px 14px -6px color-mix(in srgb, var(--pill-accent, #38c8ff) 25%, rgba(15, 23, 42, 0.08)),
       inset 0 1px 0 rgba(255, 255, 255, 0.65);
     display: flex;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 0.55rem;
     justify-content: space-between;
-    padding: 0.8rem 0.95rem;
+    padding: 0.78rem 0.95rem;
     position: relative;
     transition:
       border-color 0.18s ease,
@@ -1792,12 +1793,11 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--pill-accent, var(--accent)) 45%, transparent);
   }
 
-  .gym-archive :global(.sheet-pill-main) {
+  .gym-archive :global(.sheet-pill-head) {
+    align-items: center;
     display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 0.35rem;
-    min-width: 0;
+    gap: 0.5rem;
+    justify-content: space-between;
   }
 
   .gym-archive :global(.sheet-level-tag) {
@@ -1830,15 +1830,11 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
 
   .gym-archive :global(.sheet-card-title) {
     color: var(--ink-strong);
-    display: -webkit-box;
     font-family: var(--display);
     font-size: 0.98rem;
     font-weight: 700;
-    line-height: 1.22;
+    line-height: 1.24;
     margin: 0;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
   }
 
   .gym-archive :global(.sheet-open-btn) {
