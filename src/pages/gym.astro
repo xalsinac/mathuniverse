@@ -709,28 +709,28 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
               const isSelected = selectedSheet?.id === sheet.id;
 
               return `
-                <article class="sheet-card ${isSelected ? 'is-selected' : ''}" data-sheet-card="${sheet.id}">
-                  <div class="sheet-card-top">
-                    <span class="sheet-level-tag">${lvlInfo?.short || sheet.level}</span>
-                    <span class="sheet-branch-tag" style="--br-color:${brInfo?.color || 'var(--accent)'}">
-                      ${brInfo?.symbol || '✱'} ${brInfo?.name || sheet.branch}
+                <article
+                  class="sheet-card ${isSelected ? 'is-selected' : ''}"
+                  data-sheet-card="${sheet.id}"
+                  style="--pill-accent:${brInfo?.color || '#38c8ff'}"
+                >
+                  <div class="sheet-pill-main">
+                    <span class="sheet-level-tag">
+                      <span class="sheet-pill-dot" aria-hidden="true"></span>
+                      ${lvlInfo?.short || sheet.level}
                     </span>
+                    <h3 class="sheet-card-title">${sheet.title}</h3>
                   </div>
 
-                  <span class="sheet-topic-kicker">${sheet.topic}</span>
-                  <h3 class="sheet-card-title">${sheet.title}</h3>
-                  <p class="sheet-card-desc">${sheet.description}</p>
-
-                  <div class="sheet-card-foot">
-                    <button
-                      type="button"
-                      class="sheet-open-btn"
-                      data-open-sheet="${sheet.id}"
-                    >
-                      <span>📄 Abrir hoja de problemas →</span>
-                    </button>
-                    ${sheet.available ? '<span class="status-live-tag">PDF Listo</span>' : '<span class="status-r2-tag">R2 Config</span>'}
-                  </div>
+                  <button
+                    type="button"
+                    class="sheet-open-btn"
+                    data-open-sheet="${sheet.id}"
+                    aria-label="Abrir ${sheet.title}"
+                  >
+                    <span>Abrir</span>
+                    <span aria-hidden="true">→</span>
+                  </button>
                 </article>
               `;
             })
@@ -1740,123 +1740,138 @@ const branchCounts = gymWorksheets.reduce((acc, w) => {
 
   .gym-archive :global(.level-cards-grid) {
     display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
   }
 
   .gym-archive :global(.sheet-card) {
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
+    align-items: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 11%, rgba(255, 255, 255, 0.78));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 36%, rgba(15, 23, 42, 0.08));
+    border-radius: 16px;
+    box-shadow:
+      0 4px 14px -6px color-mix(in srgb, var(--pill-accent, #38c8ff) 25%, rgba(15, 23, 42, 0.08)),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
     display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 0.8rem 0.95rem;
     position: relative;
     transition:
       border-color 0.18s ease,
       box-shadow 0.18s ease,
+      background 0.18s ease,
       transform 0.18s ease;
   }
 
+  :root.theme-dark .gym-archive :global(.sheet-card) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 14%, rgba(18, 22, 32, 0.76));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 36%, rgba(255, 255, 255, 0.09));
+    box-shadow:
+      0 6px 18px -8px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
   .gym-archive :global(.sheet-card:hover) {
-    border-color: var(--line-strong);
-    box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.4);
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 16%, rgba(255, 255, 255, 0.9));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 65%, transparent);
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--pill-accent, #38c8ff) 42%, rgba(15, 23, 42, 0.14));
     transform: translateY(-2px);
   }
 
-  .gym-archive :global(.sheet-card.is-selected) {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
+  :root.theme-dark .gym-archive :global(.sheet-card:hover) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 22%, rgba(20, 25, 38, 0.88));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 72%, transparent);
+    box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--pill-accent, #38c8ff) 35%, rgba(0, 0, 0, 0.7));
   }
 
-  .gym-archive :global(.sheet-card-top) {
-    align-items: center;
+  .gym-archive :global(.sheet-card.is-selected) {
+    border-color: var(--pill-accent, var(--accent));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pill-accent, var(--accent)) 45%, transparent);
+  }
+
+  .gym-archive :global(.sheet-pill-main) {
     display: flex;
-    gap: 0.45rem;
-    justify-content: space-between;
-    margin-bottom: 0.65rem;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
   }
 
   .gym-archive :global(.sheet-level-tag) {
-    background: var(--bg-sunken);
-    border: 1px solid var(--line-strong);
-    color: var(--ink);
-    font: 700 0.6rem/1 var(--mono);
-    letter-spacing: 0.08em;
-    padding: 0.28rem 0.5rem;
-    text-transform: uppercase;
-  }
-
-  .gym-archive :global(.sheet-branch-tag) {
-    color: var(--br-color, var(--muted));
-    font: 600 0.62rem/1 var(--mono);
+    align-items: center;
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 16%, rgba(255, 255, 255, 0.7));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 38%, transparent);
+    border-radius: 999px;
+    color: var(--ink-strong);
+    display: inline-flex;
+    font: 700 0.62rem/1 var(--mono);
+    gap: 0.35rem;
     letter-spacing: 0.06em;
+    padding: 0.24rem 0.55rem;
     text-transform: uppercase;
   }
 
-  .gym-archive :global(.sheet-topic-kicker) {
-    color: var(--accent-ink);
-    font: 600 0.62rem/1 var(--mono);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.35rem;
-    text-transform: uppercase;
+  :root.theme-dark .gym-archive :global(.sheet-level-tag) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 20%, rgba(15, 23, 42, 0.75));
+    color: #f8fafc;
+  }
+
+  .gym-archive :global(.sheet-pill-dot) {
+    background: var(--pill-accent, #38c8ff);
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: 6px;
+    width: 6px;
   }
 
   .gym-archive :global(.sheet-card-title) {
+    color: var(--ink-strong);
+    display: -webkit-box;
     font-family: var(--display);
-    font-size: 1.25rem;
-    font-stretch: 115%;
-    line-height: 1.15;
-    margin: 0 0 0.65rem;
-  }
-
-  .gym-archive :global(.sheet-card-desc) {
-    color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.45;
-    margin: 0 0 1.25rem;
-  }
-
-  .gym-archive :global(.sheet-card-foot) {
-    align-items: center;
-    border-top: 1px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    margin-top: auto;
-    padding-top: 0.85rem;
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.22;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   .gym-archive :global(.sheet-open-btn) {
-    background: transparent;
-    border: 0;
+    align-items: center;
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 18%, rgba(255, 255, 255, 0.85));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 48%, transparent);
+    border-radius: 999px;
     color: var(--ink-strong);
     cursor: pointer;
-    font: 700 0.66rem/1 var(--mono);
-    letter-spacing: 0.08em;
-    padding: 0;
-    text-align: left;
+    display: inline-flex;
+    flex-shrink: 0;
+    font: 700 0.68rem/1 var(--mono);
+    gap: 0.3rem;
+    letter-spacing: 0.06em;
+    padding: 0.52rem 0.82rem;
     text-transform: uppercase;
-    transition: color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  :root.theme-dark .gym-archive :global(.sheet-open-btn) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 22%, rgba(15, 23, 42, 0.8));
+    color: #f8fafc;
   }
 
   .gym-archive :global(.sheet-open-btn:hover) {
-    color: var(--accent-ink);
-  }
-
-  .gym-archive :global(.status-live-tag) {
-    background: color-mix(in srgb, #10b981 14%, transparent);
-    border: 1px solid #10b981;
-    color: #10b981;
-    font: 700 0.58rem/1 var(--mono);
-    padding: 0.2rem 0.4rem;
-    text-transform: uppercase;
-  }
-
-  .gym-archive :global(.status-r2-tag) {
-    border: 1px solid var(--line);
-    color: var(--muted);
-    font: 500 0.58rem/1 var(--mono);
-    padding: 0.2rem 0.4rem;
-    text-transform: uppercase;
+    background: var(--pill-accent, #38c8ff);
+    border-color: var(--pill-accent, #38c8ff);
+    color: #090d16;
+    transform: translateX(1px);
   }
 
   .gym-archive :global(.empty-archive) {
