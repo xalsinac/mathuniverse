@@ -405,35 +405,28 @@ const branchCounts = challengeExams.reduce((acc, e) => {
               const isSelected = selectedExam?.id === exam.id;
 
               return `
-                <article class="exam-card ${isSelected ? 'is-selected' : ''}" data-exam-card="${exam.id}">
-                  <div class="exam-card-top">
-                    <span class="exam-level-tag">${lvlInfo?.short || exam.level}</span>
-                    <span class="exam-branch-tag" style="--br-color:${branchObj?.color || 'var(--accent)'}">
-                      ${branchObj?.symbol || '•'} ${branchObj?.name || exam.branch}
+                <article
+                  class="exam-card ${isSelected ? 'is-selected' : ''}"
+                  data-exam-card="${exam.id}"
+                  style="--pill-accent:${branchObj?.color || '#38c8ff'}"
+                >
+                  <div class="exam-pill-head">
+                    <span class="exam-level-tag">
+                      <span class="exam-pill-dot" aria-hidden="true"></span>
+                      ${lvlInfo?.short || exam.level}
                     </span>
-                  </div>
-
-                  <span class="exam-topic-kicker">${exam.topic}</span>
-                  <h3 class="exam-card-title">${exam.title}</h3>
-                  <p class="exam-card-desc">${exam.description}</p>
-
-                  <div class="exam-card-foot">
                     <button
                       type="button"
                       class="exam-open-btn"
                       data-open-exam="${exam.id}"
+                      aria-label="Abrir ${exam.title}"
                     >
-                      <span>👁 Ver en visor →</span>
+                      <span>Abrir</span>
+                      <span aria-hidden="true">→</span>
                     </button>
-                    <a
-                      href="${exam.pdfUrl}"
-                      download
-                      class="exam-dl-btn"
-                      title="Descargar PDF"
-                    >
-                      <span>📥 Descargar</span>
-                    </a>
                   </div>
+
+                  <h3 class="exam-card-title">${exam.title}</h3>
                 </article>
               `;
             })
@@ -1037,127 +1030,121 @@ const branchCounts = challengeExams.reduce((acc, e) => {
   }
 
   .challenge-archive :global(.level-cards-grid) {
-    background: var(--line);
-    border: 1px solid var(--line);
     display: grid;
-    gap: 1px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 860px) {
-    .challenge-archive :global(.level-cards-grid) {
-      grid-template-columns: 1fr;
-    }
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
   }
 
   .challenge-archive :global(.exam-card) {
-    background: var(--bg);
+    align-items: stretch;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 12%, var(--bg-raised));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 38%, var(--line));
+    border-radius: 16px;
+    box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--pill-accent, #38c8ff) 24%, rgba(15, 23, 42, 0.1));
     display: flex;
     flex-direction: column;
+    gap: 0.55rem;
     justify-content: space-between;
-    padding: 1.25rem;
-    transition: background-color 0.18s ease;
+    padding: 0.78rem 0.95rem;
+    position: relative;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      background 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  :global([data-theme="dark"]) .challenge-archive :global(.exam-card) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 14%, var(--bg-raised));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 36%, var(--line));
+    box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.55);
   }
 
   .challenge-archive :global(.exam-card:hover) {
-    background: var(--bg-sunken);
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 18%, var(--bg-raised));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 68%, transparent);
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--pill-accent, #38c8ff) 38%, rgba(15, 23, 42, 0.16));
+    transform: translateY(-2px);
+  }
+
+  :global([data-theme="dark"]) .challenge-archive :global(.exam-card:hover) {
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 22%, var(--bg-raised));
+    border-color: color-mix(in srgb, var(--pill-accent, #38c8ff) 72%, transparent);
+    box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--pill-accent, #38c8ff) 32%, rgba(0, 0, 0, 0.7));
   }
 
   .challenge-archive :global(.exam-card.is-selected) {
-    background: var(--bg-raised);
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
+    border-color: var(--pill-accent, var(--accent));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pill-accent, var(--accent)) 45%, transparent);
   }
 
-  .challenge-archive :global(.exam-card-top) {
+  .challenge-archive :global(.exam-pill-head) {
     align-items: center;
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .challenge-archive :global(.exam-level-tag) {
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    color: var(--ink);
-    font: 700 0.58rem/1 var(--mono);
-    letter-spacing: 0.06em;
-    padding: 0.25rem 0.45rem;
-    text-transform: uppercase;
-  }
-
-  .challenge-archive :global(.exam-branch-tag) {
-    color: var(--br-color, var(--accent));
-    font: 600 0.62rem/1 var(--mono);
-    letter-spacing: 0.05em;
-  }
-
-  .challenge-archive :global(.exam-topic-kicker) {
-    color: var(--accent-ink);
-    display: block;
-    font: 600 0.62rem/1 var(--mono);
-    letter-spacing: 0.08em;
-    margin-bottom: 0.25rem;
-    text-transform: uppercase;
-  }
-
-  .challenge-archive :global(.exam-card-title) {
-    color: var(--ink);
-    font-family: var(--display);
-    font-size: 1.15rem;
-    font-stretch: 110%;
-    font-weight: 700;
-    line-height: 1.25;
-    margin: 0 0 0.5rem;
-  }
-
-  .challenge-archive :global(.exam-card-desc) {
-    color: var(--muted);
-    font-size: 0.84rem;
-    line-height: 1.45;
-    margin: 0 0 1.25rem;
-  }
-
-  .challenge-archive :global(.exam-card-foot) {
-    align-items: center;
-    border-top: 1px solid var(--line);
     display: flex;
     gap: 0.5rem;
     justify-content: space-between;
-    padding-top: 0.85rem;
+  }
+
+  .challenge-archive :global(.exam-level-tag) {
+    align-items: center;
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 16%, var(--bg-sunken));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 40%, transparent);
+    border-radius: 999px;
+    color: var(--ink-strong);
+    display: inline-flex;
+    font: 700 0.62rem/1 var(--mono);
+    gap: 0.35rem;
+    letter-spacing: 0.06em;
+    padding: 0.24rem 0.55rem;
+    text-transform: uppercase;
+  }
+
+  .challenge-archive :global(.exam-pill-dot) {
+    background: var(--pill-accent, #38c8ff);
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: 6px;
+    width: 6px;
+  }
+
+  .challenge-archive :global(.exam-card-title) {
+    color: var(--ink-strong);
+    font-family: var(--display);
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.24;
+    margin: 0;
   }
 
   .challenge-archive :global(.exam-open-btn) {
-    background: var(--invert-bg);
-    border: 0;
-    color: var(--invert-fg);
+    align-items: center;
+    background: color-mix(in srgb, var(--pill-accent, #38c8ff) 18%, var(--bg-sunken));
+    border: 1px solid color-mix(in srgb, var(--pill-accent, #38c8ff) 48%, transparent);
+    border-radius: 999px;
+    color: var(--ink-strong);
     cursor: pointer;
-    font: 700 0.65rem/1 var(--mono);
-    letter-spacing: 0.08em;
-    padding: 0.55rem 0.85rem;
+    display: inline-flex;
+    flex-shrink: 0;
+    font: 700 0.68rem/1 var(--mono);
+    gap: 0.3rem;
+    letter-spacing: 0.06em;
+    padding: 0.52rem 0.82rem;
     text-transform: uppercase;
-    transition: opacity 0.18s ease;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.15s ease;
   }
 
   .challenge-archive :global(.exam-open-btn:hover) {
-    opacity: 0.85;
-  }
-
-  .challenge-archive :global(.exam-dl-btn) {
-    background: var(--bg-sunken);
-    border: 1px solid var(--line);
-    color: var(--accent-ink);
-    font: 600 0.65rem/1 var(--mono);
-    letter-spacing: 0.05em;
-    padding: 0.5rem 0.75rem;
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: all 0.18s ease;
-  }
-
-  .challenge-archive :global(.exam-dl-btn:hover) {
-    border-color: var(--accent);
-    color: var(--ink);
+    background: var(--pill-accent, #38c8ff);
+    border-color: var(--pill-accent, #38c8ff);
+    color: #090d16;
+    transform: translateX(1px);
   }
 
   .empty-archive {
